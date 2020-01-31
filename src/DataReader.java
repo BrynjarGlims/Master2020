@@ -4,6 +4,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLOutput;
 import java.util.ArrayList;
+import java.util.IllegalFormatException;
 import java.util.List;
 
 public class DataReader {
@@ -22,7 +23,6 @@ public class DataReader {
                 }
                 content.add(line.split(";"));
             }
-
         } catch (FileNotFoundException e) {
             System.out.println("File not found exception in readCSVFile");
 
@@ -49,19 +49,18 @@ public class DataReader {
             }
             productList.add(new Product(productID,
                     Double.parseDouble(productData.get(line)[11]),
-                    checkSplitAttribute(productData.get(line)[6]),
+                    checkSplitAttribute(productData.get(line)[6], line),
                     productData.get(line)[3],
                     Integer.parseInt(productData.get(line)[7]),
                     Integer.parseInt(productData.get(line)[8]),
                     Integer.parseInt(productData.get(line)[9])));
             productID++;
         }
-
         Customer[] customers = convertCustomerList(customerList);
         return customers;
     }
 
-    public static boolean checkSplitAttribute( String flagg){
+    public static boolean checkSplitAttribute( String flagg, int line){
         if (flagg.equals("Volumsplitt")){
             return true;
         }
@@ -70,7 +69,7 @@ public class DataReader {
         }
         else{
             System.out.println("Unknown isDividable value");
-            return false;
+            throw new IllegalArgumentException("Unknown isDividable value at line " + (line + 2));
         }
     }
 
@@ -88,38 +87,27 @@ public class DataReader {
             customers[i] = customerList.get(i);
         }
         return customers;
-
     }
 
     public static Customer[] parseTimeWindowFileData(Customer[] customers, List<String[]> timeWindowData){
         int customerCount = 0;
         double[][] timeWindow = new double[6][2];
-        System.out.println("last:" + customers[customers.length-1].customerID);
 
         for (int line = 0; line < timeWindowData.size(); line++){
-            for (String element : timeWindowData.get(line) ){
-            }
-
             if (line != 0 && !timeWindowData.get(line-1)[0].equals(timeWindowData.get(line)[0]) || line == timeWindowData.size()-1) {
                 if(customers[customerCount].customerID != Integer.parseInt(timeWindowData.get(line-1)[0])) {
-                    System.out.println("Missing customer on line: " + line);
+                    //System.out.println("Missing customer on line: " + (line+2));
                     continue;
                 }
-                double[] coordinates = getCoordinates(timeWindowData,line-1);
-                double[] loadingTimes = getLoadingTime(timeWindowData, line-1);
                 customers[customerCount].setTimeWindow(timeWindow);
-                customers[customerCount].setCoordinates(coordinates);
-                customers[customerCount].setLoadingTimes(loadingTimes);
+                customers[customerCount].setCoordinates(getCoordinates(timeWindowData,line-1));
+                customers[customerCount].setLoadingTimes(getLoadingTime(timeWindowData, line-1));
                 timeWindow = new double[6][2];
-
-                System.out.println(customerCount);
-
                 customerCount++;
             }
             timeWindow = setTimeWindows(timeWindow, timeWindowData, line);
         }
         return customers;
-
     }
 
     public static double[] getCoordinates(List<String[]> timeWindowData, int line){
@@ -136,13 +124,10 @@ public class DataReader {
         double variableUnloadingTime = Double.parseDouble(timeWindowData.get(line)[12]);
         double[] loadingTimes = {fixedLoadingTime,variableLoadingTime,fixedUnloadingTime,variableUnloadingTime};
         return loadingTimes;
-
-
     }
 
     public static double[][] setTimeWindows (double[][] timeWindows, List<String[]> timeWindowData, int line){
 
-        // TODO: 30.01.2020 Change this so the time is correctly implemented
         if (!timeWindowData.get(line)[13].equals("")){
             timeWindows[0][0] = convertTimeToDouble(timeWindowData.get(line)[13]);
             timeWindows[0][1] = convertTimeToDouble(timeWindowData.get(line)[14]);
@@ -173,44 +158,29 @@ public class DataReader {
     public static double convertTimeToDouble(String time){
         String[] convertedTime = time.split(":");
         return Double.parseDouble(convertedTime[0]) + Double.parseDouble(convertedTime[1])/60;
-
-
-
-        // TODO: 30.01.2020 Implement this 
     }
 
-
-
-
     public static Data loadData(){
-        List<String[]> customerData = DataReader.readCSVFile(Parameters.customersFilePath);
+        // Master function
+
+        // List<String[]> customerData = DataReader.readCSVFile(Parameters.customersFilePath);
         List<String[]> orderData = DataReader.readCSVFile(Parameters.ordersFilePath);
         List<String[]> timeWindowData = DataReader.readCSVFile(Parameters.timeWindowsFilePath);
-        List<String[]> vehiclesData = DataReader.readCSVFile(Parameters.vehicleFilePath);
+        // List<String[]> vehiclesData = DataReader.readCSVFile(Parameters.vehicleFilePath);
 
         Customer[] customers = parseOrdersFileData(orderData);
-
         customers = parseTimeWindowFileData(customers, timeWindowData);
-        System.out.println("Last customer: " + customers[customers.length-1].customerID);
-        System.out.println("Last customer: " + customers[customers.length-1].timeWindow[0][0]);
-        for (Customer customer: customers){
-            System.out.println(customer.timeWindow[0][1]);
-        }
         Data data = new Data(customers);
         return data;
 
-        
-
+        // TODO: 31.01.2020 Implement data extraction from Vehicles if nessesary
     }
+
+
     public static void main(String[] args){
+        // Temporary main function
+
         Data data = loadData();
-        for (Customer customer: data.customers){
-            System.out.println(customer.timeWindow[0][0]);
-        }
-
-
-
-
 
     }
 
