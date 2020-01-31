@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,23 +32,19 @@ public class DataReader {
         return content;
     }
 
-    public static Customer[] parseOrders(List<String[]> productData){
+    public static Customer[] parseOrdersFileData(List<String[]> productData){
         List<Customer> customerList = new ArrayList<Customer>();
         List<Product> productList = new ArrayList<Product>();
         int customerCount = 0;
-        int productCount = 0;
         int productID = 0;
-
 
         for(int line = 0; line < productData.size(); line++){
             if (line != 0){
-                if (productData.get(line)[0] != productData.get(line)[0]) {
-                    customerList.add(new Customer(Integer.parseInt(productData.get(line)[0]), productData.get(line)[1]));
+                if (!productData.get(line-1)[0].equals(productData.get(line)[0]) || line == (productData.size()-1)) {
+                    customerList.add(new Customer(Integer.parseInt(productData.get(line-1)[0]), productData.get(line-1)[1]));
                     customerList.get(customerCount).setProducts(convertProductList(productList));
-                    productList = new ArrayList<Product>();
+                    productList = new ArrayList<>();
                     customerCount++;
-                    productCount = 0;
-
                 }
             }
             productList.add(new Product(productID,
@@ -57,10 +54,11 @@ public class DataReader {
                     Integer.parseInt(productData.get(line)[7]),
                     Integer.parseInt(productData.get(line)[8]),
                     Integer.parseInt(productData.get(line)[9])));
-            productCount++;
             productID++;
         }
-        return convertCustomerList(customerList);
+
+        Customer[] customers = convertCustomerList(customerList);
+        return customers;
     }
 
     public static boolean checkSplitAttribute( String flagg){
@@ -93,23 +91,29 @@ public class DataReader {
 
     }
 
-    public static Customer[] parseTimeWindows(Customer[] customers, List<String[]> timeWindowData){
+    public static Customer[] parseTimeWindowFileData(Customer[] customers, List<String[]> timeWindowData){
         int customerCount = 0;
         double[][] timeWindow = new double[6][2];
+        System.out.println("last:" + customers[customers.length-1].customerID);
 
         for (int line = 0; line < timeWindowData.size(); line++){
-            System.out.println(line);
             for (String element : timeWindowData.get(line) ){
-                System.out.println(element);
             }
-            if (line != 0 && timeWindowData.get(line)[0] != timeWindowData.get(line)[0]) {
+
+            if (line != 0 && !timeWindowData.get(line-1)[0].equals(timeWindowData.get(line)[0]) || line == timeWindowData.size()-1) {
+                if(customers[customerCount].customerID != Integer.parseInt(timeWindowData.get(line-1)[0])) {
+                    System.out.println("Missing customer on line: " + line);
+                    continue;
+                }
                 double[] coordinates = getCoordinates(timeWindowData,line-1);
                 double[] loadingTimes = getLoadingTime(timeWindowData, line-1);
                 customers[customerCount].setTimeWindow(timeWindow);
                 customers[customerCount].setCoordinates(coordinates);
                 customers[customerCount].setLoadingTimes(loadingTimes);
-                if(customers[customerCount].customerID == Integer.parseInt(timeWindowData.get(line)[0]))
-                    System.out.println("Wrong order of customers, assignment need to be adjusted");
+                timeWindow = new double[6][2];
+
+                System.out.println(customerCount);
+
                 customerCount++;
             }
             timeWindow = setTimeWindows(timeWindow, timeWindowData, line);
@@ -119,8 +123,8 @@ public class DataReader {
     }
 
     public static double[] getCoordinates(List<String[]> timeWindowData, int line){
-        double x_coordinate = Double.parseDouble(timeWindowData.get(line)[5]);
-        double y_coordinate = Double.parseDouble(timeWindowData.get(line)[6]);
+        double x_coordinate = Double.parseDouble(timeWindowData.get(line)[7]);
+        double y_coordinate = Double.parseDouble(timeWindowData.get(line)[8]);
         double[] coordinates = {x_coordinate, y_coordinate};
         return coordinates;
     }
@@ -129,7 +133,7 @@ public class DataReader {
         double fixedLoadingTime = Double.parseDouble(timeWindowData.get(line)[9]);
         double variableLoadingTime = Double.parseDouble(timeWindowData.get(line)[10]);
         double fixedUnloadingTime = Double.parseDouble(timeWindowData.get(line)[11]);
-        double variableUnloadingTime = Double.parseDouble(timeWindowData.get(line)[9]);
+        double variableUnloadingTime = Double.parseDouble(timeWindowData.get(line)[12]);
         double[] loadingTimes = {fixedLoadingTime,variableLoadingTime,fixedUnloadingTime,variableUnloadingTime};
         return loadingTimes;
 
@@ -138,36 +142,38 @@ public class DataReader {
 
     public static double[][] setTimeWindows (double[][] timeWindows, List<String[]> timeWindowData, int line){
 
-        // TODO: 30.01.2020 Change this so the time is correctly implemented 
+        // TODO: 30.01.2020 Change this so the time is correctly implemented
         if (!timeWindowData.get(line)[13].equals("")){
-            timeWindows[0][0] = Double.parseDouble(timeWindowData.get(line)[13]);
-            timeWindows[0][1] = Double.parseDouble(timeWindowData.get(line)[14]);
+            timeWindows[0][0] = convertTimeToDouble(timeWindowData.get(line)[13]);
+            timeWindows[0][1] = convertTimeToDouble(timeWindowData.get(line)[14]);
         }
         if (!timeWindowData.get(line)[15].equals("")){
-            timeWindows[1][0] = Double.parseDouble(timeWindowData.get(line)[15]);
-            timeWindows[1][1] = Double.parseDouble(timeWindowData.get(line)[16]);
+            timeWindows[1][0] = convertTimeToDouble(timeWindowData.get(line)[15]);
+            timeWindows[1][1] = convertTimeToDouble(timeWindowData.get(line)[16]);
         }
         if (!timeWindowData.get(line)[17].equals("")){
-            timeWindows[2][0] = Double.parseDouble(timeWindowData.get(line)[17]);
-            timeWindows[2][1] = Double.parseDouble(timeWindowData.get(line)[18]);
+            timeWindows[2][0] = convertTimeToDouble(timeWindowData.get(line)[17]);
+            timeWindows[2][1] = convertTimeToDouble(timeWindowData.get(line)[18]);
         }
         if (!timeWindowData.get(line)[19].equals("")){
-            timeWindows[3][0] = Double.parseDouble(timeWindowData.get(line)[19]);
-            timeWindows[3][1] = Double.parseDouble(timeWindowData.get(line)[20]);
+            timeWindows[3][0] = convertTimeToDouble(timeWindowData.get(line)[19]);
+            timeWindows[3][1] = convertTimeToDouble(timeWindowData.get(line)[20]);
         }
         if (!timeWindowData.get(line)[21].equals("")){
-            timeWindows[4][0] = Double.parseDouble(timeWindowData.get(line)[21]);
-            System.out.println(timeWindowData.get(line)[21]);
-            timeWindows[4][1] = Double.parseDouble(timeWindowData.get(line)[22]);
+            timeWindows[4][0] = convertTimeToDouble(timeWindowData.get(line)[21]);
+            timeWindows[4][1] = convertTimeToDouble(timeWindowData.get(line)[22]);
         }
         if (!timeWindowData.get(line)[23].equals("")){
-            timeWindows[5][0] = Double.parseDouble(timeWindowData.get(line)[23]);
-            timeWindows[5][1] = Double.parseDouble(timeWindowData.get(line)[24]);
+            timeWindows[5][0] = convertTimeToDouble(timeWindowData.get(line)[23]);
+            timeWindows[5][1] = convertTimeToDouble(timeWindowData.get(line)[24]);
         }
         return timeWindows;
     }
     
     public static double convertTimeToDouble(String time){
+        String[] convertedTime = time.split(":");
+        return Double.parseDouble(convertedTime[0]) + Double.parseDouble(convertedTime[1])/60;
+
 
 
         // TODO: 30.01.2020 Implement this 
@@ -182,18 +188,26 @@ public class DataReader {
         List<String[]> timeWindowData = DataReader.readCSVFile(Parameters.timeWindowsFilePath);
         List<String[]> vehiclesData = DataReader.readCSVFile(Parameters.vehicleFilePath);
 
-        Customer[] customers = parseOrders(orderData);
-        customers = parseTimeWindows(customers, timeWindowData);
+        Customer[] customers = parseOrdersFileData(orderData);
+
+        customers = parseTimeWindowFileData(customers, timeWindowData);
+        System.out.println("Last customer: " + customers[customers.length-1].customerID);
+        System.out.println("Last customer: " + customers[customers.length-1].timeWindow[0][0]);
+        for (Customer customer: customers){
+            System.out.println(customer.timeWindow[0][1]);
+        }
         Data data = new Data(customers);
         return data;
 
-
-
-
+        
 
     }
     public static void main(String[] args){
         Data data = loadData();
+        for (Customer customer: data.customers){
+            System.out.println(customer.timeWindow[0][0]);
+        }
+
 
 
 
