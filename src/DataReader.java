@@ -66,7 +66,6 @@ public class DataReader {
             return false;
         }
         else{
-            System.out.println("Unknown isDividable value");
             throw new IllegalArgumentException("Unknown isDividable value at line " + (line + 2));
         }
     }
@@ -158,17 +157,48 @@ public class DataReader {
         return Double.parseDouble(convertedTime[0]) + Double.parseDouble(convertedTime[1])/60;
     }
 
+    public static Vehicle[] parseVehicleFileData(List<String[]> vehiclesData){
+        List<Vehicle> vehicleList = new ArrayList<>();
+
+        for (int line = 0; line < vehiclesData.size(); line++){
+            if (vehiclesData.get(line)[18].equals("") || Integer.parseInt(vehiclesData.get(line)[24]) < 10000){
+                //todo: chech if more removal of invalid data is needed
+                vehicleList.add(new Vehicle(Integer.parseInt(vehiclesData.get(line)[0]),
+                        vehiclesData.get(line)[2],
+                        Integer.parseInt(vehiclesData.get(line)[24]),
+                                vehiclesData.get(line)[28],
+                        Integer.parseInt(vehiclesData.get(line)[18]),
+                        Integer.parseInt(vehiclesData.get(line)[19]),
+                        Integer.parseInt(vehiclesData.get(line)[20]),
+                        Integer.parseInt(vehiclesData.get(line)[21])));
+            }
+        }
+
+        Vehicle[] vehicles = convertVehicleList(vehicleList);
+        return vehicles;
+    }
+
+    public static Vehicle[] convertVehicleList( List<Vehicle> vehicleList){
+        Vehicle[] vehicles = new Vehicle[vehicleList.size()];
+        for (int i = 0; i < vehicleList.size(); i++){
+            vehicles[i] = vehicleList.get(i);
+        }
+        return vehicles;
+
+    }
+
     public static Data loadData(){
         // Master function
 
         // List<String[]> customerData = DataReader.readCSVFile(Parameters.customersFilePath);
         List<String[]> orderData = DataReader.readCSVFile(Parameters.ordersFilePath);
         List<String[]> timeWindowData = DataReader.readCSVFile(Parameters.timeWindowsFilePath);
-        // List<String[]> vehiclesData = DataReader.readCSVFile(Parameters.vehicleFilePath);
+        List<String[]> vehiclesData = DataReader.readCSVFile(Parameters.vehicleFilePath);
 
         Customer[] customers = parseOrdersFileData(orderData);
         customers = parseTimeWindowFileData(customers, timeWindowData);
-        Data data = new Data(customers);
+        Vehicle[] vehicles = parseVehicleFileData(vehiclesData);
+        Data data = new Data(customers, vehicles);
         return data;
 
         // TODO: 31.01.2020 Implement data extraction from Vehicles if nessesary

@@ -23,9 +23,6 @@ public class Customer {
     public Customer(int customerID, String customerName){
         this.customerID = customerID;
         this.customerName = customerName;
-
-
-
     }
 
     public void setProducts( Product[] products){
@@ -47,6 +44,12 @@ public class Customer {
         this.variableLoadingTime = loadingTimes[1];
         this.fixedUnloadingTime = loadingTimes[2];
         this.variableUnloadingTime = loadingTimes[3];
+    }
+
+    public String toString(){
+        return "";
+
+
     }
 
 
