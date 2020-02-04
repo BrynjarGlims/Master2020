@@ -1,3 +1,5 @@
+package DataFiles;
+
 public class Product {
 
     // All values can be found in FFV

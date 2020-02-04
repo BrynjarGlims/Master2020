@@ -1,3 +1,5 @@
+package DataFiles;
+
 public class Parameters {
 
     //File paths

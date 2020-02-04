@@ -1,4 +1,4 @@
-import java.util.List;
+package DataFiles;
 
 public class Customer {
     //DL = detaljerte leveringstider
@@ -8,7 +8,7 @@ public class Customer {
     public int customerID; //customer code, DL
     public String customerName; // kundenavn
     public Product[] products;
-    public double[][] timeWindow;              // interval for when customer can receive, day, product
+    public double[][] timeWindow;              // interval for when customer can receive, [day][start, end]
     public int[] visitDays;
 
     public double xCoordinate;

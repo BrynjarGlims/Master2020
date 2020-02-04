@@ -1,3 +1,5 @@
+package DataFiles;
+
 public class Data {
 
     public Customer[] customers;

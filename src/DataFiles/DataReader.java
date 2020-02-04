@@ -1,3 +1,5 @@
+package DataFiles;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -190,7 +192,7 @@ public class DataReader {
     public static Data loadData(){
         // Master function
 
-        // List<String[]> customerData = DataReader.readCSVFile(Parameters.customersFilePath);
+        // List<String[]> customerData = Data.DataReader.readCSVFile(Data.Parameters.customersFilePath);
         List<String[]> orderData = DataReader.readCSVFile(Parameters.ordersFilePath);
         List<String[]> timeWindowData = DataReader.readCSVFile(Parameters.timeWindowsFilePath);
         List<String[]> vehiclesData = DataReader.readCSVFile(Parameters.vehicleFilePath);
