@@ -1,5 +1,5 @@
 package Individual;
-import Data.*;
+import DataFiles.*;
 
 import java.util.Arrays;
 

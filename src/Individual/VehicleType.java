@@ -1,6 +1,6 @@
 package Individual;
 
-import Data.Data;
+import DataFiles.Data;
 
 public class VehicleType {
 
