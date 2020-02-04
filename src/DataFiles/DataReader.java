@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class DataReader {
@@ -48,7 +49,7 @@ public class DataReader {
                 }
             }
             productList.add(new Product(productID,
-                    Double.parseDouble(productData.get(line)[11]),
+                    Double.parseDouble(productData.get(line)[12]),
                     checkSplitAttribute(productData.get(line)[6], line),
                     productData.get(line)[3],
                     Integer.parseInt(productData.get(line)[7]),
@@ -203,14 +204,30 @@ public class DataReader {
         Data data = new Data(customers, vehicles);
         return data;
 
-        // TODO: 31.01.2020 Implement data extraction from Vehicles if nessesary
+    }
+
+    public static Data loadSubsetData(int numberOfCustomer, int numberOfVehicles){
+
+        List<String[]> orderData = DataReader.readCSVFile(Parameters.ordersFilePath);
+        List<String[]> timeWindowData = DataReader.readCSVFile(Parameters.timeWindowsFilePath);
+        List<String[]> vehiclesData = DataReader.readCSVFile(Parameters.vehicleFilePath);
+
+        Customer[] customers = parseOrdersFileData(orderData);
+        customers = parseTimeWindowFileData(customers, timeWindowData);
+        Vehicle[] vehicles = parseVehicleFileData(vehiclesData);
+        Customer[] customersSubset = Arrays.copyOfRange(customers, 0, numberOfCustomer);
+        Vehicle[] vehiclesSubset = Arrays.copyOfRange(vehicles, 0, numberOfVehicles);
+        Data data = new Data(customersSubset, vehiclesSubset);
+        return data;
+
+        // TODO: 31.01.2020 Implement random data extraction if needed
     }
 
 
     public static void main(String[] args){
         // Temporary main function
 
-        Data data = loadData();
+        Data dataSubset = loadSubsetData(10,5);
 
     }
 
