@@ -9,7 +9,8 @@ public class Customer {
     public String customerName; // kundenavn
     public Product[] products;
     public double[][] timeWindow;              // interval for when customer can receive, [day][start, end]
-    public int[] visitDays;
+    public int[] requiredVisitPeriod;    // 1 if visit required, 0 if not
+    public int numberOfOrders;
 
     public double xCoordinate;
     public double yCoordinate;
@@ -27,10 +28,21 @@ public class Customer {
 
     public void setProducts( Product[] products){
         this.products = products;
+        this.numberOfOrders = products.length;
     }
 
     public void setTimeWindow(double[][] timeWindow){
         this.timeWindow = timeWindow;
+        this.requiredVisitPeriod = new int[timeWindow.length];
+        for (int i = 0; i < timeWindow.length; i++){
+            if (timeWindow[i][1] > 0.0){
+                this.requiredVisitPeriod[i] = 1;
+            }
+            else{
+                this.requiredVisitPeriod[i] = 0;
+            }
+        }
+
     }
 
     public void setCoordinates(double[] coordinates){
