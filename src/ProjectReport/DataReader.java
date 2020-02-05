@@ -171,7 +171,12 @@ public class DataReader {
         return data;
     }
 
-    public static DataMip
+    public static DataMip initialieNewData(Data data ) {
+
+        return new DataMip();
+
+
+    }
 
 
 }

@@ -4,9 +4,11 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class DataReader {
 
@@ -205,6 +207,43 @@ public class DataReader {
 
     }
 
+    public  static Customer[] removeInvalidCustomers(Customer[] customers){
+        //Function to remove invalid data
+
+        customers = removeInvalidNonDivOrderCombination(customers);
+
+        return customers;
+    }
+
+    public static Customer[] removeInvalidNonDivOrderCombination(Customer[] customers){
+        List<Integer> indexes = new ArrayList<Integer>() ;
+        for (int i = 0; i < customers.length; i++){
+            if (customers[i].numberOfNonDividableProducts > customers[i].numberOfVisitPeriods){
+                indexes.add(i);
+            }
+        }
+        Customer[] newCustomers = removeElementsInArray(customers, indexes);
+        return newCustomers;
+    }
+
+    public static Customer[] removeElementsInArray(Customer[] customers, List<Integer> indexes ){
+        // Check if something is wrong
+        if (customers == null || indexes.size() == 0 || indexes.size() > customers.length){
+            return customers;
+        }
+        Customer[] newCustomers = new Customer[customers.length-indexes.size()];
+        int tempCounter = 0;
+        for (int index = 0; index < customers.length; index++){
+            if (!indexes.contains(index)) {
+                newCustomers[tempCounter] = customers[index];
+                tempCounter++;
+            }
+        }
+
+        return newCustomers;
+    };
+
+
     public static Data loadSubsetData(int numberOfCustomer, int numberOfVehicles){
 
         List<String[]> orderData = DataReader.readCSVFile(Parameters.ordersFilePath);
@@ -213,9 +252,11 @@ public class DataReader {
 
         Customer[] customers = parseOrdersFileData(orderData);
         customers = parseTimeWindowFileData(customers, timeWindowData);
+        customers = removeInvalidCustomers(customers);
         Vehicle[] vehicles = parseVehicleFileData(vehiclesData);
         Customer[] customersSubset = Arrays.copyOfRange(customers, 0, numberOfCustomer);
         Vehicle[] vehiclesSubset = Arrays.copyOfRange(vehicles, 0, numberOfVehicles);
+
         Data data = new Data(customersSubset, vehiclesSubset);
         return data;
 
@@ -225,7 +266,11 @@ public class DataReader {
 
     public static void main(String[] args){
         // Temporary main function
-        Data dataSubset = loadSubsetData(10,5);
+
+        Data dataSubset = loadSubsetData(100,5);
+        System.out.println("hei");
+
+
 
     }
 

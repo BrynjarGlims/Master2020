@@ -14,8 +14,11 @@ public class Customer {
     public Product[] products;
     public Product[] dividableProducts;
     public Product[] nonDividableProducts;
-    public double[][] timeWindow;              // interval for when customer can receive, [day][start, end]
+    public int numberOfDividableProducts = 0;
+    public int numberOfNonDividableProducts = 0;
+    public double[][] timeWindow;// interval for when customer can receive, [day][start, end]
     public int[] requiredVisitPeriod;    // 1 if visit required, 0 if not
+    public int numberOfVisitPeriods;
     public int numberOfOrders;
 
     public double xCoordinate;
@@ -45,8 +48,11 @@ public class Customer {
         for (Product p : products){
             if (p.isDividable) {
                 dividable.add(p);
+                this.numberOfDividableProducts++;
+
             } else {
                 nonDividable.add(p);
+                this.numberOfNonDividableProducts++;
             }
         }
         dividableProducts = dividable.toArray(Product[]::new);
@@ -56,21 +62,21 @@ public class Customer {
     public void setTimeWindow(double[][] timeWindow){
         this.timeWindow = timeWindow;
         this.requiredVisitPeriod = new int[timeWindow.length];
+        this.numberOfVisitPeriods = 0;
         for (int i = 0; i < timeWindow.length; i++){
             if (timeWindow[i][1] > 0.0){
                 this.requiredVisitPeriod[i] = 1;
+                this.numberOfVisitPeriods += 1;
             }
             else{
                 this.requiredVisitPeriod[i] = 0;
             }
         }
-
     }
 
     public void setCoordinates(double[] coordinates){
         this.xCoordinate = coordinates[0];
         this.yCoordinate = coordinates[1];
-
     }
 
     public void setLoadingTimes(double[] loadingTimes){
@@ -82,8 +88,6 @@ public class Customer {
 
     public String toString(){
         return "";
-
-
     }
 
 
