@@ -42,7 +42,7 @@ public class DataReader {
         for(int line = 0; line < productData.size(); line++){
             if (line != 0){
                 if (!productData.get(line-1)[0].equals(productData.get(line)[0]) || line == (productData.size()-1)) {
-                    customerList.add(new Customer(Integer.parseInt(productData.get(line-1)[0]), productData.get(line-1)[1]));
+                    customerList.add(new Customer(customerCount, Integer.parseInt(productData.get(line-1)[0]), productData.get(line-1)[1]));
                     customerList.get(customerCount).setProducts(convertProductList(productList));
                     productList = new ArrayList<>();
                     customerCount++;
@@ -57,8 +57,7 @@ public class DataReader {
                     Integer.parseInt(productData.get(line)[9])));
             productID++;
         }
-        Customer[] customers = convertCustomerList(customerList);
-        return customers;
+        return convertCustomerList(customerList);
     }
 
     public static boolean checkSplitAttribute( String flagg, int line){
@@ -95,7 +94,7 @@ public class DataReader {
 
         for (int line = 0; line < timeWindowData.size(); line++){
             if (line != 0 && !timeWindowData.get(line-1)[0].equals(timeWindowData.get(line)[0]) || line == timeWindowData.size()-1) {
-                if(customers[customerCount].customerID != Integer.parseInt(timeWindowData.get(line-1)[0])) {
+                if(customers[customerCount].customerNumber != Integer.parseInt(timeWindowData.get(line-1)[0])) {
                     //System.out.println("Missing customer on line: " + (line+2));
                     continue;
                 }

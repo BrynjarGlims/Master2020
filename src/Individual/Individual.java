@@ -1,14 +1,14 @@
 package Individual;
 import DataFiles.*;
 
+
 import java.util.Arrays;
 
 public class Individual {
 
     public GiantTour giantTour;
     public VehicleType vehicleType;
-    public DividableProducts dividableProducts;
-    public NonDividableProducts nonDividableProducts;
+
     public Data data;
 
     public Individual(Data data){
