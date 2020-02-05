@@ -13,7 +13,7 @@ public class ArcFlowModel {
 
     public GRBEnv env;
     public GRBModel model;
-    public Data data;
+    public DataMip data;
     public PathGenerator pg;
     public Result result;
     public String dataPath;

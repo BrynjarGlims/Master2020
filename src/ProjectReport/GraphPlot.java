@@ -1,7 +1,6 @@
 package ProjectReport;
 import gurobi.GRB;
 import gurobi.GRBException;
-import gurobi.GRBVar;
 import org.graphstream.graph.*;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.stream.file.FileSinkImages;
@@ -12,7 +11,7 @@ import java.util.ArrayList;
 
 public class GraphPlot {
     private HashMap<Integer, String> colorMap = new HashMap<>();
-    private Data data;
+    private DataMip data;
     FileSinkImages fs = new FileSinkImages(FileSinkImages.OutputType.png, FileSinkImages.Resolutions.HD720);
 
     private String[] COLORS = {
@@ -21,7 +20,7 @@ public class GraphPlot {
     }; // pink, yellow, teal, green, blue, purple, orange, red, olive, brown, violet
 
 
-    public GraphPlot(Data data) {
+    public GraphPlot(DataMip data) {
         this.data = data;
     }
 

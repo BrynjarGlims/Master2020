@@ -1,15 +1,13 @@
 package ProjectReport;
-import scala.xml.Atom;
 
-import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class JourneyGenerator {
 
-    private Data data;
+    private DataMip data;
 
-    public JourneyGenerator(Data data){
+    public JourneyGenerator(DataMip data){
         this.data = data;
     }
 

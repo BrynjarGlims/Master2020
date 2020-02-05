@@ -9,7 +9,7 @@ import java.util.Map;
 import ProjectReport.*;
 
 
-public class Data {
+public class DataMip {
 
     String instanceName;
 
@@ -155,6 +155,8 @@ public class Data {
         }
         overtimeLimitAveraged = sumProducts/numPeriods;
     }
+
+
 
 
 

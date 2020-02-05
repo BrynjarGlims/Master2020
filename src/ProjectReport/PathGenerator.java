@@ -5,9 +5,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class PathGenerator {
 
 
-    private Data data;
+    private DataMip data;
 
-    public PathGenerator(Data data) {
+    public PathGenerator(DataMip data) {
         this.data = data;
     }
 

@@ -1,6 +1,5 @@
 package ProjectReport;
 import gurobi.*;
-import org.graphstream.graph.Graph;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -13,7 +12,7 @@ public class PathFlowModel {
 
     public GRBEnv env;
     public GRBModel model;
-    public Data data;
+    public DataMip data;
     public PathGenerator pg;
     public Result result;
     public String dataPath;
@@ -110,7 +109,7 @@ public class PathFlowModel {
                     for (int v = 0; v < data.numVehicles; v++) {
                         for (int r = 0; r < data.numTrips; r++) {
                             String variable_name = String.format("q[%d][%d][%d][%d][%d]", d, v, r, i, m);
-                            q[d][v][r][i][m] = model.addVar(0.0, Data.upperBoundQuantity , 0, GRB.CONTINUOUS, variable_name);
+                            q[d][v][r][i][m] = model.addVar(0.0, DataMip.upperBoundQuantity , 0, GRB.CONTINUOUS, variable_name);
                         }
                     }
                 }
@@ -128,7 +127,7 @@ public class PathFlowModel {
 
         for (int d = 0; d < data.numPeriods; d++) {
             String variable_name = String.format("qO[%d]", d);
-            qO[d] = model.addVar(0.0, Data.upperBoundOvertime, data.costOvertime, GRB.CONTINUOUS, variable_name);
+            qO[d] = model.addVar(0.0, DataMip.upperBoundOvertime, data.costOvertime, GRB.CONTINUOUS, variable_name);
         }
     }
 
