@@ -226,7 +226,6 @@ public class DataReader {
 
     public static void main(String[] args){
         // Temporary main function
-
         Data dataSubset = loadSubsetData(10,5);
 
     }
