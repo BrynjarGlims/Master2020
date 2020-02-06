@@ -235,6 +235,7 @@ public class DataReader {
         for (int index = 0; index < customers.length; index++){
             if (!indexes.contains(index)) {
                 newCustomers[tempCounter] = customers[index];
+                newCustomers[tempCounter].setCustomerID(tempCounter);
                 tempCounter++;
             }
         }
