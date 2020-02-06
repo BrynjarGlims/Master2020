@@ -1,10 +1,10 @@
 package DataFiles;
 
-public class Product {
+public class Order {
 
     // All values can be found in FFV
 
-    public int ProductID;
+    public int OrderID;
     public double volume;
     public boolean isDividable;
     public String commodityFlow;
@@ -12,9 +12,9 @@ public class Product {
     public int minFrequency;
     public int maxFrequency;
 
-    public Product(int ProductID, double volume, boolean isDividable, String commodityFlow, int storeFrequency,
-                   int minFrequency, int maxFrequency ){
-        this.ProductID = ProductID;
+    public Order(int OrderID, double volume, boolean isDividable, String commodityFlow, int storeFrequency,
+                 int minFrequency, int maxFrequency ){
+        this.OrderID = OrderID;
         this.volume = volume;
         this.isDividable = isDividable;
         this.commodityFlow = commodityFlow;
