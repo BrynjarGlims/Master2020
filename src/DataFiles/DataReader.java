@@ -199,6 +199,7 @@ public class DataReader {
 
         Customer[] customers = parseOrdersFileData(orderData);
         customers = parseTimeWindowFileData(customers, timeWindowData);
+        customers = removeInvalidCustomers(customers);
         Vehicle[] vehicles = parseVehicleFileData(vehiclesData);
         Data data = new Data(customers, vehicles);
         return data;
