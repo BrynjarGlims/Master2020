@@ -69,6 +69,7 @@ public class ProductDistribution {
                 sum += d;
             }
             System.out.println(sum);
+            System.out.println("TEST PUSH");
         }
     }
 
