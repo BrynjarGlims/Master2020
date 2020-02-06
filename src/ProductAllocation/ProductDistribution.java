@@ -5,7 +5,6 @@ import DataFiles.Data;
 import DataFiles.DataReader;
 import DataFiles.Order;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class ProductDistribution {

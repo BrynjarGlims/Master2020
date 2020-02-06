@@ -1,7 +1,5 @@
 package DataFiles;
 
-import javax.swing.*;
-
 public class Data {
 
     public Customer[] customers;
@@ -32,7 +30,7 @@ public class Data {
         double totalVolume = 0;
         int numDeliveries = 0;
         for (Customer c : customers){
-            for (Product p : c.products){
+            for (Order p : c.products){
                 totalVolume += p.volume;
                 numDeliveries ++;
             }
