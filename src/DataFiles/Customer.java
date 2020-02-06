@@ -36,6 +36,10 @@ public class Customer {
         this.customerName = customerName;
     }
 
+    public void setCustomerID(int customerID){
+        this.customerID = customerID;
+    }
+
     public void setProducts( Order[] products){
         this.products = products;
         this.numberOfOrders = products.length;
