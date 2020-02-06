@@ -3,9 +3,8 @@ package ProductAllocation;
 import DataFiles.Customer;
 import DataFiles.Data;
 import DataFiles.DataReader;
-import DataFiles.Product;
+import DataFiles.Order;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class ProductDistribution {
@@ -28,7 +27,7 @@ public class ProductDistribution {
         for (Customer c : data.customers){
             int[] visitDaysCopy = new int[c.requiredVisitPeriod.length];
             System.arraycopy(c.requiredVisitPeriod, 0, visitDaysCopy, 0, c.requiredVisitPeriod.length);
-            for (Product p : c.nonDividableProducts){
+            for (Order p : c.nonDividableProducts){
                 System.out.println(c.customerNumber);
                 int chosenDay = getMinimumPeriod(visitDaysCopy);
                 productDistribution[getMinimumPeriod(c.requiredVisitPeriod)][c.customerID] += p.volume;

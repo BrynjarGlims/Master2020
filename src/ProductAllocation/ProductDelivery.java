@@ -1,15 +1,15 @@
 package ProductAllocation;
 
-import DataFiles.Product;
+import DataFiles.Order;
 
 public class ProductDelivery {
 
 
-    Product product;
+    Order product;
     int period;
     double volume;
 
-    public ProductDelivery(Product product, int period, double volume){
+    public ProductDelivery(Order product, int period, double volume){
         this.product = product;
         this.period = period;
         this.volume = volume;
