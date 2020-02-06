@@ -5,12 +5,12 @@ import DataFiles.Order;
 public class ProductDelivery {
 
 
-    Order product;
+    Order order;
     int period;
     double volume;
 
-    public ProductDelivery(Order product, int period, double volume){
-        this.product = product;
+    public ProductDelivery(Order order, int period, double volume){
+        this.order = order;
         this.period = period;
         this.volume = volume;
     }
