@@ -159,7 +159,7 @@ public class DataReader {
         return Double.parseDouble(convertedTime[0]) + Double.parseDouble(convertedTime[1])/60;
     }
 
-    public static Vehicle[] parseVehicleFileData(List<String[]> vehiclesData){
+    public static Vehicle[] parseVehicleFileDataToVehicle(List<String[]> vehiclesData){
         List<Vehicle> vehicleList = new ArrayList<>();
 
         for (int line = 0; line < vehiclesData.size(); line++){
@@ -174,11 +174,28 @@ public class DataReader {
                         Integer.parseInt(vehiclesData.get(line)[20]),
                         Integer.parseInt(vehiclesData.get(line)[21])));
             }
+
+
         }
 
         Vehicle[] vehicles = convertVehicleList(vehicleList);
         return vehicles;
     }
+
+    public static Depot parseVehicleFileDataToDepot(List<String[]> vehiclesData)  {
+
+        for (int line = 0; line < vehiclesData.size(); line++) {
+            if (vehiclesData.get(line)[4].equals("TRONDHEIM")) {
+                double xCoordinate = Double.parseDouble(vehiclesData.get(line)[38]);
+                double yCoordinate = Double.parseDouble(vehiclesData.get(line)[39]);
+                return new Depot(xCoordinate, yCoordinate);
+            }
+        }
+        System.out.println("Depot cannot be found");
+        return new Depot(0,0);
+    }
+
+
 
     public static Vehicle[] convertVehicleList( List<Vehicle> vehicleList){
         Vehicle[] vehicles = new Vehicle[vehicleList.size()];
@@ -189,7 +206,7 @@ public class DataReader {
 
     }
 
-    public static Data loadData(){
+    public static Data loadData()  {
         // Master function
 
         // List<String[]> customerData = Data.DataReader.readCSVFile(Data.Parameters.customersFilePath);
@@ -200,8 +217,9 @@ public class DataReader {
         Customer[] customers = parseOrdersFileData(orderData);
         customers = parseTimeWindowFileData(customers, timeWindowData);
         customers = removeInvalidCustomers(customers);
-        Vehicle[] vehicles = parseVehicleFileData(vehiclesData);
-        Data data = new Data(customers, vehicles);
+        Vehicle[] vehicles = parseVehicleFileDataToVehicle(vehiclesData);
+        Depot depot = parseVehicleFileDataToDepot(vehiclesData);
+        Data data = new Data(customers, vehicles, depot);
         return data;
 
     }
@@ -244,7 +262,7 @@ public class DataReader {
     };
 
 
-    public static Data loadSubsetData(int numberOfCustomer, int numberOfVehicles){
+    public static Data loadSubsetData(int numberOfCustomer, int numberOfVehicles) {
 
         List<String[]> orderData = DataReader.readCSVFile(Parameters.ordersFilePath);
         List<String[]> timeWindowData = DataReader.readCSVFile(Parameters.timeWindowsFilePath);
@@ -253,11 +271,13 @@ public class DataReader {
         Customer[] customers = parseOrdersFileData(orderData);
         customers = parseTimeWindowFileData(customers, timeWindowData);
         customers = removeInvalidCustomers(customers);
-        Vehicle[] vehicles = parseVehicleFileData(vehiclesData);
+        Vehicle[] vehicles = parseVehicleFileDataToVehicle(vehiclesData);
+        Depot depot = parseVehicleFileDataToDepot(vehiclesData);
         Customer[] customersSubset = Arrays.copyOfRange(customers, 0, numberOfCustomer);
         Vehicle[] vehiclesSubset = Arrays.copyOfRange(vehicles, 0, numberOfVehicles);
 
-        Data data = new Data(customersSubset, vehiclesSubset);
+
+        Data data = new Data(customersSubset, vehiclesSubset, depot);
         return data;
 
         // TODO: 31.01.2020 Implement random data extraction if needed
@@ -268,6 +288,7 @@ public class DataReader {
         // Temporary main function
 
         Data dataSubset = loadSubsetData(100,5);
+        System.out.println("hei");
 
 
 
