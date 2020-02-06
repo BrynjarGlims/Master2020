@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class DataReader {
 
@@ -37,20 +35,20 @@ public class DataReader {
 
     public static Customer[] parseOrdersFileData(List<String[]> productData){
         List<Customer> customerList = new ArrayList<Customer>();
-        List<Product> productList = new ArrayList<Product>();
-        int customerCount = 0;
+        List<Order> productList = new ArrayList<Order>();
+        int customerID = 0;
         int productID = 0;
 
         for(int line = 0; line < productData.size(); line++){
             if (line != 0){
                 if (!productData.get(line-1)[0].equals(productData.get(line)[0]) || line == (productData.size()-1)) {
-                    customerList.add(new Customer(customerCount, Integer.parseInt(productData.get(line-1)[0]), productData.get(line-1)[1]));
-                    customerList.get(customerCount).setProducts(convertProductList(productList));
+                    customerList.add(new Customer(customerID, Integer.parseInt(productData.get(line-1)[0]), productData.get(line-1)[1]));
+                    customerList.get(customerID).setProducts(convertProductList(productList));
                     productList = new ArrayList<>();
-                    customerCount++;
+                    customerID++;
                 }
             }
-            productList.add(new Product(productID,
+            productList.add(new Order(productID, customerID,
                     Double.parseDouble(productData.get(line)[12]),
                     checkSplitAttribute(productData.get(line)[6], line),
                     productData.get(line)[3],
@@ -74,8 +72,8 @@ public class DataReader {
         }
     }
 
-    public static Product[] convertProductList( List<Product> productList ){
-        Product[] products = new Product[productList.size()];
+    public static Order[] convertProductList(List<Order> productList ){
+        Order[] products = new Order[productList.size()];
         for (int i = 0; i < productList.size(); i++){
             products[i] = productList.get(i);
         }
@@ -268,7 +266,7 @@ public class DataReader {
         // Temporary main function
 
         Data dataSubset = loadSubsetData(100,5);
-        System.out.println("hei");
+
 
 
 
