@@ -11,9 +11,9 @@ public class Customer {
     public int customerID;
     public int customerNumber; //customer code, DL
     public String customerName; // kundenavn
-    public Product[] products;
-    public Product[] dividableProducts;
-    public Product[] nonDividableProducts;
+    public Order[] products;
+    public Order[] dividableProducts;
+    public Order[] nonDividableProducts;
     public int numberOfDividableProducts = 0;
     public int numberOfNonDividableProducts = 0;
     public double[][] timeWindow;// interval for when customer can receive, [day][start, end]
@@ -36,16 +36,16 @@ public class Customer {
         this.customerName = customerName;
     }
 
-    public void setProducts( Product[] products){
+    public void setProducts( Order[] products){
         this.products = products;
         this.numberOfOrders = products.length;
         setDividableAndNonDividable();
     }
 
     private void setDividableAndNonDividable(){
-        List<Product> dividable = new ArrayList<>();
-        List<Product> nonDividable = new ArrayList<>();
-        for (Product p : products){
+        List<Order> dividable = new ArrayList<>();
+        List<Order> nonDividable = new ArrayList<>();
+        for (Order p : products){
             if (p.isDividable) {
                 dividable.add(p);
                 this.numberOfDividableProducts++;
@@ -55,8 +55,8 @@ public class Customer {
                 this.numberOfNonDividableProducts++;
             }
         }
-        dividableProducts = dividable.toArray(Product[]::new);
-        nonDividableProducts = nonDividable.toArray(Product[]::new);
+        dividableProducts = dividable.toArray(Order[]::new);
+        nonDividableProducts = nonDividable.toArray(Order[]::new);
     }
 
     public void setTimeWindow(double[][] timeWindow){
