@@ -45,6 +45,13 @@ public class Customer {
 
     }
 
+    public void setOrderId(int orderID){
+        for (int i = 0;  i < orders.length; i++ ){
+            this.orders[i].orderID = i+orderID;
+        }
+    }
+
+
     public void setOrders(Order[] orders){
         this.orders = orders;
         this.numberOfOrders = orders.length;

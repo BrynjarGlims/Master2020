@@ -231,12 +231,15 @@ public class DataReader {
             return customers;
         }
         Customer[] newCustomers = new Customer[customers.length-indexes.size()];
-        int tempCounter = 0;
+        int cusomterCounter = 0;
+        int orderCounter = 0;
         for (int index = 0; index < customers.length; index++){
             if (!indexes.contains(index)) {
-                newCustomers[tempCounter] = customers[index];
-                newCustomers[tempCounter].setCustomerID(tempCounter);
-                tempCounter++;
+                newCustomers[cusomterCounter] = customers[index];
+                newCustomers[cusomterCounter].setCustomerID(cusomterCounter);
+                newCustomers[cusomterCounter].setOrderId(orderCounter);
+                orderCounter += newCustomers[cusomterCounter].orders.length;
+                cusomterCounter++;
             }
         }
 
