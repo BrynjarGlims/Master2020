@@ -2,7 +2,7 @@ package ProductAllocation;
 
 import DataFiles.Order;
 
-public class OrderDelivery {
+public class OrderDelivery { // TODO: 07.02.2020 not overriding split deliveries for the same, but make a list for all order splits 
 
 
     Order order;
