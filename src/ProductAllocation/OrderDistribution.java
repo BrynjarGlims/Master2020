@@ -8,18 +8,18 @@ import DataFiles.Order;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class ProductDistribution {
+public class OrderDistribution {
 
 
-    public double[][] productDistribution;
+    public double[][] orderDistribution;
     public Data data;
     public OrderDelivery[] orderDeliveries;
     public double[] volumePerPeriod;
 
 
-    public ProductDistribution(Data data){
+    public OrderDistribution(Data data){
         this.data = data;
-        productDistribution = new double[data.numPeriods][data.customers.length];
+        orderDistribution = new double[data.numPeriods][data.customers.length];
         orderDeliveries = new OrderDelivery[data.numDeliveries];
         volumePerPeriod = new double[data.numPeriods];
     }
@@ -132,7 +132,7 @@ public class ProductDistribution {
     }
 
     private void updateFields(Order order, int period, double volume){
-        productDistribution[period][order.customerID] += volume;
+        orderDistribution[period][order.customerID] += volume;
         volumePerPeriod[period] += volume;
         orderDeliveries[order.orderID] = new OrderDelivery(order, period, volume);
     }
@@ -140,10 +140,10 @@ public class ProductDistribution {
 
     public static void main(String[] args){
         Data data = DataReader.loadData();
-        ProductDistribution pd = new ProductDistribution(data);
+        OrderDistribution pd = new OrderDistribution(data);
         pd.makeDistribution();
 
-        for (double[] period : pd.productDistribution){
+        for (double[] period : pd.orderDistribution){
             System.out.println(Arrays.toString(period));
         }
     }
