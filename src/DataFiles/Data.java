@@ -30,7 +30,7 @@ public class Data {
         double totalVolume = 0;
         int numDeliveries = 0;
         for (Customer c : customers){
-            for (Order p : c.products){
+            for (Order p : c.orders){
                 totalVolume += p.volume;
                 numDeliveries ++;
             }
