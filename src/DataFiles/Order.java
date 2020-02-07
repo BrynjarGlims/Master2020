@@ -4,8 +4,8 @@ public class Order {
 
     // All values can be found in FFV
 
-    public int OrderID;
-    public int CustomerID;
+    public int orderID;
+    public int customerID;
     public double volume;
     public boolean isDividable;
     public String commodityFlow;
@@ -15,8 +15,8 @@ public class Order {
 
     public Order(int OrderID, int CustomerID, double volume, boolean isDividable, String commodityFlow, int storeFrequency,
                  int minFrequency, int maxFrequency ){
-        this.OrderID = OrderID;
-        this.CustomerID = CustomerID;
+        this.orderID = OrderID;
+        this.customerID = CustomerID;
         this.volume = volume;
         this.isDividable = isDividable;
         this.commodityFlow = commodityFlow;
