@@ -4,7 +4,6 @@ import DataFiles.Customer;
 import DataFiles.Data;
 import DataFiles.DataReader;
 import DataFiles.Order;
-import javafx.scene.shape.ArcTo;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -17,16 +16,18 @@ public class ProductDistribution {
     public OrderDelivery[] orderDeliveries;
     public double[] volumePerPeriod;
 
+
     public ProductDistribution(Data data){
         this.data = data;
         productDistribution = new double[data.numPeriods][data.customers.length];
         orderDeliveries = new OrderDelivery[data.numDeliveries];
         volumePerPeriod = new double[data.numPeriods];
-
     }
+
 
     public void makeDistribution(){
         distributeDividables();
+        distributeNonDividables();
     }
 
 
@@ -36,11 +37,8 @@ public class ProductDistribution {
             System.arraycopy(c.requiredVisitPeriod, 0, visitDaysCopy, 0, c.requiredVisitPeriod.length);
             for (Order o : c.nonDividableProducts){
                 int chosenPeriod = getMinimumPeriod(visitDaysCopy);
-                productDistribution[chosenPeriod][c.customerID] += o.volume;
-                volumePerPeriod[chosenPeriod] += o.volume;
+                updateFields(o, chosenPeriod, o.volume);
                 visitDaysCopy[chosenPeriod] = 0;
-
-                orderDeliveries[o.orderID] = new OrderDelivery(o, chosenPeriod, o.volume);
             }
         }
     }
@@ -48,17 +46,19 @@ public class ProductDistribution {
     private void distributeDividables(){
         for (Customer c : data.customers){
             for (Order o : c.dividableProducts){
+                splitDelivery(o);
             }
         }
-
-
     }
 
     private double[] splitDelivery(Order order){
         int numSplits = ThreadLocalRandom.current().nextInt(order.minFrequency, order.maxFrequency + 1);
-        double[] volumeSplits = distributeVolume(order,numSplits, 10);
+        double[] volumeSplits = distributeVolume(order,numSplits, 10); //numFractions decide amount of randomness in distribution
+        int[] deliveryPeriods = getValidDeliveryPeriods(volumeSplits, data.customers[order.customerID]);
 
-
+        for (int i = 0 ; i < deliveryPeriods.length ; i++){
+            updateFields(order, deliveryPeriods[i], volumeSplits[i]);
+        }
         return volumeSplits;
     }
 
@@ -68,7 +68,7 @@ public class ProductDistribution {
         double sum = 0;
         int randomNumber;
         for (int i = 0 ; i < fractions ; i++){
-            randomNumber = ThreadLocalRandom.current().nextInt(10,100);
+            randomNumber = ThreadLocalRandom.current().nextInt(10,100); //for more randomness, set bigger interval
             sum += randomNumber;
             splits.add(randomNumber);
         }
@@ -84,22 +84,21 @@ public class ProductDistribution {
     return distribution;
     }
 
-    private int[] getValidTimeWindows(double[] volumes, Customer customer){
+    private int[] getValidDeliveryPeriods(double[] volumes, Customer customer){ // TODO: 07.02.2020 no validity is applied to construction
         ArrayList<Integer> periods = new ArrayList<>();
-        for (int i = 0 ; i < customer.numberOfVisitPeriods ; i++) {
+        for (int i = 0 ; i < data.numPeriods ; i++) {
             if (customer.requiredVisitPeriod[i] == 1) {
                 periods.add(i);
             }
         }
         Collections.shuffle(periods);
+
         int[] orderDeliveries = new int[volumes.length];
         for (int i = 0 ; i < volumes.length ; i++){
             orderDeliveries[i] = periods.get(i);
             }
         return orderDeliveries;
         }
-
-
 
 //        int[] deliveryPeriods = new int[data.numPeriods];
 //        int[] visitDaysCopy = new int[customer.requiredVisitPeriod.length];
@@ -110,11 +109,7 @@ public class ProductDistribution {
 //        else if (volumes.length == 2){
 //
 //        }
-//
-//
-//
-//        return new int[2];
-    }
+
 
     private int getMinimumPeriod(int[] possibleDays){
         List<Integer> validPeriods = new ArrayList<>();
@@ -136,31 +131,20 @@ public class ProductDistribution {
         return currentIndex;
     }
 
-
-    public static void main(String[] args){
-        Data data = DataReader.loadData();
-
-        ProductDistribution pd = new ProductDistribution(data);
-        pd.makeDistribution();
-        for(double[] period : pd.productDistribution){
-            double sum = 0;
-            for(double customer : period){
-                sum += customer;
-            }
-        }
-        double[] a = pd.distributeVolume(data.customers[2].dividableProducts[0],
-                ThreadLocalRandom.current().nextInt(data.customers[2].dividableProducts[0].minFrequency, data.customers[2].dividableProducts[0].maxFrequency + 1), 3);
-        System.out.println(Arrays.toString(a));
-        double sum = 0;
-        for (double e : a){
-            sum += e;
-        }
-        System.out.println(sum);
-        System.out.println(data.customers[2].dividableProducts[0].volume);
-
-
+    private void updateFields(Order order, int period, double volume){
+        productDistribution[period][order.customerID] += volume;
+        volumePerPeriod[period] += volume;
+        orderDeliveries[order.orderID] = new OrderDelivery(order, period, volume);
     }
 
 
+    public static void main(String[] args){
+        Data data = DataReader.loadData();
+        ProductDistribution pd = new ProductDistribution(data);
+        pd.makeDistribution();
 
+        for (double[] period : pd.productDistribution){
+            System.out.println(Arrays.toString(period));
+        }
+    }
 }
