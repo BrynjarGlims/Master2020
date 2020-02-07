@@ -13,10 +13,12 @@ public class Order {
     public int minFrequency;
     public int maxFrequency;
 
-    public Order(int OrderID, int CustomerID, double volume, boolean isDividable, String commodityFlow, int storeFrequency,
+
+    public Order(int orderID, int customerID, double volume, boolean isDividable, String commodityFlow, int storeFrequency,
                  int minFrequency, int maxFrequency ){
-        this.orderID = OrderID;
-        this.customerID = CustomerID;
+
+        this.orderID = orderID;
+        this.customerID = customerID;
         this.volume = volume;
         this.isDividable = isDividable;
         this.commodityFlow = commodityFlow;

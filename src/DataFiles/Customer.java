@@ -11,7 +11,7 @@ public class Customer {
     public int customerID;
     public int customerNumber; //customer code, DL
     public String customerName; // kundenavn
-    public Order[] products;
+    public Order[] orders;
     public Order[] dividableProducts;
     public Order[] nonDividableProducts;
     public int numberOfDividableProducts = 0;
@@ -37,19 +37,24 @@ public class Customer {
     }
 
     public void setCustomerID(int customerID){
+
         this.customerID = customerID;
+        for(int i = 0; i < orders.length; i++){
+            this.orders[i].customerID = this.customerID;
+        }
+
     }
 
-    public void setProducts( Order[] products){
-        this.products = products;
-        this.numberOfOrders = products.length;
+    public void setOrders(Order[] orders){
+        this.orders = orders;
+        this.numberOfOrders = orders.length;
         setDividableAndNonDividable();
     }
 
     private void setDividableAndNonDividable(){
         List<Order> dividable = new ArrayList<>();
         List<Order> nonDividable = new ArrayList<>();
-        for (Order p : products){
+        for (Order p : orders){
             if (p.isDividable) {
                 dividable.add(p);
                 this.numberOfDividableProducts++;

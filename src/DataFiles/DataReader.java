@@ -43,7 +43,7 @@ public class DataReader {
             if (line != 0){
                 if (!productData.get(line-1)[0].equals(productData.get(line)[0]) || line == (productData.size()-1)) {
                     customerList.add(new Customer(customerID, Integer.parseInt(productData.get(line-1)[0]), productData.get(line-1)[1]));
-                    customerList.get(customerID).setProducts(convertProductList(productList));
+                    customerList.get(customerID).setOrders(convertProductList(productList));
                     productList = new ArrayList<>();
                     customerID++;
                 }
@@ -268,6 +268,7 @@ public class DataReader {
         // Temporary main function
 
         Data dataSubset = loadSubsetData(100,5);
+        System.out.println("hei");
 
 
 
