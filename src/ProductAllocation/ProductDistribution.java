@@ -9,7 +9,6 @@ import java.util.Arrays;
 
 public class ProductDistribution {
 
-
     public double[][] productDistribution;
     public Data data;
     public ProductDelivery[] productDeliveries;
@@ -20,7 +19,6 @@ public class ProductDistribution {
         productDistribution = new double[data.numPeriods][data.customers.length];
         productDeliveries = new ProductDelivery[data.numDeliveries];
         volumePerPeriod = new double[data.numPeriods];
-
     }
 
     public void makeDistribution(Data data){
