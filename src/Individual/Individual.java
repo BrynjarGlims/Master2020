@@ -47,7 +47,49 @@ public class Individual {
     }
 
     public double evaluateIndividual() {
-        return;
+        //TODO: needs to be implemented
+        return 0.0;
+    }
+
+    public void AdSplit() {
+        /*
+        Split into trips:
+
+         */
+
+
+
+
+
+        //arcCost = driving time + overtime*punishment + overload*punishment
+        /*
+        Assign trips to vehicles:
+
+        1: Compute shortest path on graph H
+
+        LABELING ALGORITHM:
+        2: For all customers:
+           Initialize LabelList[i]=empty
+        3: current = 0
+        4: while current < n:
+            succ = get_succ(current)
+            load = get_load(current)
+            time = get_best_in_time(current)
+            for all labels in L:
+                for all k=1 --> m: (k represents an index in the label)
+                    update all label fields for each node (1-->m)
+                    sort fields based on driving time
+                    L_cost update
+                    L_predecessor = current
+                    if !label_dominated():
+                        List_of_labels_to_expand: add L*
+                        List_of_labels_to_expand: remove dominated labels
+            current = succ
+
+
+
+
+         */
     }
 
 
