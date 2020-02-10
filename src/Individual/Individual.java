@@ -61,6 +61,13 @@ public class Individual {
 
 
 
+
+
+
+
+
+
+
         //arcCost = driving time + overtime*punishment + overload*punishment
         /*
         Assign trips to vehicles:
