@@ -265,6 +265,9 @@ public class DataReader {
     };
 
 
+
+
+
     public static Data loadSubsetData(int numberOfCustomer, int numberOfVehicles) {
 
         List<String[]> orderData = DataReader.readCSVFile(Parameters.ordersFilePath);
@@ -278,7 +281,6 @@ public class DataReader {
         Depot depot = parseVehicleFileDataToDepot(vehiclesData);
         Customer[] customersSubset = Arrays.copyOfRange(customers, 0, numberOfCustomer);
         Vehicle[] vehiclesSubset = Arrays.copyOfRange(vehicles, 0, numberOfVehicles);
-
 
         Data data = new Data(customersSubset, vehiclesSubset, depot);
         return data;

@@ -20,30 +20,38 @@ public class Data {
         this.customers = customers;
         this.vehicles = vehicles;
         this.depot = depot;
-        initialize();
+
     }
 
     private void initialize(){
-        setNumPeriods();
-        setTargetVolume();
-        setDistanceMatrix();
+        this.setNumPeriods();
+        this.setTargetVolume();
+        this.setDistanceMatrix();
+
     }
 
-    private void setDistanceMatrix(){
+    private void setDistanceMatrix() {
         distanceMatrix = new double[customers.length][customers.length];
         for (int i = 0; i < customers.length+1; i++){
             for (int j = 0; j < customers.length+1; j++){
                 if (i == customers.length+1 && j == customers.length+1){
                     distanceMatrix[i][j] = 0;
-                    //todo: implement correctly
+
                 }
-                else if (i == customers.length+1 && j == customers.length+1){
-                    distanceMatrix[i][j] = 0;
-                    //todo: implement correctly
+                else if (i == customers.length+1) {
+                    distanceMatrix[i][j] = euclideanDistance(depot.xCoordinate, depot.yCoordinate
+                            , customers[j].xCoordinate, customers[j].yCoordinate);
+                }
+
+                else if (j == customers.length+1){
+                        distanceMatrix[i][j] = euclideanDistance(customers[i].xCoordinate, customers[i].yCoordinate,
+                                depot.xCoordinate, depot.yCoordinate);
+
 
                 }
                 else{
-                    distanceMatrix[i][j] = euclideanDistance(customers[i], customers[j]);
+                    distanceMatrix[i][j] = euclideanDistance(customers[i].xCoordinate, customers[i].yCoordinate,
+                            customers[j].xCoordinate, customers[j].yCoordinate);
 
                 }
 
@@ -51,10 +59,15 @@ public class Data {
         }
     }
 
-    private double euclideanDistance( Customer from_customer, Customer to_customer){
-        return Math.sqrt(Math.pow( (from_customer.xCoordinate-to_customer.yCoordinate), 2 ) +
-                Math.pow((from_customer.yCoordinate - to_customer.yCoordinate), 2));
+    private double euclideanDistance( double fromCustomerXCor, double formCustomerYCor,
+                                      double toCustomerXCor, double toCustomerYCor){
+        return Math.sqrt(Math.pow( (fromCustomerXCor-toCustomerXCor), 2 ) +
+                Math.pow((formCustomerYCor - toCustomerYCor), 2));
     }
+
+
+
+
 
     private void setNumPeriods(){
         numPeriods = customers[0].timeWindow.length;
