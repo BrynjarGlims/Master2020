@@ -13,6 +13,9 @@ public class Parameters {
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
 
+    //Traveling parameters
+    public static final double scalingDistanceParameter = 10;
+
     //Penalty parameters
     public int capacityPenalty;
     public int overtimePenalty;

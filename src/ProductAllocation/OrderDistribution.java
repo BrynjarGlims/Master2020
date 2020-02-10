@@ -17,7 +17,7 @@ public class OrderDistribution {
     public double[] volumePerPeriod;
 
 
-    public OrderDistribution(Data data){
+    public OrderDistribution(Data data) {
         this.data = data;
         orderDistribution = new double[data.numPeriods][data.customers.length];
         orderDeliveries = new OrderDelivery[data.numDeliveries];
@@ -25,17 +25,17 @@ public class OrderDistribution {
     }
 
 
-    public void makeDistribution(){
+    public void makeDistribution() {
         distributeDividables();
         distributeNonDividables();
     }
 
 
-    private void distributeNonDividables(){
-        for (Customer c : data.customers){
+    private void distributeNonDividables() {
+        for (Customer c : data.customers) {
             int[] visitDaysCopy = new int[c.requiredVisitPeriod.length];
             System.arraycopy(c.requiredVisitPeriod, 0, visitDaysCopy, 0, c.requiredVisitPeriod.length);
-            for (Order o : c.nonDividableProducts){
+            for (Order o : c.nonDividableProducts) {
                 int chosenPeriod = getMinimumPeriod(visitDaysCopy);
                 updateFields(o, chosenPeriod, o.volume);
                 visitDaysCopy[chosenPeriod] = 0;
@@ -43,50 +43,50 @@ public class OrderDistribution {
         }
     }
 
-    private void distributeDividables(){
-        for (Customer c : data.customers){
-            for (Order o : c.dividableProducts){
+    private void distributeDividables() {
+        for (Customer c : data.customers) {
+            for (Order o : c.dividableProducts) {
                 splitDelivery(o);
             }
         }
     }
 
-    private double[] splitDelivery(Order order){
+    private double[] splitDelivery(Order order) {
         int numSplits = ThreadLocalRandom.current().nextInt(order.minFrequency, order.maxFrequency + 1);
-        double[] volumeSplits = distributeVolume(order,numSplits, 10); //numFractions decide amount of randomness in distribution
+        double[] volumeSplits = distributeVolume(order, numSplits, 10); //numFractions decide amount of randomness in distribution
         int[] deliveryPeriods = getValidDeliveryPeriods(volumeSplits, data.customers[order.customerID]);
 
-        for (int i = 0 ; i < deliveryPeriods.length ; i++){
+        for (int i = 0; i < deliveryPeriods.length; i++) {
             updateFields(order, deliveryPeriods[i], volumeSplits[i]);
         }
         return volumeSplits;
     }
 
-    private double[] distributeVolume(Order order, int numSplits, int numFractions){
-        int fractions = numSplits*numFractions;
+    private double[] distributeVolume(Order order, int numSplits, int numFractions) {
+        int fractions = numSplits * numFractions;
         Queue<Integer> splits = new ArrayDeque<>();
         double sum = 0;
         int randomNumber;
-        for (int i = 0 ; i < fractions ; i++){
-            randomNumber = ThreadLocalRandom.current().nextInt(10,100); //for more randomness, set bigger interval
+        for (int i = 0; i < fractions; i++) {
+            randomNumber = ThreadLocalRandom.current().nextInt(10, 100); //for more randomness, set bigger interval
             sum += randomNumber;
             splits.add(randomNumber);
         }
         double[] distribution = new double[numSplits];
         int tempFraction;
-        for (int i = 0 ; i < numSplits ; i++){
+        for (int i = 0; i < numSplits; i++) {
             tempFraction = 0;
-            for (int j = 0 ; j < numFractions ; j++){
+            for (int j = 0; j < numFractions; j++) {
                 tempFraction += splits.remove();
             }
-            distribution[i] = order.volume * (tempFraction/sum);
+            distribution[i] = order.volume * (tempFraction / sum);
         }
-    return distribution;
+        return distribution;
     }
 
-    private int[] getValidDeliveryPeriods(double[] volumes, Customer customer){ // TODO: 07.02.2020 no validity is applied to construction
+    private int[] getValidDeliveryPeriods(double[] volumes, Customer customer) { // TODO: 07.02.2020 no validity is applied to construction
         ArrayList<Integer> periods = new ArrayList<>();
-        for (int i = 0 ; i < data.numPeriods ; i++) {
+        for (int i = 0; i < data.numPeriods; i++) {
             if (customer.requiredVisitPeriod[i] == 1) {
                 periods.add(i);
             }
@@ -94,11 +94,11 @@ public class OrderDistribution {
         Collections.shuffle(periods);
 
         int[] orderDeliveries = new int[volumes.length];
-        for (int i = 0 ; i < volumes.length ; i++){
+        for (int i = 0; i < volumes.length; i++) {
             orderDeliveries[i] = periods.get(i);
-            }
-        return orderDeliveries;
         }
+        return orderDeliveries;
+    }
 
 //        int[] deliveryPeriods = new int[data.numPeriods];
 //        int[] visitDaysCopy = new int[customer.requiredVisitPeriod.length];
@@ -111,40 +111,45 @@ public class OrderDistribution {
 //        }
 
 
-    private int getMinimumPeriod(int[] possibleDays){
+    private int getMinimumPeriod(int[] possibleDays) {
         List<Integer> validPeriods = new ArrayList<>();
-        for (int i = 0 ; i < possibleDays.length ; i++){
-            if (possibleDays[i] == 1){
+        for (int i = 0; i < possibleDays.length; i++) {
+            if (possibleDays[i] == 1) {
                 validPeriods.add(i);
             }
         }
-        if (validPeriods.isEmpty()){throw new IllegalStateException("customer has no valid visit days");}
+        if (validPeriods.isEmpty()) {
+            throw new IllegalStateException("customer has no valid visit days");
+        }
         int currentIndex = validPeriods.get(ThreadLocalRandom.current().nextInt(validPeriods.size()));
 
 
-        for (int i = 0 ; i < volumePerPeriod.length ; i++){
-            if (possibleDays[i] == 0) {continue;}
-            if (volumePerPeriod[i] < volumePerPeriod[currentIndex]){
-                    currentIndex = i;
+        for (int i = 0; i < volumePerPeriod.length; i++) {
+            if (possibleDays[i] == 0) {
+                continue;
+            }
+            if (volumePerPeriod[i] < volumePerPeriod[currentIndex]) {
+                currentIndex = i;
             }
         }
         return currentIndex;
     }
 
-    private void updateFields(Order order, int period, double volume){
+    private void updateFields(Order order, int period, double volume) {
         orderDistribution[period][order.customerID] += volume;
         volumePerPeriod[period] += volume;
         orderDeliveries[order.orderID] = new OrderDelivery(order, period, volume);
     }
 
 
-    public static void main(String[] args){
-        Data data = DataReader.loadData();
-        OrderDistribution pd = new OrderDistribution(data);
-        pd.makeDistribution();
+    public static void main(String[] args) {
+        Data data = DataReader.loadSubsetData(10, 5);
+        Data data1 = DataReader.loadData();
+        OrderDistribution pd = new OrderDistribution(data1);pd.makeDistribution();
 
-        for (double[] period : pd.orderDistribution){
+        for (double[] period : pd.orderDistribution) {
             System.out.println(Arrays.toString(period));
         }
     }
 }
+

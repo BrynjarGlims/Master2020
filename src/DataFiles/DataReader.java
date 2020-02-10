@@ -265,6 +265,9 @@ public class DataReader {
     };
 
 
+
+
+
     public static Data loadSubsetData(int numberOfCustomer, int numberOfVehicles) {
 
         List<String[]> orderData = DataReader.readCSVFile(Parameters.ordersFilePath);
@@ -279,7 +282,6 @@ public class DataReader {
         Customer[] customersSubset = Arrays.copyOfRange(customers, 0, numberOfCustomer);
         Vehicle[] vehiclesSubset = Arrays.copyOfRange(vehicles, 0, numberOfVehicles);
 
-
         Data data = new Data(customersSubset, vehiclesSubset, depot);
         return data;
 
@@ -289,12 +291,6 @@ public class DataReader {
 
     public static void main(String[] args){
         // Temporary main function
-
-        Data dataSubset = loadSubsetData(100,5);
-        System.out.println("hei");
-
-
-
 
     }
 
