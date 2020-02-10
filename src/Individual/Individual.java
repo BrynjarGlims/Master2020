@@ -2,21 +2,26 @@ package Individual;
 import DataFiles.*;
 
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class Individual {
 
     public GiantTour giantTour;
     public VehicleType vehicleType;
+    public double costOfIndividual;
+    public ArrayList<ArrayList<Integer>> tripSplit;
 
     public Data data;
 
     public Individual(Data data){
         this.data = data;
+        this.costOfIndividual = costOfIndividual;
     }
 
     public boolean isFeasible() {
-        //NOTE: AddSplit must be called in advance of this method
+        //NOTE: AdSplit must be called in advance of this method
         if (!hasValidTimeWindows()) {
             return false;
         }
@@ -42,8 +47,9 @@ public class Individual {
         System.out.println(data.customers.length);
         System.out.println(Arrays.toString(data.customers[0].timeWindow[1]));
 
-
         Individual individual = new Individual(data);
+
+
     }
 
     public double evaluateIndividual() {
@@ -51,21 +57,43 @@ public class Individual {
         return 0.0;
     }
 
+    public void cost_of_period() {
+        //demand =
+
+    }
+
+    public void createTrips(){
+        giantTour.chromosome
+        //customer indices
+        ArrayList<ArrayList<Integer>> tripSplit = ;
+        return tripSplit;
+
+    }
+
+    public void distributeTrips(){
+
+    }
+
+    //solves for each period
     public void AdSplit() {
+        for (int p = 0; p < Parameters.numberOfPeriods; p++) {
+            for (VehicleType vt : this.data.vehicleTypes) {
+                createTrips(p, vt);
+                distributeTrips(p, vt);
+            }
+        }
         /*
-        Split into trips:
+        Split into trips by computing shortest path:
+
+        For each (customer, period): copy order demand into a list
+        create a new list storing demand
+
+        arcCost =
 
          */
 
 
-
-
-
-
-
-
-
-
+        //update cost: this.costOfIndividual
 
 
         //arcCost = driving time + overtime*punishment + overload*punishment

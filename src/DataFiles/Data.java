@@ -1,4 +1,6 @@
 package DataFiles;
+import Individual.VehicleType;
+
 import java.lang.Math.*;
 
 
@@ -7,6 +9,7 @@ public class Data {
     public Customer[] customers;
     public Vehicle[] vehicles;
     public Depot depot;
+    public VehicleType[] vehicleTypes;  // todo: initialize
 
     public int numPeriods;
     public int numDeliveries;

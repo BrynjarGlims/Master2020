@@ -17,6 +17,9 @@ public class Parameters {
     public int capacityPenalty;
     public int overtimePenalty;
 
+    //Other parameters
+    public int maxPeriodLength;
+
 
 
 }
