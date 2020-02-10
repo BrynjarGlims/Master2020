@@ -292,12 +292,6 @@ public class DataReader {
     public static void main(String[] args){
         // Temporary main function
 
-        Data dataSubset = loadSubsetData(100,5);
-        System.out.println("hei");
-
-
-
-
     }
 
 }

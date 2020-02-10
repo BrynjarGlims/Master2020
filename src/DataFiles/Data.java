@@ -20,6 +20,7 @@ public class Data {
         this.customers = customers;
         this.vehicles = vehicles;
         this.depot = depot;
+        this.initialize();
 
     }
 
@@ -31,27 +32,27 @@ public class Data {
     }
 
     private void setDistanceMatrix() {
-        distanceMatrix = new double[customers.length][customers.length];
+        distanceMatrix = new double[customers.length + 1][customers.length + 1];
         for (int i = 0; i < customers.length+1; i++){
             for (int j = 0; j < customers.length+1; j++){
-                if (i == customers.length+1 && j == customers.length+1){
+                if (i == customers.length && j == customers.length){
                     distanceMatrix[i][j] = 0;
 
                 }
-                else if (i == customers.length+1) {
+                else if (i == customers.length) {
                     distanceMatrix[i][j] = euclideanDistance(depot.xCoordinate, depot.yCoordinate
-                            , customers[j].xCoordinate, customers[j].yCoordinate);
+                            , customers[j].xCoordinate, customers[j].yCoordinate)*Parameters.scalingDistanceParameter;
                 }
 
-                else if (j == customers.length+1){
+                else if (j == customers.length){
                         distanceMatrix[i][j] = euclideanDistance(customers[i].xCoordinate, customers[i].yCoordinate,
-                                depot.xCoordinate, depot.yCoordinate);
+                                depot.xCoordinate, depot.yCoordinate)*Parameters.scalingDistanceParameter;
 
 
                 }
                 else{
                     distanceMatrix[i][j] = euclideanDistance(customers[i].xCoordinate, customers[i].yCoordinate,
-                            customers[j].xCoordinate, customers[j].yCoordinate);
+                            customers[j].xCoordinate, customers[j].yCoordinate)*Parameters.scalingDistanceParameter;
 
                 }
 
