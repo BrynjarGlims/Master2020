@@ -13,15 +13,27 @@ public class Parameters {
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
 
+    //Loading data parameters
+    public static final int numberOfCustomers = 10;
+    public static final int numberOfVehicles = 5;
+
+
     //Traveling parameters
     public static final double scalingDistanceParameter = 10;
 
-    //Penalty parameters
-    public static final int initialCapacityPenalty = 1;
-    public static final int initialOvertimePenalty = 1;
 
-    //Other parameters
-    public static final int maxTripDuration = 10;
+    //Penalty parameters for genetic algorithm
+    public static final int initialCapacityPenalty = 1;  // lambda
+    public static final int initialOvertimePenalty = 1;  // theta
+
+
+    //Period parameters
+    public static final int[] overtimeLimit = {100, 100, 100, 100, 100, 100};
+    public static final int[] overtimeCost = {100, 100, 100, 100, 100, 100};
+
+    //Time parameters
+    public static final int maxJourneyDuration = 10; //changed to journey duration
+
 
 
 

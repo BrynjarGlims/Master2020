@@ -1,7 +1,4 @@
 package DataFiles;
-import Individual.VehicleType;
-
-import java.lang.Math.*;
 
 
 public class Data {
@@ -14,15 +11,22 @@ public class Data {
     public int numPeriods;
     public int numDeliveries;
 
+
+
     public double totalVolume;
     public double targetVolume;
 
     public double[][] distanceMatrix;   //indexed by customer i and j
 
-    public Data(Customer[] customers, Vehicle[] vehicles, Depot depot){
+    //Derived parameters
+    public int numberOfVehicleTypes;
+    public int[] numberOfVehiclesInVehicleType;
+
+    public Data(Customer[] customers, Vehicle[] vehicles, Depot depot, VehicleType[] vehicleTypes){
         this.customers = customers;
         this.vehicles = vehicles;
         this.depot = depot;
+        this.vehicleTypes = vehicleTypes;
         this.initialize();
 
     }
@@ -31,7 +35,16 @@ public class Data {
         this.setNumPeriods();
         this.setTargetVolume();
         this.setDistanceMatrix();
+        this.setDerivedParameters();
 
+    }
+
+    private void setDerivedParameters(){
+        this.numberOfVehicleTypes = vehicleTypes.length;
+        this.numberOfVehiclesInVehicleType = new int[numberOfVehicleTypes]; //initialized with zero
+        for(Vehicle vehicle : vehicles){
+            this.numberOfVehiclesInVehicleType[vehicle.vehicleType.vehicleTypeID]++;
+        }
     }
 
     private void setDistanceMatrix() {

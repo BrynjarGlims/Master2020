@@ -144,8 +144,9 @@ public class OrderDistribution {
 
     public static void main(String[] args) {
         Data data = DataReader.loadSubsetData(10, 5);
-        Data data1 = DataReader.loadData();
-        OrderDistribution pd = new OrderDistribution(data1);pd.makeDistribution();
+        OrderDistribution pd = new OrderDistribution(data);
+        pd.makeDistribution();
+
 
         for (double[] period : pd.orderDistribution) {
             System.out.println(Arrays.toString(period));
