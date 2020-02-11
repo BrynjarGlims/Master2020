@@ -1,7 +1,4 @@
 package DataFiles;
-import Individual.VehicleType;
-
-import java.lang.Math.*;
 
 
 public class Data {
@@ -19,10 +16,11 @@ public class Data {
 
     public double[][] distanceMatrix;   //indexed by customer i and j
 
-    public Data(Customer[] customers, Vehicle[] vehicles, Depot depot){
+    public Data(Customer[] customers, Vehicle[] vehicles, Depot depot, VehicleType[] vehicleTypes){
         this.customers = customers;
         this.vehicles = vehicles;
         this.depot = depot;
+        this.vehicleTypes = vehicleTypes;
         this.initialize();
 
     }

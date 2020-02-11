@@ -4,7 +4,6 @@ import DataFiles.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class Individual {
 
@@ -14,6 +13,7 @@ public class Individual {
     public ArrayList<ArrayList<Integer>> tripSplit;
 
     public Data data;
+    public int[][] arcCost;  // (i,j) i = from, j = to
 
     public Individual(Data data){
         this.data = data;
@@ -62,24 +62,36 @@ public class Individual {
 
     }
 
-    public void createTrips(){
-        giantTour.chromosome
+    public void createTrips(int p, int vt){
+        //giantTour.chromosome
         //customer indices
-        ArrayList<ArrayList<Integer>> tripSplit = ;
-        return tripSplit;
+        //ArrayList<ArrayList<Integer>> tripSplit = ;
+        //return tripSplit;
 
     }
 
-    public void distributeTrips(){
+    public void distributeTrips(int p, int vt, ArrayList<ArrayList<Integer>> tripSplit){
+
+        // take this as input,remove afterwards
+        ArrayList<Label> currentLabels = new ArrayList<Label>();
+        boolean ifFirstElement = true;
+        for (ArrayList<Integer> trip : tripSplit ){
+            if (ifFirstElement){
+                System.out.println("temp");
+                //currentLabels.add(new Label(vehicleIndex)); //todo implement
+
+            }
+
+        }
 
     }
 
     //solves for each period
     public void AdSplit() {
         for (int p = 0; p < Parameters.numberOfPeriods; p++) {
-            for (VehicleType vt : this.data.vehicleTypes) {
+            for (int vt = 0; vt < this.data.vehicleTypes.length; vt++) {
                 createTrips(p, vt);
-                distributeTrips(p, vt);
+                distributeTrips(p, vt, new ArrayList<ArrayList<Integer>>());
             }
         }
         /*

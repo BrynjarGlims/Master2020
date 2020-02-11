@@ -16,9 +16,17 @@ public class Parameters {
     //Traveling parameters
     public static final double scalingDistanceParameter = 10;
 
-    //Penalty parameters
-    public int capacityPenalty;
-    public int overtimePenalty;
+    //Penalty parameters for genetic algorithm
+    public static final int initialCapacityPenalty = 1;  // lambda
+    public static final int initialOvertimePenalty = 1;  // theta
+
+
+    //Period parameters
+    public static final int[] overtimeLimit = {100, 100, 100, 100, 100, 100};
+    public static final int[] overtimeCost = {100, 100, 100, 100, 100, 100};
+
+    //Trip parameters
+    public static final int maxTripDuration = 10;
 
     //Other parameters
     public int maxPeriodLength;
