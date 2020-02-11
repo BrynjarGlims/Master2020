@@ -17,11 +17,11 @@ public class Parameters {
     public static final double scalingDistanceParameter = 10;
 
     //Penalty parameters
-    public int capacityPenalty;
-    public int overtimePenalty;
+    public static final int initialCapacityPenalty = 1;
+    public static final int initialOvertimePenalty = 1;
 
     //Other parameters
-    public int maxPeriodLength;
+    public static final int maxTripDuration = 10;
 
 
 
