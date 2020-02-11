@@ -15,6 +15,10 @@ public class LabelPool {
 
 
     public LabelPool generateLabels(ArrayList<Label> previousLabels, double arcCost){
+        for (Label labels : previousLabels){
+
+
+        }
         return new LabelPool();
 
 
@@ -25,9 +29,7 @@ public class LabelPool {
             for (int j = i; j < labels.size(); j++){
                 this.isDominated(i,j);
             }
-
         }
-
     }
 
     public void isDominated(int i, int j){
@@ -42,7 +44,7 @@ public class LabelPool {
 
     public boolean checkDominance(int i, int j){
         double firstLabelValue = labels.get(i).cost;
-        double secondLabelValue = labels.get(i).cost;
+        double secondLabelValue = labels.get(j).cost;
         for(int k = 0; k < labels.get(i).vehicleTravelTime.size(); k++){
             firstLabelValue += Parameters.initialOvertimePenalty*deltaFunction(labels.get(i).vehicleTravelTime.get(k),
                     labels.get(j).vehicleTravelTime.get(k));
@@ -51,7 +53,8 @@ public class LabelPool {
     }
 
     public double deltaFunction(double firstVehicleTravelTime, double secondVehicleTravelTime){
-        return 0;
+        return Math.max(0, Math.min(Parameters.maxJourneyDuration, firstVehicleTravelTime)
+                - Math.min(Parameters.maxJourneyDuration, secondVehicleTravelTime));
 
     }
 }

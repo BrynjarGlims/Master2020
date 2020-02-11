@@ -11,10 +11,16 @@ public class Data {
     public int numPeriods;
     public int numDeliveries;
 
+
+
     public double totalVolume;
     public double targetVolume;
 
     public double[][] distanceMatrix;   //indexed by customer i and j
+
+    //Derived parameters
+    public int numberOfVehicleTypes;
+    public int[] numberOfVehiclesInVehicleType;
 
     public Data(Customer[] customers, Vehicle[] vehicles, Depot depot, VehicleType[] vehicleTypes){
         this.customers = customers;
@@ -29,7 +35,16 @@ public class Data {
         this.setNumPeriods();
         this.setTargetVolume();
         this.setDistanceMatrix();
+        this.setDerivedParameters();
 
+    }
+
+    private void setDerivedParameters(){
+        this.numberOfVehicleTypes = vehicleTypes.length;
+        this.numberOfVehiclesInVehicleType = new int[numberOfVehicleTypes]; //initialized with zero
+        for(Vehicle vehicle : vehicles){
+            this.numberOfVehiclesInVehicleType[vehicle.vehicleType.vehicleTypeID]++;
+        }
     }
 
     private void setDistanceMatrix() {

@@ -13,6 +13,11 @@ public class Parameters {
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
 
+    //Loading data parameters
+    public static final int numberOfCustomers = 10;
+    public static final int numberOfVehicles = 5;
+
+
     //Traveling parameters
     public static final double scalingDistanceParameter = 10;
 
@@ -25,11 +30,13 @@ public class Parameters {
     public static final int[] overtimeLimit = {100, 100, 100, 100, 100, 100};
     public static final int[] overtimeCost = {100, 100, 100, 100, 100, 100};
 
-    //Trip parameters
-    public static final int maxTripDuration = 10;
+    //Time parameters
+    public static final int maxJourneyDuration = 10; //changed to journey duration
 
-    //Other parameters
-    public int maxPeriodLength;
+
+
+
+
 
 
 
