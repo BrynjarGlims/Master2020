@@ -17,7 +17,7 @@ public class Individual {
     public Data data;
     public int[][] arcCost;  // (i,j) i = from, j = to
 
-    public Individual(Data data, OrderDistribution orderDistribution){
+    public Individual(Data data, OrderDistribution orderDistribution) {
         this.data = data;
         this.orderDistribution = orderDistribution;
         this.costOfIndividual = costOfIndividual;
@@ -27,8 +27,7 @@ public class Individual {
         //NOTE: AdSplit must be called in advance of this method
         if (!hasValidTimeWindows()) {
             return false;
-        }
-        else if (!hasValidVehicleCapacity()) {
+        } else if (!hasValidVehicleCapacity()) {
             return false;
 
         }
@@ -50,25 +49,24 @@ public class Individual {
         return 0.0;
     }
 
-
-    public void calculateArcCost(int i, int j, double loadSum) {
+    public void calculateArcCost(int i, int j, double loadSum, int vehicleTypeIndex) {
         //calculate trip cost according to Vidal's formula and update cost matrix
         //TODO 11.2: insert vehicle capacity
-        double tempCost = data.distanceMatrix[i][j] + Parameters.initialOvertimePenalty*(Math.max(0, data.distanceMatrix[i][j] - Parameters.maxTripDuration))
-                + Parameters.initialCapacityPenalty(Math.max(0, loadSum - CAPACITY ));
+        double tempCost = data.distanceMatrix[i][j] + Parameters.initialOvertimePenalty * (Math.max(0, data.distanceMatrix[i][j] - Parameters.maxJourneyDuration))
+                + Parameters.initialCapacityPenalty * (Math.max(0, loadSum - data.vehicleTypes[vehicleTypeIndex].capacity));
         this.arcCostMatrix[i][j] = tempCost;
     }
 
 
-    public void createTrips(int p, int vt){
+    public void createTrips(int p, int vt) {
         ArrayList<Integer> customerSequence = this.giantTour[p][vt].chromosome;
 
         // Calculate cost matrix
         for (int i = 0; i < data.customers.length; i++) {
             double loadSum = 0;
-            for (int j = i+1; j < data.customers.length; j++) {
+            for (int j = i + 1; j < data.customers.length; j++) {
                 loadSum += orderDistribution.orderDistribution[p][customerSequence.get(j)];
-                calculateArcCost(i, j, loadSum);
+                calculateArcCost(i, j, loadSum, vt);
             }
         }
 
@@ -86,14 +84,15 @@ public class Individual {
 
         costLabel[0] = 0;
 
-        for (int i = 1; i < customerSequence.size(); i++){
-            costLabel[i] = 100000;}
+        for (int i = 1; i < customerSequence.size(); i++) {
+            costLabel[i] = 100000;
+        }
 
         double tempLoad = 0;
         double tempCost = 0;
         for (int i = 1; i < customerSequence.size(); i++) {
             int j = i;
-            while (j <= customerSequence.size() || tempLoad <= CAPACITY || tempCost <= Parameters.maxTripDuration) {
+            while ((j <= customerSequence.size()) || (tempLoad <= data.vehicleTypes[vt].capacity) || (tempCost <= Parameters.maxJourneyDuration)) {
                 tempLoad += listOfOrders.get(j);
                 if (i == j) {
                     // Vidal also adds a delivery cost to each customer - we do not have that?
@@ -103,7 +102,7 @@ public class Individual {
                 }
                 //check feasibility
                 //TODO 11.2: insert vehicle capacity
-                if (tempLoad <= CAPACITY && tempCost <= Parameters.maxTripDuration) {
+                if (tempLoad <= data.vehicleTypes[vt].capacity && tempCost <= Parameters.maxJourneyDuration) {
                     if ((costLabel[i - 1] + tempCost) < costLabel[i]) {
                         costLabel[j] = costLabel[i - 1] + tempCost;
                         predecessorLabel[j] = i - 1;
@@ -113,7 +112,8 @@ public class Individual {
             }
         }
 
-        //extract VRP solution
+
+        //extract VRP solution by backtracking the shortest path label
         double[] listOfTrips = new double[customerSequence.size()];
         for (int i = 1; i < customerSequence.size(); i++) {
             listOfTrips[i] = 0;
@@ -121,9 +121,10 @@ public class Individual {
 
         int t = 0;
         int j = customerSequence.size();
-        while (int i != 0) {
+        int i = 1;
+        while (i != 0) {
             t += 1;
-            i = predecessorLabel[i];
+            i = predecessorLabel[j];
             for (int k = i+1; k < j; j++) {
                 //add node at end of trip (
             }
@@ -132,6 +133,10 @@ public class Individual {
 
         }
 
+
+
+
+    /*
     public void distributeTrips(int p, int vt, ArrayList<ArrayList<Integer>> tripSplit){
 
         // take this as input,remove afterwards
@@ -201,17 +206,14 @@ public class Individual {
 
          */
 
-    public static void main(String[] args){
+    public static void main (String[] args){
         Data data = DataReader.loadData();
         System.out.println(data.customers.length);
         System.out.println(Arrays.toString(data.customers[0].timeWindow[1]));
-
-        Individual individual = new Individual(data);
-        individual.createTrips();
-
-
+        OrderDistribution od = new OrderDistribution(data);
+        Individual individual = new Individual(data, od);
+        individual.createTrips(5, 5);
     }
-
 }
 
 
