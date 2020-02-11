@@ -334,7 +334,7 @@ public class DataReader {
 
 
     public static void main(String[] args){
-        Data data = loadSubsetData(10,5);
+        Data data = loadSubsetData(Parameters.numberOfCustomers,Parameters.numberOfVehicles);
         System.out.println("hei");
 
     }
