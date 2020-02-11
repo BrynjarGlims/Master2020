@@ -15,11 +15,12 @@ public class Population {
     public Population(int feasiblePopulationSize, int infeasiblePopulationSize, int totalPopulationSize, Data data) {
         this.data = data;
         this.totalPopulationSize = totalPopulationSize;
-        this.initializePopulation();
+        //this.initializePopulation();
         this.feasiblePopulationSize = feasiblePopulationSize;
         this.infeasiblePopulationSize = infeasiblePopulationSize;
     }
 
+    /*
     public void initializePopulation() {
         for (int i = 0; i < totalPopulationSize; i++) {
             Individual individual = new Individual(data);
@@ -31,6 +32,8 @@ public class Population {
             }
         }
     }
+
+     */
 
     public ArrayList<Individual> getFeasiblePopulation() {
         return feasiblePopulation;
