@@ -4,16 +4,22 @@ import java.util.ArrayList;
 
 public class Label {
 
-    public ArrayList<Integer> vehicleTravelTime;
-    public int loadInfeasability;
+    public int[] vehicleTravelTime;
+    public double loadInfeasibility;
     public Label parentNode;
     public double cost;
 
-    public Label(ArrayList<Integer> vehicleTravelTime, int loadInfeasability, Label parentNode, double cost){
+    public Label(int[] vehicleTravelTime, double loadInfeasibility, Label parentNode){
 
         this.vehicleTravelTime = vehicleTravelTime;
-        this.loadInfeasability = loadInfeasability;
+        this.loadInfeasibility = loadInfeasibility;
         this.parentNode = parentNode;
-        this.cost = cost;
+        this.deriveCost();
+
+    }
+
+    public void deriveCost(){
+        this.cost = 0; //todo: implement
+
     }
 }

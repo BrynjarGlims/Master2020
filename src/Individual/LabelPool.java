@@ -3,23 +3,41 @@ package Individual;
 import DataFiles.Parameters;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class LabelPool {
 
-    ArrayList<Label> labels;
+    ArrayList<Label> labels =  new ArrayList<Label>();
 
     public LabelPool (){
+        this.labels = new ArrayList<Label>();
 
         
     }
 
 
-    public LabelPool generateLabels(ArrayList<Label> previousLabels, double arcCost){
-        for (Label labels : previousLabels){
+    public void generateLabels(ArrayList<Label> previousLabels, double arcCost, int numberOfVehicles, double addidionalLoadInfeasability){
+        this.labels = new ArrayList<Label>();
+        for (Label label : previousLabels){
+            createNewLables(label, arcCost, numberOfVehicles, addidionalLoadInfeasability);
+    }
+    }
 
+    public void createNewLables(Label predecessorLabel, double arcCost, int numberOfVehicles,
+                                double addidionalLoadInfeasability ){
+        Label tempLabel;
+        int i = 0;
+        while ( predecessorLabel.vehicleTravelTime[i] != 0){
+            int[] newVehicleTravelTime = predecessorLabel.vehicleTravelTime.clone();
+            newVehicleTravelTime[i] += arcCost;
+            double newLoadInFeasability = predecessorLabel.loadInfeasibility + addidionalLoadInfeasability;
+            labels.add(new Label(newVehicleTravelTime, newLoadInFeasability, predecessorLabel));
 
         }
-        return new LabelPool();
+        if (predecessorLabel.vehicleTravelTime[predecessorLabel.vehicleTravelTime.length] == 0){
+
+        }
+
 
 
     }
