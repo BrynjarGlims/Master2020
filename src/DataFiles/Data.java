@@ -13,6 +13,7 @@ public class Data {
     public int numberOfCustomers = Parameters.numberOfCustomers;
     public int numberOfVehicles = Parameters.numberOfVehicles;
 
+
     public double totalVolume;
     public double targetVolume;
 
