@@ -32,7 +32,7 @@ public class Parameters {
     public static final int[] overtimeCost = {100, 100, 100, 100, 100, 100};
 
     //Time parameters
-    public static final int maxJourneyDuration = 10; //changed to journey duration
+    public static final double maxJourneyDuration = 10; //changed to journey duration
 
 
 

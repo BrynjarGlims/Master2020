@@ -294,7 +294,6 @@ public class DataReader {
     public static Data loadData()  {
         // Master function
 
-        // List<String[]> customerData = Data.DataReader.readCSVFile(Data.Parameters.customersFilePath);
         List<String[]> orderData = DataReader.readCSVFile(Parameters.ordersFilePath);
         List<String[]> timeWindowData = DataReader.readCSVFile(Parameters.timeWindowsFilePath);
         List<String[]> vehiclesData = DataReader.readCSVFile(Parameters.vehicleFilePath);
@@ -304,37 +303,20 @@ public class DataReader {
         customers = removeInvalidCustomers(customers);
         Vehicle[] vehicles = parseVehicleFileDataToVehicle(vehiclesData);
         Depot depot = parseVehicleFileDataToDepot(vehiclesData);
-        VehicleType[] vehicleTypes = getAndOrderVehicleTypes(vehicles);
-
-        Data data = new Data(customers, vehicles, depot, vehicleTypes);
-        return data;
-
-    }
-
-    public static Data loadSubsetData(int numberOfCustomer, int numberOfVehicles) {
-
-        List<String[]> orderData = DataReader.readCSVFile(Parameters.ordersFilePath);
-        List<String[]> timeWindowData = DataReader.readCSVFile(Parameters.timeWindowsFilePath);
-        List<String[]> vehiclesData = DataReader.readCSVFile(Parameters.vehicleFilePath);
-
-        Customer[] customers = parseOrdersFileData(orderData);
-        customers = parseTimeWindowFileData(customers, timeWindowData);
-        customers = removeInvalidCustomers(customers);
-        Vehicle[] vehicles = parseVehicleFileDataToVehicle(vehiclesData);
-        Depot depot = parseVehicleFileDataToDepot(vehiclesData);
-        Customer[] customersSubset = Arrays.copyOfRange(customers, 0, numberOfCustomer);
-        Vehicle[] vehiclesSubset = Arrays.copyOfRange(vehicles, 0, numberOfVehicles);
+        Customer[] customersSubset = Arrays.copyOfRange(customers, 0, Parameters.numberOfCustomers);
+        Vehicle[] vehiclesSubset = Arrays.copyOfRange(vehicles, 0, Parameters.numberOfVehicles);
         VehicleType[] vehicleTypes = getAndOrderVehicleTypes(vehiclesSubset);
 
         Data data = new     Data(customersSubset, vehiclesSubset, depot, vehicleTypes);
         return data;
 
-        // TODO: 31.01.2020 Implement random data extraction if needed
     }
 
 
+
+
     public static void main(String[] args){
-        Data data = loadSubsetData(Parameters.numberOfCustomers,Parameters.numberOfVehicles);
+        Data data = loadData();
         System.out.println("hei");
 
     }

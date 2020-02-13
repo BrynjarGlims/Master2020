@@ -7,20 +7,29 @@ import java.util.Arrays;
 
 public class Individual {
 
-    public GiantTour[][] giantTour;  //period, vehicleType
+    //chromosome data
+    public GiantTour[][] giantTours;  //period, vehicleType
+    public VehicleAssigment[][] vehicleAssigment;
+
+
+
     public VehicleType vehicleType;
     public double costOfIndividual;
-    public ArrayList<ArrayList<Integer>> tripSplit;
+    public ArrayList<ArrayList<Integer>>[][] listOfTrips;  //array1: period, array2: vehicletype
     public double[][] arcCostMatrix;
     public OrderDistribution orderDistribution;
 
     public Data data;
     public int[][] arcCost;  // (i,j) i = from, j = to
 
+    public LabelPool bestLabelPool;
+    public Label bestLabel;
+
     public Individual(Data data, OrderDistribution orderDistribution) {
         this.data = data;
         this.orderDistribution = orderDistribution;
         this.costOfIndividual = costOfIndividual;
+        this.listOfTrips = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
     }
 
     public boolean isFeasible() {
@@ -58,8 +67,8 @@ public class Individual {
     }
 
 
-    public void createTrips(int p, int vt) {
-        ArrayList<Integer> customerSequence = this.giantTour[p][vt].chromosome;
+    public int[] createTrips(int p, int vt) {
+        ArrayList<Integer> customerSequence = this.giantTours[p][vt].chromosome;
 
         // Calculate cost matrix
         for (int i = 0; i < data.customers.length; i++) {
@@ -131,38 +140,55 @@ public class Individual {
             j = i;
         }
 
-        }
-
-
-
-
-    /*
-    public void distributeTrips(int p, int vt, ArrayList<ArrayList<Integer>> tripSplit){
-
-        // take this as input,remove afterwards
-        ArrayList<Label> currentLabels = new ArrayList<Label>();
-        boolean ifFirstElement = true;
-        for (ArrayList<Integer> trip : tripSplit ){
-            if (ifFirstElement){
-                System.out.println("temp");
-                //currentLabels.add(new Label(vehicleIndex)); //todo implement
-
-            }
-
-        }
-
     }
 
-    /*
-    //solves for each period
-    public void AdSplit() {
-        for (int p = 0; p < Parameters.numberOfPeriods; p++) {
-            for (int vt = 0; vt < this.data.vehicleTypes.length; vt++) {
-                createTrips(p, vt);
-                distributeTrips(p, vt, new ArrayList<ArrayList<Integer>>());
+
+
+
+
+    public void distributeTrips(int p, int vt, ArrayList<ArrayList<Integer>> listOfTrips, int[] arcCost){
+
+        // take this as input,remove afterwards
+        ArrayList<LabelPool> labelPools = new ArrayList<LabelPool>();
+        int tripNumber = 0;
+        for (ArrayList<Integer> customerSequence : listOfTrips ){
+            if (tripNumber == 0){
+                LabelPool newLabelPool = new LabelPool(data, listOfTrips, tripNumber);
+                newLabelPool.generateFirstLabel(data.numberOfVehiclesInVehicleType[vt],
+                        arcCost[tripNumber]);
+                labelPools.add(newLabelPool);
+            }
+            else{
+                LabelPool newLabelPool = new LabelPool(data, listOfTrips, tripNumber);
+                newLabelPool.generateLabels(labelPools.get(labelPools.size()-1), arcCost[tripNumber]);
+                newLabelPool.removeDominated();
+                labelPools.add(newLabelPool);
+                tripNumber++;
             }
         }
-        /*
+        this.bestLabelPool = labelPools.get(labelPools.size()-1);
+        this.bestLabel = bestLabelPool.findBestLabel();
+    }
+
+
+
+
+
+
+
+    //solves for each period
+    public void AdSplit() {
+        for (int p = 0; p < data.numberOfPeriods; p++) {
+            for (int vt = 0; vt < this.data.numberOfVehicleTypes; vt++) {
+                int[] tripCost = createTrips(p, vt);  //Fride implements, returns int[] with arc cost in correct order
+
+                tripCost = new int[]{54, 35, 76, 34, 65};
+                distributeTrips(p, vt, listOfTrips[p][vt], tripCost);   // Lars implements
+            }
+        }
+    }
+
+     /*
         Split into trips by computing shortest path:
 
         For each (customer, period): copy order demand into a list
@@ -206,7 +232,7 @@ public class Individual {
 
          */
 
-    public static void main (String[] args){
+    public static void main(String[] args){
         Data data = DataReader.loadData();
         System.out.println(data.customers.length);
         System.out.println(Arrays.toString(data.customers[0].timeWindow[1]));

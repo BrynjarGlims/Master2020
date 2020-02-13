@@ -1,45 +1,63 @@
 package Individual;
 
-import DataFiles.Parameters;
+import DataFiles.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.stream.DoubleStream;
 
 public class LabelPool {
 
     ArrayList<Label> labels =  new ArrayList<Label>();
+    Data data;
+    Label bestLabel = null;
+    ArrayList<ArrayList<Integer>> listOfTrips;
+    int tripNumber;
+    double[][] orderDistribution;
 
-    public LabelPool (){
+    public LabelPool (Data data, ArrayList<ArrayList<Integer>> listOfTrips, int tripNumber){
         this.labels = new ArrayList<Label>();
+        this.data = data;
+        this.listOfTrips = listOfTrips;
+        this.tripNumber = tripNumber;
 
-        
     }
 
 
-    public void generateLabels(ArrayList<Label> previousLabels, double arcCost, int numberOfVehicles, double addidionalLoadInfeasability){
-        this.labels = new ArrayList<Label>();
-        for (Label label : previousLabels){
-            createNewLables(label, arcCost, numberOfVehicles, addidionalLoadInfeasability);
+
+
+    public void generateFirstLabel(int numberOfVehicles, int arcCost){
+        this.labels.add(new Label(numberOfVehicles, arcCost, data, listOfTrips, tripNumber, orderDistribution));
+    }
+
+    public void generateLabels(LabelPool previousLabelPool, double arcCost ) {
+        for (Label label : previousLabelPool.getLabels()) {
+            createNewLabels(label, arcCost); //todo:implement load infeasability
     }
     }
 
-    public void createNewLables(Label predecessorLabel, double arcCost, int numberOfVehicles,
-                                double addidionalLoadInfeasability ){
-        Label tempLabel;
-        int i = 0;
-        while ( predecessorLabel.vehicleTravelTime[i] != 0){
-            int[] newVehicleTravelTime = predecessorLabel.vehicleTravelTime.clone();
-            newVehicleTravelTime[i] += arcCost;
-            double newLoadInFeasability = predecessorLabel.loadInfeasibility + addidionalLoadInfeasability;
-            labels.add(new Label(newVehicleTravelTime, newLoadInFeasability, predecessorLabel));
+    public void createNewLabels(Label predecessorLabel, double arcCost){
+
+        double additionalLoadInfeasibility = 0; // TODO: 13.02.2020 IMPLEMENT
+
+        int vehicleID = 0;
+
+        // Generate labels by adding cost on already existing vehicles
+        while ( predecessorLabel.vehicleTravelCost[vehicleID] != 0){
+            double[] newVehicleTravelTime = predecessorLabel.vehicleTravelCost.clone();
+            newVehicleTravelTime[vehicleID] += arcCost;
+            double newLoadInFeasibility = predecessorLabel.loadInfeasibility + additionalLoadInfeasibility;
+
+            labels.add(new Label(predecessorLabel));
+            vehicleID++;
 
         }
-        if (predecessorLabel.vehicleTravelTime[predecessorLabel.vehicleTravelTime.length] == 0){
-
+        // Creating labels based on a new vehicle in use.
+        if (predecessorLabel.vehicleTravelCost[predecessorLabel.vehicleTravelCost.length] == 0){
+            double[] newVehicleTravelTime = predecessorLabel.vehicleTravelCost.clone();
+            newVehicleTravelTime[vehicleID] += arcCost;
+            double newLoadInFeasibility = predecessorLabel.loadInfeasibility + additionalLoadInfeasibility;
+            labels.add(new Label(predecessorLabel));
         }
-
-
-
     }
 
     public void removeDominated(){
@@ -60,13 +78,34 @@ public class LabelPool {
 
     }
 
-    public boolean checkDominance(int i, int j){
-        double firstLabelValue = labels.get(i).cost;
-        double secondLabelValue = labels.get(j).cost;
-        for(int k = 0; k < labels.get(i).vehicleTravelTime.size(); k++){
-            firstLabelValue += Parameters.initialOvertimePenalty*deltaFunction(labels.get(i).vehicleTravelTime.get(k),
-                    labels.get(j).vehicleTravelTime.get(k));
+    public  ArrayList<Label> getLabels(){
+        return this.labels;
+    }
+
+
+    public Label findBestLabel(){
+        double minCost = - Double.MAX_VALUE;
+        for(Label label : labels){
+            if (label.cost > minCost)
+                bestLabel = label;
         }
+        return bestLabel;
+    }
+
+
+    public boolean checkDominance(int i, int j){
+
+        double firstLabelValue = 0;
+
+        for(int k = 0; k < labels.get(i).vehicleTravelCost.length; k++){
+            firstLabelValue += deltaFunction(labels.get(i).vehicleTravelCost.length,
+                    labels.get(j).vehicleTravelCost.length);
+        }
+        firstLabelValue = Parameters.initialOvertimePenalty;
+
+        firstLabelValue += labels.get(i).cost;
+        double secondLabelValue = labels.get(j).cost;
+
         return firstLabelValue <= secondLabelValue;
     }
 
