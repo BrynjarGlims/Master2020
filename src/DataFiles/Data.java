@@ -8,8 +8,8 @@ public class Data {
     public Depot depot;
     public VehicleType[] vehicleTypes;  // todo: initialize
 
-    public int numPeriods;
-    public int numDeliveries;
+    public int numberOfPeriods;
+    public int numberOfDeliveries;
 
 
 
@@ -87,7 +87,7 @@ public class Data {
 
 
     private void setNumPeriods(){
-        numPeriods = customers[0].timeWindow.length;
+        numberOfPeriods = customers[0].timeWindow.length;
     }
 
     private void setTargetVolume(){
@@ -99,9 +99,9 @@ public class Data {
                 numDeliveries ++;
             }
         }
-        this.numDeliveries = numDeliveries;
+        this.numberOfDeliveries = numDeliveries;
         this.totalVolume = totalVolume;
-        targetVolume = totalVolume/numPeriods;
+        targetVolume = totalVolume/ numberOfPeriods;
 
     }
 

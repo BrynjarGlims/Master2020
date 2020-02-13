@@ -1,13 +1,15 @@
 package Individual;
 import DataFiles.*;
 import ProductAllocation.OrderDistribution;
+import org.w3c.dom.ls.LSOutput;
+import scala.xml.PrettyPrinter;
 
+import java.awt.color.ICC_Profile;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Individual {
 
-    public GiantTour[][] giantTour;  //period, vehicleType
+    public GiantTour[][] giantTours ;  //period, vehicleType
     public VehicleType vehicleType;
     public double costOfIndividual;
     public ArrayList<ArrayList<Integer>> tripSplit;
@@ -21,6 +23,14 @@ public class Individual {
         this.data = data;
         this.orderDistribution = orderDistribution;
         this.costOfIndividual = costOfIndividual;
+        this.giantTours = new GiantTour[data.numberOfPeriods][data.numberOfVehicleTypes];
+        for (int p = 0; p < data.numberOfPeriods; p++){
+            for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
+                giantTours[p][vt] = new GiantTour();
+            }
+        }
+        this.arcCostMatrix = new double[Parameters.numberOfCustomers][Parameters.numberOfCustomers];
+
     }
 
     public boolean isFeasible() {
@@ -51,90 +61,125 @@ public class Individual {
 
     public void calculateArcCost(int i, int j, double loadSum, int vehicleTypeIndex) {
         //calculate trip cost according to Vidal's formula and update cost matrix
-        //TODO 11.2: insert vehicle capacity
-        double tempCost = data.distanceMatrix[i][j] + Parameters.initialOvertimePenalty * (Math.max(0, data.distanceMatrix[i][j] - Parameters.maxJourneyDuration))
-                + Parameters.initialCapacityPenalty * (Math.max(0, loadSum - data.vehicleTypes[vehicleTypeIndex].capacity));
-        this.arcCostMatrix[i][j] = tempCost;
+        double tempCost = data.distanceMatrix[i][j] + Parameters.initialOvertimePenalty*(Math.max(0, data.distanceMatrix[i][j] - Parameters.maxJourneyDuration))
+                + Parameters.initialCapacityPenalty*(Math.max(0,loadSum - data.vehicleTypes[vehicleTypeIndex-1].capacity));
+        arcCostMatrix[i][j] = tempCost;
+        //System.out.println("ArcCost between " +i+","+j +" is updated to " + arcCostMatrix[i][j]);
     }
 
 
     public void createTrips(int p, int vt) {
-        ArrayList<Integer> customerSequence = this.giantTour[p][vt].chromosome;
-
+        ArrayList<Integer> customerSequence = this.giantTours[p - 1][vt - 1].chromosome;
         // Calculate cost matrix
-        for (int i = 0; i < data.customers.length; i++) {
+        for (int i = 0; i < customerSequence.size(); i++) {
             double loadSum = 0;
-            for (int j = i + 1; j < data.customers.length; j++) {
-                loadSum += orderDistribution.orderDistribution[p][customerSequence.get(j)];
+            for (int j = i + 1; j < customerSequence.size(); j++) {
+                //System.out.println("Order quantity for the customer in the chromosome: "+orderDistribution.orderDistribution[p-1][customerSequence.get(j)]);
+                loadSum += orderDistribution.orderDistribution[p - 1][customerSequence.get(j)];
                 calculateArcCost(i, j, loadSum, vt);
             }
-        }
 
+        }
         //SHORTEST PATH:
-        //extract order quantities for customers in the giant tour
-        ArrayList<Integer> listOfOrders = new ArrayList<Integer>();
-        for (int i = 0; i < customerSequence.size(); i++) {
-            listOfOrders.add(customerSequence.get(i));
-        }
-
-        //create a LabelList with length = customers in customerSequence
-
+        //Create and initialize labels for each node in the auxiliary graph (nodes represent customers)
         double[] costLabel = new double[customerSequence.size()];
         int[] predecessorLabel = new int[customerSequence.size()];
 
         costLabel[0] = 0;
-
         for (int i = 1; i < customerSequence.size(); i++) {
             costLabel[i] = 100000;
         }
 
-        double tempLoad = 0;
-        double tempCost = 0;
+
+        //Bellman-Ford
+
         for (int i = 1; i < customerSequence.size(); i++) {
             int j = i;
-            while ((j <= customerSequence.size()) || (tempLoad <= data.vehicleTypes[vt].capacity) || (tempCost <= Parameters.maxJourneyDuration)) {
-                tempLoad += listOfOrders.get(j);
+            double tempLoadOnTrip = 0;
+            double tempCost = 0;
+            System.out.println("i: " + i);
+            while ((j < customerSequence.size()) && (tempLoadOnTrip <= data.vehicleTypes[vt - 1].capacity) && (tempCost <= Parameters.maxJourneyDuration)) {
+                System.out.println("j: " + j);
+                //System.out.println("order for customer j: " + orderDistribution.orderDistribution[p-1][j-1]);
+                tempLoadOnTrip += orderDistribution.orderDistribution[p - 1][j - 1];
                 if (i == j) {
                     // Vidal also adds a delivery cost to each customer - we do not have that?
                     tempCost = arcCostMatrix[0][j] + arcCostMatrix[j][0];
+                    //System.out.println("tempcost updated (i=j): " + tempCost);
+                    System.out.println("new tempcost: " + tempCost);
                 } else {
                     tempCost = tempCost - arcCostMatrix[j - 1][0] + arcCostMatrix[j - 1][j] + arcCostMatrix[j][0];
+                    //System.out.println("tempcost updated (i!=j): " + tempCost);
+                    System.out.println("new tempcost: " + tempCost);
                 }
                 //check feasibility
-                //TODO 11.2: insert vehicle capacity
-                if (tempLoad <= data.vehicleTypes[vt].capacity && tempCost <= Parameters.maxJourneyDuration) {
-                    if ((costLabel[i - 1] + tempCost) < costLabel[i]) {
+                //TODO 13.2:
+                if (tempLoadOnTrip <= data.vehicleTypes[vt - 1].capacity && tempCost <= Parameters.maxJourneyDuration) {
+                    if ((costLabel[i-1] + tempCost) < costLabel[j]) {
                         costLabel[j] = costLabel[i - 1] + tempCost;
+                        System.out.println("cost label updated for node " + j + "from" + costLabel[j] + "to " + (costLabel[i - 1] + tempCost));
                         predecessorLabel[j] = i - 1;
+                        System.out.println("predecessor of " + j + " updated from " + predecessorLabel[j] + "to " + (i-1));
                     }
-                    j += 1;
                 }
+                j += 1;
+
             }
         }
-
-
-        //extract VRP solution by backtracking the shortest path label
-        double[] listOfTrips = new double[customerSequence.size()];
-        for (int i = 1; i < customerSequence.size(); i++) {
-            listOfTrips[i] = 0;
+        System.out.println("Print predecessor labels: ");
+        for (int i = 0; i < predecessorLabel.length; i++) {
+            System.out.println(i + ": " + predecessorLabel[i]);
         }
 
+        System.out.println("Print cost labels: ");
+        for (int i = 0; i < costLabel.length; i++) {
+            System.out.println(i + ": " + costLabel[i]);
+        }
+    System.out.println("VRP solution: ");
+    System.out.println(extractVrpSolution(customerSequence, predecessorLabel));
+    extractVrpSolution(customerSequence, predecessorLabel);
+    }
+
+
+    public ArrayList<ArrayList<Integer>> extractVrpSolution(ArrayList<Integer> customerSequence,  int[] predecessorLabel){
+        //extract VRP solution by backtracking the shortest path label
+        ArrayList<ArrayList<Integer>> listOfTrips = new ArrayList<ArrayList<Integer>>();
+        /*
         int t = 0;
         int j = customerSequence.size();
-        int i = 1;
-        while (i != 0) {
+        int i = 10;
+        while (j != 0) {
             t += 1;
-            i = predecessorLabel[j];
+            i = predecessorLabel[j-1];
+            System.out.println("predecessor of customer " + j + ": " + i);
             for (int k = i+1; k < j; j++) {
-                //add node at end of trip (
+                listOfTrips[t] = k;
             }
             j = i;
         }
+         */
+        ArrayList<Integer> tempListOfTrips = new ArrayList<Integer>();
+        ArrayList<Integer> tempListOfTripsClear = new ArrayList<Integer>();
 
+        for (int k = 0; k < customerSequence.size(); k++) {
+            if (!tempListOfTrips.contains(0)){
+                tempListOfTrips.add(0);
+            }
+            if (predecessorLabel[k] > 0) {
+                tempListOfTrips.add(customerSequence.get(k));
+            }
+            else if (predecessorLabel[k] == 0){
+                tempListOfTrips.add(customerSequence.get(k));
+                tempListOfTrips.add(0);
+                //System.out.println("tempList added to listOfTrips: " + tempListOfTrips);
+                listOfTrips.add(tempListOfTrips);
+                //TODO 14.2: remove link between lists, such that the adde list is not cleared...
+                tempListOfTrips.clear();
+                //System.out.println("cleared, tempList = "+ tempListOfTrips);
+            }
         }
-
-
-
+        return listOfTrips;
+    }
 
     /*
     public void distributeTrips(int p, int vt, ArrayList<ArrayList<Integer>> tripSplit){
@@ -200,20 +245,33 @@ public class Individual {
                         List_of_labels_to_expand: add L*
                         List_of_labels_to_expand: remove dominated labels
             current = succ
+         */
 
+    public static void main(String[] args){
+        Data data = DataReader.loadData();
+        OrderDistribution od = new OrderDistribution(data);
+        od.makeDistribution();
+        Individual individual = new Individual(data, od);
+        individual.createTrips(data.numberOfPeriods, data.numberOfVehicleTypes);
+        // Print the orderDistribution
+        /*
+        for (int i = 0; i < od.orderDistribution.length; i++) {
+            for (int j = 0; j < od.orderDistribution[0].length; j++) {
+                System.out.println("Period: " + i + ", customer: " + j + ", Order:" + od.orderDistribution[i][j]);
+            }
+        }
 
-
+        System.out.println("Length of customer list: " + data.customers.length);
+        System.out.println("GiantTour for a period, vehicleType: " + individual.giantTours[0][1].chromosome);
+        System.out.println("Periods: " + data.numberOfPeriods);
+        System.out.println("Vehicle types: " + data.numberOfVehicleTypes);
 
          */
 
-    public static void main (String[] args){
-        Data data = DataReader.loadData();
-        System.out.println(data.customers.length);
-        System.out.println(Arrays.toString(data.customers[0].timeWindow[1]));
-        OrderDistribution od = new OrderDistribution(data);
-        Individual individual = new Individual(data, od);
-        individual.createTrips(5, 5);
+
+
     }
+
 }
 
 

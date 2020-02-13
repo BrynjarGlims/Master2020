@@ -19,9 +19,9 @@ public class OrderDistribution {
 
     public OrderDistribution(Data data) {
         this.data = data;
-        orderDistribution = new double[data.numPeriods][data.customers.length];
-        orderDeliveries = new OrderDelivery[data.numDeliveries];
-        volumePerPeriod = new double[data.numPeriods];
+        orderDistribution = new double[data.numberOfPeriods][data.customers.length];
+        orderDeliveries = new OrderDelivery[data.numberOfDeliveries];
+        volumePerPeriod = new double[data.numberOfPeriods];
     }
 
 
@@ -86,7 +86,7 @@ public class OrderDistribution {
 
     private int[] getValidDeliveryPeriods(double[] volumes, Customer customer) { // TODO: 07.02.2020 no validity is applied to construction
         ArrayList<Integer> periods = new ArrayList<>();
-        for (int i = 0; i < data.numPeriods; i++) {
+        for (int i = 0; i < data.numberOfPeriods; i++) {
             if (customer.requiredVisitPeriod[i] == 1) {
                 periods.add(i);
             }
