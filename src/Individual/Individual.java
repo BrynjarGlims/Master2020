@@ -9,16 +9,10 @@ import java.util.ArrayList;
 
 public class Individual {
 
-<<<<<<< HEAD
+    
     //chromosome data
     public GiantTour[][] giantTours;  //period, vehicleType
     public VehicleAssigment[][] vehicleAssigment;
-
-
-
-=======
-    public GiantTour[][] giantTours ;  //period, vehicleType
->>>>>>> 9d6c5da427745e0b0aa517953c6841eb8a400e9c
     public VehicleType vehicleType;
     public double costOfIndividual;
     public ArrayList<ArrayList<Integer>>[][] listOfTrips;  //array1: period, array2: vehicletype
@@ -35,9 +29,8 @@ public class Individual {
         this.data = data;
         this.orderDistribution = orderDistribution;
         this.costOfIndividual = costOfIndividual;
-<<<<<<< HEAD
         this.listOfTrips = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
-=======
+
         this.giantTours = new GiantTour[data.numberOfPeriods][data.numberOfVehicleTypes];
         for (int p = 0; p < data.numberOfPeriods; p++){
             for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
@@ -46,7 +39,7 @@ public class Individual {
         }
         this.arcCostMatrix = new double[Parameters.numberOfCustomers][Parameters.numberOfCustomers];
 
->>>>>>> 9d6c5da427745e0b0aa517953c6841eb8a400e9c
+
     }
 
     public boolean isFeasible() {
