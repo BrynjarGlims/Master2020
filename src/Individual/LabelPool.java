@@ -3,7 +3,6 @@ package Individual;
 import DataFiles.*;
 
 import java.util.ArrayList;
-import java.util.stream.DoubleStream;
 
 public class LabelPool {
 
@@ -14,12 +13,12 @@ public class LabelPool {
     int tripNumber;
     double[][] orderDistribution;
 
-    public LabelPool (Data data, ArrayList<ArrayList<Integer>> listOfTrips, int tripNumber){
+    public LabelPool (Data data, ArrayList<ArrayList<Integer>> listOfTrips, int tripNumber, double[][] orderDistribution){
         this.labels = new ArrayList<Label>();
         this.data = data;
         this.listOfTrips = listOfTrips;
         this.tripNumber = tripNumber;
-
+        this.orderDistribution = orderDistribution;
     }
 
 
@@ -38,25 +37,24 @@ public class LabelPool {
     public void createNewLabels(Label predecessorLabel, double arcCost){
 
         double additionalLoadInfeasibility = 0; // TODO: 13.02.2020 IMPLEMENT
-
         int vehicleID = 0;
-
         // Generate labels by adding cost on already existing vehicles
-        while ( predecessorLabel.vehicleTravelCost[vehicleID] != 0){
-            double[] newVehicleTravelTime = predecessorLabel.vehicleTravelCost.clone();
+        while ( predecessorLabel.arcTraversalCost[vehicleID] != 0){
+            double[] newVehicleTravelTime = predecessorLabel.arcTraversalCost.clone();
             newVehicleTravelTime[vehicleID] += arcCost;
             double newLoadInFeasibility = predecessorLabel.loadInfeasibility + additionalLoadInfeasibility;
+            // TODO: 14.02.2020 Implement load infeasability
 
-            labels.add(new Label(predecessorLabel));
+            labels.add(new Label(predecessorLabel, vehicleID, arcCost));
+
+            if ( vehicleID == predecessorLabel.arcTraversalCost.length-1)
+                break;
             vehicleID++;
 
         }
         // Creating labels based on a new vehicle in use.
-        if (predecessorLabel.vehicleTravelCost[predecessorLabel.vehicleTravelCost.length] == 0){
-            double[] newVehicleTravelTime = predecessorLabel.vehicleTravelCost.clone();
-            newVehicleTravelTime[vehicleID] += arcCost;
-            double newLoadInFeasibility = predecessorLabel.loadInfeasibility + additionalLoadInfeasibility;
-            labels.add(new Label(predecessorLabel));
+        if (predecessorLabel.arcTraversalCost[predecessorLabel.arcTraversalCost.length-1] == 0){
+            labels.add(new Label(predecessorLabel, vehicleID, arcCost));
         }
     }
 
@@ -97,9 +95,9 @@ public class LabelPool {
 
         double firstLabelValue = 0;
 
-        for(int k = 0; k < labels.get(i).vehicleTravelCost.length; k++){
-            firstLabelValue += deltaFunction(labels.get(i).vehicleTravelCost.length,
-                    labels.get(j).vehicleTravelCost.length);
+        for(int k = 0; k < labels.get(i).arcTraversalCost.length; k++){
+            firstLabelValue += deltaFunction(labels.get(i).arcTraversalCost.length,
+                    labels.get(j).arcTraversalCost.length);
         }
         firstLabelValue = Parameters.initialOvertimePenalty;
 

@@ -143,7 +143,7 @@ public class OrderDistribution {
 
 
     public static void main(String[] args) {
-        Data data = DataReader.loadSubsetData(10, 5);
+        Data data = DataReader.loadData();
         OrderDistribution pd = new OrderDistribution(data);
         pd.makeDistribution();
 

@@ -7,7 +7,7 @@ public class GiantTourSplit {
     ArrayList<Integer> chromosome;
 
     GiantTourSplit(){
-        chromosome = new ArrayList<Integer>;
+        chromosome = new ArrayList<Integer>();
     }
 
 

@@ -9,7 +9,7 @@ public class VehicleAssigment {
     ArrayList<Integer> chromosome;
 
     VehicleAssigment(){
-        chromosome = new ArrayList<Integer>;
+        chromosome = new ArrayList<Integer>();
     }
 
     VehicleAssigment( ArrayList<Integer> prevChromosome){
@@ -24,6 +24,4 @@ public class VehicleAssigment {
     public ArrayList<Integer> getChromosome() {
         return chromosome;
     }
-
-
 }

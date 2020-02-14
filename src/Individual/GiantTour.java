@@ -47,7 +47,7 @@ public class GiantTour {
         for (int p = 0; p < chromosome.length; p++) {
             for (int vt = 0; vt < chromosome[0].length; vt++) {
                 Collections.shuffle(chromosome[p][vt]);
-                System.out.println(chromosome[p][vt]);
+                //System.out.println(chromosome[p][vt]);
             }
         }
     }
