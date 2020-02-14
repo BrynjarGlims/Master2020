@@ -3,10 +3,7 @@ package Individual;
 import DataFiles.Customer;
 import DataFiles.Data;
 import DataFiles.DataReader;
-import DataFiles.VehicleType;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -15,7 +12,8 @@ public class GiantTour {
 
     ArrayList[][] chromosome;
 
-    public GiantTour(){
+    public GiantTour(Data data){ //save data?
+        initializeGiantTour(data);
     }
 
 
@@ -53,8 +51,6 @@ public class GiantTour {
             }
         }
     }
-
-
 
     public static void main(String[] args){
         Data data = DataReader.loadData();
