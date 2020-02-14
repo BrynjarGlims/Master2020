@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 public class DataReader {
 
@@ -159,26 +161,58 @@ public class DataReader {
         return Double.parseDouble(convertedTime[0]) + Double.parseDouble(convertedTime[1])/60;
     }
 
-    public static Vehicle[] parseVehicleFileData(List<String[]> vehiclesData){
+    public static Vehicle[] parseVehicleFileDataToVehicle(List<String[]> vehiclesData){
         List<Vehicle> vehicleList = new ArrayList<>();
+        HashMap<Integer, VehicleType> vehicleTypeHashMap = new HashMap<Integer, VehicleType>();
+
+
+
 
         for (int line = 0; line < vehiclesData.size(); line++){
+            //error check
             if (vehiclesData.get(line)[18].equals("") || Integer.parseInt(vehiclesData.get(line)[24]) < 10000){
-                //todo: chech if more removal of invalid data is needed
+
+                //current capacity
+                int tempCapacity = Integer.parseInt(vehiclesData.get(line)[24]);
+
+                if ( !vehicleTypeHashMap.containsKey(tempCapacity)){
+                    //create new vehicle type
+                    vehicleTypeHashMap.put(tempCapacity, new VehicleType(Integer.parseInt(vehiclesData.get(line)[24]),
+                            Integer.parseInt(vehiclesData.get(line)[18]),
+                            Integer.parseInt(vehiclesData.get(line)[19]),
+                            Integer.parseInt(vehiclesData.get(line)[20]),
+                            Integer.parseInt(vehiclesData.get(line)[21])));
+
+                }
+                //create new vehicle object
                 vehicleList.add(new Vehicle(Integer.parseInt(vehiclesData.get(line)[0]),
-                        vehiclesData.get(line)[2],
-                        Integer.parseInt(vehiclesData.get(line)[24]),
-                                vehiclesData.get(line)[28],
-                        Integer.parseInt(vehiclesData.get(line)[18]),
-                        Integer.parseInt(vehiclesData.get(line)[19]),
-                        Integer.parseInt(vehiclesData.get(line)[20]),
-                        Integer.parseInt(vehiclesData.get(line)[21])));
+                        vehiclesData.get(line)[2], vehiclesData.get(line)[28]));
+
+                //assign vehicle type to object
+                vehicleList.get(vehicleList.size()-1).setVehicleType(vehicleTypeHashMap.get(tempCapacity));
             }
+
+
         }
 
         Vehicle[] vehicles = convertVehicleList(vehicleList);
         return vehicles;
     }
+
+    public static Depot parseVehicleFileDataToDepot(List<String[]> vehiclesData)  {
+
+        for (int line = 0; line < vehiclesData.size(); line++) {
+            if (vehiclesData.get(line)[4].equals("TRONDHEIM")) {
+                double xCoordinate = Double.parseDouble(vehiclesData.get(line)[38]);
+                double yCoordinate = Double.parseDouble(vehiclesData.get(line)[39]);
+                return new Depot(xCoordinate, yCoordinate);
+            }
+        }
+        System.out.println("Depot cannot be found");
+        return new Depot(0,0);
+    }
+
+
 
     public static Vehicle[] convertVehicleList( List<Vehicle> vehicleList){
         Vehicle[] vehicles = new Vehicle[vehicleList.size()];
@@ -189,22 +223,7 @@ public class DataReader {
 
     }
 
-    public static Data loadData(){
-        // Master function
 
-        // List<String[]> customerData = Data.DataReader.readCSVFile(Data.Parameters.customersFilePath);
-        List<String[]> orderData = DataReader.readCSVFile(Parameters.ordersFilePath);
-        List<String[]> timeWindowData = DataReader.readCSVFile(Parameters.timeWindowsFilePath);
-        List<String[]> vehiclesData = DataReader.readCSVFile(Parameters.vehicleFilePath);
-
-        Customer[] customers = parseOrdersFileData(orderData);
-        customers = parseTimeWindowFileData(customers, timeWindowData);
-        customers = removeInvalidCustomers(customers);
-        Vehicle[] vehicles = parseVehicleFileData(vehiclesData);
-        Data data = new Data(customers, vehicles);
-        return data;
-
-    }
 
     public  static Customer[] removeInvalidCustomers(Customer[] customers){
         //Function to remove invalid data
@@ -247,7 +266,33 @@ public class DataReader {
     };
 
 
-    public static Data loadSubsetData(int numberOfCustomer, int numberOfVehicles){
+    public static VehicleType[] getAndOrderVehicleTypes( Vehicle[] vehicles){
+        int vehicleTypeCounter = 0;
+        HashMap<Integer, VehicleType> vehicleTypeHashMap = new HashMap<Integer, VehicleType>();
+
+        for(Vehicle vehicle : vehicles){
+            if(!vehicleTypeHashMap.containsKey(vehicle.vehicleType.capacity)) {
+                vehicleTypeHashMap.put(vehicle.vehicleType.capacity, vehicle.vehicleType);
+                vehicle.vehicleType.setVehicleTypeID(vehicleTypeCounter);
+                vehicleTypeCounter++;
+            }
+        }
+
+        VehicleType[] vehicleTypes = convertHashMapToArray(vehicleTypeHashMap);
+        return vehicleTypes;
+    }
+
+    public static VehicleType[] convertHashMapToArray(HashMap<Integer, VehicleType> vehicleTypeHashMap) {
+        VehicleType[] vehicleTypes = new VehicleType[vehicleTypeHashMap.size()];
+        for (HashMap.Entry<Integer, VehicleType> entry : vehicleTypeHashMap.entrySet()){
+            vehicleTypes[entry.getValue().vehicleTypeID] = entry.getValue();
+        }
+        return vehicleTypes;
+    }
+
+
+    public static Data loadData()  {
+        // Master function
 
         List<String[]> orderData = DataReader.readCSVFile(Parameters.ordersFilePath);
         List<String[]> timeWindowData = DataReader.readCSVFile(Parameters.timeWindowsFilePath);
@@ -256,25 +301,23 @@ public class DataReader {
         Customer[] customers = parseOrdersFileData(orderData);
         customers = parseTimeWindowFileData(customers, timeWindowData);
         customers = removeInvalidCustomers(customers);
-        Vehicle[] vehicles = parseVehicleFileData(vehiclesData);
-        Customer[] customersSubset = Arrays.copyOfRange(customers, 0, numberOfCustomer);
-        Vehicle[] vehiclesSubset = Arrays.copyOfRange(vehicles, 0, numberOfVehicles);
+        Vehicle[] vehicles = parseVehicleFileDataToVehicle(vehiclesData);
+        Depot depot = parseVehicleFileDataToDepot(vehiclesData);
+        Customer[] customersSubset = Arrays.copyOfRange(customers, 0, Parameters.numberOfCustomers);
+        Vehicle[] vehiclesSubset = Arrays.copyOfRange(vehicles, 0, Parameters.numberOfVehicles);
+        VehicleType[] vehicleTypes = getAndOrderVehicleTypes(vehiclesSubset);
 
-        Data data = new Data(customersSubset, vehiclesSubset);
+        Data data = new     Data(customersSubset, vehiclesSubset, depot, vehicleTypes);
         return data;
 
-        // TODO: 31.01.2020 Implement random data extraction if needed
     }
 
 
+
+
     public static void main(String[] args){
-        // Temporary main function
-
-        Data dataSubset = loadSubsetData(100,5);
+        Data data = loadData();
         System.out.println("hei");
-
-
-
 
     }
 

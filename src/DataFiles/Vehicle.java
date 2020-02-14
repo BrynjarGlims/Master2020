@@ -2,25 +2,23 @@ package DataFiles;
 
 public class Vehicle {
 
-    public int vehicleNumber;
+    public int vehicleID;
     public String vehicleName;
-    public int capacity;
     public String trailerNumberPlate;
-    public int costPerHour;
-    public int costPerHourOvertime;
-    public int costPerDay;
-    public int costPerKm;
 
-    public Vehicle(int vehicleNumber, String vehicleName, int capacity, String trailerNumberPlate, int costPerDay, int costPerKm,
-                   int costPerHour, int costPerHourOvertime){
-        this.vehicleNumber = vehicleNumber;
+    public VehicleType vehicleType;
+
+    public Vehicle(int vehicleNumber, String vehicleName,  String trailerNumberPlate){
+        this.vehicleID = vehicleNumber;
         this.vehicleName = vehicleName;
-        this.capacity = capacity;
         this.trailerNumberPlate = trailerNumberPlate;
-        this.costPerDay = costPerDay;
-        this.costPerKm = costPerKm;
-        this.costPerHour = costPerHour;
-        this.costPerHourOvertime = costPerHourOvertime;
-        }
+    }
+
+
+    public void setVehicleType(VehicleType vehicleType){
+        this.vehicleType = vehicleType;
+    }
+
+
     }
 
