@@ -146,8 +146,6 @@ public class OrderDistribution {
         Data data = DataReader.loadData();
         OrderDistribution pd = new OrderDistribution(data);
         pd.makeDistribution();
-
-
         for (double[] period : pd.orderDistribution) {
             System.out.println(Arrays.toString(period));
         }

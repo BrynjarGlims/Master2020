@@ -73,7 +73,7 @@ public class Label {
 
 
     //create first label
-    public Label(int numberOfVehicles, int arcCost, Data data,
+    public Label(int numberOfVehicles, double arcCost, Data data,
                  ArrayList<ArrayList<Integer>> listOfTrips, int tripNumber, double[][] orderDistribution, int periodID,
                  int vehicleTypeID){
 

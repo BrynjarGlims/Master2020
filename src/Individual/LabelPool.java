@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class LabelPool {
 
-    ArrayList<Label> labels =  new ArrayList<Label>();
+    ArrayList<Label> labels;
     Data data;
     Label bestLabel = null;
     ArrayList<ArrayList<Integer>> listOfTrips;
@@ -22,18 +22,17 @@ public class LabelPool {
     }
 
 
-
-
-    public void generateFirstLabel(int numberOfVehicles, int arcCost, int periodID, int vehicleTypeID){
+    public void generateFirstLabel(int numberOfVehicles, double arcCost, int periodID, int vehicleTypeID) {
         this.labels.add(new Label(numberOfVehicles, arcCost, data, listOfTrips, tripNumber, orderDistribution,
-                periodID , vehicleTypeID));
+                periodID, vehicleTypeID));
     }
 
-    public void generateLabels(LabelPool previousLabelPool, double arcCost ) {
+
+    public void generateLabels(LabelPool previousLabelPool, double arcCost) {
         for (Label label : previousLabelPool.getLabels()) {
             createNewLabels(label, arcCost); //todo:implement load infeasability
             System.out.println("Label expanded");
-    }
+        }
     }
 
     public void createNewLabels(Label predecessorLabel, double arcCost){
@@ -98,7 +97,6 @@ public class LabelPool {
 
 
     public boolean checkDominance(int i, int j){
-
         double firstLabelValue = 0;
 
         for(int k = 0; k < labels.get(i).arcTraversalCost.length; k++){
@@ -106,17 +104,17 @@ public class LabelPool {
                     labels.get(j).arcTraversalCost.length);
         }
         firstLabelValue = Parameters.initialOvertimePenalty;
-
         firstLabelValue += labels.get(i).cost;
-        double secondLabelValue = labels.get(j).cost;
 
+        double secondLabelValue = labels.get(j).cost;
         return firstLabelValue <= secondLabelValue;
     }
 
-    public double deltaFunction(double firstVehicleTravelTime, double secondVehicleTravelTime){
+
+
+    public double deltaFunction(double firstVehicleTravelTime, double secondVehicleTravelTime) {
         return Math.max(0, Math.min(Parameters.maxJourneyDuration, firstVehicleTravelTime)
                 - Math.min(Parameters.maxJourneyDuration, secondVehicleTravelTime));
-
     }
-}
 
+}

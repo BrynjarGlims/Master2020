@@ -9,7 +9,6 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class GiantTour {
 
-
     ArrayList[][] chromosome;
 
     public GiantTour(Data data){ //save data?
