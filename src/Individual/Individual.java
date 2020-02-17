@@ -98,7 +98,11 @@ public class Individual {
                 j += 1;
             }
         }
-
+        System.out.println("Predecessors: ");
+        for (int i = 0; i < predecessorLabel.length; i++) {
+            System.out.println(predecessorLabel[i]);
+        }
+        System.out.println();
         extractVrpSolution(customerSequence, predecessorLabel, p, vt);
     }
     public void extractVrpSolution(ArrayList<Integer> customerSequence, int[] predecessorLabel, int p, int vt) {
@@ -108,9 +112,15 @@ public class Individual {
 
     //TODO: last element in giantTour often neglected. why? debug.
         for (int k = 1; k < customerSequence.size(); k++) {
-            if (predecessorLabel[k] != 0) {
+            if (k==1) {
                 tempListOfTrips.add(customerSequence.get(k));
-            } else if (predecessorLabel[k] == 0) {
+            }
+            else if (predecessorLabel[k] == (k-1)) {
+                //only add customers, not the depot, to a trip
+                tempListOfTrips.add(customerSequence.get(k - 1));
+            }
+
+            else if (predecessorLabel[k] == 0) {
                 tempListOfTrips.add(customerSequence.get(k));
                 //System.out.println("tempList added to listOfTrips: " + tempListOfTrips);
                 listOfTrips.add(tempListOfTrips);
