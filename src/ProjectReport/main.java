@@ -1,4 +1,6 @@
+
 /*
+>>>>>>> GiantTourGeneration
 package ProjectReport;
 import java.io.File;
 
@@ -59,6 +61,6 @@ public class main {
             }
         }
     }
+
 }
 */
-

@@ -14,8 +14,8 @@ public class Parameters {
     public static final int numberOfTrips = 5;
 
     //Loading data parameters
-    public static final int numberOfCustomers = 10;
-    public static final int numberOfVehicles = 5;
+    public static final int numberOfCustomers = 50;
+    public static final int numberOfVehicles = 50;
 
 
     //Traveling parameters
@@ -32,7 +32,7 @@ public class Parameters {
     public static final int[] overtimeCost = {100, 100, 100, 100, 100, 100};
 
     //Time parameters
-    public static final int maxJourneyDuration = 10; //changed to journey duration
+    public static final double maxJourneyDuration = 10; //changed to journey duration
 
 
 

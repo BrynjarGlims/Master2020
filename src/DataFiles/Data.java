@@ -10,7 +10,8 @@ public class Data {
 
     public int numberOfPeriods;
     public int numberOfDeliveries;
-
+    public int numberOfCustomers = Parameters.numberOfCustomers;
+    public int numberOfVehicles = Parameters.numberOfVehicles;
 
 
     public double totalVolume;
@@ -22,13 +23,17 @@ public class Data {
     public int numberOfVehicleTypes;
     public int[] numberOfVehiclesInVehicleType;
 
+
+
+
+
+    // Constructor
     public Data(Customer[] customers, Vehicle[] vehicles, Depot depot, VehicleType[] vehicleTypes){
         this.customers = customers;
         this.vehicles = vehicles;
         this.depot = depot;
         this.vehicleTypes = vehicleTypes;
         this.initialize();
-
     }
 
     private void initialize(){
@@ -36,7 +41,6 @@ public class Data {
         this.setTargetVolume();
         this.setDistanceMatrix();
         this.setDerivedParameters();
-
     }
 
     private void setDerivedParameters(){
@@ -59,19 +63,14 @@ public class Data {
                     distanceMatrix[i][j] = euclideanDistance(depot.xCoordinate, depot.yCoordinate
                             , customers[j].xCoordinate, customers[j].yCoordinate)*Parameters.scalingDistanceParameter;
                 }
-
                 else if (j == customers.length){
                         distanceMatrix[i][j] = euclideanDistance(customers[i].xCoordinate, customers[i].yCoordinate,
                                 depot.xCoordinate, depot.yCoordinate)*Parameters.scalingDistanceParameter;
-
-
                 }
                 else{
                     distanceMatrix[i][j] = euclideanDistance(customers[i].xCoordinate, customers[i].yCoordinate,
                             customers[j].xCoordinate, customers[j].yCoordinate)*Parameters.scalingDistanceParameter;
-
                 }
-
             }
         }
     }
