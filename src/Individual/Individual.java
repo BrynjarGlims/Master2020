@@ -180,13 +180,18 @@ public class Individual {
                 newLabelPool.generateLabels(labelPools.get(labelPools.size() - 1), arcCost.get(tripNumber));
                 newLabelPool.removeDominated();
                 labelPools.add(newLabelPool);
-                System.out.println(newLabelPool);
             }
         }
+        
+        if (labelPools.size() > 0){
+            this.lastLabelPool[p][vt] = labelPools.get(labelPools.size()-1);
+            this.bestLabel[p][vt] = lastLabelPool[p][vt].findBestLabel();
+        }
+        else{
+            System.out.println("No best label found");
+            // TODO: 17.02.2020 Problem with giant tour being empty 
+        }
 
-
-        this.lastLabelPool[p][vt] = labelPools.get(labelPools.size()-1);
-        this.bestLabel[p][vt] = lastLabelPool[p][vt].findBestLabel();
     }
 
 
@@ -229,7 +234,7 @@ public class Individual {
         Individual individual = new Individual(data, od);
         individual.adSplit();
 
-
+        //todo: implement
         individual.giantTour.toString();
         individual.giantTourSplit.toString();
         individual.vehicleAssigment.toString();

@@ -31,7 +31,7 @@ public class LabelPool {
     public void generateLabels(LabelPool previousLabelPool, double arcCost) {
         for (Label label : previousLabelPool.getLabels()) {
             createNewLabels(label, arcCost); //todo:implement load infeasability
-            System.out.println("Label expanded");
+            //System.out.println("Label expanded");
         }
     }
 
@@ -47,7 +47,7 @@ public class LabelPool {
             // TODO: 14.02.2020 Implement load infeasability
 
             labels.add(new Label(predecessorLabel, vehicleID, arcCost));
-            System.out.println("Label generated!");
+            //System.out.println("Label generated!");
             if ( vehicleID == predecessorLabel.arcTraversalCost.length-1)
                 break;
             vehicleID++;
@@ -57,7 +57,7 @@ public class LabelPool {
         // Creating labels based on a new vehicle in use.
         if (predecessorLabel.arcTraversalCost[predecessorLabel.arcTraversalCost.length-1] == 0){
             labels.add(new Label(predecessorLabel, vehicleID, arcCost));
-            System.out.println("Label generated with new vehicle");
+            //System.out.println("Label generated with new vehicle");
         }
     }
 
@@ -72,11 +72,11 @@ public class LabelPool {
     public void isDominated(int i, int j){
         if (checkDominance(i,j)){
             labels.remove(j);
-            System.out.println("Label removed!");
+            //System.out.println("Label removed!");
         }
         else if (checkDominance(j,i)){
             labels.remove(i);
-            System.out.println("Label removed!");
+            //System.out.println("Label removed!");
         }
 
     }
