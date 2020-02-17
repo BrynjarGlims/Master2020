@@ -81,6 +81,7 @@ public class Individual {
     }
 
 
+
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     //SHORTEST PATH METHODS:
 
@@ -118,34 +119,33 @@ public class Individual {
                 j += 1;
             }
         }
-        System.out.println("Predecessors: ");
-        for (int i = 0; i < predecessorLabel.length; i++) {
-            System.out.println(predecessorLabel[i]);
-        }
-        System.out.println();
         extractVrpSolution(customerSequence, predecessorLabel, p, vt);
+
     }
     public void extractVrpSolution(ArrayList<Integer> customerSequence, int[] predecessorLabel, int p, int vt) {
         //extract VRP solution by backtracking the shortest path label
         ArrayList<ArrayList<Integer>> listOfTrips = new ArrayList<ArrayList<Integer>>();
         ArrayList<Integer> tempListOfTrips = new ArrayList<Integer>();
 
-        //TODO: last element in giantTour often neglected. why? debug.
-        for (int k = 1; k < customerSequence.size(); k++) {
-            if (k==1) {
-                tempListOfTrips.add(customerSequence.get(k));
-            }
-            else if (predecessorLabel[k] == (k-1)) {
-                //only add customers, not the depot, to a trip
-                tempListOfTrips.add(customerSequence.get(k - 1));
-            }
+        if (predecessorLabel.length == 2) {
+            tempListOfTrips.add(customerSequence.get(1));
+            listOfTrips.add(tempListOfTrips);
+        }
 
-            else if (predecessorLabel[k] == 0) {
-                tempListOfTrips.add(customerSequence.get(k));
-                //System.out.println("tempList added to listOfTrips: " + tempListOfTrips);
-                listOfTrips.add(tempListOfTrips);
-                tempListOfTrips = new ArrayList<>();
-                //System.out.println("cleared, tempList = "+ tempListOfTrips);
+        else if (predecessorLabel.length > 2) {
+            tempListOfTrips.add(customerSequence.get(1));
+            for (int k = 2; k < customerSequence.size(); k++) {
+                if (predecessorLabel[k] == 0) {
+                    listOfTrips.add(tempListOfTrips);
+                    tempListOfTrips = new ArrayList<>();
+                    tempListOfTrips.add(customerSequence.get(k));
+                }
+                else if (predecessorLabel[k] == k-1) {
+                    tempListOfTrips.add(customerSequence.get(k));
+                }
+                if (k == (customerSequence.size()-1)) {
+                    listOfTrips.add(tempListOfTrips);
+                }
             }
         }
 
@@ -166,11 +166,16 @@ public class Individual {
         }
         this.matrixOfTrips[p][vt] = listOfTrips;
         this.matrixOfTripCosts[p][vt] = listOfTripCosts;
+
+
+        System.out.println("(Period, VehicleType): ("+p+","+vt+")");
+        System.out.println("Giant Tour (including depot at 0): "+ customerSequence);
+        System.out.println("List of Trips: "+listOfTrips);
+        System.out.println("Trip costs: " + listOfTripCosts);
+        System.out.println("Number of trips: " + listOfTrips.size());
+        System.out.println("Number of trip cost elements: " + listOfTripCosts.size());System.out.println("------------------------------------------------------------------------------");
     }
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
 
 
     public void labelingAlgorithm(int p, int vt, ArrayList<ArrayList<Integer>> listOfTrips, ArrayList<Double> arcCost) {
@@ -204,22 +209,28 @@ public class Individual {
 
     }
 
-
     //solves for each period
     public void adSplit() {
         for (int p = 0; p < data.numberOfPeriods; p++) {
             for (int vt = 0; vt < this.data.numberOfVehicleTypes; vt++) {
-
+                //TODO 17.2: continue whenever bestLabel is empty?
+                if (giantTour.chromosome[p][vt].size()==0 ) {
+                    continue;
+                }
                 //Shortest path algorithm
                 createTrips(p, vt);
 
                 //Labeling algorithm
                 labelingAlgorithm(p, vt, matrixOfTrips[p][vt], matrixOfTripCosts[p][vt]);   // Sets bestLabel.
 
+                //TODO 17.2: remove the comment out
+                /*
                 //Set vehicleAssignment
                 vehicleAssigment.setChromosome(bestLabel[p][vt].getVehicleAssignmentList(), p, vt);
                 //Set giantTourSplit
                 giantTourSplit.setChromosome(createSplitChromosome(matrixOfTrips[p][vt]), p, vt);
+
+                 */
             }
         }
     }

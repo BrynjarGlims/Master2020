@@ -165,7 +165,6 @@ public class Label {
 
     public void  calculateLoadValue(){
 
-
         double tempQuantity = 0;
         for (ArrayList<Integer> trip : listOfTrips){
             for(int customerID : trip) {
