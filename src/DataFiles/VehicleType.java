@@ -4,7 +4,6 @@ import DataFiles.Data;
 
 public class VehicleType {
 
-
     public int vehicleTypeID;
     public int capacity;
     public int costPerHour;

@@ -63,9 +63,9 @@ public class LabelPool {
     public boolean checkDominance(int i, int j){
         double firstLabelValue = labels.get(i).cost;
         double secondLabelValue = labels.get(j).cost;
-        for(int k = 0; k < labels.get(i).vehicleTravelTime.size(); k++){
-            firstLabelValue += Parameters.initialOvertimePenalty*deltaFunction(labels.get(i).vehicleTravelTime.get(k),
-                    labels.get(j).vehicleTravelTime.get(k));
+        for(int k = 0; k < labels.get(i).vehicleTravelTime.length; k++){
+            firstLabelValue += Parameters.initialOvertimePenalty*deltaFunction(labels.get(i).vehicleTravelTime[k],
+                    labels.get(j).vehicleTravelTime[k]);
         }
         return firstLabelValue <= secondLabelValue;
     }
