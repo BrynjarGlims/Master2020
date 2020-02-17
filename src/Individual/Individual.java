@@ -2,6 +2,7 @@ package Individual;
 import DataFiles.*;
 import ProductAllocation.OrderDistribution;
 
+import javax.lang.model.type.ArrayType;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -9,14 +10,15 @@ public class Individual {
 
 
     //chromosome data
-    public GiantTour[][] giantTours;  //period, vehicleType
-    public VehicleAssigment[][] vehicleAssigment;
-    public GiantTourSplit[][] giantTourSplits;
+    public GiantTour giantTours;  //period, vehicleType
+    public VehicleAssigment vehicleAssigment;
+    public GiantTourSplit giantTourSplit;
     public VehicleType vehicleType;
     public double costOfIndividual;
     public ArrayList<ArrayList<Integer>>[][] listOfTrips;  //array1: period, array2: vehicletype
     public double[][] arcCostMatrix;
     public OrderDistribution orderDistribution;
+    public ArrayList<LabelPool> labelPools;
 
     public Data data;
     public int[][] arcCost;  // (i,j) i = from, j = to
@@ -30,18 +32,13 @@ public class Individual {
         this.costOfIndividual = costOfIndividual;
         this.listOfTrips = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
 
-        this.giantTours = new GiantTour[data.numberOfPeriods][data.numberOfVehicleTypes];
-        for (int p = 0; p < data.numberOfPeriods; p++){
-            for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
-                giantTours[p][vt] = new GiantTour(data);
-            }
-        }
+        this.giantTours = new GiantTour(data);
         this.arcCostMatrix = new double[Parameters.numberOfCustomers][Parameters.numberOfCustomers];
         this.lastLabelPool = new LabelPool[data.numberOfPeriods][data.numberOfVehicleTypes];
         this.bestLabel = new Label[data.numberOfPeriods][data.numberOfVehicleTypes];
 
-        this.vehicleAssigment = new VehicleAssigment[data.numberOfPeriods][data.numberOfVehicleTypes] ;
-        this.giantTourSplits = new GiantTourSplit[data.numberOfPeriods][data.numberOfVehicleTypes];
+        this.vehicleAssigment = new VehicleAssigment(data);
+        this.giantTourSplit = new GiantTourSplit(data);
 
 
     }
@@ -202,22 +199,27 @@ public class Individual {
     public void labelingAlgorithm(int p, int vt, ArrayList<ArrayList<Integer>> listOfTrips, ArrayList<Integer> arcCost){
 
         // take this as input,remove afterwards
-        ArrayList<LabelPool> labelPools = new ArrayList<LabelPool>();
+        this.labelPools = new ArrayList<LabelPool>();  //reset the previous label pool
+
 
         for (int tripNumber = 0; tripNumber < listOfTrips.size(); tripNumber++){
             if (tripNumber == 0){
                 LabelPool newLabelPool = new LabelPool(data, listOfTrips, tripNumber, orderDistribution.orderDistribution);
                 newLabelPool.generateFirstLabel(data.numberOfVehiclesInVehicleType[vt],
-                        arcCost.get(tripNumber));
+                        arcCost.get(tripNumber), p, vt);
                 labelPools.add(newLabelPool);
+                System.out.println(newLabelPool);
             }
             else{
                 LabelPool newLabelPool = new LabelPool(data, listOfTrips, tripNumber, orderDistribution.orderDistribution);
                 newLabelPool.generateLabels(labelPools.get(labelPools.size()-1), arcCost.get(tripNumber));
+                System.out.println(newLabelPool);
                 newLabelPool.removeDominated();
                 labelPools.add(newLabelPool);
+                System.out.println(newLabelPool);
             }
         }
+
         this.lastLabelPool[p][vt] = labelPools.get(labelPools.size()-1);
         this.bestLabel[p][vt] = lastLabelPool[p][vt].findBestLabel();
     }
@@ -233,7 +235,7 @@ public class Individual {
         for (int p = 0; p < data.numberOfPeriods; p++) {
             for (int vt = 0; vt < this.data.numberOfVehicleTypes; vt++) {
                 // int[] tripCost = createTrips(p, vt);  //Fride implements, returns int[] with arc cost in correct order
-
+                System.out.println(data.numberOfVehiclesInVehicleType[vt]);
                 ArrayList<Integer> arcCost = new ArrayList<Integer>(Arrays.asList(34,54,23));
 
                 ArrayList<ArrayList<Integer>> customerSequence = new ArrayList<ArrayList<Integer>>();
@@ -241,14 +243,30 @@ public class Individual {
                 customerSequence.add(new ArrayList<Integer>(Arrays.asList(2,3)));
                 customerSequence.add(new ArrayList<Integer>(Arrays.asList(1,4)));
                 customerSequence.add(new ArrayList<Integer>(Arrays.asList(0)));
+
                 labelingAlgorithm(p, vt, customerSequence, arcCost);   // Wrong initialization
-                createChromosomeFromBestLabel(p, vt);
+
+                //Set vehicleAssignment
+                vehicleAssigment.setChromosome(bestLabel[p][vt].getVehicleAssignmentList(), p,vt);
+                //Set giantTourSplit
+                giantTourSplit.setChromosome(createSplitChromosome(customerSequence), p, vt );
+                break;
 
             }
+            break;
         }
     }
 
-    public void createChromosomeFromBestLabel(int p, int vt){
+
+    public ArrayList<Integer> createSplitChromosome(ArrayList<ArrayList<Integer>> customerSequence){
+        ArrayList<Integer> splits = new ArrayList<Integer>();
+        int split = 0;
+
+        for (ArrayList<Integer> tripList: customerSequence){
+            split += tripList.size();
+            splits.add(split);
+        }
+        return splits;
 
     }
      /*

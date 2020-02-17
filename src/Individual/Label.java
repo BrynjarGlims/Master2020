@@ -3,6 +3,7 @@ import DataFiles.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.stream.DoubleStream;
 
 public class Label {
@@ -17,10 +18,9 @@ public class Label {
     public int periodID;
     public int vehicleTypeID;
 
-
     //Chromosomes
-    public VehicleAssigment vehicleAssigment;
-    public GiantTourSplit giantTourSplit;
+    public ArrayList<Integer> vehicleAssigment;
+
 
     //Derived from first section of adSplit
     public ArrayList<ArrayList<Integer>> listOfTrips;
@@ -33,8 +33,6 @@ public class Label {
 
     //most likely not used
 
-
-
     //Intermediate values for calculation of cost
     public double[] vehicleTravelingTimes;
     public double travelValue;
@@ -44,9 +42,13 @@ public class Label {
     //create non-first labels
     public Label(Label parentNode, int vehicleID, double arcCost){
 
-        this.arcTraversalCost = parentNode.arcTraversalCost;
+
+        this.periodID = parentNode.periodID;
+        this.vehicleTypeID = parentNode.vehicleTypeID;
+        this.arcTraversalCost = parentNode.arcTraversalCost.clone();
         this.arcTraversalCost[vehicleID] += arcCost;
         Arrays.sort(this.arcTraversalCost);
+        reverseOrderarcTrversalCost();
         this.loadInfeasibility = parentNode.loadInfeasibility;
         this.orderDistribution = parentNode.orderDistribution;
         this.parentNode = parentNode;
@@ -54,36 +56,48 @@ public class Label {
         this.listOfTrips = parentNode.listOfTrips;
         this.tripNumber = parentNode.tripNumber + 1;
         this.vehicleTravelingTimes = new double[Parameters.numberOfVehicles];
-        this.vehicleAssigment = parentNode.vehicleAssigment;
-        this.vehicleAssigment.addVehicle(vehicleID);
+        this.vehicleAssigment = (ArrayList<Integer>) parentNode.vehicleAssigment.clone();
+        this.vehicleAssigment.add(vehicleID);
 
 
         this.deriveCost();
     }
 
+    private void reverseOrderarcTrversalCost(){
+        double[] tempArray = new double[arcTraversalCost.length];
+        for (int i = 0; i < arcTraversalCost.length; i ++){
+            tempArray[i] = this.arcTraversalCost[arcTraversalCost.length-1-i];
+        }
+        arcTraversalCost = tempArray;
+    }
+
 
     //create first label
     public Label(int numberOfVehicles, int arcCost, Data data,
-                 ArrayList<ArrayList<Integer>> listOfTrips, int tripNumber, double[][] orderDistribution ){
+                 ArrayList<ArrayList<Integer>> listOfTrips, int tripNumber, double[][] orderDistribution, int periodID,
+                 int vehicleTypeID){
 
         //generate first travel cost object
         this.arcTraversalCost = new double[numberOfVehicles];
         this.arcTraversalCost[0] = arcCost;
 
+        this.vehicleTypeID = vehicleTypeID;
+        this.periodID = periodID;
+        this.data = data;
+
         //assign first trip
-        this.vehicleAssigment = new VehicleAssigment();
-        this.vehicleAssigment.chromosome.add(0);  // add vehicle id 0 to the chromosome
+        this.vehicleAssigment = new ArrayList<Integer>();
+        this.vehicleAssigment.add(0);  // add vehicle id 0 to the chromosome
         this.vehicleTravelingTimes = new double[Parameters.numberOfVehicles];
 
 
         //initialization
         this.loadInfeasibility = 0;
         this.parentNode = null;
-        this.data = data;
         this.listOfTrips = listOfTrips;
         this.tripNumber = tripNumber;
         this.orderDistribution = orderDistribution;
-        this.giantTourSplit = new GiantTourSplit();
+
 
         this.travelValue = 0;
         this.overtimeValue = 0;
@@ -116,25 +130,22 @@ public class Label {
             }
             for(int customerID : trip){
                 if (customerCounter == 0){
-
-                    vehicleTravelingTimes[vehicleAssigment.chromosome.get(tripCounter)] +=
+                    vehicleTravelingTimes[vehicleAssigment.get(tripCounter)] +=
                             data.distanceMatrix[data.numberOfCustomers][customerID];
                     lastCustomerID = customerID;
                     customerCounter++;
 
                 }
                 else if (customerCounter == trip.size()-1){
-                    vehicleTravelingTimes[vehicleAssigment.chromosome.get(tripCounter)] +=
+                    vehicleTravelingTimes[vehicleAssigment.get(tripCounter)] +=
                             data.distanceMatrix[customerID][data.numberOfCustomers];
                 }
                 else {
-                    vehicleTravelingTimes[vehicleAssigment.chromosome.get(tripCounter)] +=
+                    vehicleTravelingTimes[vehicleAssigment.get(tripCounter)] +=
                             data.distanceMatrix[lastCustomerID][customerID];
                     lastCustomerID = customerID;
                     customerCounter++;
-
                 }
-
             }
             tripCounter++;
 
@@ -166,13 +177,11 @@ public class Label {
         loadValue *= Parameters.initialCapacityPenalty;
     }
 
-    public void setVehicleAssignment(VehicleAssigment vehicleAssignment){
-        this.vehicleAssigment = vehicleAssignment;
+    public ArrayList<Integer> getVehicleAssignmentList(){
+        return vehicleAssigment;
     }
 
-    public void setGiantTourSplit(GiantTourSplit giantTourSplit){
-        this.giantTourSplit = giantTourSplit;
-    }
+
 
 
 

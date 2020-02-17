@@ -24,13 +24,15 @@ public class LabelPool {
 
 
 
-    public void generateFirstLabel(int numberOfVehicles, int arcCost){
-        this.labels.add(new Label(numberOfVehicles, arcCost, data, listOfTrips, tripNumber, orderDistribution));
+    public void generateFirstLabel(int numberOfVehicles, int arcCost, int periodID, int vehicleTypeID){
+        this.labels.add(new Label(numberOfVehicles, arcCost, data, listOfTrips, tripNumber, orderDistribution,
+                periodID , vehicleTypeID));
     }
 
     public void generateLabels(LabelPool previousLabelPool, double arcCost ) {
         for (Label label : previousLabelPool.getLabels()) {
             createNewLabels(label, arcCost); //todo:implement load infeasability
+            System.out.println("Label expanded");
     }
     }
 
@@ -46,15 +48,17 @@ public class LabelPool {
             // TODO: 14.02.2020 Implement load infeasability
 
             labels.add(new Label(predecessorLabel, vehicleID, arcCost));
-
+            System.out.println("Label generated!");
             if ( vehicleID == predecessorLabel.arcTraversalCost.length-1)
                 break;
             vehicleID++;
 
         }
+
         // Creating labels based on a new vehicle in use.
         if (predecessorLabel.arcTraversalCost[predecessorLabel.arcTraversalCost.length-1] == 0){
             labels.add(new Label(predecessorLabel, vehicleID, arcCost));
+            System.out.println("Label generated with new vehicle");
         }
     }
 
@@ -69,9 +73,11 @@ public class LabelPool {
     public void isDominated(int i, int j){
         if (checkDominance(i,j)){
             labels.remove(j);
+            System.out.println("Label removed!");
         }
         else if (checkDominance(j,i)){
             labels.remove(i);
+            System.out.println("Label removed!");
         }
 
     }
