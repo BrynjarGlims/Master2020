@@ -213,6 +213,7 @@ public class Individual {
     public void adSplit() {
         for (int p = 0; p < data.numberOfPeriods; p++) {
             for (int vt = 0; vt < this.data.numberOfVehicleTypes; vt++) {
+
                 //TODO 17.2: continue whenever bestLabel is empty?
                 if (giantTour.chromosome[p][vt].size()==0 ) {
                     continue;
