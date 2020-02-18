@@ -6,10 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+
 public class Individual {
-
-
-
     //chromosome data
     public GiantTour giantTour;  //period, vehicleType
     public VehicleAssigment vehicleAssigment;
@@ -31,6 +29,7 @@ public class Individual {
 
 
 
+
     public Individual(Data data, OrderDistribution orderDistribution) {
         this.data = data;
         this.orderDistribution = orderDistribution;
@@ -43,12 +42,12 @@ public class Individual {
         this.vehicleAssigment = new VehicleAssigment(data);
         this.giantTourSplit = new GiantTourSplit(data);
         this.giantTour = new GiantTour(data);
+
         this.bestLabels = new Label[data.numberOfPeriods][data.numberOfVehicleTypes];
         this.matrixOfTrips = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
         this.matrixOfTripCosts = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
 
         this.adSplit(); //perform adSplit
-
 
     }
 
@@ -72,8 +71,6 @@ public class Individual {
         //TODO: needs to be implemented
         return 0.0;
     }
-
-
 
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     //SHORTEST PATH METHODS:
@@ -176,8 +173,7 @@ public class Individual {
         this.matrixOfTrips[p][vt] = listOfTrips;
         this.matrixOfTripCosts[p][vt] = listOfTripCosts;
 
- }
-    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     }
 
     public void labelingAlgorithm(int p, int vt, ArrayList<ArrayList<Integer>> listOfTrips, ArrayList<Double> arcCost) {
 
@@ -212,10 +208,8 @@ public class Individual {
                 if (giantTour.chromosome[p][vt].size()==0 ) {
                     continue;
                 }
-
                 //Shortest path algorithm
                 createTrips(p, vt);
-
                 //Labeling algorithm
                 labelingAlgorithm(p, vt, matrixOfTrips[p][vt], matrixOfTripCosts[p][vt]);   // Sets bestLabel.
                 //// TODO: 18.02.2020 Implement an improved split procedure that reorders customers

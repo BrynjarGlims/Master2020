@@ -23,6 +23,7 @@ public class Population {
         this.infeasiblePopulation = new  ArrayList<Individual>();
     }
 
+
     public void initializePopulation() {
         for (int i = 0; i < totalPopulationSize; i++) {
             Individual individual = new Individual(this.data, this.currentOrderDistribution);
@@ -34,6 +35,9 @@ public class Population {
             }
         }
     }
+
+
+
 
 
     public ArrayList<Individual> getFeasiblePopulation() {
