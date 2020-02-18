@@ -47,7 +47,6 @@ public class LabelPool {
             // TODO: 14.02.2020 Implement load infeasability
 
             labels.add(new Label(predecessorLabel, vehicleID, arcCost));
-            //System.out.println("Label generated!");
             if ( vehicleID == predecessorLabel.arcTraversalCost.length-1)
                 break;
             vehicleID++;
@@ -57,7 +56,6 @@ public class LabelPool {
         // Creating labels based on a new vehicle in use.
         if (predecessorLabel.arcTraversalCost[predecessorLabel.arcTraversalCost.length-1] == 0){
             labels.add(new Label(predecessorLabel, vehicleID, arcCost));
-            //System.out.println("Label generated with new vehicle");
         }
     }
 
@@ -103,7 +101,7 @@ public class LabelPool {
             firstLabelValue += deltaFunction(labels.get(i).arcTraversalCost.length,
                     labels.get(j).arcTraversalCost.length);
         }
-        firstLabelValue = Parameters.initialOvertimePenalty;
+        firstLabelValue *= Parameters.initialOvertimePenalty;
         firstLabelValue += labels.get(i).cost;
 
         double secondLabelValue = labels.get(j).cost;
