@@ -7,10 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
 
+
 public class Individual {
-
-
-
     //chromosome data
     public GiantTour giantTour;  //period, vehicleType
     public VehicleAssigment vehicleAssigment;
@@ -21,11 +19,8 @@ public class Individual {
     public ArrayList<ArrayList<Integer>>[][] matrixOfTrips;
     public ArrayList<Double>[][] matrixOfTripCosts;
 
-
-
     public OrderDistribution orderDistribution;
     public ArrayList<LabelPool> labelPools;
-
 
     public int[][] arcCost;  // (i,j) i = from, j = to
 
@@ -45,12 +40,10 @@ public class Individual {
         this.giantTourSplit = new GiantTourSplit(data);
         this.giantTour = new GiantTour(data);
 
-
         this.lastLabelPool = new LabelPool[data.numberOfPeriods][data.numberOfVehicleTypes];
         this.bestLabel = new Label[data.numberOfPeriods][data.numberOfVehicleTypes];
         this.matrixOfTrips = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
         this.matrixOfTripCosts = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
-
 
     }
 
@@ -80,8 +73,6 @@ public class Individual {
         return 0.0;
     }
 
-
-
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     //SHORTEST PATH METHODS:
 
@@ -104,6 +95,7 @@ public class Individual {
             double loadSum = 0;
             double distanceCost = 0;
             int j = i+1;
+            //TODO 18.2: Incoprorate loading cost at each customer
             while (j < customerSequence.size()) {
                 loadSum += this.orderDistribution.orderDistribution[p][customerSequence.get(j)];
                 if (j == (i + 1)) {
@@ -172,8 +164,7 @@ public class Individual {
         System.out.println("Giant Tour (including depot at 0): "+ customerSequence);
         System.out.println("List of Trips: "+listOfTrips);
         System.out.println("Trip costs: " + listOfTripCosts);
-        System.out.println("Number of trips: " + listOfTrips.size());
-        System.out.println("Number of trip cost elements: " + listOfTripCosts.size());System.out.println("------------------------------------------------------------------------------");
+        System.out.println("------------------------------------------------------------------------------");
     }
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -224,14 +215,11 @@ public class Individual {
                 //Labeling algorithm
                 labelingAlgorithm(p, vt, matrixOfTrips[p][vt], matrixOfTripCosts[p][vt]);   // Sets bestLabel.
 
-                //TODO 17.2: remove the comment out
-                /*
                 //Set vehicleAssignment
                 vehicleAssigment.setChromosome(bestLabel[p][vt].getVehicleAssignmentList(), p, vt);
                 //Set giantTourSplit
                 giantTourSplit.setChromosome(createSplitChromosome(matrixOfTrips[p][vt]), p, vt);
 
-                 */
             }
         }
     }

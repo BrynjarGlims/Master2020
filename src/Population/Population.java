@@ -20,6 +20,7 @@ public class Population {
         this.infeasiblePopulationSize = infeasiblePopulationSize;
     }
 
+
     /*
     public void initializePopulation() {
         for (int i = 0; i < totalPopulationSize; i++) {
