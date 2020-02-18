@@ -9,6 +9,12 @@ public class Parameters {
     public static final String vehicleFilePath = "data/Vehicles.csv";
 
 
+
+    //Population parameters
+    public static final int populationSize = 30;
+    public static final int maxNumberIterationsWithoutImprovement = 20;
+    public static final int maxNumberOfIterations = 200;
+
     //Decision parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
