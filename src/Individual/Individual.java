@@ -2,10 +2,9 @@ package Individual;
 import DataFiles.*;
 import ProductAllocation.OrderDistribution;
 
-import javax.lang.model.type.ArrayType;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
 
 public class Individual {
 
@@ -15,25 +14,16 @@ public class Individual {
     public GiantTour giantTour;  //period, vehicleType
     public VehicleAssigment vehicleAssigment;
     public GiantTourSplit giantTourSplit;
+    public OrderDistribution orderDistribution;
 
     public Data data;
 
+
+    //// TODO: 18.02.2020 TO be removed
     public ArrayList<ArrayList<Integer>>[][] matrixOfTrips;
     public ArrayList<Double>[][] matrixOfTripCosts;
+    public Label[][] bestLabels;
 
-
-
-    public OrderDistribution orderDistribution;
-    public ArrayList<LabelPool> labelPools;
-
-
-    public int[][] arcCost;  // (i,j) i = from, j = to
-
-    public LabelPool[][] lastLabelPool;
-    public Label[][] bestLabel;
-
-    private ArrayList[][] listOfTrips;
-    private double[][] arcCostMatrix;
 
 
     public Individual(Data data, OrderDistribution orderDistribution) {
@@ -44,10 +34,7 @@ public class Individual {
         this.vehicleAssigment = new VehicleAssigment(data);
         this.giantTourSplit = new GiantTourSplit(data);
         this.giantTour = new GiantTour(data);
-
-
-        this.lastLabelPool = new LabelPool[data.numberOfPeriods][data.numberOfVehicleTypes];
-        this.bestLabel = new Label[data.numberOfPeriods][data.numberOfVehicleTypes];
+        this.bestLabels = new Label[data.numberOfPeriods][data.numberOfVehicleTypes];
         this.matrixOfTrips = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
         this.matrixOfTripCosts = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
 
@@ -85,45 +72,54 @@ public class Individual {
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     //SHORTEST PATH METHODS:
 
+    public double[] getInitialCostLabel(int size){
+        double[] costLabel =  new double[size];
+        Arrays.fill(costLabel, 100000);
+        costLabel[0] = 0;
+        return costLabel;
+    }
+
+    public int[] getInitialPredecessorLabel(int size){
+        int[] predecessorLabel =  new int[size];
+        Arrays.fill(predecessorLabel, 0);
+        return predecessorLabel;
+    }
+
+
     public void createTrips(int p, int vt) {
         //SHORTEST PATH
-        ArrayList<Integer> customerSequence = this.giantTour.chromosome[p][vt];
+        ArrayList<Integer> customerSequence = (ArrayList<Integer>) giantTour.chromosome[p][vt].clone();  //// TODO: 18.02.2020 Brynar: is this superfast or only fast?
+        customerSequence.add(0, data.customers.length);
 
         //insert depot to be in the 0th position
-        customerSequence.add(0, data.customers.length);
-        double[] costLabel = new double[customerSequence.size()];
+
+        double[] costLabel = this.getInitialCostLabel(customerSequence.size());
         int[] predecessorLabel = new int[customerSequence.size()];
+        double loadSum;
+        double distanceCost;
 
 
         for (int i = 0; i < customerSequence.size(); i++) {
-            costLabel[i] = 100000;
-            predecessorLabel[i] = 0;
-        }
-        costLabel[0] = 0;
-        for (int i = 0; i < customerSequence.size(); i++) {
-            double loadSum = 0;
-            double distanceCost = 0;
-            int j = i+1;
-            while (j < customerSequence.size()) {
+            loadSum = 0;
+            for( int j = i+1; j < customerSequence.size(); j++ ) {   //todo: make this a for element in list function.
                 loadSum += this.orderDistribution.orderDistribution[p][customerSequence.get(j)];
                 if (j == (i + 1)) {
                     distanceCost = data.distanceMatrix[customerSequence.get(j)][data.customers.length];
                 } else {
-                    distanceCost = data.distanceMatrix[customerSequence.get(j - 1)][customerSequence.get(j)] + data.distanceMatrix[customerSequence.get(j)][data.customers.length];
+                    distanceCost = data.distanceMatrix[customerSequence.get(j - 1)][customerSequence.get(j)]
+                            + data.distanceMatrix[customerSequence.get(j)][data.customers.length];
                 }
                 if (costLabel[i] + distanceCost < costLabel[j] && loadSum <= data.vehicleTypes[vt].capacity) {
                     costLabel[j] = costLabel[i] + distanceCost;
                     predecessorLabel[j] = i;
-
                 }
-                j += 1;
             }
         }
         extractVrpSolution(customerSequence, predecessorLabel, p, vt);
-
     }
-    public void extractVrpSolution(ArrayList<Integer> customerSequence, int[] predecessorLabel, int p, int vt) {
-        //extract VRP solution by backtracking the shortest path label
+
+    public ArrayList<ArrayList<Integer>> setListOfTrips(ArrayList<Integer> customerSequence, int[] predecessorLabel){
+
         ArrayList<ArrayList<Integer>> listOfTrips = new ArrayList<ArrayList<Integer>>();
         ArrayList<Integer> tempListOfTrips = new ArrayList<Integer>();
 
@@ -131,7 +127,6 @@ public class Individual {
             tempListOfTrips.add(customerSequence.get(1));
             listOfTrips.add(tempListOfTrips);
         }
-
         else if (predecessorLabel.length > 2) {
             tempListOfTrips.add(customerSequence.get(1));
             for (int k = 2; k < customerSequence.size(); k++) {
@@ -148,11 +143,19 @@ public class Individual {
                 }
             }
         }
+        return listOfTrips;
+    }
 
+
+    public void extractVrpSolution(ArrayList<Integer> customerSequence, int[] predecessorLabel, int p, int vt) {
+        //extract VRP solution by backtracking the shortest path label
+
+        ArrayList<ArrayList<Integer>> listOfTrips = setListOfTrips( customerSequence, predecessorLabel);
+        double tripCost;
         //Calculate trip costs
         ArrayList<Double> listOfTripCosts = new ArrayList<Double>(listOfTrips.size());
         for (List<Integer> list : listOfTrips) {
-            double tripCost = 0;
+            tripCost = 0;
             if (list.size() == 1) {
                 tripCost += data.distanceMatrix[data.customers.length][list.get(0)] + data.distanceMatrix[list.get(list.size() - 1)][data.customers.length];
             }
@@ -167,44 +170,30 @@ public class Individual {
         this.matrixOfTrips[p][vt] = listOfTrips;
         this.matrixOfTripCosts[p][vt] = listOfTripCosts;
 
-
-        System.out.println("(Period, VehicleType): ("+p+","+vt+")");
-        System.out.println("Giant Tour (including depot at 0): "+ customerSequence);
-        System.out.println("List of Trips: "+listOfTrips);
-        System.out.println("Trip costs: " + listOfTripCosts);
-        System.out.println("Number of trips: " + listOfTrips.size());
-        System.out.println("Number of trip cost elements: " + listOfTripCosts.size());System.out.println("------------------------------------------------------------------------------");
-    }
+ }
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 
     public void labelingAlgorithm(int p, int vt, ArrayList<ArrayList<Integer>> listOfTrips, ArrayList<Double> arcCost) {
 
-        // take this as input,remove afterwards
-        this.labelPools = new ArrayList<LabelPool>();  //reset the previous label pool
+        int tripNumber = 0;
+        LabelPool currentLabelPool = new LabelPool(data, listOfTrips, tripNumber, orderDistribution.orderDistribution);
+        LabelPool nextLabelPool;
 
-
-        for (int tripNumber = 0; tripNumber < listOfTrips.size(); tripNumber++) {
+        while(tripNumber < listOfTrips.size()) {
             if (tripNumber == 0) {
-                LabelPool newLabelPool = new LabelPool(data, listOfTrips, tripNumber, orderDistribution.orderDistribution);
-                newLabelPool.generateFirstLabel(data.numberOfVehiclesInVehicleType[vt],
+                currentLabelPool.generateFirstLabel(data.numberOfVehiclesInVehicleType[vt],
                         arcCost.get(tripNumber), p, vt);
-                labelPools.add(newLabelPool);
+                tripNumber++;
             } else {
-                LabelPool newLabelPool = new LabelPool(data, listOfTrips, tripNumber, orderDistribution.orderDistribution);
-                newLabelPool.generateLabels(labelPools.get(labelPools.size() - 1), arcCost.get(tripNumber));
-                newLabelPool.removeDominated();
-                labelPools.add(newLabelPool);
+                nextLabelPool = new LabelPool(data, listOfTrips, tripNumber, orderDistribution.orderDistribution);
+                nextLabelPool.generateLabels(currentLabelPool, arcCost.get(tripNumber));
+                nextLabelPool.removeDominated();
+                currentLabelPool = nextLabelPool;
+                tripNumber++;
             }
         }
-        
-        if (labelPools.size() > 0){
-            this.lastLabelPool[p][vt] = labelPools.get(labelPools.size()-1);
-            this.bestLabel[p][vt] = lastLabelPool[p][vt].findBestLabel();
-        }
-        else{
-            System.out.println("No best label found");
-            // TODO: 17.02.2020 Problem with giant tour being empty 
+        if (currentLabelPool.labels.size() > 0){
+            this.bestLabels[p][vt] = currentLabelPool.findBestLabel();
         }
 
     }
@@ -218,20 +207,16 @@ public class Individual {
                 if (giantTour.chromosome[p][vt].size()==0 ) {
                     continue;
                 }
+
                 //Shortest path algorithm
                 createTrips(p, vt);
 
                 //Labeling algorithm
                 labelingAlgorithm(p, vt, matrixOfTrips[p][vt], matrixOfTripCosts[p][vt]);   // Sets bestLabel.
-
-                //TODO 17.2: remove the comment out
-                /*
                 //Set vehicleAssignment
-                vehicleAssigment.setChromosome(bestLabel[p][vt].getVehicleAssignmentList(), p, vt);
+                vehicleAssigment.setChromosome(bestLabels[p][vt].getVehicleAssignmentList(), p, vt);
                 //Set giantTourSplit
                 giantTourSplit.setChromosome(createSplitChromosome(matrixOfTrips[p][vt]), p, vt);
-
-                 */
             }
         }
     }

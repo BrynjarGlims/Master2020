@@ -40,25 +40,24 @@ public class Label {
     public double loadValue;
 
     //create non-first labels
-    public Label(Label parentNode, int vehicleID, double arcCost){
+    public Label(Label parentLabel, int vehicleIndex, double arcCost){
 
 
-        this.periodID = parentNode.periodID;
-        this.vehicleTypeID = parentNode.vehicleTypeID;
-        this.arcTraversalCost = parentNode.arcTraversalCost.clone();
-        this.arcTraversalCost[vehicleID] += arcCost;
+        this.periodID = parentLabel.periodID;
+        this.vehicleTypeID = parentLabel.vehicleTypeID;
+        this.arcTraversalCost = parentLabel.arcTraversalCost.clone();
+        this.arcTraversalCost[vehicleIndex] += arcCost;
         Arrays.sort(this.arcTraversalCost);
         reverseOrderarcTrversalCost();
-        this.loadInfeasibility = parentNode.loadInfeasibility;
-        this.orderDistribution = parentNode.orderDistribution;
-        this.parentNode = parentNode;
-        this.data = parentNode.data;
-        this.listOfTrips = parentNode.listOfTrips;
-        this.tripNumber = parentNode.tripNumber + 1;
+        this.loadInfeasibility = parentLabel.loadInfeasibility;
+        this.orderDistribution = parentLabel.orderDistribution;
+        this.parentNode = parentLabel;
+        this.data = parentLabel.data;
+        this.listOfTrips = parentLabel.listOfTrips;
+        this.tripNumber = parentLabel.tripNumber + 1;
         this.vehicleTravelingTimes = new double[Parameters.numberOfVehicles];
-        this.vehicleAssigment = (ArrayList<Integer>) parentNode.vehicleAssigment.clone();
-        this.vehicleAssigment.add(vehicleID);
-
+        this.vehicleAssigment = (ArrayList<Integer>) parentLabel.vehicleAssigment.clone();
+        this.vehicleAssigment.add(vehicleIndex);
 
         this.deriveCost();
     }
@@ -97,7 +96,6 @@ public class Label {
         this.listOfTrips = listOfTrips;
         this.tripNumber = tripNumber;
         this.orderDistribution = orderDistribution;
-
 
         this.travelValue = 0;
         this.overtimeValue = 0;
