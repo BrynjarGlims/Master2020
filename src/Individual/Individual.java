@@ -17,6 +17,11 @@ public class Individual {
     public OrderDistribution orderDistribution;
 
     public Data data;
+    public boolean validCapacity;
+
+    public double infeasibilityOvertimeValue;
+    public double infeasibilityTimeWarpValue;
+    public double infeasibilityOverCapacityValue;
 
 
     //// TODO: 18.02.2020 TO be removed
@@ -30,6 +35,10 @@ public class Individual {
         this.data = data;
         this.orderDistribution = orderDistribution;
 
+        this.infeasibilityOverCapacityValue = 0;
+        this.infeasibilityOvertimeValue = 0;
+        this.infeasibilityTimeWarpValue = 0;
+
         //set chromosome
         this.vehicleAssigment = new VehicleAssigment(data);
         this.giantTourSplit = new GiantTourSplit(data);
@@ -38,18 +47,15 @@ public class Individual {
         this.matrixOfTrips = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
         this.matrixOfTripCosts = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
 
+        this.adSplit(); //perform adSplit
+
 
     }
 
     public boolean isFeasible() {
-        //NOTE: AdSplit must be called in advance of this method
-        if (!hasValidTimeWindows()) {
-            return false;
-        } else if (!hasValidVehicleCapacity()) {
-            return false;
+        return (infeasibilityOverCapacityValue == 0 && infeasibilityOvertimeValue == 0
+                && infeasibilityTimeWarpValue == 0);
 
-        }
-        return true;
     }
 
     public boolean hasValidTimeWindows() {
@@ -202,8 +208,7 @@ public class Individual {
     public void adSplit() {
         for (int p = 0; p < data.numberOfPeriods; p++) {
             for (int vt = 0; vt < this.data.numberOfVehicleTypes; vt++) {
-
-                //TODO 17.2: continue whenever bestLabel is empty?
+                
                 if (giantTour.chromosome[p][vt].size()==0 ) {
                     continue;
                 }
@@ -213,6 +218,7 @@ public class Individual {
 
                 //Labeling algorithm
                 labelingAlgorithm(p, vt, matrixOfTrips[p][vt], matrixOfTripCosts[p][vt]);   // Sets bestLabel.
+                //// TODO: 18.02.2020 Implement an improved split procedure that reorders customers
                 //Set vehicleAssignment
                 vehicleAssigment.setChromosome(bestLabels[p][vt].getVehicleAssignmentList(), p, vt);
                 //Set giantTourSplit

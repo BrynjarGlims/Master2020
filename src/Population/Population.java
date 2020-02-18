@@ -1,29 +1,31 @@
 package Population;
 import DataFiles.*;
 import Individual.Individual;
+import ProductAllocation.OrderDistribution;
 
 import java.util.ArrayList;
 
 public class Population {
-    private int feasiblePopulationSize;
-    private int infeasiblePopulationSize;
     private int totalPopulationSize;
     private Data data;
     private ArrayList<Individual> feasiblePopulation;
     private ArrayList<Individual> infeasiblePopulation;
+    private OrderDistribution currentOrderDistribution;
 
-    public Population(int feasiblePopulationSize, int infeasiblePopulationSize, int totalPopulationSize, Data data) {
+    int iterationsWithoutImprovement = 0;
+
+    public Population(Data data) {
         this.data = data;
-        this.totalPopulationSize = totalPopulationSize;
-        //this.initializePopulation();
-        this.feasiblePopulationSize = feasiblePopulationSize;
-        this.infeasiblePopulationSize = infeasiblePopulationSize;
+        this.totalPopulationSize = Parameters.populationSize;
+        this.currentOrderDistribution = new OrderDistribution(this.data);
+        this.currentOrderDistribution.makeDistribution();
+        this.feasiblePopulation = new  ArrayList<Individual>();
+        this.infeasiblePopulation = new  ArrayList<Individual>();
     }
 
-    /*
     public void initializePopulation() {
         for (int i = 0; i < totalPopulationSize; i++) {
-            Individual individual = new Individual(data);
+            Individual individual = new Individual(this.data, this.currentOrderDistribution);
             if (individual.isFeasible()) {
                 feasiblePopulation.add(individual);
             }
@@ -33,7 +35,6 @@ public class Population {
         }
     }
 
-     */
 
     public ArrayList<Individual> getFeasiblePopulation() {
         return feasiblePopulation;
@@ -41,5 +42,9 @@ public class Population {
 
     public ArrayList<Individual> getInfeasiblePopulation() {
         return infeasiblePopulation;
+    }
+
+    public int getIterationsWithoutImprovement(){
+        return iterationsWithoutImprovement;
     }
 }

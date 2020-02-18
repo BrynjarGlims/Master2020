@@ -11,6 +11,7 @@ public class Label {
     //Lable values
     public double[] arcTraversalCost;
     public double loadInfeasibility;
+    public double timeWarpInfeasibility;
     public Label parentNode;
     public double cost;
 
@@ -38,21 +39,30 @@ public class Label {
     public double travelValue;
     public double overtimeValue;
     public double loadValue;
+    public double timeWarpValue;
 
     //create non-first labels
     public Label(Label parentLabel, int vehicleIndex, double arcCost){
 
-
+        //Information attributes
         this.periodID = parentLabel.periodID;
         this.vehicleTypeID = parentLabel.vehicleTypeID;
+        this.parentNode = parentLabel;
+        this.data = parentLabel.data;
+        this.orderDistribution = parentLabel.orderDistribution;
+
+        // Cost of choosing arcs from the SPA
         this.arcTraversalCost = parentLabel.arcTraversalCost.clone();
         this.arcTraversalCost[vehicleIndex] += arcCost;
         Arrays.sort(this.arcTraversalCost);
         reverseOrderarcTrversalCost();
+
+
+
         this.loadInfeasibility = parentLabel.loadInfeasibility;
-        this.orderDistribution = parentLabel.orderDistribution;
-        this.parentNode = parentLabel;
-        this.data = parentLabel.data;
+        this.timeWarpInfeasibility = parentLabel.timeWarpInfeasibility;
+
+        this.timeWarpValue = parentLabel.timeWarpValue;
         this.listOfTrips = parentLabel.listOfTrips;
         this.tripNumber = parentLabel.tripNumber + 1;
         this.vehicleTravelingTimes = new double[Parameters.numberOfVehicles];
@@ -92,6 +102,8 @@ public class Label {
 
         //initialization
         this.loadInfeasibility = 0;
+        this.timeWarpInfeasibility = 0;
+
         this.parentNode = null;
         this.listOfTrips = listOfTrips;
         this.tripNumber = tripNumber;
@@ -126,13 +138,12 @@ public class Label {
             if (tripCounter > tripNumber){
                 break;
             }
-            for(int customerID : trip){
+            for(int customerID : trip){  //todo: add unloading and loading time at the depot
                 if (customerCounter == 0){
                     vehicleTravelingTimes[vehicleAssigment.get(tripCounter)] +=
                             data.distanceMatrix[data.numberOfCustomers][customerID];
                     lastCustomerID = customerID;
                     customerCounter++;
-
                 }
                 else if (customerCounter == trip.size()-1){
                     vehicleTravelingTimes[vehicleAssigment.get(tripCounter)] +=
@@ -146,7 +157,6 @@ public class Label {
                 }
             }
             tripCounter++;
-
         }
         this.travelValue = DoubleStream.of(vehicleTravelingTimes).sum();
 
@@ -158,6 +168,7 @@ public class Label {
         for (double travelTime : vehicleTravelingTimes) {
             overtimeValue += Math.max(0, travelTime - Parameters.maxJourneyDuration);
         }
+
         overtimeValue *= Parameters.initialOvertimePenalty;
     }
 
@@ -172,6 +183,7 @@ public class Label {
             tempQuantity = 0;
         }
         loadValue *= Parameters.initialCapacityPenalty;
+        loadInfeasibility = loadValue;
     }
 
     public ArrayList<Integer> getVehicleAssignmentList(){
