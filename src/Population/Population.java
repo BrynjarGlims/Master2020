@@ -36,6 +36,9 @@ public class Population {
 
      */
 
+
+
+
     public ArrayList<Individual> getFeasiblePopulation() {
         return feasiblePopulation;
     }
