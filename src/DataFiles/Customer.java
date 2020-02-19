@@ -28,6 +28,7 @@ public class Customer {
     public double variableLoadingTime;
     public double fixedUnloadingTime;
     public double variableUnloadingTime;
+    public double totalUnloadingTime;
 
 
     public Customer(int customerID, int customerNumber, String customerName){
@@ -100,14 +101,13 @@ public class Customer {
         this.variableLoadingTime = loadingTimes[1];
         this.fixedUnloadingTime = loadingTimes[2];
         this.variableUnloadingTime = loadingTimes[3];
+        this.totalUnloadingTime = fixedUnloadingTime*Parameters.scalingUnloadingTimeAtCustomerConstant +
+                variableUnloadingTime*Parameters.scalingUnloadingTimeAtCustomerVariable;
     }
 
     public String toString(){
         return "";
     }
-
-
-
 
 
 

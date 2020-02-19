@@ -38,24 +38,18 @@ public class LabelPool {
     public void createNewLabels(Label predecessorLabel, double arcCost){
 
         double additionalLoadInfeasibility = 0; // TODO: 13.02.2020 IMPLEMENT
-        int vehicleID = 0;
+        int vehicleCostOrderNumber = 0;
         // Generate labels by adding cost on already existing vehicles
-        while ( predecessorLabel.arcTraversalCost[vehicleID] != 0){
-            double[] newVehicleTravelTime = predecessorLabel.arcTraversalCost.clone();
-            newVehicleTravelTime[vehicleID] += arcCost;
-            double newLoadInFeasibility = predecessorLabel.loadInfeasibility + additionalLoadInfeasibility;
-            // TODO: 14.02.2020 Implement load infeasability
-
-            labels.add(new Label(predecessorLabel, vehicleID, arcCost));
-            if ( vehicleID == predecessorLabel.arcTraversalCost.length-1)
+        while ( predecessorLabel.labelEntries[vehicleCostOrderNumber].vehicleCost != 0){
+            labels.add(new Label(predecessorLabel, vehicleCostOrderNumber, arcCost));
+            if ( vehicleCostOrderNumber == predecessorLabel.labelEntries.length-1)
                 break;
-            vehicleID++;
-
+            vehicleCostOrderNumber++;
         }
 
         // Creating labels based on a new vehicle in use.
-        if (predecessorLabel.arcTraversalCost[predecessorLabel.arcTraversalCost.length-1] == 0){
-            labels.add(new Label(predecessorLabel, vehicleID, arcCost));
+        if (predecessorLabel.labelEntries[predecessorLabel.labelEntries.length-1].vehicleCost == 0){
+            labels.add(new Label(predecessorLabel, vehicleCostOrderNumber, arcCost));
         }
     }
 
@@ -97,9 +91,9 @@ public class LabelPool {
     public boolean checkDominance(int i, int j){
         double firstLabelValue = 0;
 
-        for(int k = 0; k < labels.get(i).arcTraversalCost.length; k++){
-            firstLabelValue += deltaFunction(labels.get(i).arcTraversalCost.length,
-                    labels.get(j).arcTraversalCost.length);
+        for(int k = 0; k < labels.get(i).labelEntries.length; k++){
+            firstLabelValue += deltaFunction(labels.get(i).labelEntries[k].getTravelTimeValue(),
+                    labels.get(j).labelEntries[k].getTravelTimeValue());
         }
         firstLabelValue *= Parameters.initialOvertimePenalty;
         firstLabelValue += labels.get(i).cost;

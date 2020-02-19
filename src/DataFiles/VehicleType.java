@@ -2,6 +2,8 @@ package DataFiles;
 
 import DataFiles.Data;
 
+import javax.swing.text.StyleConstants;
+
 public class VehicleType {
 
     public int vehicleTypeID;
@@ -11,6 +13,8 @@ public class VehicleType {
     public int costPerDay;
     public int costPerKm;
 
+    public double loadingTimeAtDepot;
+
     public VehicleType( int capacity,  int costPerHour, int costPerHourOvertime,
                        int costPerDay, int costPerKm){
 
@@ -19,6 +23,10 @@ public class VehicleType {
         this.costPerHourOvertime = costPerHourOvertime;
         this.costPerDay = costPerDay;
         this.costPerKm = costPerKm;
+
+        this.loadingTimeAtDepot = Parameters.loadingTimeAtDepotConstant +
+                Parameters.loadaingTimeAtDepotVariable*capacity;
+
     }
 
     public void setVehicleTypeID(int vehicleTypeID){

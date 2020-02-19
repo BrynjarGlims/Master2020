@@ -3,8 +3,6 @@ import DataFiles.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.stream.DoubleStream;
 
 public class Label {
 
@@ -12,7 +10,7 @@ public class Label {
     public double[] arcTraversalCost;
     public double loadInfeasibility;
     public double timeWarpInfeasibility;
-    public Label parentNode;
+    public Label parentLabel;
     public double cost;
 
     //calculational value:
@@ -32,6 +30,10 @@ public class Label {
     public double[][] orderDistribution;  //period, customer
 
 
+    // LabelEntry
+
+    public LabelEntry[] labelEntries;
+
     //most likely not used
 
     //Intermediate values for calculation of cost
@@ -44,33 +46,33 @@ public class Label {
     //create non-first labels
     public Label(Label parentLabel, int vehicleIndex, double arcCost){
 
+
         //Information attributes
         this.periodID = parentLabel.periodID;
         this.vehicleTypeID = parentLabel.vehicleTypeID;
-        this.parentNode = parentLabel;
+        this.parentLabel = parentLabel;
         this.data = parentLabel.data;
         this.orderDistribution = parentLabel.orderDistribution;
+        this.tripNumber = parentLabel.tripNumber + 1;
+        this.listOfTrips = parentLabel.listOfTrips;
+
 
         // Cost of choosing arcs from the SPA
-        this.arcTraversalCost = parentLabel.arcTraversalCost.clone();
-        this.arcTraversalCost[vehicleIndex] += arcCost;
-        Arrays.sort(this.arcTraversalCost);
-        reverseOrderarcTrversalCost();
+        this.labelEntries = parentLabel.labelEntries.clone();
+        this.labelEntries[vehicleIndex].updateArcCost(arcCost, listOfTrips.get(tripNumber));
+        this.sortLabelEntries();
 
-
-
-        this.loadInfeasibility = parentLabel.loadInfeasibility;
-        this.timeWarpInfeasibility = parentLabel.timeWarpInfeasibility;
-
-        this.timeWarpValue = parentLabel.timeWarpValue;
-        this.listOfTrips = parentLabel.listOfTrips;
-        this.tripNumber = parentLabel.tripNumber + 1;
-        this.vehicleTravelingTimes = new double[Parameters.numberOfVehicles];
-        this.vehicleAssigment = (ArrayList<Integer>) parentLabel.vehicleAssigment.clone();
-        this.vehicleAssigment.add(vehicleIndex);
-
-        this.deriveCost();
+        this.deriveLabelCost();
     }
+
+
+    private void sortLabelEntries(){
+        Arrays.sort(labelEntries);
+        System.out.println("hei");
+    }
+
+
+
 
     private void reverseOrderarcTrversalCost(){
         double[] tempArray = new double[arcTraversalCost.length];
@@ -81,109 +83,94 @@ public class Label {
     }
 
 
+
+
     //create first label
     public Label(int numberOfVehicles, double arcCost, Data data,
                  ArrayList<ArrayList<Integer>> listOfTrips, int tripNumber, double[][] orderDistribution, int periodID,
                  int vehicleTypeID){
 
-        //generate first travel cost object
-        this.arcTraversalCost = new double[numberOfVehicles];
-        this.arcTraversalCost[0] = arcCost;
 
+
+        //information variables for each label
         this.vehicleTypeID = vehicleTypeID;
         this.periodID = periodID;
         this.data = data;
-
-        //assign first trip
-        this.vehicleAssigment = new ArrayList<Integer>();
-        this.vehicleAssigment.add(0);  // add vehicle id 0 to the chromosome
-        this.vehicleTravelingTimes = new double[Parameters.numberOfVehicles];
-
-
-        //initialization
-        this.loadInfeasibility = 0;
-        this.timeWarpInfeasibility = 0;
-
-        this.parentNode = null;
+        this.parentLabel = null;
         this.listOfTrips = listOfTrips;
         this.tripNumber = tripNumber;
         this.orderDistribution = orderDistribution;
 
-        this.travelValue = 0;
-        this.overtimeValue = 0;
-        this.loadValue = 0;
-        this.deriveCost();
+
+        //labelEntries generated
+        this.labelEntries = new LabelEntry[numberOfVehicles];
+        this.initializeLabelEntries(periodID, vehicleTypeID);
+        this.labelEntries[0].updateArcCost(arcCost, listOfTrips.get(tripNumber));
+
+        //derive cost
+        this.deriveLabelCost();
     }
 
-
-    public double[] getArcTraversalCost() {
-        return arcTraversalCost;
-    }
-
-    public void deriveCost() {
-        calculateTravelValue();  //must be used before calculateOvertimeValue
-        calculateOvertimeValue();
-        calculateLoadValue();
-        this.cost = travelValue + overtimeValue + loadValue;
-    }
-
-    public void calculateTravelValue(){ //implement this with overtime calculation
-
-
-        int lastCustomerID = -1;
-        int customerCounter = 0;
-        int tripCounter = 0;
-
-        for (ArrayList<Integer> trip : listOfTrips){
-            if (tripCounter > tripNumber){
-                break;
-            }
-            for(int customerID : trip){  //todo: add unloading and loading time at the depot
-                if (customerCounter == 0){
-                    vehicleTravelingTimes[vehicleAssigment.get(tripCounter)] +=
-                            data.distanceMatrix[data.numberOfCustomers][customerID];
-                    lastCustomerID = customerID;
-                    customerCounter++;
-                }
-                else if (customerCounter == trip.size()-1){
-                    vehicleTravelingTimes[vehicleAssigment.get(tripCounter)] +=
-                            data.distanceMatrix[customerID][data.numberOfCustomers];
-                }
-                else {
-                    vehicleTravelingTimes[vehicleAssigment.get(tripCounter)] +=
-                            data.distanceMatrix[lastCustomerID][customerID];
-                    lastCustomerID = customerID;
-                    customerCounter++;
-                }
-            }
-            tripCounter++;
+    private void initializeLabelEntries(int periodID, int vehicleTypeID){
+        for (int i = 0; i < this.labelEntries.length; i++){
+            this.labelEntries[i] = new LabelEntry(i, vehicleTypeID, periodID, data, orderDistribution);
         }
-        this.travelValue = DoubleStream.of(vehicleTravelingTimes).sum();
-
     }
 
 
-    public void calculateOvertimeValue(){
+    public void deriveLabelCost() {  //todo: implement for new structure
+        double fleetTravelTime = calculateTravelValue();  //must be used before calculateOvertimeValue
+        double fleetOvertime = calculateOvertimeValue();
+        double fleetOverLoad = calculateLoadValue();
+        double fleetTimeWarp = calculateTimeWarp();
+        this.cost = fleetTravelTime + fleetOvertime + fleetOverLoad + fleetTimeWarp;
+    }
 
-        for (double travelTime : vehicleTravelingTimes) {
-            overtimeValue += Math.max(0, travelTime - Parameters.maxJourneyDuration);
+    public double calculateTimeWarp(){
+        double fleetTimeWarpValue = 0;
+
+        for (LabelEntry labelEntry : this.labelEntries){
+            fleetTimeWarpValue += labelEntry.getTimeWarpInfeasibility();
         }
 
-        overtimeValue *= Parameters.initialOvertimePenalty;
+        return fleetTimeWarpValue;
     }
 
-    public void  calculateLoadValue(){
 
-        double tempQuantity = 0;
-        for (ArrayList<Integer> trip : listOfTrips){
-            for(int customerID : trip) {
-                tempQuantity += orderDistribution[periodID][customerID];
-            }
-            loadValue += Math.max(0 , tempQuantity - data.vehicleTypes[vehicleTypeID].capacity);
-            tempQuantity = 0;
+    public double calculateTravelValue(){ //implement this with overtime calculation
+
+        double fleetTravelTime = 0;
+
+        for (LabelEntry labelEntry : this.labelEntries){
+            fleetTravelTime += labelEntry.getTravelTimeValue();
         }
-        loadValue *= Parameters.initialCapacityPenalty;
-        loadInfeasibility = loadValue;
+
+        return fleetTravelTime;
+    }
+
+
+    public double calculateOvertimeValue(){
+
+        double fleetOvertime = 0;
+
+        for (LabelEntry labelEntry : this.labelEntries){
+            fleetOvertime += labelEntry.getOvertimeValue();
+        }
+
+        return fleetOvertime;
+
+    }
+
+    public double calculateLoadValue(){
+
+        double fleetOverloadValue = 0;
+
+        for (LabelEntry labelEntry : this.labelEntries){
+            fleetOverloadValue += labelEntry.getLoadInfeasibility();
+        }
+
+        return fleetOverloadValue;
+
     }
 
     public ArrayList<Integer> getVehicleAssignmentList(){
@@ -191,8 +178,16 @@ public class Label {
     }
 
 
+}
 
-
+/*
+public class SortByCost implements Comparator<LabelEntry> {
+    @Override
+    public int compare(LabelEntry e1, LabelEntry e2){
+        return e1.vehicleCost > e2.vehicleCost;
+    }
 
 
 }
+
+ */

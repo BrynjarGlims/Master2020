@@ -29,8 +29,9 @@ public class Parameters {
 
 
     //Penalty parameters for genetic algorithm
-    public static final int initialCapacityPenalty = 1;  // lambda
-    public static final int initialOvertimePenalty = 1;  // theta
+    public static final double initialCapacityPenalty = 1;  // lambda
+    public static final double initialOvertimePenalty = 1;  // theta
+    public static final double initialTimeWarpPenalty = 1;  // zeta
 
 
     //Period parameters
@@ -41,6 +42,10 @@ public class Parameters {
     public static final double maxJourneyDuration = 10; //changed to journey duration
 
 
+    //TEMPORARY PARAMTERS
+    public static final double loadingTimeAtDepotConstant = 0.3;
+    public static final double loadaingTimeAtDepotVariable = 0.01;
 
-
+    public static final double scalingUnloadingTimeAtCustomerConstant = 0.3;
+    public static final double scalingUnloadingTimeAtCustomerVariable = 0.01;
 }
