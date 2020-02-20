@@ -37,9 +37,6 @@ public class Population {
     }
 
 
-
-
-
     public ArrayList<Individual> getFeasiblePopulation() {
         return feasiblePopulation;
     }
@@ -48,7 +45,22 @@ public class Population {
         return infeasiblePopulation;
     }
 
+    public int getTotalPopulationSize() {
+        return totalPopulationSize;
+    }
+
+    public int getSizeOfInfeasiblePopulation() {
+        int sizeOfInfeasiblePopulation = 50;
+        return sizeOfInfeasiblePopulation;
+    }
+
+    public int getSizeOfFeasiblePopulation() {
+        int sizeOfFeasiblePopulation = 50;
+        return sizeOfFeasiblePopulation;
+    }
+
     public int getIterationsWithoutImprovement(){
         return iterationsWithoutImprovement;
     }
+
 }
