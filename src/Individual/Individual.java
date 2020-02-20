@@ -1,5 +1,6 @@
 package Individual;
 import DataFiles.*;
+import Population.Population;
 import ProductAllocation.OrderDistribution;
 
 import java.util.ArrayList;
@@ -26,8 +27,7 @@ public class Individual {
     public ArrayList<ArrayList<Integer>>[][] matrixOfTrips;
     public ArrayList<Double>[][] matrixOfTripCosts;
     public Label[][] bestLabels;
-
-
+    public Population Population;
 
 
     public Individual(Data data, OrderDistribution orderDistribution) {
@@ -231,6 +231,46 @@ public class Individual {
         }
         return splits;
 
+    }
+
+    public int getRankOfIndividual() {
+        int rank = 0; //TODO: implement rank calculations
+        return rank;
+    }
+
+    public double getIndividualBiasedFitnessScore() {
+        double fitness = 0.0; //TODO: implement fitness calculations
+        //calculate biased fitness element
+        int nbIndividuals = 0;
+        if (this.isFeasible()) {
+            nbIndividuals = Population.getSizeOfFeasiblePopulation();
+        }
+        else if (!this.isFeasible()) {
+            nbIndividuals = Population.getSizeOfInfeasiblePopulation();
+        }
+        double biasedfitness = (1 - (Parameters.numberOfEliteIndividuals/nbIndividuals)*getRankOfIndividual());
+        double fitnessScore = fitness + biasedfitness;
+
+        /*
+        //Use the following code if we do not operate two subpopulations: infeasible and feasible individuals
+        double P = 0;
+        if (isFeasible()) {
+            P = 1;
+        } else {
+
+            if (this.infeasibilityOvertimeValue > 0 && this.infeasibilityOverCapacityValue >0 && this.infeasibilityTimeWarpValue >0) {
+                P = 3;
+            }
+            else if ((this.infeasibilityOverCapacityValue > 0 && this.infeasibilityTimeWarpValue > 0) || (this.infeasibilityOverCapacityValue > 0 && this.infeasibilityOvertimeValue > 0) || (this.infeasibilityTimeWarpValue > 0 && this.infeasibilityOvertimeValue > 0) ) {
+                P = 2;
+            }
+            else if (this.infeasibilityOvertimeValue > 0 || this.infeasibilityTimeWarpValue > 0 || this.infeasibilityOverCapacityValue > 0) {
+                P = 1;
+            }
+        fitnessScore *= P;
+        }
+         */
+        return fitnessScore;
     }
 
 

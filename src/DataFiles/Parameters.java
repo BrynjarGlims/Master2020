@@ -18,6 +18,8 @@ public class Parameters {
     //Decision parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
+    public static final int numberOfEliteIndividuals = 50; //TODO: find reasonable value
+    public static final int  maxPopulationSize = 100; //TODO: find reasonable value
 
     //Loading data parameters
     public static final int numberOfCustomers = 50;
