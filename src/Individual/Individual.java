@@ -4,6 +4,7 @@ import ProductAllocation.OrderDistribution;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -214,7 +215,7 @@ public class Individual {
                 labelingAlgorithm(p, vt, matrixOfTrips[p][vt], matrixOfTripCosts[p][vt]);   // Sets bestLabel.
                 //// TODO: 18.02.2020 Implement an improved split procedure that reorders customers
                 //Set vehicleAssignment
-                vehicleAssigment.setChromosome(bestLabels[p][vt].getVehicleAssignmentList(), p, vt);
+                vehicleAssigment.setChromosome(this.bestLabels[p][vt].getVehicleAssignmentChromosome(), p , vt);
                 //Set giantTourSplit
                 giantTourSplit.setChromosome(createSplitChromosome(matrixOfTrips[p][vt]), p, vt);
             }
@@ -240,6 +241,7 @@ public class Individual {
         od.makeDistribution();
         Individual individual = new Individual(data, od);
         individual.adSplit();
+        System.out.println("hei");
 
         //todo: implement
         individual.giantTour.toString();

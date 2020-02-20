@@ -3,6 +3,7 @@ import DataFiles.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class Label {
 
@@ -34,14 +35,6 @@ public class Label {
 
     public LabelEntry[] labelEntries;
 
-    //most likely not used
-
-    //Intermediate values for calculation of cost
-    public double[] vehicleTravelingTimes;
-    public double travelValue;
-    public double overtimeValue;
-    public double loadValue;
-    public double timeWarpValue;
 
     //create non-first labels
     public Label(Label parentLabel, int vehicleIndex, double arcCost){
@@ -173,8 +166,20 @@ public class Label {
 
     }
 
-    public ArrayList<Integer> getVehicleAssignmentList(){
-        return vehicleAssigment;
+
+
+    public HashMap<Integer, Integer> getVehicleAssignmentChromosome(){
+        //number of trips could be calculated here if needed
+
+        HashMap<Integer, Integer> vehicleAssignment = new HashMap<Integer, Integer>();
+        for (LabelEntry labelEntry : labelEntries) {
+            for (ArrayList<Integer> customerList : labelEntry.tripAssigment){
+                for (int customerID : customerList) {
+                    vehicleAssignment.put(customerID, labelEntry.vehicleNumber);
+                }
+           }
+        }
+        return vehicleAssignment;
     }
 
 

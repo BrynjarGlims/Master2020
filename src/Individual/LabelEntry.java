@@ -38,7 +38,6 @@ public class LabelEntry implements Comparable<LabelEntry> {
         //data loading
         this.data = data;
         this.orderDistribution = orderDistribution;
-
         this.vehicleNumber = vehicleNumber;
         this.accumulatedTravelCost = 0;
         this.tripAssigment = new ArrayList<ArrayList<Integer>>();
@@ -170,7 +169,7 @@ public class LabelEntry implements Comparable<LabelEntry> {
 
     @Override
     public int compareTo(LabelEntry labelEntry) {
-        if ((this.vehicleCost - labelEntry.vehicleCost) > 0 ) {
+        if ((this.vehicleCost - labelEntry.vehicleCost) < 0 ) {
             return 1;
         } else {
             return -1;
