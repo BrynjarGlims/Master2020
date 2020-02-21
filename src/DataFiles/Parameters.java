@@ -22,8 +22,8 @@ public class Parameters {
     public static final int  maxPopulationSize = 100; //TODO: find reasonable value
 
     //Loading data parameters
-    public static final int numberOfCustomers = 50;
-    public static final int numberOfVehicles = 50;
+    public static final int numberOfCustomers = 10;
+    public static final int numberOfVehicles = 5;
 
 
     //Traveling parameters
@@ -37,7 +37,7 @@ public class Parameters {
 
 
     //Period parameters
-    public static final int[] overtimeLimit = {100, 100, 100, 100, 100, 100};
+    public static final int[] overtimeLimit = {100, 100, 100, 100, 100, 100};  //needs to be equal to number of periods in length
     public static final int[] overtimeCost = {100, 100, 100, 100, 100, 100};
 
     //Time parameters
@@ -50,4 +50,11 @@ public class Parameters {
 
     public static final double scalingUnloadingTimeAtCustomerConstant = 0.3;
     public static final double scalingUnloadingTimeAtCustomerVariable = 0.01;
+
+
+    //GUROBI PARAMETERS
+    public static final double modelTimeLimit = 10000;
+    public static final double modelMipGap = 0.0001;
+    public static final boolean plotArcFlow = false;
+    public static final String instanceName = "testDataFromAsko";
 }

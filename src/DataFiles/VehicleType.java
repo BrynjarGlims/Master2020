@@ -12,6 +12,8 @@ public class VehicleType {
     public int costPerHourOvertime;
     public int costPerDay;
     public int costPerKm;
+    public int travelCost;
+    public int usageCost;
 
     public double loadingTimeAtDepot;
 
@@ -27,6 +29,8 @@ public class VehicleType {
         this.loadingTimeAtDepot = Parameters.loadingTimeAtDepotConstant +
                 Parameters.loadaingTimeAtDepotVariable*capacity;
 
+        this.travelCost = costPerHour + costPerKm; //todo: implement a better way to determine this
+        this.usageCost = costPerDay*6; //todo: implement a better way to determine this
     }
 
     public void setVehicleTypeID(int vehicleTypeID){
@@ -37,18 +41,3 @@ public class VehicleType {
 
 }
 
-
-/* Old vehicleType class
-public class VehicleType {
-
-    public Integer[][] customerAndPeriodToVehicleType;
-    private Data data;
-
-    public VehicleType(Data data){
-        this.data = data;
-
-    }
-
-}
-
- */

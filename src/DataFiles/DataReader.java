@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.HashMap;
 
 public class DataReader {
@@ -236,7 +235,7 @@ public class DataReader {
     public static Customer[] removeInvalidNonDivOrderCombination(Customer[] customers){
         List<Integer> indexes = new ArrayList<Integer>() ;
         for (int i = 0; i < customers.length; i++){
-            if (customers[i].numberOfNonDividableProducts > customers[i].numberOfVisitPeriods){
+            if (customers[i].numberOfNonDividableOrders > customers[i].numberOfVisitPeriods){
                 indexes.add(i);
             }
         }

@@ -35,7 +35,7 @@ public class OrderDistribution {
         for (Customer c : data.customers) {
             int[] visitDaysCopy = new int[c.requiredVisitPeriod.length];
             System.arraycopy(c.requiredVisitPeriod, 0, visitDaysCopy, 0, c.requiredVisitPeriod.length);
-            for (Order o : c.nonDividableProducts) {
+            for (Order o : c.nonDividableOrders) {
                 int chosenPeriod = getMinimumPeriod(visitDaysCopy);
                 updateFields(o, chosenPeriod, o.volume);
                 visitDaysCopy[chosenPeriod] = 0;
@@ -45,7 +45,7 @@ public class OrderDistribution {
 
     private void distributeDividables() {
         for (Customer c : data.customers) {
-            for (Order o : c.dividableProducts) {
+            for (Order o : c.dividableOrders) {
                 splitDelivery(o);
             }
         }

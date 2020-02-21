@@ -12,10 +12,10 @@ public class Customer {
     public int customerNumber; //customer code, DL
     public String customerName; // kundenavn
     public Order[] orders;
-    public Order[] dividableProducts;
-    public Order[] nonDividableProducts;
-    public int numberOfDividableProducts = 0;
-    public int numberOfNonDividableProducts = 0;
+    public Order[] dividableOrders;
+    public Order[] nonDividableOrders;
+    public int numberOfDividableOrders = 0;
+    public int numberOfNonDividableOrders = 0;
     public double[][] timeWindow;// interval for when customer can receive, [day][start, end]
     public int[] requiredVisitPeriod;    // 1 if visit required, 0 if not
     public int numberOfVisitPeriods;
@@ -65,15 +65,15 @@ public class Customer {
         for (Order p : orders){
             if (p.isDividable) {
                 dividable.add(p);
-                this.numberOfDividableProducts++;
+                this.numberOfDividableOrders++;
 
             } else {
                 nonDividable.add(p);
-                this.numberOfNonDividableProducts++;
+                this.numberOfNonDividableOrders++;
             }
         }
-        dividableProducts = dividable.toArray(Order[]::new);
-        nonDividableProducts = nonDividable.toArray(Order[]::new);
+        dividableOrders = dividable.toArray(Order[]::new);
+        nonDividableOrders = nonDividable.toArray(Order[]::new);
     }
 
     public void setTimeWindow(double[][] timeWindow){

@@ -1,6 +1,8 @@
 package DataFiles;
 
 
+import gurobi.GRBVar;
+
 public class Data {
 
     public Customer[] customers;
@@ -8,11 +10,16 @@ public class Data {
     public Depot depot;
     public VehicleType[] vehicleTypes;  // todo: initialize
 
-    public int numberOfPeriods;
+    public int numberOfPeriods = Parameters.numberOfPeriods;
+    public int numberOfTrips = Parameters.numberOfTrips;
     public int numberOfDeliveries;
     public int numberOfCustomers = Parameters.numberOfCustomers;
     public int numberOfVehicles = Parameters.numberOfVehicles;
+    public int numberOfNodes = Parameters.numberOfCustomers + 2;
 
+
+    //Gurobi spesific variables
+    public GRBVar[][][][][] arcs;
 
     public double totalVolume;
     public double targetVolume;
@@ -37,7 +44,7 @@ public class Data {
     }
 
     private void initialize(){
-        this.setNumPeriods();
+
         this.setTargetVolume();
         this.setDistanceMatrix();
         this.setDerivedParameters();
@@ -52,18 +59,18 @@ public class Data {
     }
 
     private void setDistanceMatrix() {
-        distanceMatrix = new double[customers.length + 1][customers.length + 1];
-        for (int i = 0; i < customers.length+1; i++){
-            for (int j = 0; j < customers.length+1; j++){
-                if (i == customers.length && j == customers.length){
+        distanceMatrix = new double[numberOfNodes][numberOfNodes];
+        for (int i = 0; i < numberOfNodes; i++){
+            for (int j = 0; j < numberOfNodes; j++){
+                if ((i == customers.length || i == customers.length +1) &&
+                        (j == customers.length || j == customers.length + 1)){
                     distanceMatrix[i][j] = 0;
-
                 }
-                else if (i == customers.length) {
+                else if (i == customers.length || i == customers.length +1) {
                     distanceMatrix[i][j] = euclideanDistance(depot.xCoordinate, depot.yCoordinate
                             , customers[j].xCoordinate, customers[j].yCoordinate)*Parameters.scalingDistanceParameter;
                 }
-                else if (j == customers.length){
+                else if (j == customers.length || j == customers.length + 1){
                         distanceMatrix[i][j] = euclideanDistance(customers[i].xCoordinate, customers[i].yCoordinate,
                                 depot.xCoordinate, depot.yCoordinate)*Parameters.scalingDistanceParameter;
                 }
@@ -81,13 +88,6 @@ public class Data {
                 Math.pow((formCustomerYCor - toCustomerYCor), 2));
     }
 
-
-
-
-
-    private void setNumPeriods(){
-        numberOfPeriods = customers[0].timeWindow.length;
-    }
 
     private void setTargetVolume(){
         double totalVolume = 0;
