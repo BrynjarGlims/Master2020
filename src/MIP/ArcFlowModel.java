@@ -59,7 +59,20 @@ public class ArcFlowModel {
 
 
     public void initializeParameters() throws GRBException {
+        createParameters();
+        initializeXVariables();
+        initializeYVariables();
+        initializeZVariables();
+        initializeKVariables();
+        initializeUVariables();
+        initializeQVariables();
+        initializeTVariables();
+        initializeQOVariables();
 
+    }
+
+
+    public void createParameters() {
         this.x = new GRBVar[data.numberOfPeriods][data.numberOfVehicles][data.numberOfTrips][data.numberOfNodes][data.numberOfNodes];
         this.y = new GRBVar[data.numberOfPeriods][data.numberOfVehicles][data.numberOfTrips][data.numberOfCustomers];
         this.z = new GRBVar[data.numberOfPeriods][data.numberOfVehicles][data.numberOfTrips];
@@ -70,8 +83,6 @@ public class ArcFlowModel {
         this.qND = new GRBVar[data.numberOfPeriods][data.numberOfVehicles][data.numberOfTrips][data.numberOfCustomers][];
         this.t = new GRBVar[data.numberOfPeriods][data.numberOfVehicles][data.numberOfTrips][data.numberOfNodes];
         this.qO = new GRBVar[data.numberOfPeriods];
-
-
 
         for (int period = 0; period < data.numberOfPeriods; period++) {
             for (int customerID = 0; customerID < data.numberOfCustomers; customerID++) {
@@ -90,8 +101,11 @@ public class ArcFlowModel {
                 }
             }
         }
+    }
 
+    public void initializeXVariables() throws GRBException {
 
+        //Create x variables
         for (int d = 0; d < data.numberOfPeriods; d++) {
             for (int v = 0; v < data.numberOfVehicles; v++) {
                 for (int r = 0; r < data.numberOfTrips; r++) {
@@ -107,9 +121,12 @@ public class ArcFlowModel {
             }
         }
 
+
         //store in data files
         data.arcs = this.x;
+    }
 
+    public void initializeYVariables() throws GRBException {
         // Create y variables:
         for (int d = 0; d < data.numberOfPeriods; d++) {
             for (int v = 0; v < data.numberOfVehicles; v++) {
@@ -121,7 +138,9 @@ public class ArcFlowModel {
                 }
             }
         }
+    }
 
+    public void initializeZVariables() throws GRBException {
         // Create z variables:
         for (int d = 0; d < data.numberOfPeriods; d++) {
             for (int v = 0; v < data.numberOfVehicles; v++) {
@@ -131,13 +150,18 @@ public class ArcFlowModel {
                 }
             }
         }
+    }
+
+    public void initializeKVariables() throws GRBException {
 
         // Create k variables:
         for (int v = 0; v < data.numberOfVehicles; v++) {
             String variable_name = String.format("v[%d]", v);
             k[v] = model.addVar(0.0, 1.0, data.vehicles[v].vehicleType.usageCost, GRB.BINARY, variable_name);
         }
+    }
 
+    public void initializeUVariables() throws GRBException {
 
         // Create uND variables:
         for (int d = 0; d < data.numberOfPeriods; d++) {
@@ -158,6 +182,9 @@ public class ArcFlowModel {
                 }
             }
         }
+    }
+
+    public void initializeQVariables() throws GRBException {
 
         //Create qND variables
         for (int d = 0; d < data.numberOfPeriods; d++) {
@@ -166,7 +193,7 @@ public class ArcFlowModel {
                     for (int i = 0; i < data.numberOfCustomers; i++) {
                         for (int m = 0; m < data.customers[i].numberOfNonDividableOrders; m++) {
                             String variable_name = String.format("q[%d][%d][%d][%d][%d]", d, v, r, i, m);
-                            qND[d][v][r][i][m] = model.addVar(0.0, Parameters.upperBoundQuantity , 0, GRB.CONTINUOUS, variable_name);
+                            qND[d][v][r][i][m] = model.addVar(0.0, Parameters.upperBoundQuantity, 0, GRB.CONTINUOUS, variable_name);
                             //todo: set upper bound quantity correctly
                         }
                     }
@@ -174,20 +201,6 @@ public class ArcFlowModel {
             }
         }
 
-        //Create qND variables
-        for (int d = 0; d < data.numberOfPeriods; d++) {
-            for (int v = 0; v < data.numberOfVehicles; v++) {
-                for (int r = 0; r < data.numberOfTrips; r++) {
-                    for (int i = 0; i < data.numberOfCustomers; i++) {
-                        for (int m = 0; m < data.customers[i].numberOfNonDividableOrders; m++) {
-                            String variable_name = String.format("q[%d][%d][%d][%d][%d]", d, v, r, i, m);
-                            qND[d][v][r][i][m] = model.addVar(0.0,Parameters.upperBoundQuantity , 0, GRB.CONTINUOUS, variable_name);
-                            //todo: set upper bound quantity correctly
-                        }
-                    }
-                }
-            }
-        }
 
         //Create qD variables
         for (int d = 0; d < data.numberOfPeriods; d++) {
@@ -196,14 +209,16 @@ public class ArcFlowModel {
                     for (int i = 0; i < data.numberOfCustomers; i++) {
                         for (int m = 0; m < data.customers[i].numberOfDividableOrders; m++) {
                             String variable_name = String.format("q[%d][%d][%d][%d][%d]", d, v, r, i, m);
-                            qD[d][v][r][i][m] = model.addVar(0.0,Parameters.upperBoundQuantity , 0, GRB.CONTINUOUS, variable_name);
+                            qD[d][v][r][i][m] = model.addVar(0.0, Parameters.upperBoundQuantity, 0, GRB.CONTINUOUS, variable_name);
                             //todo: set upper bound quantity correctly
                         }
                     }
                 }
             }
         }
+    }
 
+    public void initializeTVariables() throws GRBException {
 
         //Create t variables
         for (int d = 0; d < data.numberOfPeriods; d++) {
@@ -223,12 +238,17 @@ public class ArcFlowModel {
                 }
             }
         }
+    }
+
+    public void initializeQOVariables() throws GRBException {
 
         //Create qO (overtime) variables
         for (int d = 0; d < data.numberOfPeriods; d++) {
             String variable_name = String.format("qO[%d]", d);
             qO[d] = model.addVar(0.0, Parameters.upperBoundOvertime, Parameters.overtimeCost[d], GRB.CONTINUOUS, variable_name);
         }
+
+
     }
 
     public void setObjective() throws GRBException {
@@ -270,7 +290,7 @@ public class ArcFlowModel {
         env.dispose();
     }
 
-    public void constraint53() throws GRBException {
+    public void timeBetweenCustomers() throws GRBException {
         // Constraint 5.9 - linear:
         // If a car drives from i to j, then customer i is visited and unloaded at.
         for (int d = 0; d < data.numberOfPeriods; d++) {
@@ -284,14 +304,18 @@ public class ArcFlowModel {
                             lhs.addTerm(1, t[d][v][r][i]);
                             lhs.addTerm(-1, t[d][v][r][j]);
                             String constraint_name = String.format("5.9 -Time between customer %d and " +
-                                    "customer %d for vehicle %d, trip %d, period %d. Travel time: %f, Fixed unloading time: %f.", i, j, v, r, d, data.distanceMatrix[i][j], data.customers[i].totalUnloadingTime, Parameters.maxJourneyDuration);
+                                    "customer %d for vehicle %d, trip %d, period %d. Travel time: %f, Fixed unloading time: %f.",
+                                    i, j, v, r, d, data.distanceMatrix[i][j], data.customers[i].totalUnloadingTime, Parameters.maxJourneyDuration);
                             if (j == data.numberOfCustomers+1) {
-                                lhs.addTerm( data.customers[i].timeWindow[d][1] + data.distanceMatrix[i][data.numberOfCustomers+1] + data.customers[i].totalUnloadingTime, x[d][v][r][i][j]);
+                                lhs.addTerm( data.customers[i].timeWindow[d][1] + data.distanceMatrix[i][data.numberOfCustomers+1]
+                                        + data.customers[i].totalUnloadingTime, x[d][v][r][i][j]);
                                 model.addConstr(lhs, GRB.LESS_EQUAL, data.customers[i].timeWindow[d][1], constraint_name);
                             }
                             else {
-                                lhs.addTerm( data.customers[i].timeWindow[d][1] + data.distanceMatrix[i][j] + data.customers[i].totalUnloadingTime - data.customers[j].timeWindow[d][0], x[d][v][r][i][j]);
-                                model.addConstr(lhs, GRB.LESS_EQUAL, data.customers[i].timeWindow[d][1] - data.customers[i].timeWindow[d][0], constraint_name);
+                                lhs.addTerm( data.customers[i].timeWindow[d][1] + data.distanceMatrix[i][j] +
+                                        data.customers[i].totalUnloadingTime - data.customers[j].timeWindow[d][0], x[d][v][r][i][j]);
+                                model.addConstr(lhs, GRB.LESS_EQUAL, data.customers[i].timeWindow[d][1] -
+                                        data.customers[i].timeWindow[d][0], constraint_name);
                             }
                         }
                     }
@@ -300,7 +324,7 @@ public class ArcFlowModel {
         }
     }
 
-    public void constraint54() throws GRBException {
+    public void timeFromCustomerToDepot() throws GRBException {
         // Constraint 5.10:
         // If a car drives from depot to customer i
         for (int d = 0; d < data.numberOfPeriods; d++) {
@@ -328,7 +352,7 @@ public class ArcFlowModel {
         }
     }
 
-    public void constraint55() throws GRBException {
+    public void timeLoadingAtDepot() throws GRBException {
         // Constraint 5.11:
         // The trip constraint
         for (int d = 0; d < data.numberOfPeriods; d++) {
@@ -345,7 +369,7 @@ public class ArcFlowModel {
         }
     }
 
-    public void constraint57() throws GRBException {
+    public void capacityVehicle() throws GRBException {
         for (int d = 0; d < data.numberOfPeriods; d++) {
             for (int v = 0; v < data.numberOfVehicles; v++) {
                 for (int r = 0; r < data.numberOfTrips; r++) {
@@ -368,7 +392,7 @@ public class ArcFlowModel {
         }
     }
 
-    public void constraint58() throws GRBException {
+    public void capacityOvertimeAtDepot() throws GRBException {
         // Constraint 5.4: Overtime constraint at the warehouse if the goods delivered is higher
         // than the overtime limit
         for (int d = 0; d < data.numberOfPeriods; d++) {
@@ -394,7 +418,7 @@ public class ArcFlowModel {
     }
 
 
-    public void constraint59() throws GRBException {
+    public void capacityUseOfVehicle() throws GRBException {
         // Constraint 5.17
         // If vehicle visits a customer in the planing period, its considered used
         for (int d = 0; d < data.numberOfPeriods; d++) {
@@ -411,7 +435,7 @@ public class ArcFlowModel {
     }
 
 
-    public void constraint510() throws GRBException {
+    public void flowEnforceStartAtDepot() throws GRBException {
         //  Constraint 5.13
         // All trips must start at the depot
         for (int d = 0; d < data.numberOfPeriods; d++) {
@@ -429,7 +453,7 @@ public class ArcFlowModel {
         }
 
     }
-    public void constraint511() throws GRBException {
+    public void flowEnforceEndAtDepot() throws GRBException {
         //  Constraint 5.14
         // All trips must end at the depot
         for (int d = 0; d < data.numberOfPeriods; d++) {
@@ -448,7 +472,7 @@ public class ArcFlowModel {
     }
 
 
-    public void constraint512() throws GRBException {
+    public void flowEnteringNodeBalance() throws GRBException {
         //  Constraint 5.15
         //  If a vehicle enters an node, then the node is visited
         for (int d = 0; d < data.numberOfPeriods; d++) {
@@ -469,7 +493,7 @@ public class ArcFlowModel {
         }
     }
 
-    public void constraint513() throws GRBException {
+    public void flowExitingNodeBalance() throws GRBException {
         //  Constraint 5.16
         // If a vehicle exits an node, then the node is visited.
         for (int d = 0; d < data.numberOfPeriods; d++) {
@@ -490,7 +514,7 @@ public class ArcFlowModel {
         }
     }
 
-    public void constraint514() throws GRBException {
+    public void flowAllowableVisitPeriods() throws GRBException {
         // Constraint 5.18
         // Allowable visits to customer on spesific day
         for (int d = 0; d < data.numberOfPeriods; d++) {
@@ -508,7 +532,7 @@ public class ArcFlowModel {
     }
 
 
-    public void constraint515() throws GRBException {
+    public void flowPrecedenceOfTrips() throws GRBException {
         // Constraint 5.19
         // Presedence constriant of trips
         for (int d = 0; d < data.numberOfPeriods; d++) {
@@ -524,7 +548,7 @@ public class ArcFlowModel {
         }
     }
 
-    public void constraint516() throws GRBException {
+    public void flowDeliveryVisitRequirement() throws GRBException {
         // Constraint 5.20
         // No trip, no delivery
         for (int d = 0; d < data.numberOfPeriods; d++) {
@@ -542,7 +566,7 @@ public class ArcFlowModel {
         }
     }
 
-    public void constraint517() throws GRBException {
+    public void flowDeliveryQuantityRestriction() throws GRBException {
         for (int d = 0; d < data.numberOfPeriods; d++) {
             for (int v = 0; v < data.numberOfVehicles; v++) {
                 for (int r = 0; r < data.numberOfTrips; r++) {
@@ -566,7 +590,7 @@ public class ArcFlowModel {
         }
     }
 
-    public void constraint518() throws GRBException {
+    public void quantityNonDividableDelivery() throws GRBException {
         // Constraint 5.5: If one choose to deliver a non-div good, than a certain Q must be delivered
         // than the overtime limit
         for (int d = 0; d < data.numberOfPeriods; d++) {
@@ -589,7 +613,7 @@ public class ArcFlowModel {
 
 
 
-    public void constraint519() throws GRBException {
+    public void quantityDividableBounds() throws GRBException {
         // Constraint 5.7 a): Lower bound for delivery for div product.
         for (int d = 0; d < data.numberOfPeriods; d++) {
             for (int i = 0; i < data.numberOfCustomers; i++) {
@@ -632,7 +656,7 @@ public class ArcFlowModel {
     }
 
 
-    public void constraint520() throws GRBException {
+    public void quantityTotalDemandDelivered() throws GRBException {
         // Constraint 5.8: Demand of every product must be satisfied in the planning horizon
         for (int i = 0; i < data.numberOfCustomers; i++) {
             for (int m = 0; m < data.customers[i].numberOfDividableOrders; m++) {
@@ -652,7 +676,7 @@ public class ArcFlowModel {
         }
     }
 
-    public void constraint521() throws GRBException {
+    public void quantitySingleDeliveryOfNonDivCommodity() throws GRBException {
         // Constraint 5.21: Only one non-div product is delivered to the store. // TODO: 23.11.2019 Change numbering to correct
         for (int d = 0; d < data.numberOfPeriods; d++) {
             for (int i = 0; i < data.numberOfCustomers; i++) {
@@ -667,7 +691,7 @@ public class ArcFlowModel {
         }
     }
 
-    public void constraint522() throws GRBException {
+    public void quantityDeliveryRequirementNonDivCommodity() throws GRBException {
         // Constraint 5.21
         // Non-dividable good has to be delivered during t
 
@@ -683,7 +707,7 @@ public class ArcFlowModel {
         }
     }
 
-    public void constraint523() throws GRBException {
+    public void quantityMinFrequencyDivCommodity() throws GRBException {
         // Constraint 5.22
         // Dividable good has to be delivered at least above the minimum frequenzy
         for (int i = 0; i < data.numberOfCustomers; i++) {
@@ -699,7 +723,7 @@ public class ArcFlowModel {
         }
     }
 
-    public void constraint524() throws GRBException {
+    public void quantityMaxFrequencyDivCommodity() throws GRBException {
         // Constraint 5.23
         // Dividable good has to be delivered at most the maximum number of times
 
@@ -845,31 +869,36 @@ public class ArcFlowModel {
     public void activateConstraints(String symmetry) throws GRBException {
         // -------- Add constraints -------------
         // 5.2 is implemented in variable declaration
-
-        // TODO: 21/02/2020 CHANGE CONSTRAINT NAME TO SOMETHING REASONABLE
-        constraint53();
-        constraint54();
-        constraint55();
-
         // 5.6 is implemented in variable declaration
-        constraint57();
-        constraint58();
-        constraint59();
-        constraint510();
-        constraint511();
-        constraint512();
-        constraint513();
-        constraint514();
-        constraint515();
-        constraint516();
-        constraint517();
-        constraint518();
-        constraint519();
-        constraint520();
-        constraint521();
-        constraint522();
-        constraint523();
-        constraint524();
+
+        //timeConstraints
+        timeBetweenCustomers();
+        timeFromCustomerToDepot();
+        timeLoadingAtDepot();
+
+        //capacityConstraint
+        capacityVehicle();
+        capacityOvertimeAtDepot();
+        capacityUseOfVehicle();
+
+        //flowConstraints
+        flowEnforceStartAtDepot();
+        flowEnforceEndAtDepot();
+        flowEnteringNodeBalance();
+        flowExitingNodeBalance();
+        flowAllowableVisitPeriods();
+        flowPrecedenceOfTrips();
+        flowDeliveryVisitRequirement();
+        flowDeliveryQuantityRestriction();
+
+        //quantityConstraints
+        quantityNonDividableDelivery();
+        quantityDividableBounds();
+        quantityTotalDemandDelivered();
+        quantitySingleDeliveryOfNonDivCommodity();
+        quantityDeliveryRequirementNonDivCommodity();
+        quantityMinFrequencyDivCommodity();
+        quantityMaxFrequencyDivCommodity();
 
         //Fixation of variables
         fixation1();

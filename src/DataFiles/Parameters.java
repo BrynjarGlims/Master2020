@@ -22,12 +22,12 @@ public class Parameters {
     public static final int  maxPopulationSize = 100; //TODO: find reasonable value
 
     //Loading data parameters
-    public static final int numberOfCustomers = 10;
+    public static final int numberOfCustomers = 24;
     public static final int numberOfVehicles = 5;
 
 
     //Traveling parameters
-    public static final double scalingDistanceParameter = 10;
+    public static final double scalingDistanceParameter = 1;
 
 
     //Penalty parameters for genetic algorithm
@@ -45,11 +45,11 @@ public class Parameters {
 
 
     //TEMPORARY PARAMTERS
-    public static final double loadingTimeAtDepotConstant = 0.3;
-    public static final double loadaingTimeAtDepotVariable = 0.01;
+    public static final double loadingTimeAtDepotConstant = 0.03;
+    public static final double loadaingTimeAtDepotVariable = 0.001;
 
-    public static final double scalingUnloadingTimeAtCustomerConstant = 0.3;
-    public static final double scalingUnloadingTimeAtCustomerVariable = 0.01;
+    public static final double scalingUnloadingTimeAtCustomerConstant = 0.03;
+    public static final double scalingUnloadingTimeAtCustomerVariable = 0.001;
 
 
     //GUROBI PARAMETERS
