@@ -215,12 +215,31 @@ public class Individual {
                 labelingAlgorithm(p, vt, matrixOfTrips[p][vt], matrixOfTripCosts[p][vt]);   // Sets bestLabel.
                 //// TODO: 18.02.2020 Implement an improved split procedure that reorders customers
                 //Set vehicleAssignment
-                vehicleAssigment.setChromosome(this.bestLabels[p][vt].getVehicleAssignmentChromosome(), p , vt);
+
                 //Set giantTourSplit
                 giantTourSplit.setChromosome(createSplitChromosome(matrixOfTrips[p][vt]), p, vt);
             }
+            vehicleAssigment.setChromosome(getVehicleAssignmentChromosome(p), p);
         }
     }
+
+    public HashMap<Integer, Integer> getVehicleAssignmentChromosome(int p){
+        HashMap<Integer, Integer> hashMap = new HashMap<Integer, Integer>();
+        for (int vt  = 0; vt < data.numberOfVehicleTypes; vt++){
+            if (giantTour.chromosome[p][vt].size()==0 ) {
+                continue;
+            }
+            for (LabelEntry labelEntry : this.bestLabels[p][vt].labelEntries) {
+                for (ArrayList<Integer> customerList : labelEntry.tripAssigment){
+                    for (int customerID : customerList) {
+                        hashMap.put(customerID, labelEntry.vehicleID);  // TODO: 24.02.2020 Change to correct vehicle id
+                    }
+                }
+            }
+        }
+        return hashMap;
+    }
+
 
     public ArrayList<Integer> createSplitChromosome(ArrayList<ArrayList<Integer>> customerSequence){
         ArrayList<Integer> splits = new ArrayList<>();
@@ -281,7 +300,6 @@ public class Individual {
         od.makeDistribution();
         Individual individual = new Individual(data, od);
         individual.adSplit();
-        System.out.println("hei");
 
         //todo: implement
         individual.giantTour.toString();

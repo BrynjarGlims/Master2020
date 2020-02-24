@@ -4,13 +4,12 @@ import DataFiles.Data;
 
 import java.util.ArrayList;
 import DataFiles.*;
-import ProductAllocation.OrderDistribution;
 
 
 public class LabelEntry implements Comparable<LabelEntry> {
 
     //Lable values
-    public int vehicleNumber;
+    public int vehicleID;
     public int accumulatedTravelCost;
     public ArrayList<ArrayList<Integer>> tripAssigment;
 
@@ -34,11 +33,11 @@ public class LabelEntry implements Comparable<LabelEntry> {
 
 
 
-    public LabelEntry(int vehicleNumber, int periodID, int vehicleTypeID, Data data, double[][] orderDistribution){
+    public LabelEntry(int vehicleID, int vehicleTypeID, int periodID, Data data, double[][] orderDistribution){
         //data loading
         this.data = data;
         this.orderDistribution = orderDistribution;
-        this.vehicleNumber = vehicleNumber;
+        this.vehicleID = vehicleID;
         this.accumulatedTravelCost = 0;
         this.tripAssigment = new ArrayList<ArrayList<Integer>>();
         this.vehicleTotalTravelTime = 0;

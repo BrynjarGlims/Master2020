@@ -3,13 +3,15 @@ package DataFiles;
 public class Vehicle {
 
     public int vehicleID;
+    public int vehicleNumber;
     public String vehicleName;
     public String trailerNumberPlate;
 
     public VehicleType vehicleType;
 
-    public Vehicle(int vehicleNumber, String vehicleName,  String trailerNumberPlate){
-        this.vehicleID = vehicleNumber;
+    public Vehicle(int vehicleID, int vehicleNumber, String vehicleName,  String trailerNumberPlate){
+        this.vehicleID = vehicleID;
+        this.vehicleNumber = vehicleNumber;
         this.vehicleName = vehicleName;
         this.trailerNumberPlate = trailerNumberPlate;
     }

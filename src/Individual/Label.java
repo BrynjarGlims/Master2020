@@ -61,18 +61,6 @@ public class Label {
 
     private void sortLabelEntries(){
         Arrays.sort(labelEntries);
-        System.out.println("hei");
-    }
-
-
-
-
-    private void reverseOrderarcTrversalCost(){
-        double[] tempArray = new double[arcTraversalCost.length];
-        for (int i = 0; i < arcTraversalCost.length; i ++){
-            tempArray[i] = this.arcTraversalCost[arcTraversalCost.length-1-i];
-        }
-        arcTraversalCost = tempArray;
     }
 
 
@@ -105,8 +93,10 @@ public class Label {
     }
 
     private void initializeLabelEntries(int periodID, int vehicleTypeID){
-        for (int i = 0; i < this.labelEntries.length; i++){
-            this.labelEntries[i] = new LabelEntry(i, vehicleTypeID, periodID, data, orderDistribution);
+        int i = 0;
+        for ( int vehicleID : data.vehicleTypes[this.vehicleTypeID].vehicleSet ){
+            this.labelEntries[i] = new LabelEntry(vehicleID, vehicleTypeID, periodID, data, orderDistribution);
+            i++;
         }
     }
 
@@ -167,7 +157,6 @@ public class Label {
     }
 
 
-
     public HashMap<Integer, Integer> getVehicleAssignmentChromosome(){
         //number of trips could be calculated here if needed
 
@@ -175,7 +164,7 @@ public class Label {
         for (LabelEntry labelEntry : labelEntries) {
             for (ArrayList<Integer> customerList : labelEntry.tripAssigment){
                 for (int customerID : customerList) {
-                    vehicleAssignment.put(customerID, labelEntry.vehicleNumber);
+                    vehicleAssignment.put(customerID, labelEntry.vehicleID);  // TODO: 24.02.2020 Change to correct vehicle id
                 }
            }
         }
@@ -185,14 +174,4 @@ public class Label {
 
 }
 
-/*
-public class SortByCost implements Comparator<LabelEntry> {
-    @Override
-    public int compare(LabelEntry e1, LabelEntry e2){
-        return e1.vehicleCost > e2.vehicleCost;
-    }
 
-
-}
-
- */

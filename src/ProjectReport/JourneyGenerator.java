@@ -5,9 +5,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class JourneyGenerator {
 
-    private DataMip data;
+    private Data data;
 
-    public JourneyGenerator(DataMip data){
+    public JourneyGenerator(Data data){
         this.data = data;
     }
 

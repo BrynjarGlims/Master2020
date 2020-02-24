@@ -1,6 +1,8 @@
 package DataFiles;
 
 import DataFiles.Data;
+import scala.collection.immutable.HashMap;
+import java.util.HashSet;
 
 import javax.swing.text.StyleConstants;
 
@@ -14,6 +16,7 @@ public class VehicleType {
     public int costPerKm;
     public int travelCost;
     public int usageCost;
+    public HashSet<Integer> vehicleSet;
 
     public double loadingTimeAtDepot;
 
@@ -31,10 +34,15 @@ public class VehicleType {
 
         this.travelCost = costPerHour + costPerKm; //todo: implement a better way to determine this
         this.usageCost = costPerDay*6; //todo: implement a better way to determine this
+        this.vehicleSet = new HashSet<>();
     }
 
     public void setVehicleTypeID(int vehicleTypeID){
         this.vehicleTypeID = vehicleTypeID;
+    }
+
+    public void addVehicleToSet(int vehicleID){
+        this.vehicleSet.add(vehicleID);
     }
 
 

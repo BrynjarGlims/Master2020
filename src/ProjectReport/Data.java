@@ -9,7 +9,7 @@ import java.util.Map;
 import ProjectReport.*;
 
 
-public class DataMip {
+public class Data {
 
     String instanceName;
 
