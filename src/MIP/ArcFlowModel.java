@@ -8,9 +8,6 @@ import java.util.ArrayList;
 
 public class ArcFlowModel {
 
-    public static int upperBoundQuantity = 100;  // upper bound q variable
-    public static int upperBoundOvertime = 1000;  // upper bound qO variable
-    public static double BigM = 1.5; // TODO: 24.11.2019 Change
 
     public GRBEnv env;
     public GRBModel model;
@@ -169,7 +166,7 @@ public class ArcFlowModel {
                     for (int i = 0; i < data.numberOfCustomers; i++) {
                         for (int m = 0; m < data.customers[i].numberOfNonDividableOrders; m++) {
                             String variable_name = String.format("q[%d][%d][%d][%d][%d]", d, v, r, i, m);
-                            qND[d][v][r][i][m] = model.addVar(0.0, upperBoundQuantity , 0, GRB.CONTINUOUS, variable_name);
+                            qND[d][v][r][i][m] = model.addVar(0.0, Parameters.upperBoundQuantity , 0, GRB.CONTINUOUS, variable_name);
                             //todo: set upper bound quantity correctly
                         }
                     }
@@ -184,7 +181,7 @@ public class ArcFlowModel {
                     for (int i = 0; i < data.numberOfCustomers; i++) {
                         for (int m = 0; m < data.customers[i].numberOfNonDividableOrders; m++) {
                             String variable_name = String.format("q[%d][%d][%d][%d][%d]", d, v, r, i, m);
-                            qND[d][v][r][i][m] = model.addVar(0.0, upperBoundQuantity , 0, GRB.CONTINUOUS, variable_name);
+                            qND[d][v][r][i][m] = model.addVar(0.0,Parameters.upperBoundQuantity , 0, GRB.CONTINUOUS, variable_name);
                             //todo: set upper bound quantity correctly
                         }
                     }
@@ -199,7 +196,7 @@ public class ArcFlowModel {
                     for (int i = 0; i < data.numberOfCustomers; i++) {
                         for (int m = 0; m < data.customers[i].numberOfDividableOrders; m++) {
                             String variable_name = String.format("q[%d][%d][%d][%d][%d]", d, v, r, i, m);
-                            qD[d][v][r][i][m] = model.addVar(0.0, upperBoundQuantity , 0, GRB.CONTINUOUS, variable_name);
+                            qD[d][v][r][i][m] = model.addVar(0.0,Parameters.upperBoundQuantity , 0, GRB.CONTINUOUS, variable_name);
                             //todo: set upper bound quantity correctly
                         }
                     }
@@ -230,7 +227,7 @@ public class ArcFlowModel {
         //Create qO (overtime) variables
         for (int d = 0; d < data.numberOfPeriods; d++) {
             String variable_name = String.format("qO[%d]", d);
-            qO[d] = model.addVar(0.0, upperBoundOvertime, Parameters.overtimeCost[d], GRB.CONTINUOUS, variable_name);
+            qO[d] = model.addVar(0.0, Parameters.upperBoundOvertime, Parameters.overtimeCost[d], GRB.CONTINUOUS, variable_name);
         }
     }
 

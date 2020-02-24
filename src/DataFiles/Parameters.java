@@ -57,4 +57,8 @@ public class Parameters {
     public static final double modelMipGap = 0.0001;
     public static final boolean plotArcFlow = false;
     public static final String instanceName = "testDataFromAsko";
+    public static final int upperBoundQuantity = 100;  // upper bound q variable
+    public static final int upperBoundOvertime = 1000;  // upper bound qO variable
+    public static final double BigM = 1.5; // TODO: 24.11.2019 Change
+
 }

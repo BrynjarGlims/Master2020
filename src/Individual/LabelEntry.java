@@ -5,7 +5,7 @@ import DataFiles.Data;
 import java.util.ArrayList;
 import DataFiles.*;
 import ProductAllocation.OrderDistribution;
-import scala.xml.PrettyPrinter;
+
 
 public class LabelEntry implements Comparable<LabelEntry> {
 
