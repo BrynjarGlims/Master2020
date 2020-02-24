@@ -4,12 +4,13 @@ import DataFiles.Customer;
 import DataFiles.Data;
 import DataFiles.DataReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class GiantTour {
 
-    public ArrayList[][] chromosome;
+    public ArrayList<Integer>[][] chromosome;
 
     public GiantTour(Data data){ //save data?
         initializeGiantTour(data);
@@ -29,7 +30,7 @@ public class GiantTour {
         chromosome = new ArrayList[numPeriods][numVehicleTypes];
         for (int p = 0 ; p < numPeriods ; p++){
             for (int vt = 0 ; vt < numVehicleTypes ; vt++){
-                chromosome[p][vt] = new ArrayList();
+                chromosome[p][vt] = new ArrayList<Integer>();
             }
         }
     }
@@ -55,5 +56,15 @@ public class GiantTour {
         Data data = DataReader.loadData();
         GiantTour gt = new GiantTour(data);
         gt.initializeGiantTour(data);
+
+        System.out.println(Arrays.toString(gt.chromosome));
+        for (int i = 0 ; i < data.numberOfVehicleTypes ; i++) {
+            System.out.println("NEW DAY");
+            for (ArrayList<Integer> vehicletypes : gt.chromosome[i]) {
+                for (int j : vehicletypes){
+                    System.out.println(j);
+                }
+            }
+        }
     }
 }

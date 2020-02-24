@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class GiantTourSplit {
 
-    ArrayList<Integer>[][] chromosome;
+    public ArrayList<Integer>[][] chromosome;
     Data data;
 
     GiantTourSplit(Data data){

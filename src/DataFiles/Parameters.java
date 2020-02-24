@@ -22,8 +22,8 @@ public class Parameters {
     public static final int  maxPopulationSize = 100; //TODO: find reasonable value
 
     //Loading data parameters
-    public static final int numberOfCustomers = 10;
-    public static final int numberOfVehicles = 5;
+    public static final int numberOfCustomers = 40;
+    public static final int numberOfVehicles = 10;
 
 
     //Traveling parameters

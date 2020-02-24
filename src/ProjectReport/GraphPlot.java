@@ -11,16 +11,16 @@ import java.util.ArrayList;
 
 public class GraphPlot {
     private HashMap<Integer, String> colorMap = new HashMap<>();
-    private DataMip data;
+    private Data data;
     FileSinkImages fs = new FileSinkImages(FileSinkImages.OutputType.png, FileSinkImages.Resolutions.HD720);
 
     private String[] COLORS = {
             "#E5198D", "#E9AE01", "#009C94", "#16AA39", "#1678C1", "#9627BA", "#F16301", "#CF1919",
-            "#B5CC18", "#975B33", "#5829BB"
-    }; // pink, yellow, teal, green, blue, purple, orange, red, olive, brown, violet
+            "#B5CC18", "#975B33", "#5829BB", "D8F714", "198005", "00FFFB", "001772", "9352AF"
+    }; // pink, yellow, teal, green, blue, purple, orange, red, olive, brown, violet, lime, dark green, turquise, dark blue, dark purple
 
 
-    public GraphPlot(DataMip data) {
+    public GraphPlot(Data data) {
         this.data = data;
     }
 
