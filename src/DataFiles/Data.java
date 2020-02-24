@@ -44,10 +44,16 @@ public class Data {
     }
 
     private void initialize(){
-
+        this.setVehiclesInVehicleType();
         this.setTargetVolume();
         this.setDistanceMatrix();
         this.setDerivedParameters();
+    }
+
+    private void setVehiclesInVehicleType(){
+        for (Vehicle vehicle : vehicles){
+            this.vehicleTypes[vehicle.vehicleType.vehicleTypeID].addVehicleToSet(vehicle.vehicleID);
+        }
     }
 
     private void setDerivedParameters(){

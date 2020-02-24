@@ -163,7 +163,7 @@ public class DataReader {
     public static Vehicle[] parseVehicleFileDataToVehicle(List<String[]> vehiclesData){
         List<Vehicle> vehicleList = new ArrayList<>();
         HashMap<Integer, VehicleType> vehicleTypeHashMap = new HashMap<Integer, VehicleType>();
-
+        int vehicleCounter = 0;
 
 
 
@@ -184,11 +184,13 @@ public class DataReader {
 
                 }
                 //create new vehicle object
-                vehicleList.add(new Vehicle(Integer.parseInt(vehiclesData.get(line)[0]),
+                vehicleList.add(new Vehicle(vehicleCounter, Integer.parseInt(vehiclesData.get(line)[0]),
                         vehiclesData.get(line)[2], vehiclesData.get(line)[28]));
+                vehicleCounter++;
 
                 //assign vehicle type to object
                 vehicleList.get(vehicleList.size()-1).setVehicleType(vehicleTypeHashMap.get(tempCapacity));
+
             }
 
 
@@ -306,7 +308,8 @@ public class DataReader {
         Vehicle[] vehiclesSubset = Arrays.copyOfRange(vehicles, 0, Parameters.numberOfVehicles);
         VehicleType[] vehicleTypes = getAndOrderVehicleTypes(vehiclesSubset);
 
-        Data data = new     Data(customersSubset, vehiclesSubset, depot, vehicleTypes);
+
+        Data data = new Data(customersSubset, vehiclesSubset, depot, vehicleTypes);
         return data;
 
     }
