@@ -22,7 +22,7 @@ public class Parameters {
     public static final int  maxPopulationSize = 100; //TODO: find reasonable value
 
     //Loading data parameters
-    public static final int numberOfCustomers = 40;
+    public static final int numberOfCustomers = 10;
     public static final int numberOfVehicles = 10;
 
 
@@ -60,5 +60,8 @@ public class Parameters {
     public static final int upperBoundQuantity = 100;  // upper bound q variable
     public static final int upperBoundOvertime = 1000;  // upper bound qO variable
     public static final double BigM = 1.5; // TODO: 24.11.2019 Change
+
+    //PLOT PARAMETERS
+    public static final boolean savePlots = false;
 
 }
