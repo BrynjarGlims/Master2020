@@ -12,7 +12,7 @@ public class Vehicle {
 
     public Vehicle(int vehicleID, int vehicleNumber, String vehicleName, String trailerNumberPlate) {
         this.vehicleID = vehicleID;
-        this.vehicleNumber = vehicleNumber
+        this.vehicleNumber = vehicleNumber;
         this.vehicleName = vehicleName;
         this.trailerNumberPlate = trailerNumberPlate;
     }
