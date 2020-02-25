@@ -206,7 +206,7 @@ public class Individual {
         for (int p = 0; p < data.numberOfPeriods; p++) {
             for (int vt = 0; vt < this.data.numberOfVehicleTypes; vt++) {
                 
-                if (giantTour.chromosome[p][vt].size()==0 ) {
+                if (giantTour.chromosome[p][vt].size()==0) {
                     continue;
                 }
                 //Shortest path algorithm

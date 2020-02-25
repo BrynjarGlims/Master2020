@@ -106,7 +106,18 @@ public class Customer {
     }
 
     public String toString(){
-        return "";
+        String string = "CustomerNR: " + this.customerID + " - " + this.customerName + " \n " ;
+        for (double[] tw : this.timeWindow){
+            string += "Time Window Start: " + tw[0] + "   ";
+            string += "Time Window End: " + tw[1] + "  \n ";
+        }
+
+        for(Order order :this.orders) {
+            string += "Order " + order.orderID + " - Volume: " + order.volume + " - Divdable: " + order.isDividable + "\n ";
+        }
+        return string ;
+
+
     }
 
 
