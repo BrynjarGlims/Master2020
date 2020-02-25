@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.Arrays;
 import java.util.List;
@@ -157,26 +158,42 @@ public class DataReader {
     
     public static double convertTimeToDouble(String time){
         String[] convertedTime = time.split(":");
-        return Double.parseDouble(convertedTime[0]) + Double.parseDouble(convertedTime[1])/60;
+        double number = Double.parseDouble(convertedTime[0]) + Double.parseDouble(convertedTime[1])/60 - Parameters.timeShift;
+        number = inConsistencyCheck(number);
+        DecimalFormat numberFormat = new DecimalFormat("#,00");
+        number = Double.parseDouble(numberFormat.format(number));
+        return number;
+
+
+    }
+    public static double inConsistencyCheck(double number){
+        if (number < 0){
+            return 0;
+        }
+        else if (number > Parameters.maxJourneyDuration){
+            return Parameters.maxJourneyDuration;
+        }
+        else{
+            return number;
+        }
     }
 
     public static Vehicle[] parseVehicleFileDataToVehicle(List<String[]> vehiclesData){
         List<Vehicle> vehicleList = new ArrayList<>();
-        HashMap<Integer, VehicleType> vehicleTypeHashMap = new HashMap<Integer, VehicleType>();
+
+        HashMap<String, VehicleType> vehicleTypeHashMap = new HashMap<String, VehicleType>();
         int vehicleCounter = 0;
-
-
 
         for (int line = 0; line < vehiclesData.size(); line++){
             //error check
             if (vehiclesData.get(line)[18].equals("") || Integer.parseInt(vehiclesData.get(line)[24]) < 10000){
 
                 //current capacity
-                int tempCapacity = Integer.parseInt(vehiclesData.get(line)[24]);
+                String tempCapacity = vehiclesData.get(line)[24];
 
                 if ( !vehicleTypeHashMap.containsKey(tempCapacity)){
                     //create new vehicle type
-                    vehicleTypeHashMap.put(tempCapacity, new VehicleType(Integer.parseInt(vehiclesData.get(line)[24]),
+                    vehicleTypeHashMap.put(tempCapacity, new VehicleType(vehiclesData.get(line)[24],
                             Integer.parseInt(vehiclesData.get(line)[18]),
                             Integer.parseInt(vehiclesData.get(line)[19]),
                             Integer.parseInt(vehiclesData.get(line)[20]),
@@ -228,9 +245,7 @@ public class DataReader {
 
     public  static Customer[] removeInvalidCustomers(Customer[] customers){
         //Function to remove invalid data
-
         customers = removeInvalidNonDivOrderCombination(customers);
-
         return customers;
     }
 
@@ -269,11 +284,11 @@ public class DataReader {
 
     public static VehicleType[] getAndOrderVehicleTypes( Vehicle[] vehicles){
         int vehicleTypeCounter = 0;
-        HashMap<Integer, VehicleType> vehicleTypeHashMap = new HashMap<Integer, VehicleType>();
+        HashMap<String, VehicleType> vehicleTypeHashMap = new HashMap<String, VehicleType>();
 
         for(Vehicle vehicle : vehicles){
-            if(!vehicleTypeHashMap.containsKey(vehicle.vehicleType.capacity)) {
-                vehicleTypeHashMap.put(vehicle.vehicleType.capacity, vehicle.vehicleType);
+            if(!vehicleTypeHashMap.containsKey(vehicle.vehicleType.capacityString)) {
+                vehicleTypeHashMap.put(vehicle.vehicleType.capacityString, vehicle.vehicleType);
                 vehicle.vehicleType.setVehicleTypeID(vehicleTypeCounter);
                 vehicleTypeCounter++;
             }
@@ -283,9 +298,9 @@ public class DataReader {
         return vehicleTypes;
     }
 
-    public static VehicleType[] convertHashMapToArray(HashMap<Integer, VehicleType> vehicleTypeHashMap) {
+    public static VehicleType[] convertHashMapToArray(HashMap<String, VehicleType> vehicleTypeHashMap) {
         VehicleType[] vehicleTypes = new VehicleType[vehicleTypeHashMap.size()];
-        for (HashMap.Entry<Integer, VehicleType> entry : vehicleTypeHashMap.entrySet()){
+        for (HashMap.Entry<String, VehicleType> entry : vehicleTypeHashMap.entrySet()){
             vehicleTypes[entry.getValue().vehicleTypeID] = entry.getValue();
         }
         return vehicleTypes;
@@ -309,8 +324,21 @@ public class DataReader {
         VehicleType[] vehicleTypes = getAndOrderVehicleTypes(vehiclesSubset);
 
 
-        Data data = new Data(customersSubset, vehiclesSubset, depot, vehicleTypes);
+        Data data = new     Data(customersSubset, vehiclesSubset, depot, vehicleTypes);
+        displayData(data);
+
         return data;
+
+    }
+
+    public static void displayData(Data data){
+        for (Customer customer :data.customers){
+            System.out.println(customer.toString());
+        }
+        for (Vehicle vehicle : data.vehicles){
+            System.out.println(vehicle.toString());
+        }
+
 
     }
 
