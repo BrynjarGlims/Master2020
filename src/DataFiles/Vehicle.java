@@ -8,17 +8,23 @@ public class Vehicle {
 
     public VehicleType vehicleType;
 
-    public Vehicle(int vehicleNumber, String vehicleName,  String trailerNumberPlate){
+    public Vehicle(int vehicleNumber, String vehicleName, String trailerNumberPlate) {
         this.vehicleID = vehicleNumber;
         this.vehicleName = vehicleName;
         this.trailerNumberPlate = trailerNumberPlate;
     }
 
 
-    public void setVehicleType(VehicleType vehicleType){
+    public void setVehicleType(VehicleType vehicleType) {
         this.vehicleType = vehicleType;
     }
 
 
+    public String toString() {
+        String string = "Vehicle id: " + this.vehicleID + " - " + this.vehicleName + " \n ";
+        string += "Capacity: " + this.vehicleType.capacity + " \n";
+        return string;
     }
+}
+
 

@@ -1,5 +1,4 @@
 package ProjectReport;
-import DataFiles.Data;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -32,7 +31,7 @@ public class DataReader {
         }
         return output;
     }
-    public static void readParameters(String line, DataMip data){
+    public static void readParameters(String line, Data data){
         String[] tokens = line.split("\t");
         data.numCustomers = Integer.parseInt(tokens[0]);
         data.customers = new Customer[data.numCustomers];
@@ -52,7 +51,7 @@ public class DataReader {
 
     }
 
-    public static void readCustomer(String line, DataMip data){
+    public static void readCustomer(String line, Data data){
         String[] tokens = line.split("\t");
         int ID = Integer.parseInt(tokens[0]);
 
@@ -99,7 +98,7 @@ public class DataReader {
         data.addCustomer(new Customer(ID, products, types, timeWindows, visitDays, minFrequencyProduct, maxFrequencyProduct, minQuantityProduct, maxQuantityProduct, fixedUnloading, xCoordinate, yCoordinate, distanceToDepot));
     }
 
-    public static void readVehicle(String line, DataMip data, AtomicInteger vehicleCounter){
+    public static void readVehicle(String line, Data data, AtomicInteger vehicleCounter){
         String[] tokens = line.split("\t");
         int type = Integer.parseInt(tokens[0]);
         int numVehicles = Integer.parseInt(tokens[1]);
@@ -127,7 +126,7 @@ public class DataReader {
         }
         distances.add(row);
     }
-    public static void makeDistanceData(ArrayList<double[]> distances, DataMip data){
+    public static void makeDistanceData(ArrayList<double[]> distances, Data data){
         double[][] distanceMatrix = new double[distances.size()][distances.size()];
         for (int row = 0 ; row < distances.size() ; row++){
             for (int col = 0 ; col < distances.get(row).length ; col++){
@@ -137,8 +136,8 @@ public class DataReader {
         data.setDistances(distanceMatrix);
     }
 
-    public static DataMip readFile(String inputPath) throws FileNotFoundException {
-        DataMip data = new DataMip();
+    public static Data readFile(String inputPath) throws FileNotFoundException {
+        Data data = new Data();
         data.instanceName = inputPath;
         ArrayList<double[]> distances = new ArrayList<>();
         File file = new File(inputPath);
@@ -171,9 +170,9 @@ public class DataReader {
         return data;
     }
 
-    public static DataMip initialieNewData(Data data ) {
+    public static Data initialieNewData(DataFiles.Data data ) {
 
-        return new DataMip();
+        return new Data();
 
 
     }

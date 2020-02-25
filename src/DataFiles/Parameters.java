@@ -19,15 +19,16 @@ public class Parameters {
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
     public static final int numberOfEliteIndividuals = 50; //TODO: find reasonable value
-    public static final int  maxPopulationSize = 100; //TODO: find reasonable value
+    public static final int maxPopulationSize = 100; //TODO: find reasonable value
 
     //Loading data parameters
-    public static final int numberOfCustomers = 24;
-    public static final int numberOfVehicles = 5;
+    public static final int numberOfCustomers = 10;
+    public static final int numberOfVehicles = 10;
 
 
     //Traveling parameters
     public static final double scalingDistanceParameter = 1;
+    public static final double timeShift = 6;
 
 
     //Penalty parameters for genetic algorithm
@@ -41,7 +42,7 @@ public class Parameters {
     public static final int[] overtimeCost = {100, 100, 100, 100, 100, 100};
 
     //Time parameters
-    public static final double maxJourneyDuration = 10; //changed to journey duration
+    public static final double maxJourneyDuration = 24; //changed to journey duration
 
 
     //TEMPORARY PARAMTERS
@@ -51,8 +52,11 @@ public class Parameters {
     public static final double scalingUnloadingTimeAtCustomerConstant = 0.03;
     public static final double scalingUnloadingTimeAtCustomerVariable = 0.001;
 
+    public static final double scalingVehicleCapacity = 0.01;
+
 
     //GUROBI PARAMETERS
+    public static final String symmetry =  "car";      // // none, car, trips, customers, cost, duration
     public static final double modelTimeLimit = 10000;
     public static final double modelMipGap = 0.0001;
     public static final boolean plotArcFlow = false;

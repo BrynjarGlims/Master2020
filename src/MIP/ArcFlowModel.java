@@ -303,19 +303,28 @@ public class ArcFlowModel {
                             GRBLinExpr lhs = new GRBLinExpr();    //Create the left hand side of the equation
                             lhs.addTerm(1, t[d][v][r][i]);
                             lhs.addTerm(-1, t[d][v][r][j]);
-                            String constraint_name = String.format("5.9 -Time between customer %d and " +
-                                    "customer %d for vehicle %d, trip %d, period %d. Travel time: %f, Fixed unloading time: %f.",
-                                    i, j, v, r, d, data.distanceMatrix[i][j], data.customers[i].totalUnloadingTime, Parameters.maxJourneyDuration);
+
                             if (j == data.numberOfCustomers+1) {
+                                String constraint_name = String.format("5.9 -Time between customer %d and " +
+                                                "customer %d for vehicle %d, trip %d, period %d. Travel time: %f, Fixed unloading time: %f",
+                                        i, j, v, r, d, data.distanceMatrix[i][j], data.customers[i].totalUnloadingTime, Parameters.maxJourneyDuration);
                                 lhs.addTerm( data.customers[i].timeWindow[d][1] + data.distanceMatrix[i][data.numberOfCustomers+1]
                                         + data.customers[i].totalUnloadingTime, x[d][v][r][i][j]);
                                 model.addConstr(lhs, GRB.LESS_EQUAL, data.customers[i].timeWindow[d][1], constraint_name);
                             }
                             else {
+
+                                String constraint_name = String.format("5.9 -Time between customer %d and " +
+                                                "customer %d for vehicle %d, trip %d, period %d. Travel time: %f, Fixed unloading time: %f. EndTimeWindowFrom: %f. StartTimeWindowTo: %f",
+                                        i, j, v, r, d, data.distanceMatrix[i][j], data.customers[i].totalUnloadingTime,
+                                        Parameters.maxJourneyDuration, data.customers[i].timeWindow[d][1], data.customers[j].timeWindow[d][0]);
+                                //System.out.println("values: " + (data.customers[i].timeWindow[d][1] + data.distanceMatrix[i][j] +
+                                    //    data.customers[i].totalUnloadingTime - data.customers[j].timeWindow[d][0]));
+
                                 lhs.addTerm( data.customers[i].timeWindow[d][1] + data.distanceMatrix[i][j] +
                                         data.customers[i].totalUnloadingTime - data.customers[j].timeWindow[d][0], x[d][v][r][i][j]);
                                 model.addConstr(lhs, GRB.LESS_EQUAL, data.customers[i].timeWindow[d][1] -
-                                        data.customers[i].timeWindow[d][0], constraint_name);
+                                        data.customers[j].timeWindow[d][0], constraint_name);
                             }
                         }
                     }
@@ -384,7 +393,7 @@ public class ArcFlowModel {
                         }
                     }
                     // Create name
-                    String constraint_name = String.format("5.3 -Capacity vehicle %d trip %d period %d. Capacity %d", v, r, d, data.vehicles[v].vehicleType.capacity);
+                    String constraint_name = String.format("5.3 -Capacity vehicle %d trip %d period %d. Capacity %f", v, r, d, data.vehicles[v].vehicleType.capacity);
                     // Create constraint and defind RHS
                     model.addConstr(lhs, GRB.LESS_EQUAL, data.vehicles[v].vehicleType.capacity, constraint_name);
                 }
@@ -582,7 +591,7 @@ public class ArcFlowModel {
                         }
 
                         lhs.addTerm(data.vehicles[v].vehicleType.capacity, y[d][v][r][i]);
-                        String constraint_name = String.format("5.25 -Connection q and y for customer %d vehicle %d trip %d day %d. M = %d", i, v, r, d, data.vehicles[v].vehicleType.capacity);
+                        String constraint_name = String.format("5.25 -Connection q and y for customer %d vehicle %d trip %d day %d. M = %f", i, v, r, d, data.vehicles[v].vehicleType.capacity);
                         model.addConstr(lhs, GRB.GREATER_EQUAL, 0, constraint_name);
                     }
                 }
@@ -1101,11 +1110,11 @@ public class ArcFlowModel {
                             }
                         }
                         if (quantitiyCust >= 0.0001 ){
-                            System.out.println("quantity for customer "+ i + " is :" + quantitiyCust);
+                            System.out.println("Quantity for customer "+ i + " is :" + quantitiyCust);
                         }
                     }
                     if (quantitiyTrip >= 0.0001) {
-                        System.out.println("quantity for vehicle " + v + "for trip " + r + "is equal: " + quantitiyTrip);
+                        System.out.println("Quantity for vehicle " + v + "for trip " + r + "is equal: " + quantitiyTrip);
                     }
                 }
             }
@@ -1216,9 +1225,9 @@ public class ArcFlowModel {
         
     }
 
-    public Result runModel(String symmetry) {
+    public Result runModel() {
         try {
-            this.symmetry = symmetry;
+            this.symmetry = Parameters.symmetry;
             System.out.println("Initalize model");
             initializeModel();
             System.out.println("Initalize parameters");
@@ -1278,7 +1287,7 @@ public class ArcFlowModel {
 
     public static void main(String[] args) {
         ArcFlowModel arcFlowModel = new ArcFlowModel();
-        arcFlowModel.runModel("none");
+        arcFlowModel.runModel();
 
     }
 
