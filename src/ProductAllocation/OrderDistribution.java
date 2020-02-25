@@ -37,7 +37,7 @@ public class OrderDistribution {
             System.arraycopy(c.requiredVisitPeriod, 0, visitDaysCopy, 0, c.requiredVisitPeriod.length);
             for (Order o : c.nonDividableOrders) {
                 int chosenPeriod = getMinimumPeriod(visitDaysCopy);
-                updateFields(o, chosenPeriod, o.volume);
+                updateFields(o, chosenPeriod, o.volume, false);
                 visitDaysCopy[chosenPeriod] = 0;
             }
         }
@@ -57,7 +57,7 @@ public class OrderDistribution {
         int[] deliveryPeriods = getValidDeliveryPeriods(volumeSplits, data.customers[order.customerID]);
 
         for (int i = 0; i < deliveryPeriods.length; i++) {
-            updateFields(order, deliveryPeriods[i], volumeSplits[i]);
+            updateFields(order, deliveryPeriods[i], volumeSplits[i], true);
         }
         return volumeSplits;
     }
@@ -135,10 +135,20 @@ public class OrderDistribution {
         return currentIndex;
     }
 
-    private void updateFields(Order order, int period, double volume) {
+    private void updateFields(Order order, int period, double volume, boolean dividable) {
         orderDistribution[period][order.customerID] += volume;
         volumePerPeriod[period] += volume;
-        orderDeliveries[order.orderID] = new OrderDelivery(order, period, volume);
+        if (dividable){
+            if (orderDeliveries[order.orderID] == null){
+                orderDeliveries[order.orderID] = new OrderDelivery(data.numberOfPeriods, order, period, volume, dividable);
+            }
+            else{
+                orderDeliveries[order.orderID].addDelivery(period, volume);
+            }
+        }
+        else {
+            orderDeliveries[order.orderID] = new OrderDelivery(data.numberOfPeriods, order, period, volume, dividable);
+        }
     }
 
 
