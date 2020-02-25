@@ -8,18 +8,18 @@ import java.util.HashMap;
 public class Label {
 
     //Lable values
-    public double[] arcTraversalCost;
-    public double loadInfeasibility;
-    public double timeWarpInfeasibility;
+
     public Label parentLabel;
     public double cost;
+    public double fleetTravelTime;
+    public double fleetOvertime;
+    public double fleetOverLoad;
+    public double fleetTimeWarp;
 
     //calculational value:
     public int periodID;
     public int vehicleTypeID;
 
-    //Chromosomes
-    public ArrayList<Integer> vehicleAssigment;
 
 
     //Derived from first section of adSplit
@@ -34,6 +34,9 @@ public class Label {
     // LabelEntry
 
     public LabelEntry[] labelEntries;
+    public boolean isEmptyLabel;
+
+
 
 
     //create non-first labels
@@ -48,13 +51,13 @@ public class Label {
         this.orderDistribution = parentLabel.orderDistribution;
         this.tripNumber = parentLabel.tripNumber + 1;
         this.listOfTrips = parentLabel.listOfTrips;
+        this.isEmptyLabel = false;
 
 
         // Cost of choosing arcs from the SPA
         this.labelEntries = parentLabel.labelEntries.clone();
         this.labelEntries[vehicleIndex].updateArcCost(arcCost, listOfTrips.get(tripNumber));
         this.sortLabelEntries();
-
         this.deriveLabelCost();
     }
 
@@ -63,7 +66,18 @@ public class Label {
         Arrays.sort(labelEntries);
     }
 
+    //generate empty label
+    public Label(Data data, int tripNumber, double[][] orderDistribution, int periodID,
+                 int vehicleTypeID){
+        this.vehicleTypeID = vehicleTypeID;
+        this.periodID = periodID;
+        this.data = data;
+        this.parentLabel = null;
+        this.tripNumber = tripNumber;
+        this.orderDistribution = orderDistribution;
+        this.isEmptyLabel = true;
 
+    }
 
 
     //create first label
@@ -81,6 +95,7 @@ public class Label {
         this.listOfTrips = listOfTrips;
         this.tripNumber = tripNumber;
         this.orderDistribution = orderDistribution;
+        this.isEmptyLabel = false;
 
 
         //labelEntries generated
@@ -102,57 +117,51 @@ public class Label {
 
 
     public void deriveLabelCost() {  //todo: implement for new structure
-        double fleetTravelTime = calculateTravelValue();  //must be used before calculateOvertimeValue
-        double fleetOvertime = calculateOvertimeValue();
-        double fleetOverLoad = calculateLoadValue();
-        double fleetTimeWarp = calculateTimeWarp();
+        calculateTravelValue();  //must be used before calculateOvertimeValue
+        calculateOvertimeValue();
+        calculateLoadValue();
+        calculateTimeWarp();
         this.cost = fleetTravelTime + fleetOvertime + fleetOverLoad + fleetTimeWarp;
     }
 
-    public double calculateTimeWarp(){
-        double fleetTimeWarpValue = 0;
+    public void calculateTimeWarp(){
+        fleetTimeWarp = 0;
 
         for (LabelEntry labelEntry : this.labelEntries){
-            fleetTimeWarpValue += labelEntry.getTimeWarpInfeasibility();
+            fleetTimeWarp += labelEntry.getTimeWarpInfeasibility();
         }
 
-        return fleetTimeWarpValue;
     }
 
 
-    public double calculateTravelValue(){ //implement this with overtime calculation
+    public void calculateTravelValue(){ //implement this with overtime calculation
 
-        double fleetTravelTime = 0;
+        fleetTravelTime = 0;
 
         for (LabelEntry labelEntry : this.labelEntries){
             fleetTravelTime += labelEntry.getTravelTimeValue();
         }
 
-        return fleetTravelTime;
     }
 
 
-    public double calculateOvertimeValue(){
+    public void calculateOvertimeValue(){
 
-        double fleetOvertime = 0;
+        fleetOvertime = 0;
 
         for (LabelEntry labelEntry : this.labelEntries){
             fleetOvertime += labelEntry.getOvertimeValue();
         }
 
-        return fleetOvertime;
-
     }
 
-    public double calculateLoadValue(){
+    public void calculateLoadValue(){
 
-        double fleetOverloadValue = 0;
+        fleetOverLoad = 0;
 
         for (LabelEntry labelEntry : this.labelEntries){
-            fleetOverloadValue += labelEntry.getLoadInfeasibility();
+            fleetOverLoad += labelEntry.getLoadInfeasibility();
         }
-
-        return fleetOverloadValue;
 
     }
 
@@ -171,7 +180,31 @@ public class Label {
         return vehicleAssignment;
     }
 
+    public double getLabelDrivingDistance(){
+        double drivingDistance = 0;
+        for (LabelEntry labelEntry : labelEntries){
+            drivingDistance += labelEntry.getDrivingDistance();
+        }
+        return drivingDistance;
+    }
 
+    public int getNumberOfVehicles() {
+        int numberOfVehicles = 0;
+        for (LabelEntry labelEntry : labelEntries) {
+            if (labelEntry.inUse)
+                numberOfVehicles += 1;
+        }
+        return numberOfVehicles;
+    }
+
+
+    public double getTimeWarpInfeasibility() { return fleetTimeWarp; }
+
+    public double getLoadInfeasibility() { return fleetOverLoad; }
+
+    public double getOvertimeInfeasibility(){ return fleetOvertime; }
 }
+
+
 
 

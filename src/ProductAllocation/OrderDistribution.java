@@ -1,9 +1,6 @@
 package ProductAllocation;
 
-import DataFiles.Customer;
-import DataFiles.Data;
-import DataFiles.DataReader;
-import DataFiles.Order;
+import DataFiles.*;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -15,6 +12,9 @@ public class OrderDistribution {
     public Data data;
     public OrderDelivery[] orderDeliveries;
     public double[] volumePerPeriod;
+
+    // fitness values
+    public double fitness = Double.MAX_VALUE;
 
 
     public OrderDistribution(Data data) {
@@ -149,6 +149,15 @@ public class OrderDistribution {
         else {
             orderDeliveries[order.orderID] = new OrderDelivery(data.numberOfPeriods, order, period, volume, dividable);
         }
+    }
+
+    public double getOvertimeValue(){
+        fitness = 0;
+        for (int d = 0; d < data.numberOfPeriods; d++ ){
+            fitness += Parameters.overtimeCost[d]*Math.max(0 , Arrays.stream(this.orderDistribution[d]).sum()-Parameters.overtimeLimit[d]);
+        }
+        return fitness;
+
     }
 
 

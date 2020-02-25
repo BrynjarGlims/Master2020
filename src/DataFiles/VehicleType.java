@@ -15,8 +15,8 @@ public class VehicleType {
     public int costPerHourOvertime;
     public int costPerDay;
     public int costPerKm;
-    public int travelCost;
-    public int usageCost;
+    public double travelCost;
+    public double usageCost;
     public HashSet<Integer> vehicleSet;
 
     public double loadingTimeAtDepot;

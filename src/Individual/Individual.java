@@ -15,6 +15,7 @@ public class Individual {
     public VehicleAssigment vehicleAssigment;
     public GiantTourSplit giantTourSplit;
     public OrderDistribution orderDistribution;
+    public Population population;
 
     public Data data;
     public boolean validCapacity;
@@ -29,6 +30,14 @@ public class Individual {
     public ArrayList<Double>[][] matrixOfTripCosts;
     public Label[][] bestLabels;
     public Population Population;
+
+    //fitness values:
+    public double objectiveCost;
+    public double infeasibilityCost;
+    public double fitness = Double.MAX_VALUE;
+    public double diversity = 0;
+    public double biasedFitness;
+
 
 
     public Individual(Data data, OrderDistribution orderDistribution) {
@@ -195,10 +204,11 @@ public class Individual {
                 tripNumber++;
             }
         }
-        if (currentLabelPool.labels.size() > 0){
-            this.bestLabels[p][vt] = currentLabelPool.findBestLabel();
-        }
 
+        this.bestLabels[p][vt] = currentLabelPool.findBestLabel();
+        if (this.bestLabels[p][vt] == null){
+            throw new NullPointerException( "Empty label created");
+        }
     }
 
     //solves for each period
@@ -207,6 +217,7 @@ public class Individual {
             for (int vt = 0; vt < this.data.numberOfVehicleTypes; vt++) {
                 
                 if (giantTour.chromosome[p][vt].size()==0) {
+                    this.bestLabels[p][vt] = new Label(data, 0,  orderDistribution.orderDistribution, p, vt);
                     continue;
                 }
                 //Shortest path algorithm
@@ -220,6 +231,18 @@ public class Individual {
                 giantTourSplit.setChromosome(createSplitChromosome(matrixOfTrips[p][vt]), p, vt);
             }
             vehicleAssigment.setChromosome(getVehicleAssignmentChromosome(p), p);
+        }
+
+        checkBestLabels();
+    }
+
+    public void checkBestLabels(){
+        for ( int p = 0; p < data.numberOfPeriods; p++){
+            for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
+                if (this.bestLabels[p][vt] == null){
+                    throw new NullPointerException("Fuck you, p:" + p + "  vt:" + vt );
+                }
+            }
         }
     }
 
@@ -258,8 +281,65 @@ public class Individual {
         return rank;
     }
 
+    public double getFitness(boolean update){
+        if (update || this.fitness == Double.MAX_VALUE){
+            updateFitness();
+            return fitness;
+        }
+        else {
+            return fitness;
+        }
+    }
+
+    public void updateFitness(){
+        double fitness = 0;
+
+        //Calculate objective costs
+        this.objectiveCost = getObjectiveCost();
+
+        //Add infeasibility costs
+        this.infeasibilityCost = getInfeasibilityCost();
+
+        this.fitness = this.objectiveCost + this.infeasibilityCost;
+
+    }
+
+    private double getObjectiveCost(){
+        objectiveCost = 0;
+        for (Label[] labels : bestLabels){
+            for (Label label : labels){
+                if (label.isEmptyLabel){
+                    continue;
+                }
+                //Adds driving cost
+                objectiveCost += label.getLabelDrivingDistance() * data.vehicleTypes[label.vehicleTypeID].travelCost;
+                //Adds vehicle use cost
+                objectiveCost += label.getNumberOfVehicles() * data.vehicleTypes[label.vehicleTypeID].usageCost;
+
+            }
+        }
+        objectiveCost += orderDistribution.getOvertimeValue();
+        return objectiveCost;
+    }
+
+    private double getInfeasibilityCost(){
+        double infeasibilityCost = 0;
+        for (Label[] labels : bestLabels) {
+            for (Label label : labels) {
+                if (label.isEmptyLabel){
+                    continue;
+                }
+                //Already added scaling parameters in label
+                infeasibilityCost += label.getTimeWarpInfeasibility();
+                infeasibilityCost += label.getLoadInfeasibility();
+                infeasibilityCost += label.getOvertimeInfeasibility();
+            }
+        }
+        return infeasibilityCost;
+    }
+
     public double getIndividualBiasedFitnessScore() {
-        double fitness = 0.0; //TODO: implement fitness calculations
+        fitness = 0.0; //TODO: implement fitness calculations
         //calculate biased fitness element
         int nbIndividuals = 0;
         if (this.isFeasible()) {
@@ -294,23 +374,26 @@ public class Individual {
     }
 
 
+
     public static void main(String[] args){
+        Individual individual = Individual.makeIndividual();
+        System.out.println("Value of fitness: " + individual.getFitness(false));
+    }
+
+    public static Individual makeIndividual(){
         Data data = DataReader.loadData();
         OrderDistribution od = new OrderDistribution(data);
         od.makeDistribution();
         Individual individual = new Individual(data, od);
-        individual.adSplit();
-
-        //todo: implement
-        individual.giantTour.toString();
-        individual.giantTourSplit.toString();
-        individual.vehicleAssigment.toString();
-
-
+        individual.adSplit();  //change when update comes
+        return individual;
     }
 
 
+
 }
+
+
 
 
 

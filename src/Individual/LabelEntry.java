@@ -18,6 +18,7 @@ public class LabelEntry implements Comparable<LabelEntry> {
     public double loadInfeasibility;
     public double timeWarpInfeasibility;
     public double vehicleCost;  //this is the cost vidal uses
+    public double vehicleDrivingDistance; // this is driving distance without waiting
 
     public int periodID;
     public int vehicleTypeID;
@@ -41,6 +42,7 @@ public class LabelEntry implements Comparable<LabelEntry> {
         this.accumulatedTravelCost = 0;
         this.tripAssigment = new ArrayList<ArrayList<Integer>>();
         this.vehicleTotalTravelTime = 0;
+        this.vehicleDrivingDistance = 0;
         this.currentVehicleTime = 0;
         this.loadInfeasibility = 0;
         this.timeWarpInfeasibility = 0;
@@ -119,7 +121,6 @@ public class LabelEntry implements Comparable<LabelEntry> {
         //if second trip, add loading time at depot
         if (this.vehicleTotalTravelTime > 0){
             this.vehicleTotalTravelTime += data.vehicleTypes[vehicleTypeID].loadingTimeAtDepot;
-
         }
 
         //initialize
@@ -131,16 +132,19 @@ public class LabelEntry implements Comparable<LabelEntry> {
             if (customerCounter == 0){
                 vehicleTotalTravelTime +=
                         data.distanceMatrix[data.numberOfCustomers][customerID];
+                vehicleDrivingDistance = data.distanceMatrix[data.numberOfCustomers][customerID];
                 lastCustomerID = customerID;
                 customerCounter++;
             }
             else if (customerCounter == customers.size()-1){
                 vehicleTotalTravelTime +=
                         data.distanceMatrix[customerID][data.numberOfCustomers];
+                vehicleDrivingDistance += data.distanceMatrix[customerID][data.numberOfCustomers];
             }
             else {
                 vehicleTotalTravelTime +=
                         data.distanceMatrix[lastCustomerID][customerID];
+                vehicleDrivingDistance += data.distanceMatrix[lastCustomerID][customerID];
                 lastCustomerID = customerID;
                 customerCounter++;
             }
@@ -151,6 +155,10 @@ public class LabelEntry implements Comparable<LabelEntry> {
 
     public double getTravelTimeValue(){
         return vehicleTotalTravelTime;
+    }
+
+    public double getDrivingDistance(){
+        return vehicleDrivingDistance;
     }
 
 
