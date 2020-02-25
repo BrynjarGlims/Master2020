@@ -65,4 +65,7 @@ public class Parameters {
     public static final int upperBoundOvertime = 1000;  // upper bound qO variable
     public static final double BigM = 1.5; // TODO: 24.11.2019 Change
 
+    //PLOT PARAMETERS
+    public static final boolean savePlots = false;
+
 }

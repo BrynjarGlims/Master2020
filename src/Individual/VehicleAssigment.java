@@ -7,7 +7,8 @@ import java.util.Spliterator;
 
 public class VehicleAssigment {
 
-    HashMap[] chromosome;
+
+    public HashMap<Integer, Integer>[] chromosome;
     Data data;
 
     VehicleAssigment(Data data){
@@ -17,6 +18,7 @@ public class VehicleAssigment {
             chromosome[p] = new HashMap<Integer, Integer>();
         }
     }
+
 
     public void setChromosome( HashMap<Integer, Integer> chromosome , int periodID ) {
         this.chromosome[periodID] = chromosome;

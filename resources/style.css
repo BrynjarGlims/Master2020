@@ -1,0 +1,26 @@
+graph {
+    fill-color: #ffffff;
+}
+
+node {
+    size: 6px;
+    fill-color: #000000;
+    text-color: #000000;
+    text-size: 16px;
+    text-alignment: above;
+}
+
+node.depot {
+    size: 15px;
+    shape: box;
+    fill-color: #000000;
+    text-alignment: under;
+    text-style: bold;
+    text-color: #000000;
+
+}
+
+edge {
+    text-color: #eeeeee;
+    arrow-size: 4px, 4px;
+}
