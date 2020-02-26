@@ -6,6 +6,7 @@ import DataFiles.DataReader;
 import Individual.GiantTour;
 import Individual.Individual;
 import Individual.AdSplit;
+import Individual.FitnessCalculation;
 import ProductAllocation.OrderDelivery;
 import ProductAllocation.OrderDistribution;
 
@@ -114,9 +115,21 @@ public class GiantTourCrossover {
     }
 
     private void bestInsertion(Individual child, Individual parent1, Individual parent2, HashMap<Integer, HashSet<Integer>> missingCustomers){
+        double currentBestFitness;
+        ArrayList<Integer> customerSequence;
+        Individual currentParent;
         for (int p : missingCustomers.keySet()){
             for (int c : missingCustomers.get(p)){
+                currentBestFitness = Double.MAX_VALUE;
+                currentParent = ThreadLocalRandom.current().nextInt(0,2) == 0 ? parent1 : parent2;
+                for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
+                    customerSequence = new ArrayList<>();
+                    customerSequence.add(c);
+                    currentBestFitness = Math.min(currentBestFitness, FitnessCalculation.getTripFitness(customerSequence, vt, p, currentParent.orderDistribution.orderVolumeDistribution, data));
+                    // TODO: 26.02.2020 check for all possible trips in child chromosome 
 
+
+                }
             }
         }
     }
@@ -212,6 +225,5 @@ public class GiantTourCrossover {
         Individual child = GTC.crossOver(parent1, parent2);
 
     }
-
 
 }
