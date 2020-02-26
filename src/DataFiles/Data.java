@@ -16,6 +16,8 @@ public class Data {
     public int numberOfCustomers = Parameters.numberOfCustomers;
     public int numberOfVehicles = Parameters.numberOfVehicles;
     public int numberOfNodes = Parameters.numberOfCustomers + 2;
+    public int[] numberOfCustomerVisitsInPeriod;
+    public int numberOfCustomerVisitsInPlanningHorizon;
 
 
     //Gurobi spesific variables
@@ -48,6 +50,17 @@ public class Data {
         this.setTargetVolume();
         this.setDistanceMatrix();
         this.setDerivedParameters();
+        this.setNumberOfCustomerVisitsInPeriod();
+    }
+
+    private void setNumberOfCustomerVisitsInPeriod(){
+        numberOfCustomerVisitsInPeriod = new int[numberOfPeriods];
+        for (Customer customer : customers){
+            for (int p = 0; p < numberOfPeriods; p++){
+                this.numberOfCustomerVisitsInPeriod[p] += customer.requiredVisitPeriod[p];
+                this.numberOfCustomerVisitsInPlanningHorizon += customer.requiredVisitPeriod[p];
+            }
+        }
     }
 
     private void setVehiclesInVehicleType(){

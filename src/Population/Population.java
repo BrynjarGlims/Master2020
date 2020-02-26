@@ -26,7 +26,7 @@ public class Population {
 
     public void initializePopulation() {
         for (int i = 0; i < totalPopulationSize; i++) {
-            Individual individual = new Individual(this.data, this.currentOrderDistribution);
+            Individual individual = new Individual(this.data, this.currentOrderDistribution, this);
             if (individual.isFeasible()) {
                 feasiblePopulation.add(individual);
             }
@@ -62,5 +62,8 @@ public class Population {
     public int getIterationsWithoutImprovement(){
         return iterationsWithoutImprovement;
     }
+
+
+
 
 }

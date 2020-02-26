@@ -2,6 +2,7 @@ package Individual;
 import DataFiles.*;
 import Population.Population;
 import ProductAllocation.OrderDistribution;
+import scala.collection.parallel.mutable.ParHashMapCombiner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,9 +41,10 @@ public class Individual {
 
 
 
-    public Individual(Data data, OrderDistribution orderDistribution) {
+    public Individual(Data data, OrderDistribution orderDistribution, Population population) {
         this.data = data;
         this.orderDistribution = orderDistribution;
+        this.population = population;
 
         this.infeasibilityOverCapacityValue = 0;
         this.infeasibilityOvertimeValue = 0;
@@ -373,6 +375,45 @@ public class Individual {
         return fitnessScore;
     }
 
+    public double calculateDiversity(Individual comparison){
+
+        return 0;
+
+
+
+    }
+
+    public double hammingDistance(GiantTour gt){
+        double customerDistance = 0;
+        double vehicleTypeDistance = 0;
+        int vt1 = 0;
+        int vt2 = 0;
+        int counter1 = 0;
+        int counter2 = 0;
+        for (int p = 0; p < data.numberOfPeriods; p++){
+            for (int c = 0; c < data.numberOfCustomerVisitsInPeriod[p]; c++) {
+                if (gt.chromosome[p][vt2].size() == counter2) {
+                    counter2 = 0;
+                    vt2++;
+                }
+                if (this.giantTour.chromosome[p][vt1].size() - 1 == counter1) {
+                    counter1 = 0;
+                    vt1++;
+                }
+                customerDistance += (this.giantTour.chromosome[p][vt1].get(counter1) != gt.chromosome[p][vt2].get(counter2)) ? 1 : 0;
+                vehicleTypeDistance += (vt2 != vt1) ? 1 : 0;
+                counter1++;
+                counter2++;
+            }
+            
+        }
+        customerDistance /= 2*data.numberOfCustomerVisitsInPlanningHorizon;
+
+        // TODO: 26.02.2020 Check if the proportional customer distance and vehicle type distance
+        return customerDistance + vehicleTypeDistance; //larger distance, more diversity
+    }
+
+
 
 
     public static void main(String[] args){
@@ -384,7 +425,7 @@ public class Individual {
         Data data = DataReader.loadData();
         OrderDistribution od = new OrderDistribution(data);
         od.makeDistribution();
-        Individual individual = new Individual(data, od);
+        Individual individual = new Individual(data, od, null);
         individual.adSplit();  //change when update comes
         return individual;
     }

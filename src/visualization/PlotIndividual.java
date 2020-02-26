@@ -174,7 +174,7 @@ public class PlotIndividual {
         Data data = DataReader.loadData();
         OrderDistribution od = new OrderDistribution(data);
         od.makeDistribution();
-        Individual individual = new Individual(data, od);
+        Individual individual = new Individual(data, od , null);
         individual.adSplit();
 
         //todo: implement
