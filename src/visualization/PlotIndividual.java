@@ -10,7 +10,6 @@ import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.stream.file.FileSinkImages;
 
 import java.io.IOException;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -173,8 +172,8 @@ public class PlotIndividual {
     public static void main(String[] args){
         Data data = DataReader.loadData();
         OrderDistribution od = new OrderDistribution(data);
-        od.makeDistribution();
-        Individual individual = new Individual(data, od);
+        od.makeInitialDistribution();
+        Individual individual = new Individual(data);
         individual.adSplit();
 
         //todo: implement
