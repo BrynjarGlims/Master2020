@@ -59,7 +59,7 @@ public class AdSplit {
 
     //SHORTEST PATH --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    public static void createTrips(int p, int vt) {
+    private static void createTrips(int p, int vt) {
         ArrayList<Integer> customerSequence = (ArrayList<Integer>) individual.giantTour.chromosome[p][vt].clone();  //// TODO: 18.02.2020 Brynjar: is this superfast or only fast?
         //insert depot to be in the 0th position
         customerSequence.add(0, individual.data.customers.length);
@@ -199,7 +199,7 @@ public class AdSplit {
     }
 
 
-    public static HashMap<Integer, Integer> getVehicleAssignmentChromosome(int p, int vt){
+    private static HashMap<Integer, Integer> getVehicleAssignmentChromosome(int p, int vt){
         HashMap<Integer, Integer> hashMap = new HashMap<Integer, Integer>();
         if (individual.giantTour.chromosome[p][vt].size()==0 ) {
             return hashMap;
@@ -216,7 +216,7 @@ public class AdSplit {
 
 
 
-    public static ArrayList<Integer> createSplitChromosome(ArrayList<ArrayList<Integer>> customerSequence) {
+    private static ArrayList<Integer> createSplitChromosome(ArrayList<ArrayList<Integer>> customerSequence) {
         ArrayList<Integer> splits = new ArrayList<>();
         int split = 0;
 
@@ -228,7 +228,7 @@ public class AdSplit {
     }
 
     //LABELING------------------------------------------------------------------------------------------------------------------------------------------------------------
-    public static void labelingAlgorithm(int p, int vt, ArrayList<java.util.ArrayList<Integer>> listOfTrips, ArrayList<Double> arcCost) {
+    private static void labelingAlgorithm(int p, int vt, ArrayList<java.util.ArrayList<Integer>> listOfTrips, ArrayList<Double> arcCost) {
 
         int tripNumber = 0;
         LabelPool currentLabelPool = new LabelPool(individual.data, listOfTrips, tripNumber, individual.orderDistribution.orderDistribution);
@@ -252,14 +252,14 @@ public class AdSplit {
         }
     }
 
-    public static double[] getInitialCostLabel(int size){
+    private static double[] getInitialCostLabel(int size){
         double[] costLabel =  new double[size];
         Arrays.fill(costLabel, 100000);
         costLabel[0] = 0;
         return costLabel;
     }
 
-    public static int[] getInitialPredecessorLabel(int size){
+    private static int[] getInitialPredecessorLabel(int size){
         int[] predecessorLabel =  new int[size];
         Arrays.fill(predecessorLabel, 0);
         return predecessorLabel;

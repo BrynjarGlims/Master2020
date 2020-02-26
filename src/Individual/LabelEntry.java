@@ -70,13 +70,13 @@ public class LabelEntry implements Comparable<LabelEntry> {
             this.vehicleTotalTravelTime += data.vehicleTypes[vehicleTypeID].loadingTimeAtDepot;
         }
 
-        int customerCounter = 0;
+        boolean fromDepot = true;
         int lastCustomerID = -1;
 
         //todo: make more readable
 
         for (int customerID : customers){
-            if (customerCounter == 0){  //depot to customer
+            if (fromDepot){  //depot to customer
                 currentVehicleTime = Math.max(currentVehicleTime + data.distanceMatrix[data.numberOfCustomers][customerID],
                 data.customers[customerID].timeWindow[periodID][0]);
                 if (currentVehicleTime > data.customers[customerID].timeWindow[periodID][1]){
@@ -84,15 +84,7 @@ public class LabelEntry implements Comparable<LabelEntry> {
                     currentVehicleTime = data.customers[customerID].timeWindow[periodID][1];
                 }
                 lastCustomerID = customerID;
-
-            }
-            else if (customerCounter == customers.size()-1){ //customer to depot
-                currentVehicleTime = currentVehicleTime + data.customers[customerID].totalUnloadingTime+
-                        data.distanceMatrix[customerID][data.numberOfCustomers];
-                if (currentVehicleTime > Parameters.maxJourneyDuration){
-                    timeWarpInfeasibility += currentVehicleTime - Parameters.maxJourneyDuration;
-                    currentVehicleTime = Parameters.maxJourneyDuration;
-                }
+                fromDepot = false;
             }
             else{  //Case where one goes from customer to customer
                 currentVehicleTime = Math.max(currentVehicleTime + data.customers[customerID].totalUnloadingTime +data.distanceMatrix[lastCustomerID][customerID],
@@ -103,6 +95,12 @@ public class LabelEntry implements Comparable<LabelEntry> {
                 }
                 lastCustomerID = customerID;
             }
+        }
+        currentVehicleTime = currentVehicleTime + data.customers[lastCustomerID].totalUnloadingTime+
+                data.distanceMatrix[lastCustomerID][data.numberOfCustomers];
+        if (currentVehicleTime > Parameters.maxJourneyDuration){
+            timeWarpInfeasibility += currentVehicleTime - Parameters.maxJourneyDuration;
+            currentVehicleTime = Parameters.maxJourneyDuration;
         }
 
     };
@@ -124,31 +122,29 @@ public class LabelEntry implements Comparable<LabelEntry> {
         }
 
         //initialize
-        int customerCounter = 0;
+        boolean fromDepot = true;
         int lastCustomerID = -1;
 
         //three cases, from depot to cust, cust to cust, cust to depot
         for ( int customerID : customers){
-            if (customerCounter == 0){
+            if (fromDepot){
                 vehicleTotalTravelTime +=
-                        data.distanceMatrix[data.numberOfCustomers][customerID];
+                        data.distanceMatrix[data.numberOfCustomers][customerID] + data.customers[customerID].totalUnloadingTime;
                 vehicleDrivingDistance = data.distanceMatrix[data.numberOfCustomers][customerID];
                 lastCustomerID = customerID;
-                customerCounter++;
-            }
-            else if (customerCounter == customers.size()-1){
-                vehicleTotalTravelTime +=
-                        data.distanceMatrix[customerID][data.numberOfCustomers];
-                vehicleDrivingDistance += data.distanceMatrix[customerID][data.numberOfCustomers];
+                fromDepot = false;
             }
             else {
                 vehicleTotalTravelTime +=
-                        data.distanceMatrix[lastCustomerID][customerID];
+                        data.distanceMatrix[lastCustomerID][customerID] + data.customers[customerID].totalUnloadingTime;
                 vehicleDrivingDistance += data.distanceMatrix[lastCustomerID][customerID];
                 lastCustomerID = customerID;
-                customerCounter++;
+
             }
         }
+        vehicleTotalTravelTime +=
+                data.distanceMatrix[lastCustomerID][data.numberOfCustomers];
+        vehicleDrivingDistance += data.distanceMatrix[lastCustomerID][data.numberOfCustomers];
     }
 
 
