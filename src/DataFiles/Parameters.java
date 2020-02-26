@@ -23,7 +23,7 @@ public class Parameters {
 
     //Loading data parameters
     public static final int numberOfCustomers = 10;
-    public static final int numberOfVehicles = 5;
+    public static final int numberOfVehicles = 30;
 
 
     //Traveling parameters
@@ -34,6 +34,7 @@ public class Parameters {
     public static final double initialCapacityPenalty = 1;  // lambda
     public static final double initialOvertimePenalty = 1;  // theta
     public static final double initialTimeWarpPenalty = 1;  // zeta
+    public static final double initialDrivingCostPenalty = 1; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
 
 
     //Period parameters
