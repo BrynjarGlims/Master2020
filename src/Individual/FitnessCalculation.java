@@ -2,7 +2,7 @@ package Individual;
 
 import java.util.ArrayList;
 import DataFiles.*;
-import scala.xml.PrettyPrinter;
+
 
 public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove parts of code in LabelEntryClass
 

@@ -24,8 +24,8 @@ public class AdSplit {
             resetStaticClass(ind);
         }
         if (individual.giantTour.chromosome[p][vt].size() == 0) {
-            individual.bestLabels[p][vt] = new Label(ind.data, 0, individual.orderDistribution.orderDistribution, p, vt);
-            individual.bestLabels[p][vt] = new Label(ind.data, 0, individual.orderDistribution.orderDistribution, p, vt);
+            individual.bestLabels[p][vt] = new Label(ind.data, 0, individual.orderDistribution.orderVolumeDistribution, p, vt);
+            individual.bestLabels[p][vt] = new Label(ind.data, 0, individual.orderDistribution.orderVolumeDistribution, p, vt);
             return;
         }
         //Shortest path algorithm
@@ -94,7 +94,7 @@ public class AdSplit {
                     }
                     routeTimeWarp = Math.max(0, (currentTime - individual.data.customers[customerSequence.get(j)].timeWindow[p][1]));
                     tempDistanceCost += individual.data.distanceMatrix[customerSequence.get(i)][customerSequence.get(j)] + individual.data.distanceMatrix[customerSequence.get(j)][individual.data.customers.length];
-                    loadSum = individual.orderDistribution.orderDistribution[p][customerSequence.get(j)];
+                    loadSum = individual.orderDistribution.orderVolumeDistribution[p][customerSequence.get(j)];
 
                     currentCost = (tempDistanceCost)*Parameters.initialDrivingCostPenalty
                             + routeTimeWarp*Parameters.initialTimeWarpPenalty + Parameters.initialCapacityPenalty*(Math.max(0, loadSum-individual.data.vehicleTypes[vt].capacity));
@@ -118,7 +118,7 @@ public class AdSplit {
                         if (counter != i+1) {
                             tempDistanceCost += individual.data.distanceMatrix[customerSequence.get(counter - 1)][customerSequence.get(counter)];
                         }
-                        loadSum += individual.orderDistribution.orderDistribution[p][customerSequence.get(counter)];
+                        loadSum += individual.orderDistribution.orderVolumeDistribution[p][customerSequence.get(counter)];
                     }
                     currentCost += Parameters.initialCapacityPenalty*(Math.max(0, loadSum-individual.data.vehicleTypes[vt].capacity))
                             + routeTimeWarp*Parameters.initialTimeWarpPenalty + Parameters.initialDrivingCostPenalty*(individual.data.distanceMatrix[customerSequence.get(j - 1)][customerSequence.get(j)]);
@@ -231,7 +231,7 @@ public class AdSplit {
     private static void labelingAlgorithm(int p, int vt, ArrayList<java.util.ArrayList<Integer>> listOfTrips, ArrayList<Double> arcCost) {
 
         int tripNumber = 0;
-        LabelPool currentLabelPool = new LabelPool(individual.data, listOfTrips, tripNumber, individual.orderDistribution.orderDistribution);
+        LabelPool currentLabelPool = new LabelPool(individual.data, listOfTrips, tripNumber, individual.orderDistribution.orderVolumeDistribution);
         LabelPool nextLabelPool;
 
         while(tripNumber < listOfTrips.size()) {
@@ -240,7 +240,7 @@ public class AdSplit {
                         arcCost.get(tripNumber), p, vt);
                 tripNumber++;
             } else {
-                nextLabelPool = new LabelPool(individual.data, listOfTrips, tripNumber, individual.orderDistribution.orderDistribution);
+                nextLabelPool = new LabelPool(individual.data, listOfTrips, tripNumber, individual.orderDistribution.orderVolumeDistribution);
                 nextLabelPool.generateLabels(currentLabelPool, arcCost.get(tripNumber));
                 nextLabelPool.removeDominated();
                 currentLabelPool = nextLabelPool;
