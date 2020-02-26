@@ -5,6 +5,7 @@ import DataFiles.Data;
 import DataFiles.DataReader;
 import Individual.GiantTour;
 import Individual.Individual;
+import Individual.AdSplit;
 import ProductAllocation.OrderDelivery;
 import ProductAllocation.OrderDistribution;
 
@@ -112,8 +113,12 @@ public class GiantTourCrossover {
         }
     }
 
-    private void bestInsertion(Individual child, HashMap<Integer, HashSet<Integer>> missingCustomers){
-        System.out.println("hello");
+    private void bestInsertion(Individual child, Individual parent1, Individual parent2, HashMap<Integer, HashSet<Integer>> missingCustomers){
+        for (int p : missingCustomers.keySet()){
+            for (int c : missingCustomers.get(p)){
+
+            }
+        }
     }
 
     private HashMap<Integer, HashSet<Integer>> findMissingCustomers(HashMap<Integer, HashSet<Integer>> visitedCustomers){
@@ -196,14 +201,14 @@ public class GiantTourCrossover {
         OrderDistribution orderDistribution1 = new OrderDistribution(data);
         orderDistribution1.makeInitialDistribution();
         Individual parent1 = new Individual(data);
-
         parent1.initializeIndividual();
+        AdSplit.adSplitPlural(parent1);
 
         OrderDistribution orderDistribution2 = new OrderDistribution(data);
         orderDistribution2.makeInitialDistribution();
         Individual parent2 = new Individual(data);
         parent2.initializeIndividual();
-        parent2.adSplit();
+        AdSplit.adSplitPlural(parent2);
         Individual child = GTC.crossOver(parent1, parent2);
 
     }

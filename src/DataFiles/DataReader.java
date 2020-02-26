@@ -13,7 +13,7 @@ import java.util.HashMap;
 public class DataReader {
 
 
-    public static List<String[]> readCSVFile( String file) {
+    private static List<String[]> readCSVFile( String file) {
         List<String[]> content = new ArrayList<>();
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
@@ -35,7 +35,7 @@ public class DataReader {
         return content;
     }
 
-    public static Customer[] parseOrdersFileData(List<String[]> productData){
+    private static Customer[] parseOrdersFileData(List<String[]> productData){
         List<Customer> customerList = new ArrayList<Customer>();
         List<Order> productList = new ArrayList<Order>();
         int customerID = 0;
@@ -62,7 +62,7 @@ public class DataReader {
         return convertCustomerList(customerList);
     }
 
-    public static boolean checkSplitAttribute( String flagg, int line){
+    private static boolean checkSplitAttribute( String flagg, int line){
         if (flagg.equals("Volumsplitt")){
             return true;
         }
@@ -74,7 +74,7 @@ public class DataReader {
         }
     }
 
-    public static Order[] convertProductList(List<Order> productList ){
+    private static Order[] convertProductList(List<Order> productList ){
         Order[] products = new Order[productList.size()];
         for (int i = 0; i < productList.size(); i++){
             products[i] = productList.get(i);
@@ -82,7 +82,7 @@ public class DataReader {
         return products;
     }
 
-    public static Customer[] convertCustomerList( List<Customer> customerList ){
+    private static Customer[] convertCustomerList( List<Customer> customerList ){
         Customer[] customers = new Customer[customerList.size()];
         for (int i = 0; i < customerList.size(); i++){
             customers[i] = customerList.get(i);
@@ -90,7 +90,7 @@ public class DataReader {
         return customers;
     }
 
-    public static Customer[] parseTimeWindowFileData(Customer[] customers, List<String[]> timeWindowData){
+    private static Customer[] parseTimeWindowFileData(Customer[] customers, List<String[]> timeWindowData){
         int customerCount = 0;
         double[][] timeWindow = new double[6][2];
 
@@ -111,14 +111,14 @@ public class DataReader {
         return customers;
     }
 
-    public static double[] getCoordinates(List<String[]> timeWindowData, int line){
+    private static double[] getCoordinates(List<String[]> timeWindowData, int line){
         double x_coordinate = Double.parseDouble(timeWindowData.get(line)[7]);
         double y_coordinate = Double.parseDouble(timeWindowData.get(line)[8]);
         double[] coordinates = {x_coordinate, y_coordinate};
         return coordinates;
     }
 
-    public static double[] getLoadingTime(List<String[]> timeWindowData, int line){
+    private static double[] getLoadingTime(List<String[]> timeWindowData, int line){
         double fixedLoadingTime = Double.parseDouble(timeWindowData.get(line)[9]);
         double variableLoadingTime = Double.parseDouble(timeWindowData.get(line)[10]);
         double fixedUnloadingTime = Double.parseDouble(timeWindowData.get(line)[11]);
@@ -127,7 +127,7 @@ public class DataReader {
         return loadingTimes;
     }
 
-    public static double[][] setTimeWindows (double[][] timeWindows, List<String[]> timeWindowData, int line){
+    private static double[][] setTimeWindows (double[][] timeWindows, List<String[]> timeWindowData, int line){
 
         if (!timeWindowData.get(line)[13].equals("")){
             timeWindows[0][0] = convertTimeToDouble(timeWindowData.get(line)[13]);
@@ -155,8 +155,8 @@ public class DataReader {
         }
         return timeWindows;
     }
-    
-    public static double convertTimeToDouble(String time){
+
+    private static double convertTimeToDouble(String time){
         String[] convertedTime = time.split(":");
         double number = Double.parseDouble(convertedTime[0]) + Double.parseDouble(convertedTime[1])/60 - Parameters.timeShift;
         number = inConsistencyCheck(number);
@@ -166,7 +166,7 @@ public class DataReader {
 
 
     }
-    public static double inConsistencyCheck(double number){
+    private static double inConsistencyCheck(double number){
         if (number < 0){
             return 0;
         }
@@ -178,7 +178,7 @@ public class DataReader {
         }
     }
 
-    public static Vehicle[] parseVehicleFileDataToVehicle(List<String[]> vehiclesData){
+    private static Vehicle[] parseVehicleFileDataToVehicle(List<String[]> vehiclesData){
         List<Vehicle> vehicleList = new ArrayList<>();
 
         HashMap<String, VehicleType> vehicleTypeHashMap = new HashMap<String, VehicleType>();
@@ -217,7 +217,7 @@ public class DataReader {
         return vehicles;
     }
 
-    public static Depot parseVehicleFileDataToDepot(List<String[]> vehiclesData)  {
+    private static Depot parseVehicleFileDataToDepot(List<String[]> vehiclesData)  {
 
         for (int line = 0; line < vehiclesData.size(); line++) {
             if (vehiclesData.get(line)[4].equals("TRONDHEIM")) {
@@ -232,7 +232,7 @@ public class DataReader {
 
 
 
-    public static Vehicle[] convertVehicleList( List<Vehicle> vehicleList){
+    private static Vehicle[] convertVehicleList( List<Vehicle> vehicleList){
         Vehicle[] vehicles = new Vehicle[vehicleList.size()];
         for (int i = 0; i < vehicleList.size(); i++){
             vehicles[i] = vehicleList.get(i);
@@ -243,13 +243,13 @@ public class DataReader {
 
 
 
-    public  static Customer[] removeInvalidCustomers(Customer[] customers){
+    private static Customer[] removeInvalidCustomers(Customer[] customers){
         //Function to remove invalid data
         customers = removeInvalidNonDivOrderCombination(customers);
         return customers;
     }
 
-    public static Customer[] removeInvalidNonDivOrderCombination(Customer[] customers){
+    private static Customer[] removeInvalidNonDivOrderCombination(Customer[] customers){
         List<Integer> indexes = new ArrayList<Integer>() ;
         for (int i = 0; i < customers.length; i++){
             if (customers[i].numberOfNonDividableOrders > customers[i].numberOfVisitPeriods){
@@ -260,7 +260,7 @@ public class DataReader {
         return newCustomers;
     }
 
-    public static Customer[] removeElementsInArray(Customer[] customers, List<Integer> indexes ){
+    private static Customer[] removeElementsInArray(Customer[] customers, List<Integer> indexes ){
         // Check if something is wrong
         if (customers == null || indexes.size() == 0 || indexes.size() > customers.length){
             return customers;
@@ -282,7 +282,7 @@ public class DataReader {
     };
 
 
-    public static VehicleType[] getAndOrderVehicleTypes( Vehicle[] vehicles){
+    private static VehicleType[] getAndOrderVehicleTypes( Vehicle[] vehicles){
         int vehicleTypeCounter = 0;
         HashMap<String, VehicleType> vehicleTypeHashMap = new HashMap<String, VehicleType>();
 
@@ -298,7 +298,7 @@ public class DataReader {
         return vehicleTypes;
     }
 
-    public static VehicleType[] convertHashMapToArray(HashMap<String, VehicleType> vehicleTypeHashMap) {
+    private static VehicleType[] convertHashMapToArray(HashMap<String, VehicleType> vehicleTypeHashMap) {
         VehicleType[] vehicleTypes = new VehicleType[vehicleTypeHashMap.size()];
         for (HashMap.Entry<String, VehicleType> entry : vehicleTypeHashMap.entrySet()){
             vehicleTypes[entry.getValue().vehicleTypeID] = entry.getValue();
@@ -352,7 +352,6 @@ public class DataReader {
 
     public static void main(String[] args){
         Data data = loadData();
-        System.out.println("hei");
 
     }
 

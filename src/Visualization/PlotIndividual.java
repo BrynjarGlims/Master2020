@@ -1,7 +1,7 @@
 package visualization;
 
 import DataFiles.*;
-import Individual.Individual;
+import Individual.*;
 import ProductAllocation.OrderDistribution;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
@@ -172,17 +172,10 @@ public class PlotIndividual {
     public static void main(String[] args){
         Data data = DataReader.loadData();
         OrderDistribution od = new OrderDistribution(data);
-        od.makeInitialDistribution();
-        Individual individual = new Individual(data);
-        individual.adSplit();
+
 
         //todo: implement
-        individual.giantTour.toString();
-        individual.giantTourSplit.toString();
-        individual.vehicleAssigment.toString();
 
-        PlotIndividual pi = new PlotIndividual(data);
-        pi.visualize(individual);
 
     }
 

@@ -21,7 +21,13 @@ public class VehicleAssigment {
 
 
     public void setChromosome( HashMap<Integer, Integer> chromosome , int periodID ) {
-        this.chromosome[periodID] = chromosome;
+        if (this.chromosome[periodID].isEmpty()){
+            this.chromosome[periodID] = chromosome;
+        }
+        else{
+            this.chromosome[periodID].putAll(chromosome);
+        }
+
     }
 
 }
