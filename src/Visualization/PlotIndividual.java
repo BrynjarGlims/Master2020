@@ -1,7 +1,7 @@
-package visualization;
+package Visualization;
 
 import DataFiles.*;
-import Individual.Individual;
+import Individual.*;
 import ProductAllocation.OrderDistribution;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
@@ -10,7 +10,6 @@ import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.stream.file.FileSinkImages;
 
 import java.io.IOException;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -175,12 +174,13 @@ public class PlotIndividual {
         OrderDistribution od = new OrderDistribution(data);
         od.makeDistribution();
         Individual individual = new Individual(data, od , null);
-        individual.adSplit();
+        AdSplit.
 
         //todo: implement
         individual.giantTour.toString();
         individual.giantTourSplit.toString();
         individual.vehicleAssigment.toString();
+        AdSplit.adSplitPlural(individual);
 
         PlotIndividual pi = new PlotIndividual(data);
         pi.visualize(individual);

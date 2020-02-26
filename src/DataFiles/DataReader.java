@@ -307,7 +307,7 @@ public class DataReader {
     }
 
 
-    public static Data loadData()  {
+    public static Data loadData(boolean verbose)  {
         // Master function
 
         List<String[]> orderData = DataReader.readCSVFile(Parameters.ordersFilePath);
@@ -325,11 +325,17 @@ public class DataReader {
 
 
         Data data = new     Data(customersSubset, vehiclesSubset, depot, vehicleTypes);
-        displayData(data);
+        if (verbose)
+            displayData(data);
 
         return data;
 
     }
+
+    public static Data loadData()  {
+        return loadData(false);
+    }
+
 
     public static void displayData(Data data){
         for (Customer customer :data.customers){
@@ -347,7 +353,7 @@ public class DataReader {
 
     public static void main(String[] args){
         Data data = loadData();
-        System.out.println("hei");
+
 
     }
 

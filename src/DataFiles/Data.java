@@ -33,9 +33,6 @@ public class Data {
     public int[] numberOfVehiclesInVehicleType;
 
 
-
-
-
     // Constructor
     public Data(Customer[] customers, Vehicle[] vehicles, Depot depot, VehicleType[] vehicleTypes){
         this.customers = customers;
