@@ -243,7 +243,7 @@ public class DataReader {
 
 
 
-    private  static Customer[] removeInvalidCustomers(Customer[] customers){
+    private static Customer[] removeInvalidCustomers(Customer[] customers){
         //Function to remove invalid data
         customers = removeInvalidNonDivOrderCombination(customers);
         return customers;
@@ -306,6 +306,9 @@ public class DataReader {
         return vehicleTypes;
     }
 
+    public static Data loadData(){
+        return loadData(false);
+    }
 
     public static Data loadData(boolean verbose)  {
         // Master function
@@ -324,18 +327,14 @@ public class DataReader {
         VehicleType[] vehicleTypes = getAndOrderVehicleTypes(vehiclesSubset);
 
 
-        Data data = new     Data(customersSubset, vehiclesSubset, depot, vehicleTypes);
-        if (verbose)
+        Data data = new Data(customersSubset, vehiclesSubset, depot, vehicleTypes);
+        if(verbose){
             displayData(data);
+        }
 
         return data;
 
     }
-
-    public static Data loadData()  {
-        return loadData(false);
-    }
-
 
     public static void displayData(Data data){
         for (Customer customer :data.customers){
@@ -353,7 +352,6 @@ public class DataReader {
 
     public static void main(String[] args){
         Data data = loadData();
-
 
     }
 

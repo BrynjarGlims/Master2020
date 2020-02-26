@@ -18,7 +18,7 @@ public class Population {
         this.data = data;
         this.totalPopulationSize = Parameters.populationSize;
         this.currentOrderDistribution = new OrderDistribution(this.data);
-        this.currentOrderDistribution.makeDistribution();
+        this.currentOrderDistribution.makeInitialDistribution();
         this.feasiblePopulation = new  ArrayList<Individual>();
         this.infeasiblePopulation = new  ArrayList<Individual>();
     }
@@ -26,7 +26,7 @@ public class Population {
 
     public void initializePopulation() {
         for (int i = 0; i < totalPopulationSize; i++) {
-            Individual individual = new Individual(this.data, this.currentOrderDistribution, this);
+            Individual individual = new Individual(this.data);
             if (individual.isFeasible()) {
                 feasiblePopulation.add(individual);
             }
@@ -62,8 +62,5 @@ public class Population {
     public int getIterationsWithoutImprovement(){
         return iterationsWithoutImprovement;
     }
-
-
-
 
 }

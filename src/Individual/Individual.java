@@ -2,7 +2,6 @@ package Individual;
 import DataFiles.*;
 import Population.Population;
 import ProductAllocation.OrderDistribution;
-import scala.collection.parallel.mutable.ParHashMapCombiner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,7 +29,6 @@ public class Individual {
     //// TODO: 18.02.2020 TO be removed
     public Population Population;
 
-
     //fitness values:
     public double objectiveCost;
     public double infeasibilityCost;
@@ -39,25 +37,26 @@ public class Individual {
     public double diversity = 0;
     public double biasedFitness;
 
-
-
-    public Individual(Data data, OrderDistribution orderDistribution, Population population) {
+    public Individual(Data data) {
         this.data = data;
-        this.orderDistribution = orderDistribution;
-        this.population = population;
+        this.vehicleAssigment = new VehicleAssigment(data);
+        this.giantTourSplit = new GiantTourSplit(data);
+        this.giantTour = new GiantTour(data);
+        this.orderDistribution = new OrderDistribution(data);
 
+
+    }
+
+    public void initializeIndividual() {
+        //set chromosome
+        orderDistribution.makeInitialDistribution();
+        giantTourSplit.initialize();
+        giantTour.initializeGiantTour();
 
         this.infeasibilityOverCapacityValue = 0;
         this.infeasibilityOvertimeValue = 0;
         this.infeasibilityTimeWarpValue = 0;
-
-        //set chromosome
-        this.vehicleAssigment = new VehicleAssigment(data);
-        this.giantTourSplit = new GiantTourSplit(data);
-        this.giantTour = new GiantTour(data);
-
-        this.bestLabels =new Label[data.numberOfPeriods][data.numberOfVehicleTypes];
-
+        this.bestLabels = new Label[data.numberOfPeriods][data.numberOfVehicleTypes];
     }
 
     public boolean isFeasible() {
@@ -65,6 +64,7 @@ public class Individual {
                 && infeasibilityTimeWarpValue == 0);
 
     }
+
     public boolean hasValidTimeWindows() {
         //Todo: needs to be implemented
         return true;
@@ -86,19 +86,17 @@ public class Individual {
         return rank;
     }
 
-    public double getFitness(boolean update){
-        if (update || this.fitness == Double.MAX_VALUE){
+    public double getFitness(boolean update) {
+        if (update || this.fitness == Double.MAX_VALUE) {
             updateFitness();
             return fitness;
-        }
-        else {
+        } else {
             return fitness;
         }
     }
 
 
-
-    public void updateFitness(){
+    public void updateFitness() {
         double fitness = 0;
 
         //Calculate objective costs
@@ -111,11 +109,11 @@ public class Individual {
 
     }
 
-    private double getObjectiveCost(){
+    private double getObjectiveCost() {
         objectiveCost = 0;
-        for (Label[] labels : bestLabels){
-            for (Label label : labels){
-                if (label.isEmptyLabel){
+        for (Label[] labels : bestLabels) {
+            for (Label label : labels) {
+                if (label.isEmptyLabel) {
                     continue;
                 }
                 //Adds driving cost
@@ -129,11 +127,11 @@ public class Individual {
         return objectiveCost;
     }
 
-    private double getInfeasibilityCost(){
+    private double getInfeasibilityCost() {
         double infeasibilityCost = 0;
         for (Label[] labels : bestLabels) {
             for (Label label : labels) {
-                if (label.isEmptyLabel){
+                if (label.isEmptyLabel) {
                     continue;
                 }
                 //Already added scaling parameters in label
@@ -151,29 +149,28 @@ public class Individual {
         int nbIndividuals = 0;
         if (this.isFeasible()) {
             nbIndividuals = Population.getSizeOfFeasiblePopulation();
-        }
-        else if (!this.isFeasible()) {
+        } else if (!this.isFeasible()) {
             nbIndividuals = Population.getSizeOfInfeasiblePopulation();
         }
-        double biasedFitness = (1 - (Parameters.numberOfEliteIndividuals/nbIndividuals)*getRankOfIndividual());
+        double biasedFitness = (1 - (Parameters.numberOfEliteIndividuals / nbIndividuals) * getRankOfIndividual());
         double fitnessScore = fitness + biasedFitness;
         return fitnessScore;
     }
 
-    public double calculateDiversity(Individual comparison){
+    public double calculateDiversity(Individual comparison) {
 
         return 0;
 
     }
 
-    public double hammingDistance(GiantTour gt){
+    public double hammingDistance(GiantTour gt) {
         double customerDistance = 0;
         double vehicleTypeDistance = 0;
         int vt1 = 0;
         int vt2 = 0;
         int counter1 = 0;
         int counter2 = 0;
-        for (int p = 0; p < data.numberOfPeriods; p++){
+        for (int p = 0; p < data.numberOfPeriods; p++) {
             for (int c = 0; c < data.numberOfCustomerVisitsInPeriod[p]; c++) {
                 if (gt.chromosome[p][vt2].size() == counter2) {
                     counter2 = 0;
@@ -188,33 +185,28 @@ public class Individual {
                 counter1++;
                 counter2++;
             }
-            
+
         }
-        customerDistance /= 2*data.numberOfCustomerVisitsInPlanningHorizon;
+        customerDistance /= 2 * data.numberOfCustomerVisitsInPlanningHorizon;
 
         // TODO: 26.02.2020 Check if the proportional customer distance and vehicle type distance
         return customerDistance + vehicleTypeDistance; //larger distance, more diversity
     }
 
 
-
-
-    public static void main(String[] args){
+    public static void main(String[] args) {
         Individual individual = Individual.makeIndividual();
         System.out.println("Value of fitness: " + individual.getFitness(false));
     }
 
-    public static Individual makeIndividual(){
+    public static Individual makeIndividual() {
         Data data = DataReader.loadData();
         OrderDistribution od = new OrderDistribution(data);
-        od.makeDistribution();
-        Individual individual = new Individual(data, od, null);
-        AdSplit.adSplitPlural(individual);
+        od.makeInitialDistribution();
+        Individual individual = new Individual(data);
+        individual.initializeIndividual();
         return individual;
     }
-
-
-
 }
 
 

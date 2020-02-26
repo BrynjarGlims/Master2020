@@ -1,4 +1,4 @@
-package Visualization;
+package visualization;
 
 import DataFiles.*;
 import Individual.*;
@@ -172,18 +172,10 @@ public class PlotIndividual {
     public static void main(String[] args){
         Data data = DataReader.loadData();
         OrderDistribution od = new OrderDistribution(data);
-        od.makeDistribution();
-        Individual individual = new Individual(data, od , null);
-        AdSplit.
+
 
         //todo: implement
-        individual.giantTour.toString();
-        individual.giantTourSplit.toString();
-        individual.vehicleAssigment.toString();
-        AdSplit.adSplitPlural(individual);
 
-        PlotIndividual pi = new PlotIndividual(data);
-        pi.visualize(individual);
 
     }
 
