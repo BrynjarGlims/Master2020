@@ -5,8 +5,8 @@ import DataFiles.Data;
 import DataFiles.DataReader;
 import Individual.GiantTour;
 import Individual.Individual;
+import ProductAllocation.OrderDelivery;
 import ProductAllocation.OrderDistribution;
-import org.w3c.dom.ls.LSOutput;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -22,15 +22,17 @@ public class GiantTourCrossover {
 
     }
 
-    public GiantTour crossOver(Individual parent1, Individual parent2){
-        GiantTour child = new GiantTour(data, false);
+    public Individual crossOver(Individual parent1, Individual parent2){
+        Individual child = new Individual(data);
+        OrderDistribution orderDistribution = new OrderDistribution(data);
         HashSet<Integer>[] sets = initializeSets();
         HashMap<Integer, HashSet<Integer>> visitedCustomers = new HashMap<>();
+
         for (int i = 0 ; i < data.numberOfPeriods ; i++){
             visitedCustomers.put(i, new HashSet<Integer>());
         }
 
-        inheritParent1(parent1, child, sets[0], sets[2], visitedCustomers);
+        inheritParent1(parent1, child, orderDistribution, sets[0], sets[2], visitedCustomers);
         HashSet<Integer> combined = new HashSet<>();
         combined.addAll(sets[1]);
         combined.addAll(sets[2]);
@@ -41,20 +43,27 @@ public class GiantTourCrossover {
     }
 
 
-    private void inheritParent1(Individual parent1, GiantTour child, HashSet<Integer> lambda1, HashSet<Integer> lambdaMix, HashMap<Integer, HashSet<Integer>> visitedCustomers){ //step one of vidal 2012
+    private void inheritParent1(Individual parent1, Individual child, OrderDistribution orderDistribution, HashSet<Integer> lambda1, HashSet<Integer> lambdaMix, HashMap<Integer, HashSet<Integer>> visitedCustomers){ //step one of vidal 2012
         ArrayList<Integer> copyArrayList;
+        int period;
+        int vehicleType;
         for (Integer i : lambda1){
+            period = i / data.numberOfVehicleTypes;
+            vehicleType = i % data.numberOfVehicleTypes;
             copyArrayList = new ArrayList<>(getRoute(parent1, i));
-            child.chromosome[i / data.numberOfVehicleTypes][i % data.numberOfVehicleTypes] = copyArrayList;
+            child.giantTour.chromosome[period][vehicleType] = copyArrayList;
             for (int c : copyArrayList){
-                visitedCustomers.get(i / data.numberOfVehicleTypes).add(c);
+                visitedCustomers.get(period).add(c);
+                updateOrder(parent1.orderDistribution, child.orderDistribution, period, c);
             }
         }
         int alpha;
         int beta;
         for (Integer i : lambdaMix){
+            period = i / data.numberOfVehicleTypes;
+            vehicleType = i % data.numberOfVehicleTypes;
             if (getRoute(parent1, i).isEmpty()){
-                child.chromosome[i / data.numberOfVehicleTypes][i % data.numberOfVehicleTypes] = new ArrayList<>();
+                child.giantTour.chromosome[period][vehicleType] = new ArrayList<>();
                 continue;
             }
             alpha = ThreadLocalRandom.current().nextInt(0, (getRoute(parent1, i).size() + 1));
@@ -74,31 +83,37 @@ public class GiantTourCrossover {
                     copyArrayList.add(getRoute(parent1, i).get(j));
                 }
             }
-            child.chromosome[i / data.numberOfVehicleTypes][i % data.numberOfVehicleTypes] = copyArrayList;
+            child.giantTour.chromosome[period][vehicleType] = copyArrayList;
             for (int c : copyArrayList){
-                visitedCustomers.get(i / data.numberOfVehicleTypes).add(c);
+                visitedCustomers.get(period).add(c);
+                updateOrder(parent1.orderDistribution, child.orderDistribution, period, c);
             }
         }
     }
 
-    private void inheritParent2(Individual parent2, GiantTour child, HashSet<Integer> combinedSet, HashMap<Integer, HashSet<Integer>> visitedCustomers){ //step 2 vidal
+    private void inheritParent2(Individual parent2, Individual child, HashSet<Integer> combinedSet, HashMap<Integer, HashSet<Integer>> visitedCustomers){ //step 2 vidal
         ArrayList<Integer> copyArrayList;
         int period;
         int vehicleType;
         for (Integer i : combinedSet){
             period = i / data.numberOfVehicleTypes;
             vehicleType = i % data.numberOfVehicleTypes;
-            if (child.chromosome[period][vehicleType] == null){
-                child.chromosome[period][vehicleType] = new ArrayList<>();
+            if (child.giantTour.chromosome[period][vehicleType] == null){
+                child.giantTour.chromosome[period][vehicleType] = new ArrayList<>();
                 }
-            copyArrayList = child.chromosome[period][vehicleType];
-            for (int j : getRoute(parent2, i)){
-                if (!visitedCustomers.get(period).contains(j)){
-                    copyArrayList.add(j);
-                    visitedCustomers.get(period).add(j);
+            copyArrayList = child.giantTour.chromosome[period][vehicleType];
+            for (int c : getRoute(parent2, i)){
+                if (!visitedCustomers.get(period).contains(c)){
+                    copyArrayList.add(c);
+                    updateOrder(parent2.orderDistribution, child.orderDistribution, period, c);
+                    visitedCustomers.get(period).add(c);
                 }
             }
         }
+    }
+
+    private void bestInsertion(Individual child, HashMap<Integer, HashSet<Integer>> missingCustomers){
+        System.out.println("hello");
     }
 
     private HashMap<Integer, HashSet<Integer>> findMissingCustomers(HashMap<Integer, HashSet<Integer>> visitedCustomers){
@@ -153,6 +168,22 @@ public class GiantTourCrossover {
         return sets;
     }
 
+    private void updateOrder(OrderDistribution source, OrderDistribution target, int period, int customer){
+        target.orderVolumeDistribution[period][customer] = source.orderVolumeDistribution[period][customer];
+        for (int i : source.orderIdDistribution[period][customer]){
+            target.orderIdDistribution[period][customer].add(i);
+            if (target.orderDeliveries[i] == null){
+                target.orderDeliveries[i] = new OrderDelivery(data.numberOfPeriods, data.orders[i], period, source.orderDeliveries[i].orderVolumes[period], source.orderDeliveries[i].dividable);
+            }
+            else {
+                target.orderDeliveries[i].addDelivery(period, source.orderDeliveries[i].orderVolumes[period]);
+            }
+
+        }
+
+
+    }
+
     private ArrayList<Integer> getRoute(Individual individual, int index){
         return individual.giantTour.chromosome[index / data.numberOfVehicleTypes][index % data.numberOfVehicleTypes];
     }
@@ -163,15 +194,17 @@ public class GiantTourCrossover {
 
 
         OrderDistribution orderDistribution1 = new OrderDistribution(data);
-        orderDistribution1.makeDistribution();
-        Individual parent1 = new Individual(data, orderDistribution1);
-        parent1.adSplit();
+        orderDistribution1.makeInitialDistribution();
+        Individual parent1 = new Individual(data);
+
+        parent1.initializeIndividual();
 
         OrderDistribution orderDistribution2 = new OrderDistribution(data);
-        orderDistribution2.makeDistribution();
-        Individual parent2 = new Individual(data, orderDistribution2);
+        orderDistribution2.makeInitialDistribution();
+        Individual parent2 = new Individual(data);
+        parent2.initializeIndividual();
         parent2.adSplit();
-        GiantTour child = GTC.crossOver(parent1, parent2);
+        Individual child = GTC.crossOver(parent1, parent2);
 
     }
 

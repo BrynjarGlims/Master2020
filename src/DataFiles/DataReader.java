@@ -306,8 +306,11 @@ public class DataReader {
         return vehicleTypes;
     }
 
+    public static Data loadData(){
+        return loadData(false);
+    }
 
-    public static Data loadData()  {
+    public static Data loadData(boolean verbose)  {
         // Master function
 
         List<String[]> orderData = DataReader.readCSVFile(Parameters.ordersFilePath);
@@ -324,8 +327,10 @@ public class DataReader {
         VehicleType[] vehicleTypes = getAndOrderVehicleTypes(vehiclesSubset);
 
 
-        Data data = new     Data(customersSubset, vehiclesSubset, depot, vehicleTypes);
-        displayData(data);
+        Data data = new Data(customersSubset, vehiclesSubset, depot, vehicleTypes);
+        if(verbose){
+            displayData(data);
+        }
 
         return data;
 

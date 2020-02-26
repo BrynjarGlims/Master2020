@@ -11,12 +11,10 @@ public class GiantTourSplit {
     GiantTourSplit(Data data){
         this.data = data;
         this.chromosome = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
-        initialize();
-
     }
 
 
-    private void initialize(){
+    public void initialize(){
         for (int p = 0; p < data.numberOfPeriods; p++){
             for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
                 chromosome[p][vt] = new ArrayList<Integer>();

@@ -7,6 +7,7 @@ public class Data {
 
     public Customer[] customers;
     public Vehicle[] vehicles;
+    public Order[] orders;
     public Depot depot;
     public VehicleType[] vehicleTypes;  // todo: initialize
 
@@ -99,14 +100,21 @@ public class Data {
         double totalVolume = 0;
         int numDeliveries = 0;
         for (Customer c : customers){
-            for (Order p : c.orders){
-                totalVolume += p.volume;
+            for (Order o : c.orders){
+                totalVolume += o.volume;
                 numDeliveries ++;
             }
         }
         this.numberOfDeliveries = numDeliveries;
         this.totalVolume = totalVolume;
+        this.orders = new Order[numDeliveries];
+        for (Customer c : customers){
+            for (Order o : c.orders){
+                orders[o.orderID] = o;
+            }
+        }
         targetVolume = totalVolume/ numberOfPeriods;
+
 
     }
 

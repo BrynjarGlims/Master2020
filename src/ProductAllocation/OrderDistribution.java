@@ -4,6 +4,7 @@ import DataFiles.Customer;
 import DataFiles.Data;
 import DataFiles.DataReader;
 import DataFiles.Order;
+import scala.Int;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -11,7 +12,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class OrderDistribution {
 
 
-    public double[][] orderDistribution;
+    public double[][] orderVolumeDistribution;
+    public ArrayList<Integer>[][] orderIdDistribution;
     public Data data;
     public OrderDelivery[] orderDeliveries;
     public double[] volumePerPeriod;
@@ -19,13 +21,19 @@ public class OrderDistribution {
 
     public OrderDistribution(Data data) {
         this.data = data;
-        orderDistribution = new double[data.numberOfPeriods][data.customers.length];
+        orderVolumeDistribution = new double[data.numberOfPeriods][data.customers.length];
+        orderIdDistribution = new ArrayList[data.numberOfPeriods][data.customers.length];
+        for (int row = 0 ; row < data.numberOfPeriods ; row++){
+            for (int col = 0 ; col < data.customers.length ; col++){
+                orderIdDistribution[row][col] = new ArrayList<>();
+            }
+        }
         orderDeliveries = new OrderDelivery[data.numberOfDeliveries];
         volumePerPeriod = new double[data.numberOfPeriods];
     }
 
 
-    public void makeDistribution() {
+    public void makeInitialDistribution() {
         distributeDividables();
         distributeNonDividables();
     }
@@ -136,7 +144,8 @@ public class OrderDistribution {
     }
 
     private void updateFields(Order order, int period, double volume, boolean dividable) {
-        orderDistribution[period][order.customerID] += volume;
+        orderVolumeDistribution[period][order.customerID] += volume;
+        orderIdDistribution[period][order.customerID].add(order.orderID);
         volumePerPeriod[period] += volume;
         if (dividable){
             if (orderDeliveries[order.orderID] == null){
@@ -155,9 +164,17 @@ public class OrderDistribution {
     public static void main(String[] args) {
         Data data = DataReader.loadData();
         OrderDistribution pd = new OrderDistribution(data);
-        pd.makeDistribution();
-        for (double[] period : pd.orderDistribution) {
+        pd.makeInitialDistribution();
+        for (double[] period : pd.orderVolumeDistribution) {
             System.out.println(Arrays.toString(period));
+        }
+        for (ArrayList<Integer>[] period : pd.orderIdDistribution){
+            for (ArrayList<Integer> customer : period){
+                System.out.println(customer);
+                for (int i : customer){
+                    System.out.println(pd.orderDeliveries[i]);
+                }
+            }
         }
     }
 }

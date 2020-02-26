@@ -31,25 +31,30 @@ public class Individual {
     public Population Population;
 
 
-    public Individual(Data data, OrderDistribution orderDistribution) {
+    public Individual(Data data) {
         this.data = data;
-        this.orderDistribution = orderDistribution;
+        this.vehicleAssigment = new VehicleAssigment(data);
+        this.giantTourSplit = new GiantTourSplit(data);
+        this.giantTour = new GiantTour(data);
+        this.orderDistribution = new OrderDistribution(data);
+
+
+    }
+
+    public void initializeIndividual(){
+        //set chromosome
+        orderDistribution.makeInitialDistribution();
+        giantTourSplit.initialize();
+        giantTour.initializeGiantTour();
 
         this.infeasibilityOverCapacityValue = 0;
         this.infeasibilityOvertimeValue = 0;
         this.infeasibilityTimeWarpValue = 0;
 
-        //set chromosome
-        this.vehicleAssigment = new VehicleAssigment(data);
-        this.giantTourSplit = new GiantTourSplit(data);
-        this.giantTour = new GiantTour(data);
-
         this.bestLabels = new Label[data.numberOfPeriods][data.numberOfVehicleTypes];
         this.matrixOfTrips = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
         this.matrixOfTripCosts = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
-
         this.adSplit(); //perform adSplit
-
     }
 
     public boolean isFeasible() {
@@ -106,7 +111,7 @@ public class Individual {
         for (int i = 0; i < customerSequence.size(); i++) {
             loadSum = 0;
             for( int j = i+1; j < customerSequence.size(); j++ ) {   //todo: make this a for element in list function.
-                loadSum += this.orderDistribution.orderDistribution[p][customerSequence.get(j)];
+                loadSum += this.orderDistribution.orderVolumeDistribution[p][customerSequence.get(j)];
                 if (j == (i + 1)) {
                     distanceCost = data.distanceMatrix[customerSequence.get(j)][data.customers.length];
                 } else {
@@ -179,7 +184,7 @@ public class Individual {
     public void labelingAlgorithm(int p, int vt, ArrayList<ArrayList<Integer>> listOfTrips, ArrayList<Double> arcCost) {
 
         int tripNumber = 0;
-        LabelPool currentLabelPool = new LabelPool(data, listOfTrips, tripNumber, orderDistribution.orderDistribution);
+        LabelPool currentLabelPool = new LabelPool(data, listOfTrips, tripNumber, orderDistribution.orderVolumeDistribution);
         LabelPool nextLabelPool;
 
         while(tripNumber < listOfTrips.size()) {
@@ -188,7 +193,7 @@ public class Individual {
                         arcCost.get(tripNumber), p, vt);
                 tripNumber++;
             } else {
-                nextLabelPool = new LabelPool(data, listOfTrips, tripNumber, orderDistribution.orderDistribution);
+                nextLabelPool = new LabelPool(data, listOfTrips, tripNumber, orderDistribution.orderVolumeDistribution);
                 nextLabelPool.generateLabels(currentLabelPool, arcCost.get(tripNumber));
                 nextLabelPool.removeDominated();
                 currentLabelPool = nextLabelPool;
@@ -297,9 +302,9 @@ public class Individual {
     public static void main(String[] args){
         Data data = DataReader.loadData();
         OrderDistribution od = new OrderDistribution(data);
-        od.makeDistribution();
-        Individual individual = new Individual(data, od);
-        individual.adSplit();
+        od.makeInitialDistribution();
+        Individual individual = new Individual(data);
+        individual.initializeIndividual();
 
         //todo: implement
         individual.giantTour.toString();

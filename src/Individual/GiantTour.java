@@ -11,14 +11,16 @@ import java.util.concurrent.ThreadLocalRandom;
 public class GiantTour {
 
     public ArrayList<Integer>[][] chromosome;
+    public Data data;
 
-    public GiantTour(Data data){ //save data?
-        initializeGiantTour(data);
+
+    public GiantTour(Data data){
+        this.data = data;
+        chromosome = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
     }
 
 
-
-    public void initializeGiantTour(Data data) {
+    public void initializeGiantTour() {
         constructChromosome(data.numberOfPeriods, data.numberOfVehicleTypes);
         for (Customer c : data.customers) {
             placeCustomer(c);
@@ -27,7 +29,6 @@ public class GiantTour {
     }
 
     private void constructChromosome(int numPeriods, int numVehicleTypes){
-        chromosome = new ArrayList[numPeriods][numVehicleTypes];
         for (int p = 0 ; p < numPeriods ; p++){
             for (int vt = 0 ; vt < numVehicleTypes ; vt++){
                 chromosome[p][vt] = new ArrayList<Integer>();
@@ -52,10 +53,23 @@ public class GiantTour {
         }
     }
 
+    public String toString(){
+        String out = "";
+        for (ArrayList[] i : chromosome){
+            out += "\nNEW PERIOD\n";
+            for (ArrayList list : i){
+                if (list != null){
+                    out += list.toString() + "\n";
+                }
+            }
+        }
+        return out;
+    }
+
     public static void main(String[] args){
         Data data = DataReader.loadData();
         GiantTour gt = new GiantTour(data);
-        gt.initializeGiantTour(data);
+        gt.initializeGiantTour();
 
         System.out.println(Arrays.toString(gt.chromosome));
         for (int i = 0 ; i < data.numberOfVehicleTypes ; i++) {
