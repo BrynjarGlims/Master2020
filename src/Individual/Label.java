@@ -1,5 +1,6 @@
 package Individual;
 import DataFiles.*;
+import scala.util.regexp.WordExp;
 
 
 import java.util.ArrayList;
@@ -47,7 +48,6 @@ public class Label {
         //Information attributes
         this.periodID = parentLabel.periodID;
         this.vehicleTypeID = parentLabel.vehicleTypeID;
-        this.parentLabel = parentLabel;
         this.data = parentLabel.data;
         this.orderDistribution = parentLabel.orderDistribution;
         this.tripNumber = parentLabel.tripNumber + 1;
@@ -56,15 +56,32 @@ public class Label {
 
 
         // Cost of choosing arcs from the SPA
-        this.labelEntries = parentLabel.labelEntries.clone();
+        this.cloneParentLabelEntries(parentLabel.labelEntries);
         this.labelEntries[vehicleIndex].updateArcCost(arcCost, listOfTrips.get(tripNumber));
+
         this.sortLabelEntries();
         this.deriveLabelCost();
+
+        /*
+        System.out.println(" --------------  New label  ---------------");
+        System.out.print("TimeWarpCost: " + fleetTimeWarp + "\n");
+        for(LabelEntry le : labelEntries){
+            System.out.print(le.toString());
+        }
+
+         */
     }
 
 
     private void sortLabelEntries(){
         Arrays.sort(labelEntries);
+    }
+
+    private void cloneParentLabelEntries( LabelEntry[] parentLabelEntries){
+        labelEntries = new LabelEntry[parentLabelEntries.length];
+        for (int i = 0; i < parentLabelEntries.length; i++){
+            labelEntries[i] = parentLabelEntries[i].copyLabelEntry();
+        }
     }
 
     //generate empty label
@@ -104,8 +121,21 @@ public class Label {
         this.initializeLabelEntries(periodID, vehicleTypeID);
         this.labelEntries[0].updateArcCost(arcCost, listOfTrips.get(tripNumber));
 
+
+
+
+
         //derive cost
         this.deriveLabelCost();
+
+        /*
+        System.out.println(" --------------  New label (first label)  ---------------");
+        System.out.print("TimeWarpCost: " + fleetTimeWarp + "\n");
+        for(LabelEntry le : labelEntries){
+            System.out.print(le.toString());
+        }
+
+         */
     }
 
     private void initializeLabelEntries(int periodID, int vehicleTypeID){

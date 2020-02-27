@@ -255,6 +255,7 @@ public class GiantTourCrossover {
         Individual parent2 = new Individual(data);
         parent2.initializeIndividual();
         AdSplit.adSplitPlural(parent2);
+        System.out.println("hei");
         
 
 

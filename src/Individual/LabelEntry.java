@@ -3,6 +3,8 @@ package Individual;
 import DataFiles.Data;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+
 import DataFiles.*;
 
 
@@ -52,6 +54,44 @@ public class LabelEntry implements Comparable<LabelEntry> {
         this.inUse = false;
 
     }
+
+    private LabelEntry(LabelEntry parentLabelEntry){
+        this.data = parentLabelEntry.data;
+        this.orderDistribution = parentLabelEntry.orderDistribution;
+        this.vehicleID = parentLabelEntry.vehicleID;
+        this.accumulatedTravelCost = parentLabelEntry.accumulatedTravelCost;
+        this.tripAssigment = cloneTripAssignment(parentLabelEntry.tripAssigment);
+        this.vehicleTotalTravelTime = parentLabelEntry.vehicleTotalTravelTime;
+        this.vehicleDrivingDistance = parentLabelEntry.vehicleDrivingDistance;
+        this.currentVehicleTime = parentLabelEntry.currentVehicleTime;
+        this.loadInfeasibility = parentLabelEntry.loadInfeasibility;
+        this.timeWarpInfeasibility = parentLabelEntry.timeWarpInfeasibility;
+        this.vehicleCost = parentLabelEntry.vehicleCost;
+        this.vehicleTypeID = parentLabelEntry.vehicleTypeID;
+        this.periodID = parentLabelEntry.periodID;
+        this.inUse = parentLabelEntry.inUse;
+    }
+
+
+    private ArrayList<ArrayList<Integer>> cloneTripAssignment(ArrayList<ArrayList<Integer>> prevTripAssignment){
+        ArrayList<ArrayList<Integer>> tripAssignment = new ArrayList<ArrayList<Integer>>();
+        for (ArrayList<Integer> trips : prevTripAssignment){
+            ArrayList<Integer> newTrips = new ArrayList<Integer>();
+            for (int customer : trips){
+                newTrips.add(customer);
+            }
+            tripAssignment.add(newTrips);
+        }
+        return tripAssignment;
+    }
+
+    public LabelEntry copyLabelEntry(){
+        return new LabelEntry(this);
+    }
+
+
+
+
 
     public void updateArcCost(double arcCost, ArrayList<Integer> customers){
         this.inUse = true;
@@ -104,7 +144,7 @@ public class LabelEntry implements Comparable<LabelEntry> {
         }
 
 
-    };
+    }
 
 
     private void updateLoadInfeasibility(ArrayList<Integer> customers){
@@ -114,6 +154,8 @@ public class LabelEntry implements Comparable<LabelEntry> {
         }
         this.loadInfeasibility += Math.max(0, tripLoad - data.vehicleTypes[vehicleTypeID].capacity);
     }
+
+
 
     private void updateTravelTime(ArrayList<Integer> customers){
 
@@ -127,6 +169,7 @@ public class LabelEntry implements Comparable<LabelEntry> {
         int lastCustomerID = -1;
 
         //three cases, from depot to cust, cust to cust, cust to depot
+
         for ( int customerID : customers){
             if (fromDepot){
                 vehicleTotalTravelTime +=
@@ -170,6 +213,18 @@ public class LabelEntry implements Comparable<LabelEntry> {
 
     public double getOvertimeValue() {
         return Math.max(0, vehicleTotalTravelTime - Parameters.maxJourneyDuration);
+    }
+
+    public String toString(){
+        String string = "LabelEntry vehicle ID: " + vehicleID + " with cost " + vehicleCost + " \n ";
+        for (ArrayList<Integer> trips :tripAssigment){
+            string += "trip: ";
+            for (int customer : trips){
+                string += customer + " ";
+            }
+            string += "\n ";
+        }
+        return string;
     }
 
     @Override

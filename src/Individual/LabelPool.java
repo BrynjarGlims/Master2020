@@ -37,7 +37,7 @@ public class LabelPool {
 
     public void createNewLabels(Label predecessorLabel, double arcCost){
 
-        double additionalLoadInfeasibility = 0; // TODO: 13.02.2020 IMPLEMENT
+
         int vehicleCostOrderNumber = 0;
         // Generate labels by adding cost on already existing vehicles
         while ( predecessorLabel.labelEntries[vehicleCostOrderNumber].vehicleCost != 0){
@@ -48,7 +48,7 @@ public class LabelPool {
         }
 
         // Creating labels based on a new vehicle in use.
-        if (predecessorLabel.labelEntries[predecessorLabel.labelEntries.length-1].vehicleCost == 0){
+        if (predecessorLabel.labelEntries[vehicleCostOrderNumber].vehicleCost == 0){
             labels.add(new Label(predecessorLabel, vehicleCostOrderNumber, arcCost));
         }
     }
