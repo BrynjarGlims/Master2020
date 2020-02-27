@@ -283,7 +283,7 @@ public class AdSplit {
     }
 
     //LABELING------------------------------------------------------------------------------------------------------------------------------------------------------------
-    private static void labelingAlgorithm(int p, int vt, ArrayList<java.util.ArrayList<Integer>> listOfTrips, ArrayList<Double> arcCost) {
+    private static void labelingAlgorithm(int p, int vt, ArrayList<ArrayList<Integer>> listOfTrips, ArrayList<Double> arcCost) {
 
         int tripNumber = 0;
         LabelPool currentLabelPool = new LabelPool(individual.data, listOfTrips, tripNumber, individual.orderDistribution.orderVolumeDistribution);

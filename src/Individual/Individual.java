@@ -43,14 +43,11 @@ public class Individual {
         this.giantTourSplit = new GiantTourSplit(data);
         this.giantTour = new GiantTour(data);
         this.orderDistribution = new OrderDistribution(data);
+        this.bestLabels = new Label[data.numberOfPeriods][data.numberOfVehicleTypes];
     }
 
     public Individual(Data data, Population population) {
-        this.data = data;
-        this.vehicleAssigment = new VehicleAssigment(data);
-        this.giantTourSplit = new GiantTourSplit(data);
-        this.giantTour = new GiantTour(data);
-        this.orderDistribution = new OrderDistribution(data);
+        this(data);
         this.population = population;
     }
 
@@ -65,7 +62,7 @@ public class Individual {
         this.infeasibilityOverCapacityValue = 0;
         this.infeasibilityOvertimeValue = 0;
         this.infeasibilityTimeWarpValue = 0;
-        this.bestLabels = new Label[data.numberOfPeriods][data.numberOfVehicleTypes];
+
     }
 
     public boolean isFeasible() {
@@ -198,6 +195,10 @@ public class Individual {
 
         // TODO: 26.02.2020 Check if the proportional customer distance and vehicle type distance
         return customerDistance + vehicleTypeDistance; //larger distance, more diversity
+    }
+
+    public String toString(){
+        return giantTour.toString();
     }
 
 
