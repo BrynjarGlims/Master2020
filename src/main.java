@@ -13,8 +13,7 @@ public class main {
         population.initializePopulation();
         int numberOfIterations = 0;
 
-        while ( population.getIterationsWithoutImprovement() < Parameters.maxNumberIterationsWithoutImprovement &&
-                numberOfIterations < Parameters.maxNumberOfIterations){
+        while (population.getIterationsWithoutImprovement() < Parameters.maxNumberIterationsWithoutImprovement && numberOfIterations < Parameters.maxNumberOfIterations){
             //crossover to obtain a new child
             //for the obtained child:
             //adsplit
@@ -22,10 +21,17 @@ public class main {
             //educate (with probability P_ls)
             //if (child infeasible):
                 //repair
-            //insert child into population
-            //if (population.getSize() > maxSize): select survivors
-            //adjust penalty parameters for overtimeInfeasibility, loadInfeasibility and timeWarpInfeasibility
+            //insert child into relevant subpopulation
 
+            //if (subpopulation.getSize() > maxSize): select survivors:
+            //if child.isFeasible();
+                //Population.selectFeasibleSurvivors();
+            //else
+                //population.selectInfeasibleSurvivors();
+
+
+
+            //adjust penalty parameters for overtimeInfeasibility, loadInfeasibility and timeWarpInfeasibility
             numberOfIterations++;
             System.out.println("hei");
 

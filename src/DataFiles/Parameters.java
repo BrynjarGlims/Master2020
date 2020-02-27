@@ -11,9 +11,11 @@ public class Parameters {
 
 
     //Population parameters
-    public static final int populationSize = 30;
+    public static final int maximumSubPopulationSize = 40; // A subpopulation ie either the feasile or infeasible population
+    public static final int minimumSubPopulationSize = 20;
     public static final int maxNumberIterationsWithoutImprovement = 20;
     public static final int maxNumberOfIterations = 200;
+    public static final double minimumFitnessDifferenceForClones = 10; //minimum fitness difference to encounter two individuals as clones
 
     //Decision parameters
     public static final int numberOfPeriods = 6;
