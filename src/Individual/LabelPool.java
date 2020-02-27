@@ -81,7 +81,7 @@ public class LabelPool {
     public Label findBestLabel(){
         double minCost = - Double.MAX_VALUE;
         for(Label label : labels){
-            if (label.cost > minCost)
+            if (label.costOfLabel > minCost)
                 bestLabel = label;
         }
         return bestLabel;
@@ -96,9 +96,9 @@ public class LabelPool {
                     labels.get(j).labelEntries[k].getTravelTimeValue());
         }
         firstLabelValue *= Parameters.initialOvertimePenalty;
-        firstLabelValue += labels.get(i).cost;
+        firstLabelValue += labels.get(i).costOfLabel;
 
-        double secondLabelValue = labels.get(j).cost;
+        double secondLabelValue = labels.get(j).costOfLabel;
         return firstLabelValue <= secondLabelValue;
     }
 

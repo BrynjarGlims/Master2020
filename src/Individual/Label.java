@@ -1,6 +1,7 @@
 package Individual;
 import DataFiles.*;
 
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -10,7 +11,7 @@ public class Label {
     //Lable values
 
     public Label parentLabel;
-    public double cost;
+    public double costOfLabel;
     public double fleetTravelTime;
     public double fleetOvertime;
     public double fleetOverLoad;
@@ -121,7 +122,7 @@ public class Label {
         calculateOvertimeValue();
         calculateLoadValue();
         calculateTimeWarp();
-        this.cost = fleetTravelTime + fleetOvertime + fleetOverLoad + fleetTimeWarp;
+        this.costOfLabel = fleetTravelTime + fleetOvertime + fleetOverLoad + fleetTimeWarp;
     }
 
     public void calculateTimeWarp(){
@@ -130,6 +131,8 @@ public class Label {
         for (LabelEntry labelEntry : this.labelEntries){
             fleetTimeWarp += labelEntry.getTimeWarpInfeasibility();
         }
+
+        fleetTimeWarp *= Parameters.initialTimeWarpPenalty;
 
     }
 
@@ -148,10 +151,11 @@ public class Label {
     public void calculateOvertimeValue(){
 
         fleetOvertime = 0;
-
         for (LabelEntry labelEntry : this.labelEntries){
             fleetOvertime += labelEntry.getOvertimeValue();
         }
+        fleetOvertime *= Parameters.initialOvertimePenalty;
+
 
     }
 
@@ -162,6 +166,8 @@ public class Label {
         for (LabelEntry labelEntry : this.labelEntries){
             fleetOverLoad += labelEntry.getLoadInfeasibility();
         }
+
+        fleetOverLoad *= Parameters.initialCapacityPenalty;
 
     }
 

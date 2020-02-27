@@ -60,7 +60,7 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
             timeWarpInfeasibility += currentVehicleTime - Parameters.maxJourneyDuration;
             currentVehicleTime = Parameters.maxJourneyDuration;
         }
-        return timeWarpInfeasibility* Parameters.initialTimeWarpPenalty;
+        return timeWarpInfeasibility * Parameters.initialTimeWarpPenalty;
 
 
 

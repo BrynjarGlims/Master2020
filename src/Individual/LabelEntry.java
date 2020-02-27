@@ -103,6 +103,7 @@ public class LabelEntry implements Comparable<LabelEntry> {
             currentVehicleTime = Parameters.maxJourneyDuration;
         }
 
+
     };
 
 
@@ -145,6 +146,7 @@ public class LabelEntry implements Comparable<LabelEntry> {
         vehicleTotalTravelTime +=
                 data.distanceMatrix[lastCustomerID][data.numberOfCustomers];
         vehicleDrivingDistance += data.distanceMatrix[lastCustomerID][data.numberOfCustomers];
+
     }
 
 
@@ -159,11 +161,11 @@ public class LabelEntry implements Comparable<LabelEntry> {
 
 
     public double getTimeWarpInfeasibility(){
-        return timeWarpInfeasibility;
+        return timeWarpInfeasibility ;
     }
 
     public double getLoadInfeasibility(){
-        return loadInfeasibility;
+        return loadInfeasibility ;
     }
 
     public double getOvertimeValue() {

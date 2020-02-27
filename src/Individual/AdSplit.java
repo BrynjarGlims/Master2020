@@ -25,16 +25,25 @@ public class AdSplit {
         }
         if (individual.giantTour.chromosome[p][vt].size() == 0) {
             individual.bestLabels[p][vt] = new Label(ind.data, 0, individual.orderDistribution.orderVolumeDistribution, p, vt);
-            return;
+            individual.vehicleAssigment.setChromosome(new HashMap<Integer, Integer>(), p);
+            //Set giantTourSplit
+            individual.giantTourSplit.setChromosome(new ArrayList<Integer>(), p, vt);
         }
-        //Shortest path algorithm
-        createTrips(p, vt);
-        //Labeling algorithm
-        labelingAlgorithm(p, vt, matrixOfTrips, matrixOfTripCosts);   // Sets bestLabel.
-        //Set vehicleAssignment
-        individual.vehicleAssigment.setChromosome(getVehicleAssignmentChromosome(p, vt), p);
-        //Set giantTourSplit
-        individual.giantTourSplit.setChromosome(createSplitChromosome(matrixOfTrips), p, vt);
+        else{
+            //Shortest path algorithm
+            createTrips(p, vt);
+
+            //DEBUG:
+            //testTimeWarpValues(matrixOfTrips, matrixOfTripCosts, individual.data, p , vt );
+
+            //Labeling algorithm
+            labelingAlgorithm(p, vt, matrixOfTrips, matrixOfTripCosts);   // Sets bestLabel.
+            //Set vehicleAssignment
+            individual.vehicleAssigment.setChromosome(getVehicleAssignmentChromosome(p, vt), p);
+            //Set giantTourSplit
+            individual.giantTourSplit.setChromosome(createSplitChromosome(matrixOfTrips), p, vt);
+        }
+
     }
 
     public static void adSplitSingular (Individual ind, int p, int vt) {
@@ -45,6 +54,50 @@ public class AdSplit {
         individual = ind;
         matrixOfTrips = null;
         matrixOfTripCosts = null;
+    }
+
+    public static void testTimeWarpValues(ArrayList<ArrayList<Integer>> listOfTrips, ArrayList<Double> arcCost, Data data, int p , int vt ) {
+        boolean fromDepot = true;
+        int lastCustomerID = -1;
+        double currentVehicleTime = 0;
+        double timeWarpInfeasibility = 0;
+
+        //todo: make more readable
+        for (ArrayList<Integer> trip : listOfTrips) {
+            for (int customerID : trip) {
+                if (fromDepot) {  //depot to customer
+                    currentVehicleTime = Math.max(currentVehicleTime + data.distanceMatrix[data.numberOfCustomers][customerID],
+                            data.customers[customerID].timeWindow[p][0]);
+                    if (currentVehicleTime > data.customers[customerID].timeWindow[p][1]) {
+                        timeWarpInfeasibility += currentVehicleTime - data.customers[customerID].timeWindow[p][1];
+                        currentVehicleTime = data.customers[customerID].timeWindow[p][1];
+                    }
+                    lastCustomerID = customerID;
+                    fromDepot = false;
+                } else {  //Case where one goes from customer to customer
+                    currentVehicleTime = Math.max(currentVehicleTime + data.customers[customerID].totalUnloadingTime + data.distanceMatrix[lastCustomerID][customerID],
+                            data.customers[customerID].timeWindow[p][0]);
+                    if (currentVehicleTime > data.customers[customerID].timeWindow[p][1]) {
+                        timeWarpInfeasibility += currentVehicleTime - data.customers[customerID].timeWindow[p][1];
+                        currentVehicleTime = data.customers[customerID].timeWindow[p][1];
+                    }
+                    lastCustomerID = customerID;
+                }
+            }
+            currentVehicleTime += data.customers[lastCustomerID].totalUnloadingTime +
+                    data.distanceMatrix[lastCustomerID][data.numberOfCustomers];
+            if (currentVehicleTime > Parameters.maxJourneyDuration) {
+                timeWarpInfeasibility += currentVehicleTime - Parameters.maxJourneyDuration;
+                currentVehicleTime = Parameters.maxJourneyDuration;
+            }
+
+            System.out.println("Time warp inf: " + timeWarpInfeasibility);
+
+            fromDepot = true;
+            lastCustomerID = -1;
+            currentVehicleTime = 0;
+            timeWarpInfeasibility = 0;
+        }
     }
 
     public static void adSplitPlural(Individual ind) {
@@ -218,6 +271,9 @@ public class AdSplit {
     private static ArrayList<Integer> createSplitChromosome(ArrayList<ArrayList<Integer>> customerSequence) {
         ArrayList<Integer> splits = new ArrayList<>();
         int split = 0;
+        if (customerSequence.isEmpty()){
+            return splits;
+        }
 
         for (ArrayList<Integer> tripList : customerSequence) {
             split += tripList.size();
