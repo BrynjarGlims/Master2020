@@ -1,6 +1,7 @@
 package Population;
 import DataFiles.*;
 import Individual.Individual;
+import Individual.AdSplit;
 import ProductAllocation.OrderDistribution;
 
 import java.util.ArrayList;
@@ -26,7 +27,9 @@ public class Population {
 
     public void initializePopulation() {
         for (int i = 0; i < totalPopulationSize; i++) {
-            Individual individual = new Individual(this.data);
+            Individual individual = new Individual(this.data, this);
+            individual.initializeIndividual();
+            AdSplit.adSplitPlural(individual);
             if (individual.isFeasible()) {
                 feasiblePopulation.add(individual);
             }
@@ -63,4 +66,11 @@ public class Population {
         return iterationsWithoutImprovement;
     }
 
+
+    public static void main( String[] args){
+        Data data = DataReader.loadData();
+        Population population = new Population(data);
+        population.initializePopulation();
+        System.out.println("hei");
+    }
 }

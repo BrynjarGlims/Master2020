@@ -11,7 +11,7 @@ public class Parameters {
 
 
     //Population parameters
-    public static final int populationSize = 30;
+    public static final int populationSize = 100;
     public static final int maxNumberIterationsWithoutImprovement = 20;
     public static final int maxNumberOfIterations = 200;
 
@@ -32,10 +32,10 @@ public class Parameters {
 
 
     //Penalty parameters for genetic algorithm
-    public static final double initialCapacityPenalty = 1;  // lambda
-    public static final double initialOvertimePenalty = 1;  // theta
-    public static final double initialTimeWarpPenalty = 1;  // zeta
-    public static final double initialDrivingCostPenalty = 1; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
+    public static final double initialCapacityPenalty = 0.01;  // lambda
+    public static final double initialOvertimePenalty = 0.01;  // theta
+    public static final double initialTimeWarpPenalty = 0.01;  // zeta
+    public static final double initialDrivingCostPenalty = 0.01; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
 
 
     //Period parameters

@@ -43,9 +43,18 @@ public class Individual {
         this.giantTourSplit = new GiantTourSplit(data);
         this.giantTour = new GiantTour(data);
         this.orderDistribution = new OrderDistribution(data);
-
-
     }
+
+    public Individual(Data data, Population population) {
+        this.data = data;
+        this.vehicleAssigment = new VehicleAssigment(data);
+        this.giantTourSplit = new GiantTourSplit(data);
+        this.giantTour = new GiantTour(data);
+        this.orderDistribution = new OrderDistribution(data);
+        this.population = population;
+    }
+
+
 
     public void initializeIndividual() {
         //set chromosome
@@ -196,7 +205,7 @@ public class Individual {
 
     public static void main(String[] args) {
         Individual individual = Individual.makeIndividual();
-        System.out.println("Value of fitness: " + individual.getFitness(false));
+        System.out.println("Value of fitness: " + individual.getFitness(true));
     }
 
     public static Individual makeIndividual() {
@@ -205,8 +214,11 @@ public class Individual {
         od.makeInitialDistribution();
         Individual individual = new Individual(data);
         individual.initializeIndividual();
+        AdSplit.adSplitPlural(individual);
         return individual;
     }
+
+
 }
 
 

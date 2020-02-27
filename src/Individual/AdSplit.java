@@ -25,7 +25,6 @@ public class AdSplit {
         }
         if (individual.giantTour.chromosome[p][vt].size() == 0) {
             individual.bestLabels[p][vt] = new Label(ind.data, 0, individual.orderDistribution.orderVolumeDistribution, p, vt);
-            individual.bestLabels[p][vt] = new Label(ind.data, 0, individual.orderDistribution.orderVolumeDistribution, p, vt);
             return;
         }
         //Shortest path algorithm
