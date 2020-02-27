@@ -24,18 +24,26 @@ public class AdSplit {
             resetStaticClass(ind);
         }
         if (individual.giantTour.chromosome[p][vt].size() == 0) {
-            individual.bestLabels[p][vt] = new Label(ind.data, 0, individual.orderDistribution.orderDistribution, p, vt);
-            individual.bestLabels[p][vt] = new Label(ind.data, 0, individual.orderDistribution.orderDistribution, p, vt);
-            return;
+            individual.bestLabels[p][vt] = new Label(ind.data, 0, individual.orderDistribution.orderVolumeDistribution, p, vt);
+            individual.vehicleAssigment.setChromosome(new HashMap<Integer, Integer>(), p);
+            //Set giantTourSplit
+            individual.giantTourSplit.setChromosome(new ArrayList<Integer>(), p, vt);
         }
-        //Shortest path algorithm
-        createTrips(p, vt);
-        //Labeling algorithm
-        labelingAlgorithm(p, vt, matrixOfTrips, matrixOfTripCosts);   // Sets bestLabel.
-        //Set vehicleAssignment
-        individual.vehicleAssigment.setChromosome(getVehicleAssignmentChromosome(p, vt), p);
-        //Set giantTourSplit
-        individual.giantTourSplit.setChromosome(createSplitChromosome(matrixOfTrips), p, vt);
+        else{
+            //Shortest path algorithm
+            createTrips(p, vt);
+
+            //DEBUG:
+            //testTimeWarpValues(matrixOfTrips, matrixOfTripCosts, individual.data, p , vt );
+
+            //Labeling algorithm
+            labelingAlgorithm(p, vt, matrixOfTrips, matrixOfTripCosts);   // Sets bestLabel.
+            //Set vehicleAssignment
+            individual.vehicleAssigment.setChromosome(getVehicleAssignmentChromosome(p, vt), p);
+            //Set giantTourSplit
+            individual.giantTourSplit.setChromosome(createSplitChromosome(matrixOfTrips), p, vt);
+        }
+
     }
 
     public static void adSplitSingular (Individual ind, int p, int vt) {
@@ -46,6 +54,50 @@ public class AdSplit {
         individual = ind;
         matrixOfTrips = null;
         matrixOfTripCosts = null;
+    }
+
+    public static void testTimeWarpValues(ArrayList<ArrayList<Integer>> listOfTrips, ArrayList<Double> arcCost, Data data, int p , int vt ) {
+        boolean fromDepot = true;
+        int lastCustomerID = -1;
+        double currentVehicleTime = 0;
+        double timeWarpInfeasibility = 0;
+
+        //todo: make more readable
+        for (ArrayList<Integer> trip : listOfTrips) {
+            for (int customerID : trip) {
+                if (fromDepot) {  //depot to customer
+                    currentVehicleTime = Math.max(currentVehicleTime + data.distanceMatrix[data.numberOfCustomers][customerID],
+                            data.customers[customerID].timeWindow[p][0]);
+                    if (currentVehicleTime > data.customers[customerID].timeWindow[p][1]) {
+                        timeWarpInfeasibility += currentVehicleTime - data.customers[customerID].timeWindow[p][1];
+                        currentVehicleTime = data.customers[customerID].timeWindow[p][1];
+                    }
+                    lastCustomerID = customerID;
+                    fromDepot = false;
+                } else {  //Case where one goes from customer to customer
+                    currentVehicleTime = Math.max(currentVehicleTime + data.customers[customerID].totalUnloadingTime + data.distanceMatrix[lastCustomerID][customerID],
+                            data.customers[customerID].timeWindow[p][0]);
+                    if (currentVehicleTime > data.customers[customerID].timeWindow[p][1]) {
+                        timeWarpInfeasibility += currentVehicleTime - data.customers[customerID].timeWindow[p][1];
+                        currentVehicleTime = data.customers[customerID].timeWindow[p][1];
+                    }
+                    lastCustomerID = customerID;
+                }
+            }
+            currentVehicleTime += data.customers[lastCustomerID].totalUnloadingTime +
+                    data.distanceMatrix[lastCustomerID][data.numberOfCustomers];
+            if (currentVehicleTime > Parameters.maxJourneyDuration) {
+                timeWarpInfeasibility += currentVehicleTime - Parameters.maxJourneyDuration;
+                currentVehicleTime = Parameters.maxJourneyDuration;
+            }
+
+            System.out.println("Time warp inf: " + timeWarpInfeasibility);
+
+            fromDepot = true;
+            lastCustomerID = -1;
+            currentVehicleTime = 0;
+            timeWarpInfeasibility = 0;
+        }
     }
 
     public static void adSplitPlural(Individual ind) {
@@ -59,7 +111,7 @@ public class AdSplit {
 
     //SHORTEST PATH --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    public static void createTrips(int p, int vt) {
+    private static void createTrips(int p, int vt) {
         ArrayList<Integer> customerSequence = (ArrayList<Integer>) individual.giantTour.chromosome[p][vt].clone();  //// TODO: 18.02.2020 Brynjar: is this superfast or only fast?
         //insert depot to be in the 0th position
         customerSequence.add(0, individual.data.customers.length);
@@ -94,7 +146,7 @@ public class AdSplit {
                     }
                     routeTimeWarp = Math.max(0, (currentTime - individual.data.customers[customerSequence.get(j)].timeWindow[p][1]));
                     tempDistanceCost += individual.data.distanceMatrix[customerSequence.get(i)][customerSequence.get(j)] + individual.data.distanceMatrix[customerSequence.get(j)][individual.data.customers.length];
-                    loadSum = individual.orderDistribution.orderDistribution[p][customerSequence.get(j)];
+                    loadSum = individual.orderDistribution.orderVolumeDistribution[p][customerSequence.get(j)];
 
                     currentCost = (tempDistanceCost)*Parameters.initialDrivingCostPenalty
                             + routeTimeWarp*Parameters.initialTimeWarpPenalty + Parameters.initialCapacityPenalty*(Math.max(0, loadSum-individual.data.vehicleTypes[vt].capacity));
@@ -118,7 +170,7 @@ public class AdSplit {
                         if (counter != i+1) {
                             tempDistanceCost += individual.data.distanceMatrix[customerSequence.get(counter - 1)][customerSequence.get(counter)];
                         }
-                        loadSum += individual.orderDistribution.orderDistribution[p][customerSequence.get(counter)];
+                        loadSum += individual.orderDistribution.orderVolumeDistribution[p][customerSequence.get(counter)];
                     }
                     currentCost += Parameters.initialCapacityPenalty*(Math.max(0, loadSum-individual.data.vehicleTypes[vt].capacity))
                             + routeTimeWarp*Parameters.initialTimeWarpPenalty + Parameters.initialDrivingCostPenalty*(individual.data.distanceMatrix[customerSequence.get(j - 1)][customerSequence.get(j)]);
@@ -199,7 +251,7 @@ public class AdSplit {
     }
 
 
-    public static HashMap<Integer, Integer> getVehicleAssignmentChromosome(int p, int vt){
+    private static HashMap<Integer, Integer> getVehicleAssignmentChromosome(int p, int vt){
         HashMap<Integer, Integer> hashMap = new HashMap<Integer, Integer>();
         if (individual.giantTour.chromosome[p][vt].size()==0 ) {
             return hashMap;
@@ -216,9 +268,12 @@ public class AdSplit {
 
 
 
-    public static ArrayList<Integer> createSplitChromosome(ArrayList<ArrayList<Integer>> customerSequence) {
+    private static ArrayList<Integer> createSplitChromosome(ArrayList<ArrayList<Integer>> customerSequence) {
         ArrayList<Integer> splits = new ArrayList<>();
         int split = 0;
+        if (customerSequence.isEmpty()){
+            return splits;
+        }
 
         for (ArrayList<Integer> tripList : customerSequence) {
             split += tripList.size();
@@ -228,10 +283,10 @@ public class AdSplit {
     }
 
     //LABELING------------------------------------------------------------------------------------------------------------------------------------------------------------
-    public static void labelingAlgorithm(int p, int vt, ArrayList<java.util.ArrayList<Integer>> listOfTrips, ArrayList<Double> arcCost) {
+    private static void labelingAlgorithm(int p, int vt, ArrayList<ArrayList<Integer>> listOfTrips, ArrayList<Double> arcCost) {
 
         int tripNumber = 0;
-        LabelPool currentLabelPool = new LabelPool(individual.data, listOfTrips, tripNumber, individual.orderDistribution.orderDistribution);
+        LabelPool currentLabelPool = new LabelPool(individual.data, listOfTrips, tripNumber, individual.orderDistribution.orderVolumeDistribution);
         LabelPool nextLabelPool;
 
         while(tripNumber < listOfTrips.size()) {
@@ -240,7 +295,7 @@ public class AdSplit {
                         arcCost.get(tripNumber), p, vt);
                 tripNumber++;
             } else {
-                nextLabelPool = new LabelPool(individual.data, listOfTrips, tripNumber, individual.orderDistribution.orderDistribution);
+                nextLabelPool = new LabelPool(individual.data, listOfTrips, tripNumber, individual.orderDistribution.orderVolumeDistribution);
                 nextLabelPool.generateLabels(currentLabelPool, arcCost.get(tripNumber));
                 nextLabelPool.removeDominated();
                 currentLabelPool = nextLabelPool;
@@ -252,14 +307,14 @@ public class AdSplit {
         }
     }
 
-    public static double[] getInitialCostLabel(int size){
+    private static double[] getInitialCostLabel(int size){
         double[] costLabel =  new double[size];
         Arrays.fill(costLabel, 100000);
         costLabel[0] = 0;
         return costLabel;
     }
 
-    public static int[] getInitialPredecessorLabel(int size){
+    private static int[] getInitialPredecessorLabel(int size){
         int[] predecessorLabel =  new int[size];
         Arrays.fill(predecessorLabel, 0);
         return predecessorLabel;

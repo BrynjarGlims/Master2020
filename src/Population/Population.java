@@ -1,6 +1,7 @@
 package Population;
 import DataFiles.*;
 import Individual.Individual;
+import Individual.AdSplit;
 import ProductAllocation.OrderDistribution;
 import scala.xml.PrettyPrinter;
 
@@ -25,15 +26,12 @@ public class Population {
 
 
     public void initializePopulation() {
-        for (int i = 0; i < 4*Parameters.minimumSubPopulationSize; i++) {
-            Individual individual = new Individual(this.data, this.currentOrderDistribution, this);
-            //individual.educate();
-            Random r = new Random();
-            double repairProbability = r.nextDouble();
-            if (repairProbability >= 0.5) {
-                //individual.repair()
-            }
-            //
+        for (int i = 0; i < totalPopulationSize; i++) {
+            Individual individual = new Individual(this.data, this);
+            individual.initializeIndividual();
+            AdSplit.adSplitPlural(individual);
+            individual.updateFitness();
+
             if (individual.isFeasible()) {
                 feasiblePopulation.add(individual);
                 if (getSizeOfFeasiblePopulation() > Parameters.maximumSubPopulationSize) {
@@ -76,7 +74,7 @@ public class Population {
         }
 
         for (int i = 0; i < (getSizeOfFeasiblePopulation() - Parameters.minimumSubPopulationSize); i++) {
-            setOfAllClones.sort(); //TODO: find a way to sort individuals based on fitness
+            //setOfAllClones.sort(); //TODO: find a way to sort individuals based on fitness
         }
         //X = set of individuals with clones
         //if X not empty:
@@ -122,6 +120,10 @@ public class Population {
     }
 
 
-
-
+    public static void main( String[] args){
+        Data data = DataReader.loadData();
+        Population population = new Population(data);
+        population.initializePopulation();
+        System.out.println("hei");
+    }
 }

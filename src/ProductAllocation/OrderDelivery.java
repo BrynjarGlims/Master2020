@@ -1,18 +1,12 @@
 package ProductAllocation;
 
-import DataFiles.Data;
 import DataFiles.Order;
 
-import java.util.ArrayList;
-
 public class OrderDelivery { 
-
 
     private Order order;
     public double[] orderVolumes;
     public int[] orderPeriods;
-    public int period;
-    public double volume;
     public boolean dividable;
 
 
@@ -30,9 +24,22 @@ public class OrderDelivery {
         orderPeriods[period] = 1;
     }
 
-    public void removeDeliver(int period){
+    public void removeDelivery(int period){
         orderVolumes[period] = 0;
         orderPeriods[period] = 0;
+    }
+
+
+    public String toString(){
+        String out = "";
+        out += "Order: " + order.orderID;
+        out += "\nDividable: " + dividable;
+        for (int i = 0; i < orderPeriods.length ; i++){
+            if (orderPeriods[i] == 1){
+                out += "\nPeriod: " + i + "  Volume: " + orderVolumes[i];
+            }
+        }
+        return out;
     }
 
 

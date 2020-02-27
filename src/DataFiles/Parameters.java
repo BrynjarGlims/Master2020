@@ -13,6 +13,7 @@ public class Parameters {
     //Population parameters
     public static final int maximumSubPopulationSize = 40; // A subpopulation ie either the feasile or infeasible population
     public static final int minimumSubPopulationSize = 20;
+
     public static final int maxNumberIterationsWithoutImprovement = 20;
     public static final int maxNumberOfIterations = 200;
     public static final double minimumFitnessDifferenceForClones = 10; //minimum fitness difference to encounter two individuals as clones
@@ -24,7 +25,7 @@ public class Parameters {
     public static final int maxPopulationSize = 100; //TODO: find reasonable value
 
     //Loading data parameters
-    public static final int numberOfCustomers = 10;
+    public static final int numberOfCustomers = 100;
     public static final int numberOfVehicles = 30;
 
 
@@ -34,10 +35,10 @@ public class Parameters {
 
 
     //Penalty parameters for genetic algorithm
-    public static final double initialCapacityPenalty = 1;  // lambda
-    public static final double initialOvertimePenalty = 1;  // theta
-    public static final double initialTimeWarpPenalty = 1;  // zeta
-    public static final double initialDrivingCostPenalty = 1; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
+    public static final double initialCapacityPenalty = 0.01;  // lambda
+    public static final double initialOvertimePenalty = 0.01;  // theta
+    public static final double initialTimeWarpPenalty = 0.01;  // zeta
+    public static final double initialDrivingCostPenalty = 0.01; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
 
 
     //Period parameters
