@@ -30,6 +30,7 @@ public class Population {
             Individual individual = new Individual(this.data, this);
             individual.initializeIndividual();
             AdSplit.adSplitPlural(individual);
+            individual.updateFitness();
             if (individual.isFeasible()) {
                 feasiblePopulation.add(individual);
             }

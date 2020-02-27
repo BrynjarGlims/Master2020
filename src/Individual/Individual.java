@@ -66,8 +66,7 @@ public class Individual {
     }
 
     public boolean isFeasible() {
-        return (infeasibilityOverCapacityValue == 0 && infeasibilityOvertimeValue == 0
-                && infeasibilityTimeWarpValue == 0);
+        return (infeasibilityCost == 0);
 
     }
 
@@ -134,19 +133,18 @@ public class Individual {
     }
 
     private double getInfeasibilityCost() {
-        double infeasibilityCost = 0;
         for (Label[] labels : bestLabels) {
             for (Label label : labels) {
                 if (label.isEmptyLabel) {
                     continue;
                 }
                 //Already added scaling parameters in label
-                infeasibilityCost += label.getTimeWarpInfeasibility();
-                infeasibilityCost += label.getLoadInfeasibility();
-                infeasibilityCost += label.getOvertimeInfeasibility();
+                infeasibilityTimeWarpValue += label.getTimeWarpInfeasibility();
+                infeasibilityOverCapacityValue += label.getLoadInfeasibility();
+                infeasibilityOvertimeValue += label.getOvertimeInfeasibility();
             }
         }
-        return infeasibilityCost;
+        return infeasibilityOvertimeValue + infeasibilityOverCapacityValue + infeasibilityTimeWarpValue;
     }
 
     public double getIndividualBiasedFitnessScore() {
