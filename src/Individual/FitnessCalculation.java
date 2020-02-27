@@ -1,22 +1,23 @@
 package Individual;
 
 import java.util.ArrayList;
+import java.util.List;
+
 import DataFiles.*;
 
 
 public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove parts of code in LabelEntryClass
 
-    public static double getTripFitness(ArrayList<Integer> customerOrder, int vt, int p, double[][] orderDistribution, Data data){
+    public static double getTripFitness(List<Integer> customerOrder, int vt, int p, double[][] orderDistribution, Data data){
         double fitness = 0;
         fitness += overloadScore(customerOrder, vt, p, orderDistribution, data);
         fitness += travelingDistanceScoreAndOvertimeScore(customerOrder, vt, p, orderDistribution, data);
         fitness += timeWarpScore(customerOrder, vt, p, orderDistribution, data);
         return fitness;
-
-
     }
 
-    private static double overloadScore(ArrayList<Integer> customerOrder, int vt, int p, double[][] orderDistribution,  Data data){
+
+    private static double overloadScore(List<Integer> customerOrder, int vt, int p, double[][] orderDistribution,  Data data){
         double load = 0;
         for (int customerID : customerOrder){
             load += orderDistribution[p][customerID];
@@ -25,7 +26,7 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
 
     }
 
-    private static double timeWarpScore(ArrayList<Integer> customerOrder, int vt, int p, double[][] orderDistribution,  Data data){
+    private static double timeWarpScore(List<Integer> customerOrder, int vt, int p, double[][] orderDistribution,  Data data){
         boolean fromDepot = true;
         int lastCustomerID = -1;
         double currentVehicleTime = 0;
@@ -61,13 +62,9 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
             currentVehicleTime = Parameters.maxJourneyDuration;
         }
         return timeWarpInfeasibility* Parameters.initialTimeWarpPenalty;
-
-
-
-
     }
 
-    private static double travelingDistanceScoreAndOvertimeScore(ArrayList<Integer> customerOrder, int vt, int p, double[][] orderDistribution,  Data data){
+    private static double travelingDistanceScoreAndOvertimeScore(List<Integer> customerOrder, int vt, int p, double[][] orderDistribution,  Data data){
         //initialize
         int customerCounter = 0;
         int lastCustomerID = -1;
@@ -97,9 +94,6 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
         vehicleTotalTravelTime *= Parameters.initialOvertimePenalty;
         vehicleDrivingDistance *= Parameters.initialDrivingCostPenalty;
         return vehicleDrivingDistance + vehicleTotalTravelTime;
-
-
-        
     }
 
 }

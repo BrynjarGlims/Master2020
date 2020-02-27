@@ -39,7 +39,7 @@ public class GiantTourCrossover {
         combined.addAll(sets[1]);
         combined.addAll(sets[2]);
         inheritParent2(parent2, child, combined, visitedCustomers);
-        findMissingCustomers(visitedCustomers);
+        bestInsertion(child, parent1, parent2, findMissingCustomers(visitedCustomers));
 
         return child;
     }
@@ -116,19 +116,50 @@ public class GiantTourCrossover {
 
     private void bestInsertion(Individual child, Individual parent1, Individual parent2, HashMap<Integer, HashSet<Integer>> missingCustomers){
         double currentBestFitness;
-        ArrayList<Integer> customerSequence;
+        List<Integer> customerSequence;
         Individual currentParent;
+        int from;
+        double tripFitness;
+        double tempTripFitness;
+        int currentBestVehicleType = 0;
+        List<Integer> currentBestSequence = null;
         for (int p : missingCustomers.keySet()){
             for (int c : missingCustomers.get(p)){
                 currentBestFitness = Double.MAX_VALUE;
+                customerSequence = new ArrayList<>();
                 currentParent = ThreadLocalRandom.current().nextInt(0,2) == 0 ? parent1 : parent2;
                 for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
-                    customerSequence = new ArrayList<>();
                     customerSequence.add(c);
-                    currentBestFitness = Math.min(currentBestFitness, FitnessCalculation.getTripFitness(customerSequence, vt, p, currentParent.orderDistribution.orderVolumeDistribution, data));
-                    // TODO: 26.02.2020 check for all possible trips in child chromosome 
+                    tempTripFitness = FitnessCalculation.getTripFitness(customerSequence, vt, p, currentParent.orderDistribution.orderVolumeDistribution, data);
+                    if (tempTripFitness < currentBestFitness){
+                        currentBestFitness = tempTripFitness;
+                        currentBestSequence = customerSequence;
+                        currentBestVehicleType = vt;
+                    }
+                    AdSplit.adSplitSingular(child, p, vt);
+                    for (int trip = 0 ; trip <= child.giantTourSplit.chromosome[p][vt].size() ; trip++){
+                        from = trip - 1 == -1 ? 0 : child.giantTourSplit.chromosome[p][vt].get(trip - 1);
+                        customerSequence = new LinkedList<>(child.giantTour.chromosome[p][vt].subList(from, child.giantTourSplit.chromosome[p][vt].get(trip)));
+                        tripFitness = FitnessCalculation.getTripFitness(customerSequence, vt, p, child.orderDistribution.orderVolumeDistribution, data);
+                        for (int i = 0 ; i < customerSequence.size() ; i++){
+                            customerSequence.add(i, c);
+                            tempTripFitness = FitnessCalculation.getTripFitness(customerSequence, vt, p, child.orderDistribution.orderVolumeDistribution, data);
+                            if(tempTripFitness - tripFitness < currentBestFitness){
+                                currentBestSequence = new ArrayList<>(customerSequence);
+                                currentBestFitness = tripFitness - currentBestFitness;
+                                currentBestVehicleType = vt;
+                            }
+                            customerSequence.remove(c);
+                        }
+                    }
 
 
+                }
+                if (currentBestSequence.size() == 1){
+                    child.giantTour.chromosome[p][currentBestVehicleType].add(currentBestSequence.get(0));
+                }
+                else{
+                    child.giantTour.chromosome[p][currentBestVehicleType] = (ArrayList<Integer>) currentBestSequence;
                 }
             }
         }
@@ -223,6 +254,20 @@ public class GiantTourCrossover {
         parent2.initializeIndividual();
         AdSplit.adSplitPlural(parent2);
         Individual child = GTC.crossOver(parent1, parent2);
+
+        ArrayList<Integer> arraylist = new ArrayList<>();
+        arraylist.add(5);
+        arraylist.add(4);
+        List<Integer> linkedlist = new LinkedList<>(arraylist);
+
+        linkedlist.add(3);
+        System.out.println(arraylist);
+        System.out.println(linkedlist);
+        for (int i = 0 ; i <= linkedlist.size() ; i++){
+            linkedlist.add(i, 10);
+            System.out.println(linkedlist);
+            linkedlist.remove(i);
+        }
 
     }
 
