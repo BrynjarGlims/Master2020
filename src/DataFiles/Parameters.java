@@ -22,7 +22,7 @@ public class Parameters {
     public static final int maxPopulationSize = 100; //TODO: find reasonable value
 
     //Loading data parameters
-    public static final int numberOfCustomers = 10;
+    public static final int numberOfCustomers = 30;
     public static final int numberOfVehicles = 30;
 
 

@@ -297,7 +297,7 @@ public class AdSplit {
             } else {
                 nextLabelPool = new LabelPool(individual.data, listOfTrips, tripNumber, individual.orderDistribution.orderVolumeDistribution);
                 nextLabelPool.generateLabels(currentLabelPool, arcCost.get(tripNumber));
-                nextLabelPool.removeDominated();
+                //nextLabelPool.removeDominated();
                 currentLabelPool = nextLabelPool;
                 tripNumber++;
             }
