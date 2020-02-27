@@ -197,6 +197,10 @@ public class Individual {
         return customerDistance + vehicleTypeDistance; //larger distance, more diversity
     }
 
+    public String toString(){
+        return giantTour.toString();
+    }
+
 
     public static void main(String[] args) {
         Individual individual = Individual.makeIndividual();

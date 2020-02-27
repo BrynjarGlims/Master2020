@@ -10,6 +10,7 @@ import Individual.FitnessCalculation;
 import ProductAllocation.OrderDelivery;
 import ProductAllocation.OrderDistribution;
 
+import java.sql.SQLOutput;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -17,6 +18,7 @@ public class GiantTourCrossover {
 
     static Data data;
     static int numPeriodVehicleTypeCouples;
+    public static int count = 0;
 
     public GiantTourCrossover(Data data){
         this.data = data;
@@ -40,7 +42,7 @@ public class GiantTourCrossover {
         combined.addAll(sets[2]);
         inheritParent2(parent2, child, combined, visitedCustomers);
         bestInsertion(child, parent1, parent2, findMissingCustomers(visitedCustomers));
-
+        AdSplit.adSplitPlural(child);
         return child;
     }
 
@@ -136,12 +138,13 @@ public class GiantTourCrossover {
                         currentBestSequence = customerSequence;
                         currentBestVehicleType = vt;
                     }
+                    count++;
                     AdSplit.adSplitSingular(child, p, vt);
-                    for (int trip = 0 ; trip <= child.giantTourSplit.chromosome[p][vt].size() ; trip++){
+                    for (int trip = 0 ; trip < child.giantTourSplit.chromosome[p][vt].size() ; trip++){
                         from = trip - 1 == -1 ? 0 : child.giantTourSplit.chromosome[p][vt].get(trip - 1);
                         customerSequence = new LinkedList<>(child.giantTour.chromosome[p][vt].subList(from, child.giantTourSplit.chromosome[p][vt].get(trip)));
                         tripFitness = FitnessCalculation.getTripFitness(customerSequence, vt, p, child.orderDistribution.orderVolumeDistribution, data);
-                        for (int i = 0 ; i < customerSequence.size() ; i++){
+                        for (int i = 0 ; i <= customerSequence.size() ; i++){
                             customerSequence.add(i, c);
                             tempTripFitness = FitnessCalculation.getTripFitness(customerSequence, vt, p, child.orderDistribution.orderVolumeDistribution, data);
                             if(tempTripFitness - tripFitness < currentBestFitness){
@@ -149,17 +152,17 @@ public class GiantTourCrossover {
                                 currentBestFitness = tripFitness - currentBestFitness;
                                 currentBestVehicleType = vt;
                             }
-                            customerSequence.remove(c);
+                            customerSequence.remove(i);
                         }
                     }
-
-
                 }
                 if (currentBestSequence.size() == 1){
                     child.giantTour.chromosome[p][currentBestVehicleType].add(currentBestSequence.get(0));
+                    updateOrder(currentParent.orderDistribution, child.orderDistribution, p, c);
                 }
                 else{
                     child.giantTour.chromosome[p][currentBestVehicleType] = (ArrayList<Integer>) currentBestSequence;
+                    updateOrder(currentParent.orderDistribution, child.orderDistribution, p, c);
                 }
             }
         }
@@ -174,7 +177,6 @@ public class GiantTourCrossover {
             for (int i = 0 ; i < data.numberOfPeriods ; i++){
                 if (c.requiredVisitPeriod[i] == 1 && !visitedCustomers.get(i).contains(c.customerID)){
                     missingCustomers.get(i).add(c.customerID);
-                    System.out.println("found missing customer: " + c.customerID);
                 }
             }
         }
@@ -253,21 +255,9 @@ public class GiantTourCrossover {
         Individual parent2 = new Individual(data);
         parent2.initializeIndividual();
         AdSplit.adSplitPlural(parent2);
-        Individual child = GTC.crossOver(parent1, parent2);
+        
 
-        ArrayList<Integer> arraylist = new ArrayList<>();
-        arraylist.add(5);
-        arraylist.add(4);
-        List<Integer> linkedlist = new LinkedList<>(arraylist);
 
-        linkedlist.add(3);
-        System.out.println(arraylist);
-        System.out.println(linkedlist);
-        for (int i = 0 ; i <= linkedlist.size() ; i++){
-            linkedlist.add(i, 10);
-            System.out.println(linkedlist);
-            linkedlist.remove(i);
-        }
 
     }
 
