@@ -3,10 +3,12 @@ package Individual;
 import DataFiles.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+
 
 public class LabelPool {
 
-    ArrayList<Label> labels;
+    HashSet<Label> labels;
     Data data;
     Label bestLabel = null;
     ArrayList<ArrayList<Integer>> listOfTrips;
@@ -14,7 +16,7 @@ public class LabelPool {
     double[][] orderDistribution;
 
     public LabelPool (Data data, ArrayList<ArrayList<Integer>> listOfTrips, int tripNumber, double[][] orderDistribution){
-        this.labels = new ArrayList<Label>();
+        this.labels = new HashSet<>();
         this.data = data;
         this.listOfTrips = listOfTrips;
         this.tripNumber = tripNumber;
@@ -54,26 +56,22 @@ public class LabelPool {
     }
 
     public void removeDominated(){
-        for(int i = 0; i < labels.size() - 1; i++ ){
-            for (int j = i; j < labels.size(); j++){
-                this.isDominated(i,j);
+        HashSet<Label> tempLabelSet = (HashSet<Label>) labels.clone();
+        for(Label firstLabel : labels){
+            for(Label secondLabel : tempLabelSet){
+                if (firstLabel.equals(secondLabel)){
+                    continue;
+                }
+                if (checkDominance(secondLabel, firstLabel)){
+                    labels.remove(firstLabel);
+                    break;
+                }
             }
         }
     }
 
-    public void isDominated(int i, int j){
-        if (checkDominance(i,j)){
-            labels.remove(j);
-            //System.out.println("Label removed!");
-        }
-        else if (checkDominance(j,i)){
-            labels.remove(i);
-            //System.out.println("Label removed!");
-        }
 
-    }
-
-    public  ArrayList<Label> getLabels(){
+    public  HashSet<Label> getLabels(){
         return this.labels;
     }
 
@@ -88,17 +86,17 @@ public class LabelPool {
     }
 
 
-    public boolean checkDominance(int i, int j){
+    public boolean checkDominance(Label firstLabel, Label secondLabel){
         double firstLabelValue = 0;
 
-        for(int k = 0; k < labels.get(i).labelEntries.length; k++){
-            firstLabelValue += deltaFunction(labels.get(i).labelEntries[k].getTravelTimeValue(),
-                    labels.get(j).labelEntries[k].getTravelTimeValue());
+        for(int k = 0; k < firstLabel.labelEntries.length; k++){
+            firstLabelValue += deltaFunction(firstLabel.labelEntries[k].getTravelTimeValue(),
+                    secondLabel.labelEntries[k].getTravelTimeValue());
         }
         firstLabelValue *= Parameters.initialOvertimePenalty;
-        firstLabelValue += labels.get(i).costOfLabel;
+        firstLabelValue += firstLabel.costOfLabel;
 
-        double secondLabelValue = labels.get(j).costOfLabel;
+        double secondLabelValue = secondLabel.costOfLabel;
         return firstLabelValue <= secondLabelValue;
     }
 

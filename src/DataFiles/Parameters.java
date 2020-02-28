@@ -11,7 +11,7 @@ public class Parameters {
 
 
     //Population parameters
-    public static final int populationSize = 1000;
+    public static final int populationSize = 2;
     public static final int maxNumberIterationsWithoutImprovement = 20;
     public static final int maxNumberOfIterations = 200;
 
