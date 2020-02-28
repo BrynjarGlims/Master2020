@@ -2,6 +2,7 @@ package Individual;
 
 import DataFiles.*;
 
+import javax.swing.text.LabelView;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -57,13 +58,13 @@ public class LabelPool {
 
     public void removeDominated(){
         HashSet<Label> tempLabelSet = (HashSet<Label>) labels.clone();
-        for(Label firstLabel : labels){
-            for(Label secondLabel : tempLabelSet){
+        for(Label firstLabel : tempLabelSet){
+            for(Label secondLabel : labels){
                 if (firstLabel.equals(secondLabel)){
                     continue;
                 }
-                if (checkDominance(secondLabel, firstLabel)){
-                    labels.remove(firstLabel);
+                if (checkDominance(firstLabel, secondLabel)){
+                    labels.remove(secondLabel);
                     break;
                 }
             }
@@ -86,20 +87,23 @@ public class LabelPool {
     }
 
 
-    public boolean checkDominance(Label firstLabel, Label secondLabel){
+    private boolean checkDominance(Label firstLabel, Label secondLabel){
         double firstLabelValue = 0;
-
-        for(int k = 0; k < firstLabel.labelEntries.length; k++){
-            firstLabelValue += deltaFunction(firstLabel.labelEntries[k].getTravelTimeValue(),
-                    secondLabel.labelEntries[k].getTravelTimeValue());
-        }
+        firstLabelValue += calculateDeltaSumValue(firstLabel.labelEntries, secondLabel.labelEntries);
         firstLabelValue *= Parameters.initialOvertimePenalty;
         firstLabelValue += firstLabel.costOfLabel;
-
         double secondLabelValue = secondLabel.costOfLabel;
         return firstLabelValue <= secondLabelValue;
     }
 
+    private double calculateDeltaSumValue(LabelEntry[] firstLabelEntries, LabelEntry[] secondLabelEntries){
+        double sum = 0;
+        for(int k = 0; k < firstLabelEntries.length; k++){
+            sum += deltaFunction(firstLabelEntries[k].getTravelTimeValue(),
+                    secondLabelEntries[k].getTravelTimeValue());
+        }
+        return sum;
+    }
 
 
     public double deltaFunction(double firstVehicleTravelTime, double secondVehicleTravelTime) {
