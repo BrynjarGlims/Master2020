@@ -33,10 +33,67 @@ public class LabelPool {
 
     public void generateLabels(LabelPool previousLabelPool, double arcCost) {
         for (Label label : previousLabelPool.getLabels()) {
-            createNewLabels(label, arcCost); //todo:implement load infeasability
-            //System.out.println("Label expanded");
+            createNewLabels(label, arcCost);
         }
     }
+
+    public void generateAndRemoveDominatedLabels(LabelPool previousLabelPool, double arcCost) {
+        for (Label label : previousLabelPool.getLabels()) {
+            addExtendedDominantLabels(label, arcCost);
+        }
+    }
+
+    private void addExtendedDominantLabels(Label predecessorLabel, double arcCost){
+
+        int vehicleCostOrderNumber = 0;
+
+        // Generate labels by adding cost on already existing vehicles
+        while (predecessorLabel.labelEntries[vehicleCostOrderNumber].vehicleCost != 0){
+            tryToAddNewLabel(new Label(predecessorLabel, vehicleCostOrderNumber, arcCost));
+            if ( vehicleCostOrderNumber == predecessorLabel.labelEntries.length-1)
+                break;
+            vehicleCostOrderNumber++;
+        }
+
+        // Creating labels based on a new vehicle in use.
+        if (predecessorLabel.labelEntries[vehicleCostOrderNumber].vehicleCost == 0){
+            tryToAddNewLabel(new Label(predecessorLabel, vehicleCostOrderNumber, arcCost));
+        }
+    }
+
+    private void tryToAddNewLabel(Label currentLabel){
+        if (isNotDominated(currentLabel)){
+            eliminateDominatedLabels(currentLabel);
+            labels.add(currentLabel);
+        }
+    }
+
+    private boolean isNotDominated(Label currentLabel){
+        if (labels.isEmpty()){
+            return true;
+        }
+        for (Label label : labels){
+            if (checkDominance(label, currentLabel)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void eliminateDominatedLabels(Label currentLabel){
+        if (labels.isEmpty()){
+            return;
+        }
+        HashSet<Label> setOfRemovedLabels = new HashSet<Label>();
+        for (Label testLabel : labels){
+            if(checkDominance(currentLabel, testLabel)){
+                setOfRemovedLabels.add(testLabel);
+            }
+        }
+        labels.removeAll(setOfRemovedLabels);
+    }
+
+
 
     public void createNewLabels(Label predecessorLabel, double arcCost){
 
@@ -55,6 +112,8 @@ public class LabelPool {
             labels.add(new Label(predecessorLabel, vehicleCostOrderNumber, arcCost));
         }
     }
+
+
 
     public void removeDominated(){
         HashSet<Label> tempLabelSet = (HashSet<Label>) labels.clone();

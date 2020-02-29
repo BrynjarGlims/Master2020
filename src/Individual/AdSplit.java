@@ -300,10 +300,8 @@ public class AdSplit {
                 tripNumber++;
             } else {
                 nextLabelPool = new LabelPool(individual.data, listOfTrips, tripNumber, individual.orderDistribution.orderVolumeDistribution);
-                nextLabelPool.generateLabels(currentLabelPool, arcCost.get(tripNumber));
+                nextLabelPool.generateAndRemoveDominatedLabels(currentLabelPool, arcCost.get(tripNumber));
                 System.out.println("     ");
-                System.out.println("Number of labels before removal: " + nextLabelPool.labels.size());
-                nextLabelPool.removeDominated();
                 System.out.println("Number of labels after removal: " + nextLabelPool.labels.size());
                 currentLabelPool = nextLabelPool;
                 tripNumber++;
