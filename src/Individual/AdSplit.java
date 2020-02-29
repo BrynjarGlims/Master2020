@@ -37,7 +37,7 @@ public class AdSplit {
             //testTimeWarpValues(matrixOfTrips, matrixOfTripCosts, individual.data, p , vt );
 
             //Labeling algorithm
-            labelingAlgorithm(p, vt, matrixOfTrips, matrixOfTripCosts);   // Sets bestLabel.
+            labelingAlgorithm(p, vt, matrixOfTrips);   // Sets bestLabel.
             //Set vehicleAssignment
             individual.vehicleAssigment.setChromosome(getVehicleAssignmentChromosome(p, vt), p);
             //Set giantTourSplit
@@ -283,7 +283,7 @@ public class AdSplit {
     }
 
     //LABELING------------------------------------------------------------------------------------------------------------------------------------------------------------
-    private static void labelingAlgorithm(int p, int vt, ArrayList<ArrayList<Integer>> listOfTrips, ArrayList<Double> arcCost) {
+    private static void labelingAlgorithm(int p, int vt, ArrayList<ArrayList<Integer>> listOfTrips) {
 
         int tripNumber = 0;
         LabelPool currentLabelPool = new LabelPool(individual.data, listOfTrips, tripNumber, individual.orderDistribution.orderVolumeDistribution);
@@ -291,17 +291,14 @@ public class AdSplit {
         System.out.println("    ");
         System.out.println("----------Number of trips to be combined: " + listOfTrips.size() + "  -------");
         System.out.println("Number of vehicles: " + individual.data.vehicleTypes[vt].vehicleSet.size());
-        System.out.println("    ");
 
         while(tripNumber < listOfTrips.size()) {
             if (tripNumber == 0) {
-                currentLabelPool.generateFirstLabel(individual.data.numberOfVehiclesInVehicleType[vt],
-                        arcCost.get(tripNumber), p, vt);
+                currentLabelPool.generateFirstLabel(individual.data.numberOfVehiclesInVehicleType[vt], p, vt);
                 tripNumber++;
             } else {
                 nextLabelPool = new LabelPool(individual.data, listOfTrips, tripNumber, individual.orderDistribution.orderVolumeDistribution);
-                nextLabelPool.generateAndRemoveDominatedLabels(currentLabelPool, arcCost.get(tripNumber));
-                System.out.println("     ");
+                nextLabelPool.generateAndRemoveDominatedLabels(currentLabelPool);
                 System.out.println("Number of labels after removal: " + nextLabelPool.labels.size());
                 currentLabelPool = nextLabelPool;
                 tripNumber++;

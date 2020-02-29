@@ -24,40 +24,33 @@ public class LabelPool {
         this.orderDistribution = orderDistribution;
     }
 
-
-    public void generateFirstLabel(int numberOfVehicles, double arcCost, int periodID, int vehicleTypeID) {
-        this.labels.add(new Label(numberOfVehicles, arcCost, data, listOfTrips, tripNumber, orderDistribution,
+    public void generateFirstLabel(int numberOfVehicles, int periodID, int vehicleTypeID) {
+        this.labels.add(new Label(numberOfVehicles, data, listOfTrips, tripNumber, orderDistribution,
                 periodID, vehicleTypeID));
     }
 
 
-    public void generateLabels(LabelPool previousLabelPool, double arcCost) {
+    public void generateAndRemoveDominatedLabels(LabelPool previousLabelPool) {
         for (Label label : previousLabelPool.getLabels()) {
-            createNewLabels(label, arcCost);
+            addExtendedDominantLabels(label);
         }
     }
 
-    public void generateAndRemoveDominatedLabels(LabelPool previousLabelPool, double arcCost) {
-        for (Label label : previousLabelPool.getLabels()) {
-            addExtendedDominantLabels(label, arcCost);
-        }
-    }
-
-    private void addExtendedDominantLabels(Label predecessorLabel, double arcCost){
+    private void addExtendedDominantLabels(Label predecessorLabel){
 
         int vehicleCostOrderNumber = 0;
 
         // Generate labels by adding cost on already existing vehicles
-        while (predecessorLabel.labelEntries[vehicleCostOrderNumber].vehicleCost != 0){
-            tryToAddNewLabel(new Label(predecessorLabel, vehicleCostOrderNumber, arcCost));
-            if ( vehicleCostOrderNumber == predecessorLabel.labelEntries.length-1)
+        while (predecessorLabel.labelEntries[vehicleCostOrderNumber].inUse){
+            tryToAddNewLabel(new Label(predecessorLabel, vehicleCostOrderNumber));
+            if (vehicleCostOrderNumber == predecessorLabel.labelEntries.length-1)
                 break;
             vehicleCostOrderNumber++;
         }
 
         // Creating labels based on a new vehicle in use.
         if (predecessorLabel.labelEntries[vehicleCostOrderNumber].vehicleCost == 0){
-            tryToAddNewLabel(new Label(predecessorLabel, vehicleCostOrderNumber, arcCost));
+            tryToAddNewLabel(new Label(predecessorLabel, vehicleCostOrderNumber));
         }
     }
 
@@ -66,6 +59,7 @@ public class LabelPool {
             eliminateDominatedLabels(currentLabel);
             labels.add(currentLabel);
         }
+
     }
 
     private boolean isNotDominated(Label currentLabel){
@@ -93,42 +87,6 @@ public class LabelPool {
         labels.removeAll(setOfRemovedLabels);
     }
 
-
-
-    public void createNewLabels(Label predecessorLabel, double arcCost){
-
-
-        int vehicleCostOrderNumber = 0;
-        // Generate labels by adding cost on already existing vehicles
-        while ( predecessorLabel.labelEntries[vehicleCostOrderNumber].vehicleCost != 0){
-            labels.add(new Label(predecessorLabel, vehicleCostOrderNumber, arcCost));
-            if ( vehicleCostOrderNumber == predecessorLabel.labelEntries.length-1)
-                break;
-            vehicleCostOrderNumber++;
-        }
-
-        // Creating labels based on a new vehicle in use.
-        if (predecessorLabel.labelEntries[vehicleCostOrderNumber].vehicleCost == 0){
-            labels.add(new Label(predecessorLabel, vehicleCostOrderNumber, arcCost));
-        }
-    }
-
-
-
-    public void removeDominated(){
-        HashSet<Label> tempLabelSet = (HashSet<Label>) labels.clone();
-        for(Label firstLabel : tempLabelSet){
-            for(Label secondLabel : labels){
-                if (firstLabel.equals(secondLabel)){
-                    continue;
-                }
-                if (checkDominance(firstLabel, secondLabel)){
-                    labels.remove(secondLabel);
-                    break;
-                }
-            }
-        }
-    }
 
 
     public  HashSet<Label> getLabels(){

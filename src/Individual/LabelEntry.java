@@ -93,13 +93,13 @@ public class LabelEntry implements Comparable<LabelEntry> {
 
 
 
-    public void updateArcCost(double arcCost, ArrayList<Integer> customers){
+    public void updateLabelEntryValues(ArrayList<Integer> customers){
         this.inUse = true;
         this.tripAssigment.add(customers);
         this.updateTravelTime(customers);
         this.updateLoadInfeasibility(customers);
         this.updateTimeWarp(customers);
-        this.vehicleCost += arcCost;
+        //this.vehicleCost += arcCost;
     }
 
 
@@ -229,7 +229,7 @@ public class LabelEntry implements Comparable<LabelEntry> {
 
     @Override
     public int compareTo(LabelEntry labelEntry) {
-        if ((this.vehicleCost - labelEntry.vehicleCost) < 0 ) {
+        if ((this.vehicleDrivingDistance - labelEntry.vehicleDrivingDistance) < 0 ) {
             return 1;
         } else {
             return -1;

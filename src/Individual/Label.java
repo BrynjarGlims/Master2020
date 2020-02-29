@@ -1,6 +1,5 @@
 package Individual;
 import DataFiles.*;
-import scala.util.regexp.WordExp;
 
 
 import java.util.ArrayList;
@@ -42,7 +41,7 @@ public class Label {
 
 
     //create non-first labels
-    public Label(Label parentLabel, int vehicleIndex, double arcCost){
+    public Label(Label parentLabel, int vehicleIndex){
 
 
         //Information attributes
@@ -57,7 +56,7 @@ public class Label {
 
         // Cost of choosing arcs from the SPA
         this.cloneParentLabelEntries(parentLabel.labelEntries);
-        this.labelEntries[vehicleIndex].updateArcCost(arcCost, listOfTrips.get(tripNumber));
+        this.labelEntries[vehicleIndex].updateLabelEntryValues(listOfTrips.get(tripNumber));
 
         this.sortLabelEntries();
         this.deriveLabelCost();
@@ -72,17 +71,6 @@ public class Label {
          */
     }
 
-
-    private void sortLabelEntries(){
-        Arrays.sort(labelEntries);
-    }
-
-    private void cloneParentLabelEntries( LabelEntry[] parentLabelEntries){
-        labelEntries = new LabelEntry[parentLabelEntries.length];
-        for (int i = 0; i < parentLabelEntries.length; i++){
-            labelEntries[i] = parentLabelEntries[i].copyLabelEntry();
-        }
-    }
 
     //generate empty label
     public Label(Data data, int tripNumber, double[][] orderDistribution, int periodID,
@@ -99,7 +87,7 @@ public class Label {
 
 
     //create first label
-    public Label(int numberOfVehicles, double arcCost, Data data,
+    public Label(int numberOfVehicles, Data data,
                  ArrayList<ArrayList<Integer>> listOfTrips, int tripNumber, double[][] orderDistribution, int periodID,
                  int vehicleTypeID){
 
@@ -119,9 +107,7 @@ public class Label {
         //labelEntries generated
         this.labelEntries = new LabelEntry[numberOfVehicles];
         this.initializeLabelEntries(periodID, vehicleTypeID);
-        this.labelEntries[0].updateArcCost(arcCost, listOfTrips.get(tripNumber));
-
-
+        this.labelEntries[0].updateLabelEntryValues( listOfTrips.get(tripNumber));
 
 
 
@@ -143,6 +129,17 @@ public class Label {
         for ( int vehicleID : data.vehicleTypes[this.vehicleTypeID].vehicleSet ){
             this.labelEntries[i] = new LabelEntry(vehicleID, vehicleTypeID, periodID, data, orderDistribution);
             i++;
+        }
+    }
+
+    private void sortLabelEntries(){
+        Arrays.sort(labelEntries);
+    }
+
+    private void cloneParentLabelEntries( LabelEntry[] parentLabelEntries){
+        labelEntries = new LabelEntry[parentLabelEntries.length];
+        for (int i = 0; i < parentLabelEntries.length; i++){
+            labelEntries[i] = parentLabelEntries[i].copyLabelEntry();
         }
     }
 
