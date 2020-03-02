@@ -15,7 +15,7 @@ public class OrderDistribution {
     public double[][] orderVolumeDistribution;
     public ArrayList<Integer>[][] orderIdDistribution;
     public Data data;
-    public OrderDelivery[] orderDeliveries;
+    public OrderDelivery[] orderDeliveries;  //orderids
     public double[] volumePerPeriod;
 
     // fitness values

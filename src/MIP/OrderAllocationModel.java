@@ -27,11 +27,11 @@ public class OrderAllocationModel {
     public double volumeOvertime = 0;
 
     //variables
-    public GRBVar[][][][]y;  //this is a constant, and redundant.
+    //public GRBVar[][][][]y;  //this is a constant, and redundant.
     public GRBVar[][][] uND;
     public GRBVar[][][] uD;
-    public GRBVar[][][][][] qND;
-    public GRBVar[][][][][] qD;
+    public GRBVar[][][] qND;
+    public GRBVar[][][] qD;
     public GRBVar[] qO;
 
 
@@ -47,7 +47,6 @@ public class OrderAllocationModel {
 
     public void initializeParameters() throws GRBException {
         createParameters();
-        initializeYVariables();
         initializeUVariables();
         initializeQVariables();
         initializeQOVariables();
@@ -56,11 +55,11 @@ public class OrderAllocationModel {
 
 
     public void createParameters() {
-        this.y = new GRBVar[data.numberOfPeriods][data.numberOfVehicles][data.numberOfTrips][data.numberOfCustomers];
+        //this.y = new GRBVar[data.numberOfPeriods][data.numberOfVehicles][data.numberOfTrips][data.numberOfCustomers];
         this.uD = new GRBVar[data.numberOfPeriods][data.numberOfCustomers][];
         this.uND = new GRBVar[data.numberOfPeriods][data.numberOfCustomers][];
-        this.qD = new GRBVar[data.numberOfPeriods][data.numberOfVehicles][data.numberOfTrips][data.numberOfCustomers][];
-        this.qND = new GRBVar[data.numberOfPeriods][data.numberOfVehicles][data.numberOfTrips][data.numberOfCustomers][];
+        this.qD = new GRBVar[data.numberOfPeriods][data.numberOfCustomers][];
+        this.qND = new GRBVar[data.numberOfPeriods][data.numberOfCustomers][];// TODO: 02.03.2020 Remember to set all other quantities to zero
         this.qO = new GRBVar[data.numberOfPeriods];
 
         for (int period = 0; period < data.numberOfPeriods; period++) {
@@ -71,31 +70,14 @@ public class OrderAllocationModel {
         }
 
         for (int period = 0; period < data.numberOfPeriods; period++) {
-            for (int vehicleID = 0; vehicleID < data.numberOfVehicles; vehicleID++) {
-                for (int tripCounter = 0; tripCounter < data.numberOfTrips; tripCounter++) {
-                    for (int customerID = 0; customerID < data.numberOfCustomers; customerID++) {
-                        this.qD[period][vehicleID][tripCounter][customerID] = new GRBVar[data.customers[customerID].numberOfDividableOrders];
-                        this.qND[period][vehicleID][tripCounter][customerID] = new GRBVar[data.customers[customerID].numberOfNonDividableOrders];
-                    }
-                }
+            for (int customerID = 0; customerID < data.numberOfCustomers; customerID++) {
+                this.qD[period][customerID] = new GRBVar[data.customers[customerID].numberOfDividableOrders];
+                this.qND[period][customerID] = new GRBVar[data.customers[customerID].numberOfNonDividableOrders]
+
             }
         }
     }
 
-
-    public void initializeYVariables() throws GRBException {
-        // Create y variables:
-        for (int d = 0; d < data.numberOfPeriods; d++) {
-            for (int v = 0; v < data.numberOfVehicles; v++) {
-                for (int r = 0; r < data.numberOfTrips; r++) {
-                    for (int i = 0; i < data.numberOfCustomers; i++) {
-                        String variable_name = String.format("y[%d][%d][%d][%d]", d, v, r, i);
-                        y[d][v][r][i] = model.addVar(0.0, 1.0, 0, GRB.BINARY, variable_name);
-                    }
-                }
-            }
-        }
-    }
 
 
     public void initializeUVariables() throws GRBException {
@@ -104,7 +86,7 @@ public class OrderAllocationModel {
         for (int d = 0; d < data.numberOfPeriods; d++) {
             for (int i = 0; i < data.numberOfCustomers; i++) {
                 for (int m = 0; m < data.customers[i].numberOfNonDividableOrders; m++) {
-                    String variable_name = String.format("u[%d][%d][%d]", d, i, m);
+                    String variable_name = String.format("uND[%d][%d][%d]", d, i, m);
                     uND[d][i][m] = model.addVar(0.0, 1.0, 0, GRB.BINARY, variable_name);
                 }
             }
@@ -114,7 +96,7 @@ public class OrderAllocationModel {
         for (int d = 0; d < data.numberOfPeriods; d++) {
             for (int i = 0; i < data.numberOfCustomers; i++) {
                 for (int m = 0; m < data.customers[i].numberOfDividableOrders; m++) {
-                    String variable_name = String.format("u[%d][%d][%d]", d, i, m);
+                    String variable_name = String.format("uD[%d][%d][%d]", d, i, m);
                     uD[d][i][m] = model.addVar(0.0, 1.0, 0, GRB.BINARY, variable_name);
                 }
             }
@@ -125,15 +107,11 @@ public class OrderAllocationModel {
 
         //Create qND variables
         for (int d = 0; d < data.numberOfPeriods; d++) {
-            for (int v = 0; v < data.numberOfVehicles; v++) {
-                for (int r = 0; r < data.numberOfTrips; r++) {
-                    for (int i = 0; i < data.numberOfCustomers; i++) {
-                        for (int m = 0; m < data.customers[i].numberOfNonDividableOrders; m++) {
-                            String variable_name = String.format("q[%d][%d][%d][%d][%d]", d, v, r, i, m);
-                            qND[d][v][r][i][m] = model.addVar(0.0, Parameters.upperBoundQuantity, 0, GRB.CONTINUOUS, variable_name);
-                            //todo: set upper bound quantity correctly
-                        }
-                    }
+            for (int i = 0; i < data.numberOfCustomers; i++) {
+                for (int m = 0; m < data.customers[i].numberOfNonDividableOrders; m++) {
+                    String variable_name = String.format("qND[%d][%d][%d]", d, i, m);
+                    qND[d][i][m] = model.addVar(0.0, Parameters.upperBoundQuantity, 0, GRB.CONTINUOUS, variable_name);
+                    //todo: set upper bound quantity correctly
                 }
             }
         }
@@ -141,15 +119,11 @@ public class OrderAllocationModel {
 
         //Create qD variables
         for (int d = 0; d < data.numberOfPeriods; d++) {
-            for (int v = 0; v < data.numberOfVehicles; v++) {
-                for (int r = 0; r < data.numberOfTrips; r++) {
-                    for (int i = 0; i < data.numberOfCustomers; i++) {
-                        for (int m = 0; m < data.customers[i].numberOfDividableOrders; m++) {
-                            String variable_name = String.format("q[%d][%d][%d][%d][%d]", d, v, r, i, m);
-                            qD[d][v][r][i][m] = model.addVar(0.0, Parameters.upperBoundQuantity, 0, GRB.CONTINUOUS, variable_name);
-                            //todo: set upper bound quantity correctly
-                        }
-                    }
+            for (int i = 0; i < data.numberOfCustomers; i++) {
+                for (int m = 0; m < data.customers[i].numberOfDividableOrders; m++) {
+                    String variable_name = String.format("qD[%d][%d][%d]", d,  i, m);
+                    qD[d][i][m] = model.addVar(0.0, Parameters.upperBoundQuantity, 0, GRB.CONTINUOUS, variable_name);
+                    //todo: set upper bound quantity correctly
                 }
             }
         }
@@ -238,7 +212,7 @@ public class OrderAllocationModel {
                 GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
                 for (int v = 0; v < data.numberOfVehicles; v++) {
                     for (int r = 0; r < data.numberOfTrips; r++) {
-                        lhs.addTerm(1, y[d][v][r][i]);
+                        //lhs.addTerm(1, y[d][v][r][i]);
                     }
                 }
                 String constraint_name = String.format("5.18 -Legal delivery day %d for customer %d: %d (yes:1, no:0)", d, i, data.customers[i].requiredVisitPeriod[d]);
@@ -265,7 +239,7 @@ public class OrderAllocationModel {
 
                         }
 
-                        lhs.addTerm(data.vehicles[v].vehicleType.capacity, y[d][v][r][i]);
+                        //lhs.addTerm(data.vehicles[v].vehicleType.capacity, y[d][v][r][i]);
                         String constraint_name = String.format("5.25 -Connection q and y for customer %d vehicle %d trip %d day %d. M = %f", i, v, r, d, data.vehicles[v].vehicleType.capacity);
                         model.addConstr(lhs, GRB.GREATER_EQUAL, 0, constraint_name);
                     }
@@ -448,8 +422,11 @@ public class OrderAllocationModel {
         quantityTotalDemandDelivered();
         quantitySingleDeliveryOfNonDivCommodity();
         quantityDeliveryRequirementNonDivCommodity();
-        quantityMinFrequencyDivCommodity();
-        quantityMaxFrequencyDivCommodity();
+
+
+        // TODO: 02.03.2020 Frequency Constraints to be added. 
+        //quantityMinFrequencyDivCommodity();
+        //quantityMaxFrequencyDivCommodity();
 
         //symmetry breaking constraints
         if (symmetry.equals("none")){
@@ -508,23 +485,6 @@ public class OrderAllocationModel {
 
     public void printSolution() throws GRBException {
 
-        // Print y variables: visiting customer i with vehicle v
-        System.out.println("Print of y-variables: If a car visits a customer");
-        for (int d = 0; d < data.numberOfPeriods; d++) {
-            for (int v = 0; v < data.numberOfVehicles; v++) {
-                for (int r = 0; r < data.numberOfTrips; r++) {
-                    for (int i = 0; i < data.numberOfCustomers; i++) {
-                        if (y[d][v][r][i].get(GRB.DoubleAttr.X) == 1) {
-                            System.out.println("Vehicle " + v + " on period " + d + " trip " + r +
-                                    " visits customer " + i);
-                        }
-                    }
-                }
-            }
-        }
-
-        System.out.println("   ");
-        System.out.println("   ");
 
 
 
