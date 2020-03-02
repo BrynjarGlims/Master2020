@@ -56,11 +56,15 @@ public class LabelEntry implements Comparable<LabelEntry> {
     }
 
     private LabelEntry(LabelEntry parentLabelEntry){
+
+        // TODO: 02.03.2020 Expensive call, discuss if it can be simplified.
+        this.tripAssigment = cloneTripAssignment(parentLabelEntry.tripAssigment);
+
+
         this.data = parentLabelEntry.data;
         this.orderDistribution = parentLabelEntry.orderDistribution;
         this.vehicleID = parentLabelEntry.vehicleID;
         this.accumulatedTravelCost = parentLabelEntry.accumulatedTravelCost;
-        this.tripAssigment = cloneTripAssignment(parentLabelEntry.tripAssigment);
         this.vehicleTotalTravelTime = parentLabelEntry.vehicleTotalTravelTime;
         this.vehicleDrivingDistance = parentLabelEntry.vehicleDrivingDistance;
         this.currentVehicleTime = parentLabelEntry.currentVehicleTime;
@@ -99,7 +103,6 @@ public class LabelEntry implements Comparable<LabelEntry> {
         this.updateTravelTime(customers);
         this.updateLoadInfeasibility(customers);
         this.updateTimeWarp(customers);
-        //this.vehicleCost += arcCost;
     }
 
 

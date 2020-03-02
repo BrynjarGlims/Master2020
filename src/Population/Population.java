@@ -27,6 +27,7 @@ public class Population {
 
     public void initializePopulation() {
         for (int i = 0; i < totalPopulationSize; i++) {
+            //System.out.println("## New Individual Generated, nr: " + (i+1) + " ##" );
             Individual individual = new Individual(this.data, this);
             individual.initializeIndividual();
             AdSplit.adSplitPlural(individual);
@@ -66,7 +67,6 @@ public class Population {
     public int getIterationsWithoutImprovement(){
         return iterationsWithoutImprovement;
     }
-
 
     public static void main( String[] args){
         Data data = DataReader.loadData();

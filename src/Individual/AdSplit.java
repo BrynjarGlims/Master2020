@@ -288,9 +288,9 @@ public class AdSplit {
         int tripNumber = 0;
         LabelPool currentLabelPool = new LabelPool(individual.data, listOfTrips, tripNumber, individual.orderDistribution.orderVolumeDistribution);
         LabelPool nextLabelPool;
-        System.out.println("    ");
-        System.out.println("----------Number of trips to be combined: " + listOfTrips.size() + "  -------");
-        System.out.println("Number of vehicles: " + individual.data.vehicleTypes[vt].vehicleSet.size());
+        //System.out.println("    ");
+        //System.out.println("----------Number of trips to be combined: " + listOfTrips.size() + "  -------");
+        //System.out.println("Number of vehicles: " + individual.data.vehicleTypes[vt].vehicleSet.size());
 
         while(tripNumber < listOfTrips.size()) {
             if (tripNumber == 0) {
@@ -299,7 +299,7 @@ public class AdSplit {
             } else {
                 nextLabelPool = new LabelPool(individual.data, listOfTrips, tripNumber, individual.orderDistribution.orderVolumeDistribution);
                 nextLabelPool.generateAndRemoveDominatedLabels(currentLabelPool);
-                System.out.println("Number of labels after removal: " + nextLabelPool.labels.size());
+                //System.out.println("Number of labels after removal: " + nextLabelPool.labels.size());
                 currentLabelPool = nextLabelPool;
                 tripNumber++;
             }

@@ -116,8 +116,8 @@ public class LabelPool {
     private double calculateDeltaSumValue(LabelEntry[] firstLabelEntries, LabelEntry[] secondLabelEntries){
         double sum = 0;
         for(int k = 0; k < firstLabelEntries.length; k++){
-            sum += deltaFunction(firstLabelEntries[k].getTravelTimeValue(),
-                    secondLabelEntries[k].getTravelTimeValue());
+            sum += deltaFunction(firstLabelEntries[k].getDrivingDistance(),
+                    secondLabelEntries[k].getDrivingDistance());
         }
         return sum;
     }
