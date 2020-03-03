@@ -39,7 +39,7 @@ public class Parameters {
 
 
     //Period parameters
-    public static final int[] overtimeLimit = {100, 100, 100, 100, 100, 100};  //needs to be equal to number of periods in length
+    public static final int[] overtimeLimit = {100, 100, 100, 100, 100, 100};
     public static final int[] overtimeCost = {100, 100, 100, 100, 100, 100};
 
     //Time parameters

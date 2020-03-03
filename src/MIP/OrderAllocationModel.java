@@ -38,13 +38,13 @@ public class OrderAllocationModel {
     private GRBVar[] qO;
 
 
-    private void initializeModel() throws GRBException, FileNotFoundException {
+    private void initializeModel(boolean verbose) throws GRBException, FileNotFoundException {
         env = new GRBEnv(true);
         this.env.set("logFile",  "OrderAllocationModel.log");
         this.env.start();
         this.model = new GRBModel(env);
         model.set(GRB.StringAttr.ModelName, "ArcFlowModel");
-        this.data = DataReader.loadData(true);
+        this.data = DataReader.loadData(verbose);
     }
 
 
@@ -262,7 +262,6 @@ public class OrderAllocationModel {
         }
     }
 
-    int counter = 1;
 
     private void quantityTotalDemandDelivered() throws GRBException {
         // Constraint 5.8: Demand of every product must be satisfied in the planning horizon
@@ -274,8 +273,6 @@ public class OrderAllocationModel {
                 }
                 String constraint_name = String.format("5 - Total delivery of div product %d to customer %d. Quantity %f", m, i, data.customers[i].dividableOrders[m].volume);
                 model.addConstr(lhs, GRB.EQUAL, data.customers[i].dividableOrders[m].volume, constraint_name);
-                System.out.println( counter + " - volume requirement" + data.customers[i].dividableOrders[m].volume);
-                counter++;
             }
         }
     }
@@ -307,8 +304,6 @@ public class OrderAllocationModel {
                 }
                 String constraint_name = String.format("5.21 -Nondiv good %d must be delivered exactly once to customer %d", m, i);
                 model.addConstr(lhs, GRB.EQUAL, 1, constraint_name);
-                System.out.println(counter + " - Non div order created: " + data.customers[i].nonDividableOrders[m].orderID);
-                counter++;
             }
         }
     }
@@ -386,7 +381,7 @@ public class OrderAllocationModel {
 
 
 
-    private void activateConstraints(String symmetry) throws GRBException {
+    private void activateConstraints() throws GRBException {
         // -------- Add constraints -------------
         // 5.2 is implemented in variable declaration
         // 5.6 is implemented in variable declaration
@@ -411,14 +406,7 @@ public class OrderAllocationModel {
         //fixation
         fixationRemoveNonDeliveries();
 
-        //symmetry breaking constraints
-        if (symmetry.equals("none")){
-            System.out.println("----------------------------No symmetry chosen----------------------------------------");
-        }
-        else {
-            System.out.println("-----------------------Using symmetry : " + symmetry + " (not standard) -------------------------");
-            System.out.println("Only simple symmetry breaking chosen");
-        }
+
 
     }
 
@@ -428,8 +416,6 @@ public class OrderAllocationModel {
         model.set(GRB.DoubleParam.TimeLimit, Parameters.modelTimeLimit);
         model.optimize();
         model.get(GRB.DoubleAttr.Runtime);
-        System.out.println(GRB.Status.OPTIMAL);
-        System.out.println(GRB.DoubleAttr.Runtime);
         this.optimstatus = model.get(GRB.IntAttr.Status);
     }
 
@@ -551,32 +537,18 @@ public class OrderAllocationModel {
 
 
 
-
-
-    private void calculateResultValues() throws GRBException {
-        if (optimstatus == 2){
-            for (int d = 0; d < data.numberOfPeriods; d++) {
-                if (qO[d].get(GRB.DoubleAttr.X) >= 0.001) {
-                    volumeOvertime += qO[d].get(GRB.DoubleAttr.X);
-                }
-            }
-        }
-
-
-    }
-
     public Result runModel(Individual individual) {
         try {
             this.symmetry = Parameters.symmetry;
             this.individual = individual;
             System.out.println("Initalize model");
-            initializeModel();
+            initializeModel(true);
             System.out.println("Initalize parameters");
             initializeParameters();
             System.out.println("Set objective");
             setObjective();
             System.out.println("Activate constraints");
-            activateConstraints(symmetry);
+            activateConstraints();
             System.out.println("Optimize model");
             optimizeModel();
             System.out.println("Print results:");
@@ -619,20 +591,19 @@ public class OrderAllocationModel {
         }
     }
 
-    private void initializeODObject(){
-        this.orderDistribution.makeDistributionFromMIP( uND, uD, qND, qD, qO);
+    private void initializeODObject() throws GRBException {
+        this.orderDistribution.makeDistributionFromMIP( uND, uD, qND, qD, model.get(GRB.DoubleAttr.ObjVal));
     }
 
-    public OrderDistribution createODFromMIP(Individual individual) {
+    public OrderDistribution createODFromMIP(Individual individual, boolean verbose) {
         try {
             this.orderDistribution = new OrderDistribution(individual.data);
             this.individual = individual;
-            initializeModel();
+            initializeModel(verbose);
             initializeParameters();
             setObjective();
-            activateConstraints(symmetry);
+            activateConstraints();
             optimizeModel();
-            //displayResults(true);
             if (optimstatus == 3) {
                 System.out.println("No solution found");
                 System.out.println("Terminate model");
@@ -660,7 +631,9 @@ public class OrderAllocationModel {
         }
     }
 
-
+    public OrderDistribution createODFromMIP(Individual individual){
+        return createODFromMIP(individual, false);
+    }
 
 
 
@@ -670,7 +643,6 @@ public class OrderAllocationModel {
         individual.updateFitness();
         OrderAllocationModel orderAllocationModel = new OrderAllocationModel();
         OrderDistribution od = orderAllocationModel.createODFromMIP(individual);
-
     }
 
 }
