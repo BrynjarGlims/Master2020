@@ -10,23 +10,23 @@ import java.util.*;
 public class Population {
     private int totalPopulationSize;
     private Data data;
-    private Set<Individual> feasiblePopulation;
-    private Set<Individual> infeasiblePopulation;
-    private OrderDistribution currentOrderDistribution;
+    public Set<Individual> feasiblePopulation;
+    public Set<Individual> infeasiblePopulation;
+    public OrderDistributionPopulation orderDistributionPopulation;
 
     int iterationsWithoutImprovement = 0;
 
     public Population(Data data) {
         this.data = data;
-        this.currentOrderDistribution = new OrderDistribution(this.data);
-        this.currentOrderDistribution.makeDistribution();
+        this.orderDistributionPopulation = orderDistributionPopulation;
         this.feasiblePopulation = new HashSet<Individual>();
         this.infeasiblePopulation = new HashSet<Individual>();
     }
 
 
-    public void initializePopulation() {
-        for (int i = 0; i < totalPopulationSize; i++) {
+    public void initializePopulation (OrderDistributionPopulation odp) {
+        this.orderDistributionPopulation = odp;
+        for (int i = 0; i < Parameters.initialPopulationSize; i++) {
             Individual individual = new Individual(this.data, this);
             individual.initializeIndividual();
             AdSplit.adSplitPlural(individual);
@@ -85,12 +85,18 @@ public class Population {
     }
 
     public void selectInfeasibleSurvivors() {
-        for (int i = 0; i < (getSizeOfInfeasiblePopulation() - Parameters.minimumSubPopulationSize); i++) {
-
+        Set<Individual> setOfAllClones = new HashSet<Individual>();
+        for (Individual individual: feasiblePopulation) {
+            for (Individual ind: getFeasibleClonesForAnIndividual(individual)) {
+                setOfAllClones.add(ind);
+            }
         }
+
+        for (int i = 0; i < (getSizeOfInfeasiblePopulation() - Parameters.minimumSubPopulationSize); i++) {
+            //setOfAllClones.sort(); //TODO: find a way to sort individuals based on fitness
+        }
+
     }
-
-
 
 
     public Set<Individual> getFeasiblePopulation() {
@@ -123,7 +129,9 @@ public class Population {
     public static void main( String[] args){
         Data data = DataReader.loadData();
         Population population = new Population(data);
-        population.initializePopulation();
+        OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
+        odp.initializeOrderDistributionPopulation(population);
+        population.initializePopulation(odp);
         System.out.println("hei");
     }
 }

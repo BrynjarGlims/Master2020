@@ -178,13 +178,13 @@ public class OrderDistribution {
         OrderDistribution pd = new OrderDistribution(data);
         pd.makeInitialDistribution();
         for (double[] period : pd.orderVolumeDistribution) {
-            System.out.println(Arrays.toString(period));
+            //System.out.println(Arrays.toString(period));
         }
         for (ArrayList<Integer>[] period : pd.orderIdDistribution){
             for (ArrayList<Integer> customer : period){
-                System.out.println(customer);
+                //System.out.println(customer);
                 for (int i : customer){
-                    System.out.println(pd.orderDeliveries[i]);
+                    //System.out.println(pd.orderDeliveries[i]);
                 }
             }
         }
