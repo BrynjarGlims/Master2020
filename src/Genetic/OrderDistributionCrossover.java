@@ -6,10 +6,7 @@ import DataFiles.Order;
 import ProductAllocation.OrderDelivery;
 import ProductAllocation.OrderDistribution;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 public class OrderDistributionCrossover {
 
@@ -100,7 +97,7 @@ public class OrderDistributionCrossover {
         OrderDistribution child1 = children[0];
         OrderDistribution child2 = children[1];
 
-        System.out.println(child1);
+        System.out.println(Arrays.toString(child1.volumePerPeriod));
 
 
     }
