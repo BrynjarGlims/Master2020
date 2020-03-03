@@ -32,6 +32,9 @@ public class OrderDistribution {
             }
         }
         orderDeliveries = new OrderDelivery[data.numberOfDeliveries];
+        for (int i = 0 ; i < data.numberOfDeliveries ; i++){
+            orderDeliveries[i] = new OrderDelivery(data.numberOfPeriods, data.orders[i]);
+        }
         volumePerPeriod = new double[data.numberOfPeriods];
     }
 
@@ -41,14 +44,47 @@ public class OrderDistribution {
         distributeNonDividables();
     }
 
+    public void addOrderDelivery(OrderDelivery orderDelivery){
+        for (int i = 0 ; i < orderDelivery.orderPeriods.length ; i++){
+            if (orderDelivery.orderPeriods[i] == 1){
+                addOrderDelivery(i, orderDelivery.orderVolumes[i], orderDelivery.order);
+            }
+        }
+    }
+
+    public boolean containsNonDividable(int customer, int period){
+        for (int i : orderIdDistribution[period][customer]){
+            if (!data.orders[i].isDividable){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int getBestPeriod(int order){
+        int[] visitDaysCopy = new int[data.customers[data.orders[order].customerID].requiredVisitPeriod.length];
+        System.arraycopy(data.customers[data.orders[order].customerID].requiredVisitPeriod, 0, visitDaysCopy, 0, data.customers[data.orders[order].customerID].requiredVisitPeriod.length);
+        int currentBest;
+        while (true){
+            currentBest = getMinimumPeriod(visitDaysCopy);
+            if (!containsNonDividable(data.orders[order].customerID, currentBest)){
+                return currentBest;
+            }
+            else{
+                visitDaysCopy[currentBest] = 0;
+            }
+        }
+    }
+
 
     private void distributeNonDividables() {
+        int chosenPeriod;
         for (Customer c : data.customers) {
             int[] visitDaysCopy = new int[c.requiredVisitPeriod.length];
             System.arraycopy(c.requiredVisitPeriod, 0, visitDaysCopy, 0, c.requiredVisitPeriod.length);
             for (Order o : c.nonDividableOrders) {
-                int chosenPeriod = getMinimumPeriod(visitDaysCopy);
-                updateFields(o, chosenPeriod, o.volume, false);
+                chosenPeriod = getMinimumPeriod(visitDaysCopy);
+                updateFields(o, chosenPeriod, o.volume);
                 visitDaysCopy[chosenPeriod] = 0;
             }
         }
@@ -68,7 +104,7 @@ public class OrderDistribution {
         int[] deliveryPeriods = getValidDeliveryPeriods(volumeSplits, data.customers[order.customerID]);
 
         for (int i = 0; i < deliveryPeriods.length; i++) {
-            updateFields(order, deliveryPeriods[i], volumeSplits[i], true);
+            updateFields(order, deliveryPeriods[i], volumeSplits[i]);
         }
         return volumeSplits;
     }
@@ -121,6 +157,13 @@ public class OrderDistribution {
 //
 //        }
 
+    private void addOrderDelivery(int period, double volume, Order order){
+        orderVolumeDistribution[period][order.customerID] += volume;
+        orderIdDistribution[period][order.customerID].add(order.orderID);
+        orderDeliveries[order.orderID].addDelivery(period, volume);
+        volumePerPeriod[period] += volume;
+    }
+
 
     private int getMinimumPeriod(int[] possibleDays) {
         List<Integer> validPeriods = new ArrayList<>();
@@ -146,21 +189,11 @@ public class OrderDistribution {
         return currentIndex;
     }
 
-    private void updateFields(Order order, int period, double volume, boolean dividable) {
+    private void updateFields(Order order, int period, double volume) {
         orderVolumeDistribution[period][order.customerID] += volume;
         orderIdDistribution[period][order.customerID].add(order.orderID);
         volumePerPeriod[period] += volume;
-        if (dividable){
-            if (orderDeliveries[order.orderID] == null){
-                orderDeliveries[order.orderID] = new OrderDelivery(data.numberOfPeriods, order, period, volume, dividable);
-            }
-            else{
-                orderDeliveries[order.orderID].addDelivery(period, volume);
-            }
-        }
-        else {
-            orderDeliveries[order.orderID] = new OrderDelivery(data.numberOfPeriods, order, period, volume, dividable);
-        }
+        orderDeliveries[order.orderID].addDelivery(period, volume);
     }
 
     public double getOvertimeValue(){
@@ -169,7 +202,17 @@ public class OrderDistribution {
             fitness += Parameters.overtimeCost[d]*Math.max(0 , Arrays.stream(this.orderVolumeDistribution[d]).sum()-Parameters.overtimeLimit[d]);
         }
         return fitness;
+    }
 
+    public String toString(){
+        String out = "";
+        for (OrderDelivery od : orderDeliveries){
+            if (od != null){
+
+                out += od.toString();
+            }
+        }
+        return out;
     }
 
 
