@@ -29,6 +29,7 @@ public class GiantTourCrossover {
     public Individual crossOver(Individual parent1, Individual parent2){
         Individual child = new Individual(data);
         OrderDistribution orderDistribution = new OrderDistribution(data);
+        child.orderDistribution = orderDistribution;
         HashSet<Integer>[] sets = initializeSets();
         HashMap<Integer, HashSet<Integer>> visitedCustomers = new HashMap<>();
 
@@ -224,7 +225,7 @@ public class GiantTourCrossover {
         for (int i : source.orderIdDistribution[period][customer]){
             target.orderIdDistribution[period][customer].add(i);
             if (target.orderDeliveries[i] == null){
-                target.orderDeliveries[i] = new OrderDelivery(data.numberOfPeriods, data.orders[i], period, source.orderDeliveries[i].orderVolumes[period], source.orderDeliveries[i].dividable);
+                target.orderDeliveries[i] = new OrderDelivery(data.numberOfPeriods, data.orders[i], period, source.orderDeliveries[i].orderVolumes[period]);
             }
             else {
                 target.orderDeliveries[i].addDelivery(period, source.orderDeliveries[i].orderVolumes[period]);
@@ -255,10 +256,8 @@ public class GiantTourCrossover {
         Individual parent2 = new Individual(data);
         parent2.initializeIndividual();
         AdSplit.adSplitPlural(parent2);
-        System.out.println("hei");
+
         
-
-
 
     }
 
