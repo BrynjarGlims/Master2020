@@ -54,6 +54,22 @@ public class Data {
         setNearestNeighbors();
         this.setDerivedParameters();
         this.setNumberOfCustomerVisitsInPeriod();
+        this.setCorrectOrderID();
+    }
+
+    private void setCorrectOrderID(){
+        for (int customerID = 0; customerID < customers.length; customerID++){
+            for (int i = 0; i < customers[customerID].orders.length; i++){
+                this.customers[customerID].orders[i].setCustomerOrderID(i);
+            }
+            for (int i = 0; i < customers[customerID].dividableOrders.length; i++){
+                this.customers[customerID].dividableOrders[i].setCustomerDividableOrderID(i);
+            }
+            for (int i = 0; i <  customers[customerID].nonDividableOrders.length; i++){
+                this.customers[customerID].nonDividableOrders[i].setCustomerNonDividableOrderID(i);
+            }
+        }
+
     }
 
     private void setNumberOfCustomerVisitsInPeriod(){

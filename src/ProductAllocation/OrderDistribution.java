@@ -5,17 +5,21 @@ import DataFiles.Data;
 import DataFiles.DataReader;
 import DataFiles.Order;
 import DataFiles.*;
+import gurobi.GRB;
+import gurobi.GRBException;
+import gurobi.GRBVar;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.DoubleStream;
 
 public class OrderDistribution {
 
 
-    public double[][] orderVolumeDistribution;
+    public double[][] orderVolumeDistribution;  //period, customer
     public ArrayList<Integer>[][] orderIdDistribution;
     public Data data;
-    public OrderDelivery[] orderDeliveries;
+    public OrderDelivery[] orderDeliveries;  //orderids
     public double[] volumePerPeriod;
 
     // fitness values
@@ -43,6 +47,46 @@ public class OrderDistribution {
         distributeDividables();
         distributeNonDividables();
     }
+
+
+    public void makeDistributionFromMIP(GRBVar[][][] uND, GRBVar[][][] uD, GRBVar[][][] qND, GRBVar[][][] qD, double objectiveValue) throws GRBException {
+        setVolumeAndOrdersFromMIP( uND, uD, qND, qD);
+        setVolumePerPeriod();
+        setFitness(objectiveValue);
+    }
+
+    private void setVolumeAndOrdersFromMIP(GRBVar[][][] uND, GRBVar[][][] uD, GRBVar[][][] qND, GRBVar[][][] qD ) throws GRBException {
+        for (int d = 0; d < data.numberOfPeriods; d++){
+            for (int i = 0; i < data.numberOfCustomers; i++) {
+                for (int m = 0; m < data.customers[i].numberOfDividableOrders; m++){
+                    if (uD[d][i][m].get(GRB.DoubleAttr.X) == 1) {
+                        this.orderIdDistribution[d][i].add(data.customers[i].dividableOrders[m].orderID);
+                        this.orderDeliveries[data.customers[i].dividableOrders[m].orderID].addDelivery(d, qD[d][i][m].get(GRB.DoubleAttr.X));
+                        this.orderVolumeDistribution[d][i] += qD[d][i][m].get(GRB.DoubleAttr.X);
+                    }
+                }
+                for (int m = 0; m < data.customers[i].numberOfNonDividableOrders; m++){
+                    if (uND[d][i][m].get(GRB.DoubleAttr.X) == 1) {
+                        this.orderIdDistribution[d][i].add(data.customers[i].nonDividableOrders[m].orderID);
+                        this.orderDeliveries[data.customers[i].nonDividableOrders[m].orderID].addDelivery(d, qND[d][i][m].get(GRB.DoubleAttr.X));
+                        this.orderVolumeDistribution[d][i] += qND[d][i][m].get(GRB.DoubleAttr.X);
+                    }
+                }
+            }
+        }
+    }
+
+    private void setFitness(double objectiveValue){
+        this.fitness = objectiveValue;
+    }
+
+    private void setVolumePerPeriod(){
+        for (int p = 0; p < data.numberOfPeriods; p++){
+            this.volumePerPeriod[p] = DoubleStream.of(this.orderVolumeDistribution[p]).sum();
+        }
+    }
+
+
 
     public void addOrderDelivery(OrderDelivery orderDelivery){
         for (int i = 0 ; i < orderDelivery.orderPeriods.length ; i++){
@@ -72,6 +116,7 @@ public class OrderDistribution {
             }
             else{
                 visitDaysCopy[currentBest] = 0;
+
             }
         }
     }

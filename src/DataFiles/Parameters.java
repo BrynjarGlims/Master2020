@@ -11,7 +11,7 @@ public class Parameters {
 
 
     //Population parameters
-    public static final int populationSize = 10000;
+    public static final int populationSize = 1000;
     public static final int maxNumberIterationsWithoutImprovement = 20;
     public static final int maxNumberOfIterations = 200;
 
@@ -24,6 +24,7 @@ public class Parameters {
     //Loading data parameters
     public static final int numberOfCustomers = 100;
     public static final int numberOfVehicles = 50;
+
 
     //Traveling parameters
     public static final double scalingDistanceParameter = 2;
@@ -40,7 +41,7 @@ public class Parameters {
 
 
     //Period parameters
-    public static final int[] overtimeLimit = {100, 100, 100, 100, 100, 100};  //needs to be equal to number of periods in length
+    public static final int[] overtimeLimit = {100, 100, 100, 100, 100, 100};
     public static final int[] overtimeCost = {100, 100, 100, 100, 100, 100};
 
     //Time parameters

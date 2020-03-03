@@ -651,7 +651,7 @@ public class ArcFlowModel {
                     GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
                     for (int v = 0; v < data.numberOfVehicles; v++) {
                         for (int r = 0; r < data.numberOfTrips; r++) {
-                            lhs.addTerm(1, qD[d][v][r][i][m]);
+                            lhs.addTerm(-1, qD[d][v][r][i][m]);
                         }
                     }
                     lhs.addTerm(data.customers[i].dividableOrders[m].maxVolume, uD[d][i][m]);
