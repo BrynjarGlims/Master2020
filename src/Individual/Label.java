@@ -41,13 +41,12 @@ public class Label {
 
 
     //create non-first labels
-    public Label(Label parentLabel, int vehicleIndex, double arcCost){
+    public Label(Label parentLabel, int vehicleIndex){
 
 
         //Information attributes
         this.periodID = parentLabel.periodID;
         this.vehicleTypeID = parentLabel.vehicleTypeID;
-        this.parentLabel = parentLabel;
         this.data = parentLabel.data;
         this.orderDistribution = parentLabel.orderDistribution;
         this.tripNumber = parentLabel.tripNumber + 1;
@@ -56,16 +55,22 @@ public class Label {
 
 
         // Cost of choosing arcs from the SPA
-        this.labelEntries = parentLabel.labelEntries.clone();
-        this.labelEntries[vehicleIndex].updateArcCost(arcCost, listOfTrips.get(tripNumber));
+        this.cloneParentLabelEntries(parentLabel.labelEntries);
+        this.labelEntries[vehicleIndex].updateLabelEntryValues(listOfTrips.get(tripNumber));
+
         this.sortLabelEntries();
         this.deriveLabelCost();
+
+        /*
+        System.out.println(" --------------  New label  ---------------");
+        System.out.print("TimeWarpCost: " + fleetTimeWarp + "\n");
+        for(LabelEntry le : labelEntries){
+            System.out.print(le.toString());
+        }
+
+         */
     }
 
-
-    private void sortLabelEntries(){
-        Arrays.sort(labelEntries);
-    }
 
     //generate empty label
     public Label(Data data, int tripNumber, double[][] orderDistribution, int periodID,
@@ -82,7 +87,7 @@ public class Label {
 
 
     //create first label
-    public Label(int numberOfVehicles, double arcCost, Data data,
+    public Label(int numberOfVehicles, Data data,
                  ArrayList<ArrayList<Integer>> listOfTrips, int tripNumber, double[][] orderDistribution, int periodID,
                  int vehicleTypeID){
 
@@ -102,10 +107,21 @@ public class Label {
         //labelEntries generated
         this.labelEntries = new LabelEntry[numberOfVehicles];
         this.initializeLabelEntries(periodID, vehicleTypeID);
-        this.labelEntries[0].updateArcCost(arcCost, listOfTrips.get(tripNumber));
+        this.labelEntries[0].updateLabelEntryValues( listOfTrips.get(tripNumber));
+
+
 
         //derive cost
         this.deriveLabelCost();
+
+        /*
+        System.out.println(" --------------  New label (first label)  ---------------");
+        System.out.print("TimeWarpCost: " + fleetTimeWarp + "\n");
+        for(LabelEntry le : labelEntries){
+            System.out.print(le.toString());
+        }
+
+         */
     }
 
     private void initializeLabelEntries(int periodID, int vehicleTypeID){
@@ -113,6 +129,17 @@ public class Label {
         for ( int vehicleID : data.vehicleTypes[this.vehicleTypeID].vehicleSet ){
             this.labelEntries[i] = new LabelEntry(vehicleID, vehicleTypeID, periodID, data, orderDistribution);
             i++;
+        }
+    }
+
+    private void sortLabelEntries(){
+        Arrays.sort(labelEntries);
+    }
+
+    private void cloneParentLabelEntries( LabelEntry[] parentLabelEntries){
+        labelEntries = new LabelEntry[parentLabelEntries.length];
+        for (int i = 0; i < parentLabelEntries.length; i++){
+            labelEntries[i] = parentLabelEntries[i].copyLabelEntry();
         }
     }
 

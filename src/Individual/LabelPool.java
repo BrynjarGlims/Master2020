@@ -2,11 +2,14 @@ package Individual;
 
 import DataFiles.*;
 
+import javax.swing.text.LabelView;
 import java.util.ArrayList;
+import java.util.HashSet;
+
 
 public class LabelPool {
 
-    ArrayList<Label> labels;
+    HashSet<Label> labels;
     Data data;
     Label bestLabel = null;
     ArrayList<ArrayList<Integer>> listOfTrips;
@@ -14,66 +17,79 @@ public class LabelPool {
     double[][] orderDistribution;
 
     public LabelPool (Data data, ArrayList<ArrayList<Integer>> listOfTrips, int tripNumber, double[][] orderDistribution){
-        this.labels = new ArrayList<Label>();
+        this.labels = new HashSet<>();
         this.data = data;
         this.listOfTrips = listOfTrips;
         this.tripNumber = tripNumber;
         this.orderDistribution = orderDistribution;
     }
 
-
-    public void generateFirstLabel(int numberOfVehicles, double arcCost, int periodID, int vehicleTypeID) {
-        this.labels.add(new Label(numberOfVehicles, arcCost, data, listOfTrips, tripNumber, orderDistribution,
+    public void generateFirstLabel(int numberOfVehicles, int periodID, int vehicleTypeID) {
+        this.labels.add(new Label(numberOfVehicles, data, listOfTrips, tripNumber, orderDistribution,
                 periodID, vehicleTypeID));
     }
 
 
-    public void generateLabels(LabelPool previousLabelPool, double arcCost) {
+    public void generateAndRemoveDominatedLabels(LabelPool previousLabelPool) {
         for (Label label : previousLabelPool.getLabels()) {
-            createNewLabels(label, arcCost); //todo:implement load infeasability
-            //System.out.println("Label expanded");
+            addExtendedDominantLabels(label);
         }
     }
 
-    public void createNewLabels(Label predecessorLabel, double arcCost){
+    private void addExtendedDominantLabels(Label predecessorLabel){
 
-        double additionalLoadInfeasibility = 0; // TODO: 13.02.2020 IMPLEMENT
         int vehicleCostOrderNumber = 0;
+
         // Generate labels by adding cost on already existing vehicles
-        while ( predecessorLabel.labelEntries[vehicleCostOrderNumber].vehicleCost != 0){
-            labels.add(new Label(predecessorLabel, vehicleCostOrderNumber, arcCost));
-            if ( vehicleCostOrderNumber == predecessorLabel.labelEntries.length-1)
+        while (predecessorLabel.labelEntries[vehicleCostOrderNumber].inUse){
+            tryToAddNewLabel(new Label(predecessorLabel, vehicleCostOrderNumber));
+            if (vehicleCostOrderNumber == predecessorLabel.labelEntries.length-1)
                 break;
             vehicleCostOrderNumber++;
         }
 
         // Creating labels based on a new vehicle in use.
-        if (predecessorLabel.labelEntries[predecessorLabel.labelEntries.length-1].vehicleCost == 0){
-            labels.add(new Label(predecessorLabel, vehicleCostOrderNumber, arcCost));
+        if (predecessorLabel.labelEntries[vehicleCostOrderNumber].vehicleCost == 0){
+            tryToAddNewLabel(new Label(predecessorLabel, vehicleCostOrderNumber));
         }
     }
 
-    public void removeDominated(){
-        for(int i = 0; i < labels.size() - 1; i++ ){
-            for (int j = i; j < labels.size(); j++){
-                this.isDominated(i,j);
+    private void tryToAddNewLabel(Label currentLabel){
+        if (isNotDominated(currentLabel)){
+            eliminateDominatedLabels(currentLabel);
+            labels.add(currentLabel);
+        }
+
+    }
+
+    private boolean isNotDominated(Label currentLabel){
+        if (labels.isEmpty()){
+            return true;
+        }
+        for (Label label : labels){
+            if (checkDominance(label, currentLabel)){
+                return false;
             }
         }
+        return true;
     }
 
-    public void isDominated(int i, int j){
-        if (checkDominance(i,j)){
-            labels.remove(j);
-            //System.out.println("Label removed!");
+    private void eliminateDominatedLabels(Label currentLabel){
+        if (labels.isEmpty()){
+            return;
         }
-        else if (checkDominance(j,i)){
-            labels.remove(i);
-            //System.out.println("Label removed!");
+        HashSet<Label> setOfRemovedLabels = new HashSet<Label>();
+        for (Label testLabel : labels){
+            if(checkDominance(currentLabel, testLabel)){
+                setOfRemovedLabels.add(testLabel);
+            }
         }
-
+        labels.removeAll(setOfRemovedLabels);
     }
 
-    public  ArrayList<Label> getLabels(){
+
+
+    public  HashSet<Label> getLabels(){
         return this.labels;
     }
 
@@ -88,20 +104,23 @@ public class LabelPool {
     }
 
 
-    public boolean checkDominance(int i, int j){
+    private boolean checkDominance(Label firstLabel, Label secondLabel){
         double firstLabelValue = 0;
-
-        for(int k = 0; k < labels.get(i).labelEntries.length; k++){
-            firstLabelValue += deltaFunction(labels.get(i).labelEntries[k].getTravelTimeValue(),
-                    labels.get(j).labelEntries[k].getTravelTimeValue());
-        }
+        firstLabelValue += calculateDeltaSumValue(firstLabel.labelEntries, secondLabel.labelEntries);
         firstLabelValue *= Parameters.initialOvertimePenalty;
-        firstLabelValue += labels.get(i).costOfLabel;
-
-        double secondLabelValue = labels.get(j).costOfLabel;
+        firstLabelValue += firstLabel.costOfLabel;
+        double secondLabelValue = secondLabel.costOfLabel;
         return firstLabelValue <= secondLabelValue;
     }
 
+    private double calculateDeltaSumValue(LabelEntry[] firstLabelEntries, LabelEntry[] secondLabelEntries){
+        double sum = 0;
+        for(int k = 0; k < firstLabelEntries.length; k++){
+            sum += deltaFunction(firstLabelEntries[k].getDrivingDistance(),
+                    secondLabelEntries[k].getDrivingDistance());
+        }
+        return sum;
+    }
 
 
     public double deltaFunction(double firstVehicleTravelTime, double secondVehicleTravelTime) {

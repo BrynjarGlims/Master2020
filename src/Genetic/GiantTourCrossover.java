@@ -257,11 +257,7 @@ public class GiantTourCrossover {
         parent2.initializeIndividual();
         AdSplit.adSplitPlural(parent2);
 
-        Individual child = GTC.crossOver(parent1, parent2);
-
-        System.out.println(child.orderDistribution);
-
-
+        
 
     }
 
