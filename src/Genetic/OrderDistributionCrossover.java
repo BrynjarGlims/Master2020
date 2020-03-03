@@ -15,7 +15,7 @@ public class OrderDistributionCrossover {
 
     public Data data;
 
-    
+
     public OrderDistributionCrossover(Data data){
         this.data = data;
     }
