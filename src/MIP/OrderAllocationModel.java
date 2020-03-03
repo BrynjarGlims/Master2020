@@ -537,7 +537,7 @@ public class OrderAllocationModel {
 
 
 
-    public Result runModel(Individual individual) {
+    private Result runModel(Individual individual) {
         try {
             this.symmetry = Parameters.symmetry;
             this.individual = individual;
@@ -595,7 +595,7 @@ public class OrderAllocationModel {
         this.orderDistribution.makeDistributionFromMIP( uND, uD, qND, qD, model.get(GRB.DoubleAttr.ObjVal));
     }
 
-    public OrderDistribution createODFromMIP(Individual individual, boolean verbose) {
+    private OrderDistribution createODFromMIP(Individual individual, boolean verbose) {
         try {
             this.orderDistribution = new OrderDistribution(individual.data);
             this.individual = individual;
@@ -631,18 +631,15 @@ public class OrderAllocationModel {
         }
     }
 
-    public OrderDistribution createODFromMIP(Individual individual){
+    private OrderDistribution createODFromMIP(Individual individual){
         return createODFromMIP(individual, false);
     }
 
 
-
-    public static void main(String[] args) {
-        Individual individual = Individual.makeIndividual();
-        AdSplit.adSplitPlural(individual);
-        individual.updateFitness();
+    //MASTER FUNCTION
+    public static OrderDistribution createOptimalOrderDistribution( Individual individual){
         OrderAllocationModel orderAllocationModel = new OrderAllocationModel();
-        OrderDistribution od = orderAllocationModel.createODFromMIP(individual);
+        return orderAllocationModel.createODFromMIP(individual);
     }
 
 }
