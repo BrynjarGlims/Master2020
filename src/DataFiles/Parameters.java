@@ -26,12 +26,12 @@ public class Parameters {
     public static final int maxPopulationSize = 100; //TODO: find reasonable value
 
     //Loading data parameters
-    public static final int numberOfCustomers = 100;
-    public static final int numberOfVehicles = 30;
 
+    public static final int numberOfCustomers = 110;
+    public static final int numberOfVehicles = 100;
 
     //Traveling parameters
-    public static final double scalingDistanceParameter = 1;
+    public static final double scalingDistanceParameter = 2;
     public static final double timeShift = 6;
 
 
@@ -44,8 +44,9 @@ public class Parameters {
     public static final double penaltyFactorForUnderFilling = 1.5;
 
 
+
     //Period parameters
-    public static final int[] overtimeLimit = {100, 100, 100, 100, 100, 100};  //needs to be equal to number of periods in length
+    public static final int[] overtimeLimit = {100, 100, 100, 100, 100, 100};
     public static final int[] overtimeCost = {100, 100, 100, 100, 100, 100};
 
     //Time parameters

@@ -343,16 +343,10 @@ public class DataReader {
         for (Vehicle vehicle : data.vehicles){
             System.out.println(vehicle.toString());
         }
-
-
     }
-
-
-
 
     public static void main(String[] args){
         Data data = loadData();
-
     }
 
 }

@@ -5,6 +5,9 @@ public class Order {
     // All values can be found in FFV
 
     public int orderID;
+    public int customerOrderID;
+    public int customerDividableOrderID;
+    public int customerNonDividableOrderID;
     public int customerID;
     public double volume;
     public boolean isDividable;
@@ -43,12 +46,15 @@ public class Order {
 
     }
 
+    public void setCustomerDividableOrderID(int customerDividableOrderID) {
+        this.customerDividableOrderID = customerDividableOrderID;
+    }
 
+    public void setCustomerNonDividableOrderID(int customerNonDividableOrderID) {
+        this.customerNonDividableOrderID = customerNonDividableOrderID;
+    }
 
-
-
-
-
-
-
+    public void setCustomerOrderID(int customerOrderID){
+        this.customerOrderID = customerOrderID;
+    }
 }

@@ -71,7 +71,6 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
 
 
 
-
     //-----------------------------------------Depot overtime fitness score------------------------------------------------------------------------
     /*
     //TODO 2.3: implement calculations

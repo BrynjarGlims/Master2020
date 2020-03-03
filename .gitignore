@@ -21,6 +21,7 @@
 *.rar
 *.xml
 *.iml
+*.ilp
 
 # folders
 .idea/

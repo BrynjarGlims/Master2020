@@ -27,6 +27,7 @@ public class Population {
     public void initializePopulation (OrderDistributionPopulation odp) {
         this.orderDistributionPopulation = odp;
         for (int i = 0; i < Parameters.initialPopulationSize; i++) {
+
             Individual individual = new Individual(this.data, this);
             individual.initializeIndividual();
             AdSplit.adSplitPlural(individual);
@@ -124,7 +125,6 @@ public class Population {
     public int getIterationsWithoutImprovement(){
         return iterationsWithoutImprovement;
     }
-
 
     public static void main( String[] args){
         Data data = DataReader.loadData();
