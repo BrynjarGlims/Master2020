@@ -2,6 +2,10 @@ package DataFiles;
 
 
 import gurobi.GRBVar;
+import org.numenta.nupic.util.ArrayUtils;
+
+import java.lang.*;
+import java.util.Arrays;
 
 public class Data {
 
@@ -47,6 +51,7 @@ public class Data {
         this.setVehiclesInVehicleType();
         this.setTargetVolume();
         this.setDistanceMatrix();
+        setNearestNeighbors();
         this.setDerivedParameters();
         this.setNumberOfCustomerVisitsInPeriod();
     }
@@ -72,6 +77,23 @@ public class Data {
         this.numberOfVehiclesInVehicleType = new int[numberOfVehicleTypes]; //initialized with zero
         for(Vehicle vehicle : vehicles){
             this.numberOfVehiclesInVehicleType[vehicle.vehicleType.vehicleTypeID]++;
+        }
+    }
+
+    private void setNearestNeighbors(){
+        double[] distanceCopy;
+        int[] intDistanceCopy;
+        int[] argSortedDistance;
+        for (int customer = 0 ; customer < numberOfCustomers ; customer++){
+            distanceCopy = ArrayUtils.multiply(Arrays.copyOf(distanceMatrix[customer], numberOfCustomers), 1000);
+            intDistanceCopy = new int[distanceCopy.length];
+            for (int i = 0; i < distanceCopy.length ; i++){
+                intDistanceCopy[i] = (int) distanceCopy[i];
+            }
+            argSortedDistance = ArrayUtils.argsort(intDistanceCopy);
+            for (int n = 1 ; n <= Parameters.nearestNeighbors; n++){
+                customers[customer].nearestNeighbors.add(customers[argSortedDistance[n]]);
+            }
         }
     }
 
@@ -131,10 +153,8 @@ public class Data {
 
     public static void main(String[] args){
         Data data = DataReader.loadData();
-        for (Customer c : data.customers){
-            if (c.timeWindow.length != 6){
-                System.out.println(c.customerID);
-            }
+        for (Customer c : data.customers[0].nearestNeighbors){
+            System.out.println(c.customerID);
         }
         }
 

@@ -22,7 +22,6 @@ public class Parameters {
     public static final int maxPopulationSize = 100; //TODO: find reasonable value
 
     //Loading data parameters
-
     public static final int numberOfCustomers = 100;
     public static final int numberOfVehicles = 50;
 
@@ -36,6 +35,8 @@ public class Parameters {
     public static final double initialOvertimePenalty = 1;  // theta
     public static final double initialTimeWarpPenalty = 1;  // zeta
     public static final double initialDrivingCostPenalty = 1; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
+    public static final int nearestNeighbors = 8; //Neighborhood size for each customer
+
 
 
     //Period parameters

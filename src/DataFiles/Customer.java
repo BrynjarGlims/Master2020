@@ -1,6 +1,7 @@
 package DataFiles;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class Customer {
@@ -23,6 +24,7 @@ public class Customer {
 
     public double xCoordinate;
     public double yCoordinate;
+    public HashSet<Customer> nearestNeighbors;
 
     public double fixedLoadingTime;
     public double variableLoadingTime;
@@ -35,6 +37,7 @@ public class Customer {
         this.customerID = customerID;
         this.customerNumber = customerNumber;
         this.customerName = customerName;
+        nearestNeighbors = new HashSet<>();
     }
 
     public void setCustomerID(int customerID){
