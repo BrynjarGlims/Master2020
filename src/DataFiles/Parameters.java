@@ -11,7 +11,7 @@ public class Parameters {
 
 
     //Population parameters
-    public static final int populationSize = 10000;
+    public static final int populationSize = 1000;
     public static final int maxNumberIterationsWithoutImprovement = 20;
     public static final int maxNumberOfIterations = 200;
 
@@ -23,8 +23,8 @@ public class Parameters {
 
     //Loading data parameters
 
-    public static final int numberOfCustomers = 100;
-    public static final int numberOfVehicles = 50;
+    public static final int numberOfCustomers = 110;
+    public static final int numberOfVehicles = 100;
 
     //Traveling parameters
     public static final double scalingDistanceParameter = 2;

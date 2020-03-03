@@ -5,6 +5,9 @@ import DataFiles.Data;
 import DataFiles.DataReader;
 import DataFiles.Order;
 import DataFiles.*;
+import gurobi.GRB;
+import gurobi.GRBException;
+import gurobi.GRBVar;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -40,6 +43,41 @@ public class OrderDistribution {
         distributeDividables();
         distributeNonDividables();
     }
+
+    public void makeDistributionFromMIP(GRBVar[][][] uND, GRBVar[][][] uD, GRBVar[][][] qND, GRBVar[][][] qD, GRBVar[] qO){
+        setDivOrdersFromMIP( uD, qD);
+        setNonDivOrdersFromMIP(uND, qND);
+        setOvertimeAtDepot(qO);
+    }
+
+    private void setOvertimeAtDepot(GRBVar[] qO){
+
+
+    }
+
+    private void setDivOrdersFromMIP(GRBVar[][][] uD, GRBVar[][][] qD ) throws GRBException {
+        for (int d = 0; d < data.numberOfPeriods; d++){
+            for (int i = 0; i < data.numberOfCustomers; i++){
+                for (int m = 0; m < data.customers[i].numberOfDividableOrders; m++)
+                    if (uD[d][i][m].get(GRB.DoubleAttr.X) == 1){
+                        this.orderIdDistribution[d][i].add(data.customers[i].dividableOrders[m].orderID);
+                        this.orderDeliveries[data.customers[i].dividableOrders[m].orderID].addDelivery(d, qD[d][i][m].get);
+                    }
+                for (Order order : data.customers[i].dividableOrders)
+            }
+        }
+    }
+
+    private void setNonDivOrdersFromMIP(GRBVar[][][] uND, GRBVar[][][] qND ){
+        for (int d = 0; d < data.numberOfPeriods; d++){
+            for (int i = 0; i < data.numberOfCustomers; i++){
+                for (Order order : data.customers[i].dividableOrders)
+            }
+        }
+    }
+
+
+
 
 
     private void distributeNonDividables() {
