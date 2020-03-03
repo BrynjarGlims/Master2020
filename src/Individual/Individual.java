@@ -201,7 +201,6 @@ public class Individual {
         return giantTour.toString();
     }
 
-
     public static void main(String[] args) {
         Individual individual = Individual.makeIndividual();
         System.out.println("Value of fitness: " + individual.getFitness(true));

@@ -9,10 +9,11 @@ public class Parameters {
     public static final String vehicleFilePath = "data/Vehicles.csv";
 
 
-
     //Population parameters
-    public static final int maximumSubPopulationSize = 40; // A subpopulation ie either the feasile or infeasible population
-    public static final int minimumSubPopulationSize = 20;
+    public static final int maximumSubPopulationSize = 100; // A subpopulation ie either the feasile or infeasible population
+    public static final int minimumSubPopulationSize = 50;
+    public static final int initialPopulationSize = 100;
+    public static final int initialOrderDistributionPopulationSize = 10;
 
     public static final int maxNumberIterationsWithoutImprovement = 20;
     public static final int maxNumberOfIterations = 200;
@@ -39,6 +40,8 @@ public class Parameters {
     public static final double initialOvertimePenalty = 0.01;  // theta
     public static final double initialTimeWarpPenalty = 0.01;  // zeta
     public static final double initialDrivingCostPenalty = 0.01; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
+    public static final double penaltyFactorForOverFilling = 1.1;
+    public static final double penaltyFactorForUnderFilling = 1.5;
 
 
     //Period parameters
