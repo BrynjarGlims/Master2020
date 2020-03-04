@@ -39,39 +39,16 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
         if (!individual.giantTourSplit.chromosome[p][vt].isEmpty()) {
             Iterator iterator = individual.giantTourSplit.chromosome[p][vt].iterator();
             int split = (Integer) iterator.next();
-            /*
-            System.out.println("------------");
-            System.out.println("giant tour: " + individual.giantTour.chromosome[p][vt]);
-            System.out.println("giant tour split: " + individual.giantTourSplit.chromosome[p][vt]);
-             */
             for (int i = 0; i < individual.giantTour.chromosome[p][vt].size(); i++) {
                 tripLoad += orderDistribution.orderVolumeDistribution[p][individual.giantTour.chromosome[p][vt].get(i)];
                 if (i == split-1) {
                     singleChromosomeFitness += calculateJourneyLoadPunishment(tripLoad, vt, individual);
                     tripLoad = 0;
-                    if (i != individual.giantTour.chromosome[p][vt].size() - 1) {
-                        if (iterator.hasNext()) {
-                            //if there are more splits
-                            split = (Integer) iterator.next();
-                        }
-                        else {
-                            // split will never be reached
-                            split = individual.giantTour.chromosome[p][vt].size();
-                        }
+                    if (i != individual.giantTour.chromosome[p][vt].size() - 1)
+                        split = (Integer) iterator.next();
                     }
-                }
-            }
-        /*
-        for (int tripSplitIndex = 0; tripSplitIndex < individual.giantTourSplit.chromosome[p][vt].size(); tripSplitIndex++) {
-            from = tripSplitIndex - 1 == -1 ? 0 : individual.giantTourSplit.chromosome[p][vt].get(tripSplitIndex - 1);
-            currentTrip = new LinkedList<>(individual.giantTour.chromosome[p][vt].subList(from, individual.giantTourSplit.chromosome[p][vt].get(tripSplitIndex)));
-            for (int customerID: currentTrip) {
-                tripLoad += orderDistribution.orderVolumeDistribution[p][customerID];
             }
         }
-        */
-        }
-
         return singleChromosomeFitness;
     }
 
