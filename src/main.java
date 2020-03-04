@@ -12,7 +12,9 @@ public class main {
         Data data = DataReader.loadData();
         Population population = new Population(data);
         OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
-        population.initializePopulation(odp);
+        OrderDistribution targetOD = odp.getRandomOrderDistribution();
+        population.setOrderDistributionPopulation(odp);
+        population.initializePopulation(targetOD);
         odp.initializeOrderDistributionPopulation(population);
         GiantTourCrossover GTC = new GiantTourCrossover(data);
 
@@ -20,7 +22,6 @@ public class main {
 
         while ( population.getIterationsWithoutImprovement() < Parameters.maxNumberIterationsWithoutImprovement &&
                 numberOfIterations < Parameters.maxNumberOfIterations){
-            OrderDistribution targetOD = odp.getRandomOrderDistribution();
 
             while (population.getPopulationSize() < Parameters.maxPopulationSize){
 

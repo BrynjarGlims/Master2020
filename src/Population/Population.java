@@ -31,12 +31,14 @@ public class Population {
         return feasiblePopulation.size() + infeasiblePopulation.size();
     }
 
-
-
-    public void initializePopulation (OrderDistributionPopulation odp) {
+    public void setOrderDistributionPopulation(OrderDistributionPopulation odp){
         this.orderDistributionPopulation = odp;
-        for (int i = 0; i < Parameters.initialPopulationSize; i++) {
+    }
 
+
+
+    public void initializePopulation (OrderDistribution od) {
+        for (int i = 0; i < Parameters.initialPopulationSize; i++) {
             Individual individual = new Individual(this.data, this);
             individual.initializeIndividual();
             AdSplit.adSplitPlural(individual);
@@ -140,7 +142,7 @@ public class Population {
         Population population = new Population(data);
         OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
         odp.initializeOrderDistributionPopulation(population);
-        population.initializePopulation(odp);
+        population.initializePopulation(odp.getRandomOrderDistribution());
         System.out.println("hei");
     }
 

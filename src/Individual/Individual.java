@@ -65,6 +65,8 @@ public class Individual {
 
     }
 
+
+
     public boolean isFeasible() {
         return (infeasibilityCost == 0);
 
