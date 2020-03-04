@@ -24,6 +24,7 @@ public class Population {
     }
 
 
+
     public void initializePopulation (OrderDistributionPopulation odp) {
         this.orderDistributionPopulation = odp;
         for (int i = 0; i < Parameters.initialPopulationSize; i++) {

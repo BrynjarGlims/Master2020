@@ -50,7 +50,6 @@ public class OrderDistributionPopulation {
         for (Individual ind : currentGiantTourPopulation) {
             fillingLevelFitness.put(ind, getFillingLevelFitnessSingular(ind));
         }
-
         return fillingLevelFitness;
     }
 
@@ -70,7 +69,7 @@ public class OrderDistributionPopulation {
         OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
         population.initializePopulation(odp);
         odp.initializeOrderDistributionPopulation(population);
-        System.out.println(odp.getFillingLevelFitnessScoresPlural());
+        odp.getFillingLevelFitnessScoresPlural();
     }
 
 }

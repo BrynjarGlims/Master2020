@@ -1,9 +1,6 @@
 package Genetic;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import DataFiles.*;
 import Individual.Individual;
@@ -28,22 +25,43 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
         for (int p = 0; p < Parameters.numberOfPeriods; p++) {
             double periodicFitness = 0;
             for (int vt = 0; vt < individual.data.numberOfVehicleTypes; vt++) {
-                double journeyFitness = getJourneyFitness(vt, p, individual, orderDistribution);
-                periodicFitness += journeyFitness;
+                periodicFitness += getSingleChromosomeFitness(vt, p, individual, orderDistribution);
             }
             totalFitness += periodicFitness;
         }
-        System.out.println("For individual: " + individual.giantTour.chromosome + ", orderDistr: "+ orderDistribution + ", fitness: "+ totalFitness);
+        System.out.println("For individual: " + individual.giantTour.chromosome + ", orderDistr: "+ orderDistribution.hashCode() + ", fitness: "+ totalFitness);
         return totalFitness;
     }
 
-    public static double getJourneyFitness(int vt, int p, Individual individual, OrderDistribution orderDistribution) {
+    public static double getSingleChromosomeFitness(int vt, int p, Individual individual, OrderDistribution orderDistribution) {
         double tripLoad = 0;
-        double journeyFitness = 0;
-        List<Integer> currentTrip;
-        int from;
-
-        //todo: CHANGE SUBLIST STRUCTURE
+        double singleChromosomeFitness = 0;
+        if (!individual.giantTourSplit.chromosome[p][vt].isEmpty()) {
+            Iterator iterator = individual.giantTourSplit.chromosome[p][vt].iterator();
+            int split = (Integer) iterator.next();
+            /*
+            System.out.println("------------");
+            System.out.println("giant tour: " + individual.giantTour.chromosome[p][vt]);
+            System.out.println("giant tour split: " + individual.giantTourSplit.chromosome[p][vt]);
+             */
+            for (int i = 0; i < individual.giantTour.chromosome[p][vt].size(); i++) {
+                tripLoad += orderDistribution.orderVolumeDistribution[p][individual.giantTour.chromosome[p][vt].get(i)];
+                if (i == split-1) {
+                    singleChromosomeFitness += calculateJourneyLoadPunishment(tripLoad, vt, individual);
+                    tripLoad = 0;
+                    if (i != individual.giantTour.chromosome[p][vt].size() - 1) {
+                        if (iterator.hasNext()) {
+                            //if there are more splits
+                            split = (Integer) iterator.next();
+                        }
+                        else {
+                            // split will never be reached
+                            split = individual.giantTour.chromosome[p][vt].size();
+                        }
+                    }
+                }
+            }
+        /*
         for (int tripSplitIndex = 0; tripSplitIndex < individual.giantTourSplit.chromosome[p][vt].size(); tripSplitIndex++) {
             from = tripSplitIndex - 1 == -1 ? 0 : individual.giantTourSplit.chromosome[p][vt].get(tripSplitIndex - 1);
             currentTrip = new LinkedList<>(individual.giantTour.chromosome[p][vt].subList(from, individual.giantTourSplit.chromosome[p][vt].get(tripSplitIndex)));
@@ -51,25 +69,27 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
                 tripLoad += orderDistribution.orderVolumeDistribution[p][customerID];
             }
         }
-        journeyFitness = calculateJourneyLoadPunishment(tripLoad, vt, individual);
-        return journeyFitness;
+        */
+        }
+
+        return singleChromosomeFitness;
     }
 
     public static double calculateJourneyLoadPunishment(double tripLoad, int vt, Individual individual) {
-        double journeyFitness = 0;
+        double fitness = 0;
         if (tripLoad > individual.data.vehicleTypes[vt].capacity) {
-            journeyFitness = Parameters.penaltyFactorForOverFilling*((tripLoad - individual.data.vehicleTypes[vt].capacity)/individual.data.vehicleTypes[vt].capacity);
+            fitness = Parameters.penaltyFactorForOverFilling*((tripLoad - individual.data.vehicleTypes[vt].capacity)/individual.data.vehicleTypes[vt].capacity);
         }
         else if (tripLoad < individual.data.vehicleTypes[vt].capacity){
-            journeyFitness = Parameters.penaltyFactorForUnderFilling*((individual.data.vehicleTypes[vt].capacity - tripLoad)/individual.data.vehicleTypes[vt].capacity);
+            fitness = Parameters.penaltyFactorForUnderFilling*((individual.data.vehicleTypes[vt].capacity - tripLoad)/individual.data.vehicleTypes[vt].capacity);
         }
         else if (tripLoad == individual.data.vehicleTypes[vt].capacity) {
-            journeyFitness = 0;
+            fitness = 0;
         }
-        return journeyFitness;
+        return fitness;
     }
 
-
+    //---------------------------------------------------------------------------------------------------------------------------------------------
 
     //-----------------------------------------Depot overtime fitness score------------------------------------------------------------------------
     /*
