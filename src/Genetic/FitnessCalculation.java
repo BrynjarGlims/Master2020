@@ -67,11 +67,7 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
         return fitness;
     }
 
-    //---------------------------------------------------------------------------------------------------------------------------------------------
 
-    //-----------------------------------------Depot overtime fitness score------------------------------------------------------------------------
-
-    //TODO 2.3: implement calculations
     public static double getPeriodicOvertimeFitness (OrderDistribution orderDistribution, int p) {
         double periodicOvertime = 0;
         double loadSumForVehicleType = 0;
@@ -80,16 +76,12 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
         return periodicOvertime*Parameters.overtimeCost[p];
     }
 
-    public static double getIndividualOvertimeFitness (OrderDistribution orderDistribution) {
+    private static double getIndividualOvertimeFitness (OrderDistribution orderDistribution) {
         double overtimeFitness = 0;
         for (int p = 0; p < Parameters.numberOfPeriods; p++) {
             overtimeFitness += getPeriodicOvertimeFitness(orderDistribution, p);
         }
         return overtimeFitness;
-    }
-
-    public static void main(String[] args) {
-        OrderDistribution od = new OrderDistribution();
     }
 
 
