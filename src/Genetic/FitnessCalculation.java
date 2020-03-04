@@ -30,7 +30,6 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
             }
             totalFitness += periodicFitness;
         }
-        System.out.println("For individual: " + individual.giantTour.chromosome + ", orderDistr: "+ orderDistribution.hashCode() + ", fitness: "+ totalFitness);
         return totalFitness;
     }
 

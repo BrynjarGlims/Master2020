@@ -10,24 +10,26 @@ public class Parameters {
 
 
     //Population parameters
-    public static final int maximumSubPopulationSize = 100; // A subpopulation ie either the feasile or infeasible population
+    public static final int maximumSubPopulationSize = 100; //TODO: find reasonable value
     public static final int minimumSubPopulationSize = 50;
-    public static final int initialPopulationSize = 100;
+    public static final int initialPopulationSize = 10;
     public static final int initialOrderDistributionPopulationSize = 10;
 
-    public static final int maxNumberIterationsWithoutImprovement = 20;
-    public static final int maxNumberOfIterations = 200;
+    public static final int maxNumberIterationsWithoutImprovement = 10;
+    public static final int maxNumberOfIterations = 10;
     public static final double minimumFitnessDifferenceForClones = 10; //minimum fitness difference to encounter two individuals as clones
 
     //Decision parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
     public static final int numberOfEliteIndividuals = 50; //TODO: find reasonable value
-    public static final int maxPopulationSize = 200; //TODO: find reasonable value
+
+
 
     //Loading data parameters
     public static final int numberOfCustomers = 10;
     public static final int numberOfVehicles = 10;
+
 
     //Traveling parameters
     public static final double scalingDistanceParameter = 2;
@@ -35,10 +37,10 @@ public class Parameters {
 
 
     //Penalty parameters for genetic algorithm
-    public static final double initialCapacityPenalty = 0.01;  // lambda
-    public static final double initialOvertimePenalty = 0.01;  // theta
-    public static final double initialTimeWarpPenalty = 0.01;  // zeta
-    public static final double initialDrivingCostPenalty = 0.01; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
+    public static final double initialCapacityPenalty = 1;  // lambda
+    public static final double initialOvertimePenalty = 1;  // theta
+    public static final double initialTimeWarpPenalty = 1;  // zeta
+    public static final double initialDrivingCostPenalty = 1; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
     public static final double penaltyFactorForOverFilling = 1.1;
     public static final double penaltyFactorForUnderFilling = 1.5;
 
@@ -62,7 +64,7 @@ public class Parameters {
 
 
     //GUROBI PARAMETERS
-    public static final double greedyMIPValue = 0.5;
+    public static final double greedyMIPValue = 0.1;
     public static final String symmetry =  "car";      // // none, car, trips, customers, cost, duration
     public static final double modelTimeLimit = 10000;
     public static final double modelMipGap = 0.0001;

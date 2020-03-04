@@ -1,6 +1,5 @@
 import DataFiles.Data;
 import DataFiles.DataReader;
-import DataFiles.Order;
 import DataFiles.Parameters;
 import Genetic.GiantTourCrossover;
 import Genetic.OrderDistributionCrossover;
@@ -10,34 +9,32 @@ import Population.Population;
 import ProductAllocation.OrderDistribution;
 import Population.OrderDistributionPopulation;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class main {
     public static void main(String[] args){
         Data data = DataReader.loadData();
         Population population = new Population(data);
         OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
-        ArrayList<OrderDistribution> tabuList = new ArrayList<OrderDistribution>();
         GiantTourCrossover GTC = new GiantTourCrossover(data);
         OrderDistributionCrossover ODC = new OrderDistributionCrossover(data);
-        OrderDistribution targetOD = odp.getRandomOrderDistribution();
-
-        tabuList.add(targetOD);
+        odp.initializeOrderDistributionPopulation(population);
+        OrderDistribution firstOD = odp.getRandomOrderDistribution();
+        population.setOrderDistributionPopulation(odp);
+        population.initializePopulation(firstOD);
 
         int numberOfIterations = 0;
         while ( population.getIterationsWithoutImprovement() < Parameters.maxNumberIterationsWithoutImprovement &&
                 numberOfIterations < Parameters.maxNumberOfIterations){
-            if (numberOfIterations == 0){
-                population.setOrderDistributionPopulation(odp);
-                population.initializePopulation(targetOD);
-                odp.initializeOrderDistributionPopulation(population);
+            System.out.println("Start generation: " + numberOfIterations);
+            //Find best OD for the distribution
+            odp.calculateFillingLevelFitnessScoresPlural();
+            for (Individual individual : population.infeasiblePopulation){
+                individual.testNewOrderDistribution(odp.getBestOrderDistribution(individual));
             }
-            HashMap<Individual, HashMap<OrderDistribution, Double>> crossFitnessScore = odp.getFillingLevelFitnessScoresPlural();
 
-            while (population.getPopulationSize() < Parameters.maxPopulationSize){
+            //Generate new population
+            while (population.getPopulationSize() < Parameters.maximumSubPopulationSize){
                 Individual parent1 = population.getRandomIndividual();
                 Individual parent2 = population.getRandomIndividual();//todo:base this on crossfitnesscstore
                 OrderDistribution[] crossoverOD = ODC.crossover(parent1.orderDistribution, parent2.orderDistribution); //these will be the same
@@ -52,41 +49,28 @@ public class main {
                 Random rand = new Random();
                 if (rand.nextDouble() < Parameters.greedyMIPValue){
                     OrderDistribution optimalOD = OrderAllocationModel.createOptimalOrderDistribution(newIndividual, data);
+                    newIndividual.setOptimalOrderDistribution(optimalOD);
+                    odp.addOrderDistribution(optimalOD);
+                    // TODO: 04.03.2020 Implement safe trap in case no solution is found in gurobi
                 }
-
                 population.addChildToPopulation(newIndividual);
+
+                //remember
+                newIndividual.testNewOrderDistribution(odp.getRandomOrderDistribution());
 
             }
 
+            //reduce size of both populations
+            population.reduceSizeToMin();
+            odp.removeNoneUsedOrderDistributions();
 
+            // TODO: 04.03.2020 Implement adjust penalty parameters for overtimeInfeasibility, loadInfeasibility and timeWarpInfeasibility
 
-
-            //crossover to obtain a new child
-            //for the obtained child:
-            //adsplit
-            //getIndividualFitnessScore()
-            //educate (with probability P_ls)
-            //if (child infeasible):
-                //repair
-            //insert child into relevant subpopulation
-
-            //if (subpopulation.getSize() > maxSize): select survivors:
-            //if child.isFeasible();
-                //Population.selectFeasibleSurvivors();
-            //else
-                //population.selectInfeasibleSurvivors();
-
-
-
-            //adjust penalty parameters for overtimeInfeasibility, loadInfeasibility and timeWarpInfeasibility
             numberOfIterations++;
         }
-
-
-
-
+        Individual bestIndividual = population.returnBestIndividual();
+        System.out.println(bestIndividual.toString());
+        System.out.println("Individual infeasible: " + bestIndividual.isFeasible());
+        System.out.println("Fitness: " + bestIndividual.getFitness(false));
     }
-
-
-
 }

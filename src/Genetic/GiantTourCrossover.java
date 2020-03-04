@@ -2,10 +2,8 @@ package Genetic;
 
 import DataFiles.Customer;
 import DataFiles.Data;
-import DataFiles.DataReader;
 import Individual.Individual;
 import Individual.AdSplit;
-import ProductAllocation.OrderDelivery;
 import ProductAllocation.OrderDistribution;
 
 import java.util.*;
@@ -40,6 +38,7 @@ public class GiantTourCrossover {
         inheritParent2(parent2, child, combined, visitedCustomers);
         bestInsertion(child, orderDistribution, findMissingCustomers(visitedCustomers));
         AdSplit.adSplitPlural(child);
+        child.updateFitness();
         return child;
     }
 
@@ -151,7 +150,7 @@ public class GiantTourCrossover {
                     child.giantTour.chromosome[p][currentBestVehicleType].add(currentBestSequence.get(0));
                 }
                 else{
-                    child.giantTour.chromosome[p][currentBestVehicleType] = (ArrayList<Integer>) currentBestSequence;
+                    child.giantTour.chromosome[p][currentBestVehicleType] = new ArrayList<>(currentBestSequence);
                 }
             }
         }

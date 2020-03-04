@@ -1,7 +1,5 @@
 package Individual;
 import DataFiles.Data;
-import DataFiles.DataReader;
-import ProductAllocation.OrderDistribution;
 import DataFiles.Parameters;
 
 import java.util.ArrayList;
@@ -24,7 +22,7 @@ public class AdSplit {
             resetStaticClass(ind);
         }
         if (individual.giantTour.chromosome[p][vt].size() == 0) {
-            individual.bestLabels[p][vt] = new Label(ind.data, 0, individual.orderDistribution.orderVolumeDistribution, p, vt);
+            individual.bestLabels[p][vt] = new Label(ind.data, 0, individual.getOrderDistribution().orderVolumeDistribution, p, vt);
             individual.vehicleAssigment.setChromosome(new HashMap<Integer, Integer>(), p);
             //Set giantTourSplit
             individual.giantTourSplit.setChromosome(new ArrayList<Integer>(), p, vt);

@@ -31,12 +31,52 @@ public class Population {
         return feasiblePopulation.size() + infeasiblePopulation.size();
     }
 
-    public void setOrderDistributionPopulation(OrderDistributionPopulation odp){
-        this.orderDistributionPopulation = odp;
+    public void reduceSizeToMin(){
+        this.reduceFeasiblePopulation();
+        this.reduceInfeasiblePopulation();
+    }
+
+    private void reduceFeasiblePopulation(){
+        int numoberOfIndividualsToRemove = feasiblePopulation.size() - Parameters.minimumSubPopulationSize;
+        if (numoberOfIndividualsToRemove < 0)
+            return;
+        ArrayList<Individual> worstIndividuals = new ArrayList<Individual>();
+        for (Individual individual : feasiblePopulation){
+            worstIndividuals.add(individual);
+            if(worstIndividuals.size() < numoberOfIndividualsToRemove){
+                Collections.sort(worstIndividuals);
+            }
+            else{
+                Collections.sort(worstIndividuals);
+                worstIndividuals.remove(worstIndividuals.size()-1);
+            }
+        }
+        this.feasiblePopulation.removeAll(worstIndividuals);
+    }
+
+    private void reduceInfeasiblePopulation(){
+        int numberOfIndividualsToRemove = infeasiblePopulation.size() - Parameters.minimumSubPopulationSize;
+        if (numberOfIndividualsToRemove < 0)
+            return;
+        ArrayList<Individual> worstIndividuals = new ArrayList<Individual>();
+        for (Individual individual : infeasiblePopulation){
+            worstIndividuals.add(individual);
+            if(worstIndividuals.size() < numberOfIndividualsToRemove){
+                Collections.sort(worstIndividuals);
+            }
+            else{
+                Collections.sort(worstIndividuals);
+                worstIndividuals.remove(worstIndividuals.size()-1);
+            }
+        }
+        this.infeasiblePopulation.removeAll(worstIndividuals);
     }
 
 
 
+    public void setOrderDistributionPopulation(OrderDistributionPopulation odp){
+        this.orderDistributionPopulation = odp;
+    }
 
 
     public void initializePopulation (OrderDistribution od) {
@@ -45,18 +85,12 @@ public class Population {
             individual.initializeIndividual(od);
             AdSplit.adSplitPlural(individual);
             individual.updateFitness();
-
             if (individual.isFeasible()) {
                 feasiblePopulation.add(individual);
-                //if (getSizeOfFeasiblePopulation() > Parameters.maximumSubPopulationSize) {
-                    //survivorSelection();
-                //}
             }
             else {
                 infeasiblePopulation.add(individual);
-                //if (getSizeOfInfeasiblePopulation() > Parameters.maximumSubPopulationSize) {
-                    //activate survivor selection
-                //}
+
             }
         }
     }
@@ -120,6 +154,27 @@ public class Population {
             infeasiblePopulation.add(individual);
         }
 
+    }
+
+    public Individual returnBestIndividual(){
+        Individual bestIndividual = null;
+        double fitnessScore = Double.MAX_VALUE;
+        for (Individual individual : feasiblePopulation){
+            if (individual.getFitness(false) < fitnessScore){
+                bestIndividual = individual;
+                fitnessScore = individual.getFitness(false);
+            }
+        }
+        if (bestIndividual != null){
+            return bestIndividual;
+        }
+        for (Individual individual : infeasiblePopulation){
+            if (individual.getFitness(false) < fitnessScore){
+                bestIndividual = individual;
+                fitnessScore = individual.getFitness(false);
+            }
+        }
+        return bestIndividual;
     }
 
 
