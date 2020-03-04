@@ -204,7 +204,10 @@ public class Individual {
 
     public static void main(String[] args) {
         Individual individual = Individual.makeIndividual();
-        System.out.println("Value of fitness: " + individual.getFitness(true));
+        System.out.println("Feasibility status: " + individual.isFeasible());
+        System.out.println("Feasibility status: " + individual.isFeasible());
+        //System.out.println("Value of fitness: " + individual.getFitness(true));
+
     }
 
     public static Individual makeIndividual() {

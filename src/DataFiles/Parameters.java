@@ -26,8 +26,8 @@ public class Parameters {
     public static final int maxPopulationSize = 200; //TODO: find reasonable value
 
     //Loading data parameters
-    public static final int numberOfCustomers = 110;
-    public static final int numberOfVehicles = 100;
+    public static final int numberOfCustomers = 10;
+    public static final int numberOfVehicles = 10;
 
     //Traveling parameters
     public static final double scalingDistanceParameter = 2;
@@ -41,8 +41,6 @@ public class Parameters {
     public static final double initialDrivingCostPenalty = 0.01; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
     public static final double penaltyFactorForOverFilling = 1.1;
     public static final double penaltyFactorForUnderFilling = 1.5;
-
-
 
     //Period parameters
     //TODO: change to percentage values
