@@ -46,8 +46,9 @@ public class Parameters {
 
 
     //Period parameters
-    public static final int[] overtimeLimit = {100, 100, 100, 100, 100, 100};
-    public static final int[] overtimeCost = {100, 100, 100, 100, 100, 100};
+    //TODO: change to percentage values
+    public static final double[] overtimeLimit = {100, 100, 100, 100, 100, 100};
+    public static final double[] overtimeCost = {100, 100, 100, 100, 100, 100};
 
     //Time parameters
     public static final double maxJourneyDuration = 24; //changed to journey duration

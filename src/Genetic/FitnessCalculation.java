@@ -6,6 +6,7 @@ import DataFiles.*;
 import Individual.Individual;
 import ProductAllocation.OrderDistribution;
 import ProjectReport.Journey;
+import scala.xml.PrettyPrinter;
 
 
 public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove parts of code in LabelEntryClass
@@ -69,23 +70,28 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
     //---------------------------------------------------------------------------------------------------------------------------------------------
 
     //-----------------------------------------Depot overtime fitness score------------------------------------------------------------------------
-    /*
+
     //TODO 2.3: implement calculations
-    public static double depotOvertimeScoreInPeriod (List<Integer> customerOrder, int p, double[][] orderDistribution,  Data data) {
-        double overtime = 0;
+    public static double getPeriodicOvertimeFitness (OrderDistribution orderDistribution, int p) {
+        double periodicOvertime = 0;
         double loadSumForVehicleType = 0;
         int tripLoad = 0;
-        for (int vt = 0; vt < data.numberOfVehicleTypes; vt++) {
-            //TODO 2.3: calculate currentLoad
-            for (all trips : c) {
-                tripLoad+=;
-            }
-            loadSumForVehicleType += Math.max(0, tripLoad - 0);
-        }
-
-        return overtime*Parameters.initialOvertimePenalty;
+        periodicOvertime = Math.max(orderDistribution.volumePerPeriod[p] - Parameters.overtimeLimit[p], 0);
+        return periodicOvertime*Parameters.overtimeCost[p];
     }
-     */
+
+    public static double getIndividualOvertimeFitness (OrderDistribution orderDistribution) {
+        double overtimeFitness = 0;
+        for (int p = 0; p < Parameters.numberOfPeriods; p++) {
+            overtimeFitness += getPeriodicOvertimeFitness(orderDistribution, p);
+        }
+        return overtimeFitness;
+    }
+
+    public static void main(String[] args) {
+        OrderDistribution od = new OrderDistribution();
+    }
+
 
     private static double overloadScore(List<Integer> customerOrder, int vt, int p, double[][] orderDistribution,  Data data){
         double load = 0;
