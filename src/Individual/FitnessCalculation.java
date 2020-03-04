@@ -10,6 +10,9 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
 
     public static double getTripFitness(List<Integer> customerOrder, int vt, int p, double[][] orderDistribution, Data data){
         double fitness = 0;
+        if (customerOrder.isEmpty()){
+            return 0;
+        }
         fitness += overloadScore(customerOrder, vt, p, orderDistribution, data);
         fitness += travelingDistanceScoreAndOvertimeScore(customerOrder, vt, p, orderDistribution, data);
         fitness += timeWarpScore(customerOrder, vt, p, orderDistribution, data);
@@ -88,8 +91,7 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
                 customerCounter++;
             }
         }
-        vehicleTotalTravelTime +=
-                data.distanceMatrix[lastCustomerID][data.numberOfCustomers];
+        vehicleTotalTravelTime += data.distanceMatrix[lastCustomerID][data.numberOfCustomers];
         vehicleDrivingDistance += data.distanceMatrix[lastCustomerID][data.numberOfCustomers];
         vehicleTotalTravelTime *= Parameters.initialOvertimePenalty;
         vehicleDrivingDistance *= Parameters.initialDrivingCostPenalty;

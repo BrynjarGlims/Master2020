@@ -16,6 +16,7 @@ public class Individual {
     public GiantTourSplit giantTourSplit;
     public OrderDistribution orderDistribution;
     public Population population;
+    public CustomerToTrip[][] customerToTrips; //period, customer
 
     public Data data;
     public boolean validCapacity;
@@ -44,6 +45,7 @@ public class Individual {
         this.giantTour = new GiantTour(data);
         this.orderDistribution = new OrderDistribution(data);
         this.bestLabels = new Label[data.numberOfPeriods][data.numberOfVehicleTypes];
+        this.customerToTrips = new CustomerToTrip[data.numberOfPeriods][data.numberOfCustomers];
     }
 
     public Individual(Data data, Population population) {
@@ -63,6 +65,29 @@ public class Individual {
         this.infeasibilityOvertimeValue = 0;
         this.infeasibilityTimeWarpValue = 0;
 
+    }
+
+    public void makeCustomerToTripMap(){
+        for (int period = 0 ; period < data.numberOfPeriods ; period++){
+            for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
+                makeCustomerToTripMapSingular(period, vt);
+            }
+        }
+    }
+
+    public void makeCustomerToTripMapSingular(int period, int vt){
+        int tripCounter;
+        int from;
+        CustomerToTrip ctt;
+        tripCounter = 0;
+        for (int customer = 0 ; customer < giantTour.chromosome[period][vt].size() ; customer++){
+            from = tripCounter == 0 ? 0 : giantTourSplit.chromosome[period][vt].get(tripCounter - 1);
+            ctt = new CustomerToTrip(period, vt, giantTour.chromosome[period][vt].get(customer), customer - from, from, giantTourSplit.chromosome[period][vt].get(tripCounter));
+            customerToTrips[period][giantTour.chromosome[period][vt].get(customer)] = ctt;
+            if (customer + 1 >= giantTourSplit.chromosome[period][vt].get(tripCounter)){
+                tripCounter++;
+            }
+        }
     }
 
     public boolean isFeasible() {
