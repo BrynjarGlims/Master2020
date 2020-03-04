@@ -40,10 +40,10 @@ public class OrderAllocationModel {
 
     private void initializeModel(Data data) throws GRBException, FileNotFoundException {
         env = new GRBEnv(true);
-        this.env.set("logFile",  "OrderAllocationModel.log");
         this.env.start();
         this.model = new GRBModel(env);
-        model.set(GRB.StringAttr.ModelName, "ArcFlowModel");
+        model.set(GRB.StringAttr.ModelName, "OrderAllocationModel");
+        this.model.set(GRB.IntParam.LogToConsole, 0); //removes print of gurobi
         this.data = data;
     }
 
@@ -209,7 +209,7 @@ public class OrderAllocationModel {
                 }
             }
             lhs.addTerm(-1.0, qO[d]); // Add the over time variable for that day
-            String constraint_name = String.format("2 -Overtime on day %d. OvertimeLimit %d ", d, Parameters.overtimeLimit[d]);
+            String constraint_name = String.format("2 -Overtime on day %d. OvertimeLimit %f ", d, Parameters.overtimeLimit[d]);
             model.addConstr(lhs, GRB.LESS_EQUAL, Parameters.overtimeLimit[d], constraint_name);
         }
     }

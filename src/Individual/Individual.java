@@ -3,13 +3,8 @@ import DataFiles.*;
 import Population.Population;
 import ProductAllocation.OrderDistribution;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 
-
-public class Individual {
+public class Individual implements Comparable<Individual> {
     //chromosomes
     public GiantTour giantTour;  //period, vehicleType
     public VehicleAssigment vehicleAssigment;
@@ -64,7 +59,20 @@ public class Individual {
 
     }
 
+    public void setOptimalOrderDistribution(OrderDistribution orderDistribution) {
+        this.orderDistribution = orderDistribution;
+        AdSplit.adSplitPlural(this);
+        this.updateFitness();
+    }
 
+    public void testNewOrderDistribution(OrderDistribution orderDistribution){
+        double currentFitness = this.getFitness(false);
+        OrderDistribution currentOrderDistribution = this.orderDistribution;
+        this.setOptimalOrderDistribution(orderDistribution);
+        if (this.getFitness(false) > currentFitness){
+            this.setOptimalOrderDistribution(currentOrderDistribution);
+        }
+    }
 
     public boolean isFeasible() {
         return (infeasibilityCost == 0);
@@ -86,6 +94,9 @@ public class Individual {
         return 0.0;
     }
 
+    public OrderDistribution getOrderDistribution() {
+        return orderDistribution;
+    }
 
     public int getRankOfIndividual() {
         int rank = 0; //TODO: implement rank calculations
@@ -217,7 +228,14 @@ public class Individual {
         return individual;
     }
 
+    public int compareTo(Individual individual) { // TODO: 04.03.2020 Sort by biased fitness and not fitness
+        if (this.getFitness(false) > individual.getFitness(false) ) {
+            return 1;
+        } else {
+            return -1;
+        }
 
+    }
 }
 
 
