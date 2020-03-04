@@ -42,7 +42,6 @@ public class Individual {
         this.vehicleAssigment = new VehicleAssigment(data);
         this.giantTourSplit = new GiantTourSplit(data);
         this.giantTour = new GiantTour(data);
-        this.orderDistribution = new OrderDistribution(data);
         this.bestLabels = new Label[data.numberOfPeriods][data.numberOfVehicleTypes];
     }
 
@@ -53,9 +52,9 @@ public class Individual {
 
 
 
-    public void initializeIndividual() {
+    public void initializeIndividual(OrderDistribution od) {
         //set chromosome
-        orderDistribution.makeInitialDistribution();
+        this.orderDistribution = od;
         giantTourSplit.initialize();
         giantTour.initializeGiantTour();
 
@@ -213,7 +212,7 @@ public class Individual {
         OrderDistribution od = new OrderDistribution(data);
         od.makeInitialDistribution();
         Individual individual = new Individual(data);
-        individual.initializeIndividual();
+        individual.initializeIndividual(od);
         AdSplit.adSplitPlural(individual);
         return individual;
     }

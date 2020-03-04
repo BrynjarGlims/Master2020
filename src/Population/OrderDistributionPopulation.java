@@ -54,7 +54,7 @@ public class OrderDistributionPopulation {
         return fillingLevelFitness;
     }
 
-    public HashMap<OrderDistribution, Double> getFillingLevelFitnessSingular(Individual individual) {
+    private HashMap<OrderDistribution, Double> getFillingLevelFitnessSingular(Individual individual) {
         HashMap<OrderDistribution, Double> tempHashMap = new HashMap<OrderDistribution, Double>();
         for (OrderDistribution od : this.setOfOrderDistributionIndividuals) {
             tempHashMap.put(od, FitnessCalculation.getFitnessForAnIndividualAndAnOrderDistribution(individual, od));
@@ -75,13 +75,17 @@ public class OrderDistributionPopulation {
         return null;
     }
 
+    public void addOrderDistribution(OrderDistribution od){
+        setOfOrderDistributionIndividuals.add(od);
+    }
+
 
 
     public static void main(String[] args) {
         Data data = DataReader.loadData();
         Population population = new Population(data);
         OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
-        population.initializePopulation(odp);
+        population.initializePopulation(odp.getRandomOrderDistribution());
         odp.initializeOrderDistributionPopulation(population);
         odp.getFillingLevelFitnessScoresPlural();
     }
