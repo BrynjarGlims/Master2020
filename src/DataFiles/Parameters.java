@@ -64,6 +64,7 @@ public class Parameters {
 
 
     //GUROBI PARAMETERS
+    public static final double greedyMIPValue = 0.5;
     public static final String symmetry =  "car";      // // none, car, trips, customers, cost, duration
     public static final double modelTimeLimit = 10000;
     public static final double modelMipGap = 0.0001;

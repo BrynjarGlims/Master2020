@@ -37,24 +37,26 @@ public class Population {
 
 
 
+
+
     public void initializePopulation (OrderDistribution od) {
         for (int i = 0; i < Parameters.initialPopulationSize; i++) {
             Individual individual = new Individual(this.data, this);
-            individual.initializeIndividual();
+            individual.initializeIndividual(od);
             AdSplit.adSplitPlural(individual);
             individual.updateFitness();
 
             if (individual.isFeasible()) {
                 feasiblePopulation.add(individual);
-                if (getSizeOfFeasiblePopulation() > Parameters.maximumSubPopulationSize) {
+                //if (getSizeOfFeasiblePopulation() > Parameters.maximumSubPopulationSize) {
                     //survivorSelection();
-                }
+                //}
             }
             else {
                 infeasiblePopulation.add(individual);
-                if (getSizeOfInfeasiblePopulation() > Parameters.maximumSubPopulationSize) {
+                //if (getSizeOfInfeasiblePopulation() > Parameters.maximumSubPopulationSize) {
                     //activate survivor selection
-                }
+                //}
             }
         }
     }
@@ -106,6 +108,16 @@ public class Population {
 
         for (int i = 0; i < (getSizeOfInfeasiblePopulation() - Parameters.minimumSubPopulationSize); i++) {
             //setOfAllClones.sort(); //TODO: find a way to sort individuals based on fitness
+        }
+
+    }
+
+    public void addChildToPopulation(Individual individual){
+        if (individual.isFeasible()){
+            feasiblePopulation.add(individual);
+        }
+        else{
+            infeasiblePopulation.add(individual);
         }
 
     }
