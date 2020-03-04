@@ -5,6 +5,7 @@ import Individual.AdSplit;
 import ProductAllocation.OrderDistribution;
 
 import java.util.ArrayList;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Population {
     private int totalPopulationSize;
@@ -73,5 +74,17 @@ public class Population {
         Population population = new Population(data);
         population.initializePopulation();
         System.out.println("hei");
+    }
+
+    public Individual getRandomIndividual(){
+        int populationSize = infeasiblePopulation.size() + feasiblePopulation.size();
+        int randomIndex = ThreadLocalRandom.current().nextInt(0,populationSize);
+        if (randomIndex < feasiblePopulation.size()){
+            return feasiblePopulation.get(randomIndex);
+        }
+        else{
+            return infeasiblePopulation.get(randomIndex);
+        }
+
     }
 }
