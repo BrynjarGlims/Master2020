@@ -1,9 +1,11 @@
-package Individual;
+package Genetic;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import DataFiles.*;
+import Individual.Individual;
+import ProductAllocation.OrderDistribution;
+import ProjectReport.Journey;
 
 
 public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove parts of code in LabelEntryClass
@@ -17,14 +19,82 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
     }
 
 
+    //-----------------------------------------Order distribution fitness based on filling level------------------------------------------
+    public static double getFitnessForAnIndividualAndAnOrderDistribution (Individual individual, OrderDistribution orderDistribution) {
+        double totalFitness = 0;
+        for (int p = 0; p < Parameters.numberOfPeriods; p++) {
+            double periodicFitness = 0;
+            for (int vt = 0; vt < individual.data.numberOfVehicleTypes; vt++) {
+                periodicFitness += getSingleChromosomeFitness(vt, p, individual, orderDistribution);
+            }
+            totalFitness += periodicFitness;
+        }
+        System.out.println("For individual: " + individual.giantTour.chromosome + ", orderDistr: "+ orderDistribution.hashCode() + ", fitness: "+ totalFitness);
+        return totalFitness;
+    }
+
+    public static double getSingleChromosomeFitness(int vt, int p, Individual individual, OrderDistribution orderDistribution) {
+        double tripLoad = 0;
+        double singleChromosomeFitness = 0;
+        if (!individual.giantTourSplit.chromosome[p][vt].isEmpty()) {
+            Iterator iterator = individual.giantTourSplit.chromosome[p][vt].iterator();
+            int split = (Integer) iterator.next();
+            for (int i = 0; i < individual.giantTour.chromosome[p][vt].size(); i++) {
+                tripLoad += orderDistribution.orderVolumeDistribution[p][individual.giantTour.chromosome[p][vt].get(i)];
+                if (i == split-1) {
+                    singleChromosomeFitness += calculateJourneyLoadPunishment(tripLoad, vt, individual);
+                    tripLoad = 0;
+                    if (i != individual.giantTour.chromosome[p][vt].size() - 1)
+                        split = (Integer) iterator.next();
+                    }
+            }
+        }
+        return singleChromosomeFitness;
+    }
+
+    public static double calculateJourneyLoadPunishment(double tripLoad, int vt, Individual individual) {
+        double fitness = 0;
+        if (tripLoad > individual.data.vehicleTypes[vt].capacity) {
+            fitness = Parameters.penaltyFactorForOverFilling*((tripLoad - individual.data.vehicleTypes[vt].capacity)/individual.data.vehicleTypes[vt].capacity);
+        }
+        else if (tripLoad < individual.data.vehicleTypes[vt].capacity){
+            fitness = Parameters.penaltyFactorForUnderFilling*((individual.data.vehicleTypes[vt].capacity - tripLoad)/individual.data.vehicleTypes[vt].capacity);
+        }
+        else if (tripLoad == individual.data.vehicleTypes[vt].capacity) {
+            fitness = 0;
+        }
+        return fitness;
+    }
+
+    //---------------------------------------------------------------------------------------------------------------------------------------------
+
+    //-----------------------------------------Depot overtime fitness score------------------------------------------------------------------------
+    /*
+    //TODO 2.3: implement calculations
+    public static double depotOvertimeScoreInPeriod (List<Integer> customerOrder, int p, double[][] orderDistribution,  Data data) {
+        double overtime = 0;
+        double loadSumForVehicleType = 0;
+        int tripLoad = 0;
+        for (int vt = 0; vt < data.numberOfVehicleTypes; vt++) {
+            //TODO 2.3: calculate currentLoad
+            for (all trips : c) {
+                tripLoad+=;
+            }
+            loadSumForVehicleType += Math.max(0, tripLoad - 0);
+        }
+
+        return overtime*Parameters.initialOvertimePenalty;
+    }
+     */
+
     private static double overloadScore(List<Integer> customerOrder, int vt, int p, double[][] orderDistribution,  Data data){
         double load = 0;
         for (int customerID : customerOrder){
             load += orderDistribution[p][customerID];
         }
         return Math.max(0, load - data.vehicleTypes[vt].capacity*Parameters.initialCapacityPenalty);
-
     }
+
 
     private static double timeWarpScore(List<Integer> customerOrder, int vt, int p, double[][] orderDistribution,  Data data){
         boolean fromDepot = true;
@@ -95,5 +165,6 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
         vehicleDrivingDistance *= Parameters.initialDrivingCostPenalty;
         return vehicleDrivingDistance + vehicleTotalTravelTime;
     }
+
 
 }

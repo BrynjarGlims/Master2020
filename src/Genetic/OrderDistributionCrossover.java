@@ -81,8 +81,6 @@ public class OrderDistributionCrossover {
         return child.containsNonDividable(orderDelivery.order.customerID, orderDelivery.getPeriod());
     }
 
-
-
     public static void main(String[] args){
         Data data = DataReader.loadData();
         OrderDistributionCrossover ODC = new OrderDistributionCrossover(data);
@@ -97,9 +95,7 @@ public class OrderDistributionCrossover {
         OrderDistribution child1 = children[0];
         OrderDistribution child2 = children[1];
 
-        System.out.println(Arrays.toString(child1.volumePerPeriod));
-
-
+        //System.out.println(Arrays.toString(child1.volumePerPeriod));
     }
 
 }

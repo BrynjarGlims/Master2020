@@ -3,14 +3,11 @@ package Genetic;
 import DataFiles.Customer;
 import DataFiles.Data;
 import DataFiles.DataReader;
-import Individual.GiantTour;
 import Individual.Individual;
 import Individual.AdSplit;
-import Individual.FitnessCalculation;
 import ProductAllocation.OrderDelivery;
 import ProductAllocation.OrderDistribution;
 
-import java.sql.SQLOutput;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
