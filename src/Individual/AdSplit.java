@@ -105,6 +105,7 @@ public class AdSplit {
         for (int p = 0; p < individual.data.numberOfPeriods; p++) {
             for (int vt = 0; vt < individual.data.numberOfVehicleTypes; vt++) {
                 adSplitSingular(individual, p , vt, false);
+                System.out.println(individual.isFeasible());
             }
         }
     }
@@ -185,6 +186,7 @@ public class AdSplit {
                 }
             }
         }
+        System.out.println("time warp cost: "+ routeTimeWarp);
         extractVrpSolution(customerSequence, predecessorLabel, p, vt);
     }
 

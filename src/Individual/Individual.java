@@ -42,7 +42,6 @@ public class Individual {
         this.vehicleAssigment = new VehicleAssigment(data);
         this.giantTourSplit = new GiantTourSplit(data);
         this.giantTour = new GiantTour(data);
-        this.orderDistribution = new OrderDistribution(data);
         this.bestLabels = new Label[data.numberOfPeriods][data.numberOfVehicleTypes];
     }
 
