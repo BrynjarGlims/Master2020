@@ -38,13 +38,13 @@ public class OrderAllocationModel {
     private GRBVar[] qO;
 
 
-    private void initializeModel(boolean verbose) throws GRBException, FileNotFoundException {
+    private void initializeModel(Data data) throws GRBException, FileNotFoundException {
         env = new GRBEnv(true);
         this.env.set("logFile",  "OrderAllocationModel.log");
         this.env.start();
         this.model = new GRBModel(env);
         model.set(GRB.StringAttr.ModelName, "ArcFlowModel");
-        this.data = DataReader.loadData(verbose);
+        this.data = data;
     }
 
 
@@ -537,12 +537,12 @@ public class OrderAllocationModel {
 
 
 
-    private Result runModel(Individual individual) {
+    private Result runModel(Individual individual, Data data) {
         try {
             this.symmetry = Parameters.symmetry;
             this.individual = individual;
             System.out.println("Initalize model");
-            initializeModel(true);
+            initializeModel(data);
             System.out.println("Initalize parameters");
             initializeParameters();
             System.out.println("Set objective");
@@ -595,11 +595,11 @@ public class OrderAllocationModel {
         this.orderDistribution.makeDistributionFromMIP( uND, uD, qND, qD, model.get(GRB.DoubleAttr.ObjVal));
     }
 
-    private OrderDistribution createODFromMIP(Individual individual, boolean verbose) {
+    private OrderDistribution createODFromMIP(Individual individual, Data data) {
         try {
             this.orderDistribution = new OrderDistribution(individual.data);
             this.individual = individual;
-            initializeModel(verbose);
+            initializeModel(data);
             initializeParameters();
             setObjective();
             activateConstraints();
@@ -631,15 +631,13 @@ public class OrderAllocationModel {
         }
     }
 
-    private OrderDistribution createODFromMIP(Individual individual){
-        return createODFromMIP(individual, false);
-    }
+
 
 
     //MASTER FUNCTION
-    public static OrderDistribution createOptimalOrderDistribution( Individual individual){
+    public static OrderDistribution createOptimalOrderDistribution( Individual individual, Data data){
         OrderAllocationModel orderAllocationModel = new OrderAllocationModel();
-        return orderAllocationModel.createODFromMIP(individual);
+        return orderAllocationModel.createODFromMIP(individual, data);
     }
 
 }

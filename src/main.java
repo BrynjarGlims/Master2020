@@ -1,6 +1,7 @@
 import DataFiles.Data;
 import DataFiles.DataReader;
 import DataFiles.Parameters;
+import Genetic.GiantTourCrossover;
 import Individual.Individual;
 import Population.Population;
 import ProductAllocation.OrderDistribution;
@@ -11,12 +12,21 @@ public class main {
         Data data = DataReader.loadData();
         Population population = new Population(data);
         OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
+        OrderDistribution targetOD = odp.getRandomOrderDistribution();
+        population.setOrderDistributionPopulation(odp);
+        population.initializePopulation(targetOD);
         odp.initializeOrderDistributionPopulation(population);
-        population.initializePopulation(odp);
+        GiantTourCrossover GTC = new GiantTourCrossover(data);
 
         int numberOfIterations = 0;
 
-        while (population.getIterationsWithoutImprovement() < Parameters.maxNumberIterationsWithoutImprovement && numberOfIterations < Parameters.maxNumberOfIterations){
+        while ( population.getIterationsWithoutImprovement() < Parameters.maxNumberIterationsWithoutImprovement &&
+                numberOfIterations < Parameters.maxNumberOfIterations){
+
+            while (population.getPopulationSize() < Parameters.maxPopulationSize){
+
+            }
+
             //crossover to obtain a new child
             //for the obtained child:
             //adsplit
@@ -36,9 +46,8 @@ public class main {
 
             //adjust penalty parameters for overtimeInfeasibility, loadInfeasibility and timeWarpInfeasibility
             numberOfIterations++;
-            System.out.println("hei");
-
         }
+
 
 
 

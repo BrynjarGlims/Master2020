@@ -13,6 +13,7 @@ import Genetic.FitnessCalculation;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 public class OrderDistributionPopulation {
@@ -59,6 +60,19 @@ public class OrderDistributionPopulation {
             tempHashMap.put(od, FitnessCalculation.getFitnessForAnIndividualAndAnOrderDistribution(individual, od));
         }
         return tempHashMap;
+    }
+
+    public OrderDistribution getRandomOrderDistribution(){ // TODO: 04.03.2020 Must be a better way to do this
+        int randomIndex = ThreadLocalRandom.current().nextInt(0,setOfOrderDistributionIndividuals.size());
+        int currentIndex = 0;
+        for (OrderDistribution od : setOfOrderDistributionIndividuals){
+            if (randomIndex == currentIndex) {
+                return od;
+            }
+            currentIndex++;
+        }
+
+        return null;
     }
 
 

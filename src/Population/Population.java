@@ -5,7 +5,11 @@ import Individual.AdSplit;
 import ProductAllocation.OrderDistribution;
 import scala.xml.PrettyPrinter;
 
+
+import java.util.ArrayList;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.*;
+
 
 public class Population {
     private int totalPopulationSize;
@@ -23,12 +27,18 @@ public class Population {
         this.infeasiblePopulation = new HashSet<Individual>();
     }
 
+    public int getPopulationSize(){
+        return feasiblePopulation.size() + infeasiblePopulation.size();
+    }
 
-
-    public void initializePopulation (OrderDistributionPopulation odp) {
+    public void setOrderDistributionPopulation(OrderDistributionPopulation odp){
         this.orderDistributionPopulation = odp;
-        for (int i = 0; i < Parameters.initialPopulationSize; i++) {
+    }
 
+
+
+    public void initializePopulation (OrderDistribution od) {
+        for (int i = 0; i < Parameters.initialPopulationSize; i++) {
             Individual individual = new Individual(this.data, this);
             individual.initializeIndividual();
             AdSplit.adSplitPlural(individual);
@@ -132,7 +142,26 @@ public class Population {
         Population population = new Population(data);
         OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
         odp.initializeOrderDistributionPopulation(population);
-        population.initializePopulation(odp);
+        population.initializePopulation(odp.getRandomOrderDistribution());
         System.out.println("hei");
+    }
+
+    public Individual getRandomIndividual(){
+        int populationSize = infeasiblePopulation.size() + feasiblePopulation.size();
+        int randomIndex = ThreadLocalRandom.current().nextInt(0,populationSize);
+        int currentIndex = 0;
+        for (Individual individual : feasiblePopulation){
+            if (randomIndex == currentIndex) {
+                return individual;
+            }
+            currentIndex++;
+        }
+        for (Individual individual : infeasiblePopulation){
+            if (randomIndex == currentIndex) {
+                return individual;
+            }
+            currentIndex++;
+        }
+        return null;
     }
 }
