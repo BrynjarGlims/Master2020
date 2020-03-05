@@ -47,7 +47,7 @@ public class OrderAllocationModel {
         this.env.start();
         this.model = new GRBModel(env);
         model.set(GRB.StringAttr.ModelName, "OrderAllocationModel");
-        //this.model.set(GRB.IntParam.LogToConsole, 0); //removes print of gurobi
+        this.model.set(GRB.IntParam.LogToConsole, 0); //removes print of gurobi
         this.data = data;
     }
 
@@ -654,15 +654,24 @@ public class OrderAllocationModel {
         OrderDistribution firstOD = odp.getRandomOrderDistribution();
         population.setOrderDistributionPopulation(odp);
         population.initializePopulation(firstOD);
+        for (int i = 0; i < 3; i++) {
+            Individual individual = population.getRandomIndividual();
+            System.out.println("########################################################");
+            System.out.println("Old fitness: " + individual.getBiasedFitness());
+            individual.printDetailedFitness();
 
-        Individual individual = population.getRandomIndividual();
-        System.out.println("Old fitness: " + individual.getBiasedFitness());
-        OrderDistribution optimalDistribution = OrderAllocationModel.createOptimalOrderDistribution(individual, data);
-        individual.setOptimalOrderDistribution(optimalDistribution);
-        odp.addOrderDistribution(optimalDistribution);  // todo: do not remove adsplit
-        System.out.println("New fitness: " + individual.getBiasedFitness());
+            OrderDistribution optimalDistribution = OrderAllocationModel.createOptimalOrderDistribution(individual, data);
+            individual.setOptimalOrderDistribution(optimalDistribution, false);
+            System.out.println("Temporary fitness: " + individual.getBiasedFitness());
+            individual.printDetailedFitness();
 
+            individual.setOptimalOrderDistribution(optimalDistribution, true);
 
+            odp.addOrderDistribution(optimalDistribution);  // todo: do not remove adsplit
+            System.out.println("New fitness: " + individual.getBiasedFitness());
+            individual.printDetailedFitness();
+            System.out.println("########################################################");
+        }
 
     }
 

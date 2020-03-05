@@ -14,7 +14,7 @@ public class Parameters {
     public static final int minimumSubIndividualPopulationSize = 50;
     public static final int numberOfElitismSurvivorsPerGeneration = 5;
 
-    public static final int initialPopulationSize = 10;
+    public static final int initialPopulationSize = 100;
     public static final int initialOrderDistributionPopulationSize = 10;
 
     public static final int maxNumberIterationsWithoutImprovement = 10;

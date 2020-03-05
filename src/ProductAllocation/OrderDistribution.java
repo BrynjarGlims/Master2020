@@ -81,9 +81,10 @@ public class OrderDistribution {
         for (int p = 0; p < data.numberOfPeriods; p++){
             fitness += Parameters.overtimeCost[p]*Math.max(0, this.volumePerPeriod[p] - Parameters.overtimeLimit[p]);
         }
-
-        System.out.println( "Fitness of objective: " + objectiveValue);
-        System.out.println("Fitness of brute force calculation: " + fitness);
+        //System.out.println("#####");
+        //System.out.println( "Fitness of objective: " + objectiveValue);
+        //System.out.println("Fitness of brute force calculation: " + fitness);
+        //System.out.println("#####");
         //this.fitness = objectiveValue;
     }
 
