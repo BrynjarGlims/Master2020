@@ -22,12 +22,12 @@ public class Parameters {
     public static final int maxPopulationSize = 100; //TODO: find reasonable value
 
     //Loading data parameters
-    public static final int numberOfCustomers = 30;
+    public static final int numberOfCustomers = 100;
     public static final int numberOfVehicles = 50;
 
 
     //Traveling parameters
-    public static final double scalingDistanceParameter = 2;
+    public static final double scalingDistanceParameter = 1;
     public static final double timeShift = 6;
 
 

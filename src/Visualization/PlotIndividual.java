@@ -160,7 +160,7 @@ public class PlotIndividual {
         graphs.get(0).display(false);
     }
 
-    public void saveGraph(Graph graph, String path) {
+    private void saveGraph(Graph graph, String path) {
         try {
             fs.writeAll(graph, path);
         } catch (IOException e) {
