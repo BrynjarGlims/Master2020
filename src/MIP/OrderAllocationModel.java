@@ -14,6 +14,7 @@ import Population.*;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -655,7 +656,11 @@ public class OrderAllocationModel {
         population.initializePopulation(firstOD);
 
         Individual individual = population.getRandomIndividual();
-        individual.
+        System.out.println("Old fitness: " + individual.getBiasedFitness());
+        OrderDistribution optimalDistribution = OrderAllocationModel.createOptimalOrderDistribution(individual, data);
+        individual.setOptimalOrderDistribution(optimalDistribution);
+        odp.addOrderDistribution(optimalDistribution);  // todo: do not remove adsplit
+        System.out.println("New fitness: " + individual.getBiasedFitness());
 
 
 

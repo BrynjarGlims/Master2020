@@ -49,7 +49,7 @@ public class Parameters {
 
     //Period parameters
     //TODO: change to percentage values
-    public static final double[] overtimeLimit = {10, 10, 10, 10, 10, 10};
+    public static final double[] overtimeLimit = {50, 50, 50, 50, 50, 50};
     public static final double[] overtimeCost = {100, 100, 100, 100, 100, 100};
 
     //Time parameters
@@ -75,7 +75,6 @@ public class Parameters {
     public static final String instanceName = "testDataFromAsko";
     public static final int upperBoundQuantity = 100;  // upper bound q variable
     public static final int upperBoundOvertime = 1000;  // upper bound qO variable
-    public static final double BigM = 1.5; // TODO: 24.11.2019 Change
 
     //PLOT PARAMETERS
     public static final boolean savePlots = false;
