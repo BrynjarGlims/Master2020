@@ -1,4 +1,4 @@
-package visualization;
+package Visualization;
 
 import DataFiles.*;
 import Individual.*;

@@ -3,11 +3,14 @@ package MIP;
 import DataFiles.Data;
 import DataFiles.DataReader;
 import DataFiles.Parameters;
+import Genetic.GiantTourCrossover;
+import Genetic.OrderDistributionCrossover;
 import Individual.Individual;
 import Individual.AdSplit;
+import Population.Population;
 import ProductAllocation.OrderDistribution;
 import gurobi.*;
-import scala.Int;
+import Population.*;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -43,7 +46,7 @@ public class OrderAllocationModel {
         this.env.start();
         this.model = new GRBModel(env);
         model.set(GRB.StringAttr.ModelName, "OrderAllocationModel");
-        this.model.set(GRB.IntParam.LogToConsole, 0); //removes print of gurobi
+        //this.model.set(GRB.IntParam.LogToConsole, 0); //removes print of gurobi
         this.data = data;
     }
 
@@ -638,6 +641,24 @@ public class OrderAllocationModel {
     public static OrderDistribution createOptimalOrderDistribution( Individual individual, Data data){
         OrderAllocationModel orderAllocationModel = new OrderAllocationModel();
         return orderAllocationModel.createODFromMIP(individual, data);
+    }
+
+    public static void main(String[] args){
+        Data data = DataReader.loadData();
+        Population population = new Population(data);
+        OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
+        GiantTourCrossover GTC = new GiantTourCrossover(data);
+        OrderDistributionCrossover ODC = new OrderDistributionCrossover(data);
+        odp.initializeOrderDistributionPopulation(population);
+        OrderDistribution firstOD = odp.getRandomOrderDistribution();
+        population.setOrderDistributionPopulation(odp);
+        population.initializePopulation(firstOD);
+
+        Individual individual = population.getRandomIndividual();
+        individual.
+
+
+
     }
 
 }

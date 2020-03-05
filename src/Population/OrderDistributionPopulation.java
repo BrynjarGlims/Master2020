@@ -74,6 +74,9 @@ public class OrderDistributionPopulation {
         }
         return tempHashMap;
     }
+    public int getPopulationSize(){
+        return this.setOfOrderDistributions.size();
+    }
 
     public OrderDistribution getRandomOrderDistribution(){ // TODO: 04.03.2020 Must be a better way to do this
         int randomIndex = ThreadLocalRandom.current().nextInt(0, setOfOrderDistributions.size());

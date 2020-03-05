@@ -32,6 +32,9 @@ public class Individual implements Comparable<Individual> {
     public double diversity = 0;
     public double biasedFitness;
 
+    public boolean isSurvivor;
+
+
     public Individual(Data data) {
         this.data = data;
         this.vehicleAssigment = new VehicleAssigment(data);
@@ -61,7 +64,7 @@ public class Individual implements Comparable<Individual> {
 
     public void setOptimalOrderDistribution(OrderDistribution orderDistribution) {
         this.orderDistribution = orderDistribution;
-        AdSplit.adSplitPlural(this);
+        //AdSplit.adSplitPlural(this);
         this.updateFitness();
     }
 
@@ -114,7 +117,7 @@ public class Individual implements Comparable<Individual> {
 
 
     public void updateFitness() {
-        double fitness = 0;
+        this.fitness = 0;
 
         //Calculate objective costs
         this.objectiveCost = getObjectiveCost();
@@ -144,6 +147,7 @@ public class Individual implements Comparable<Individual> {
         return objectiveCost;
     }
 
+
     private double getInfeasibilityCost() {
         for (Label[] labels : bestLabels) {
             for (Label label : labels) {
@@ -171,6 +175,10 @@ public class Individual implements Comparable<Individual> {
         double biasedFitness = (1 - (Parameters.numberOfEliteIndividuals / nbIndividuals) * getRankOfIndividual());
         double fitnessScore = fitness + biasedFitness;
         return fitnessScore;
+    }
+
+    public double getBiasedFitness(){
+        return this.getFitness(false) - this.diversity;
     }
 
     public double calculateDiversity(Individual comparison) {
@@ -230,7 +238,7 @@ public class Individual implements Comparable<Individual> {
     }
 
     public int compareTo(Individual individual) { // TODO: 04.03.2020 Sort by biased fitness and not fitness
-        if (this.getFitness(false) > individual.getFitness(false) ) {
+        if (this.getBiasedFitness() < individual.getBiasedFitness() ) {
             return 1;
         }
         else {

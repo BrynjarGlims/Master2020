@@ -3,7 +3,6 @@ import DataFiles.*;
 import Individual.Individual;
 import Individual.AdSplit;
 import ProductAllocation.OrderDistribution;
-import scala.xml.PrettyPrinter;
 
 
 import java.util.ArrayList;
@@ -37,13 +36,16 @@ public class Population {
     }
 
     private void reduceFeasiblePopulation(){
-        int numoberOfIndividualsToRemove = feasiblePopulation.size() - Parameters.minimumSubPopulationSize;
-        if (numoberOfIndividualsToRemove < 0)
+        int numberOfIndividualsToRemove = feasiblePopulation.size() - Parameters.minimumSubIndividualPopulationSize;
+        if (numberOfIndividualsToRemove < 0)
             return;
         ArrayList<Individual> worstIndividuals = new ArrayList<Individual>();
         for (Individual individual : feasiblePopulation){
+            if ( individual.isSurvivor){
+                continue;
+            }
             worstIndividuals.add(individual);
-            if(worstIndividuals.size() < numoberOfIndividualsToRemove){
+            if(worstIndividuals.size() < numberOfIndividualsToRemove){
                 Collections.sort(worstIndividuals);
             }
             else{
@@ -55,11 +57,14 @@ public class Population {
     }
 
     private void reduceInfeasiblePopulation(){
-        int numberOfIndividualsToRemove = infeasiblePopulation.size() - Parameters.minimumSubPopulationSize;
+        int numberOfIndividualsToRemove = infeasiblePopulation.size() - Parameters.minimumSubIndividualPopulationSize;
         if (numberOfIndividualsToRemove < 0)
             return;
         ArrayList<Individual> worstIndividuals = new ArrayList<Individual>();
         for (Individual individual : infeasiblePopulation){
+            if ( individual.isSurvivor){
+                continue;
+            }
             worstIndividuals.add(individual);
             if(worstIndividuals.size() < numberOfIndividualsToRemove){
                 Collections.sort(worstIndividuals);
@@ -95,6 +100,22 @@ public class Population {
         }
     }
 
+    public void setSurvivorsForNextGeneration(){
+        ArrayList<Individual> listToBeSorted = new ArrayList<Individual>(this.infeasiblePopulation);
+        listToBeSorted.addAll(this.infeasiblePopulation);
+        Collections.sort(listToBeSorted);
+        int counter = 0;
+        for (Individual individual : listToBeSorted){
+            if (counter < Parameters.numberOfElitismSurvivorsPerGeneration){
+                individual.isSurvivor = true;
+                counter++;
+            }
+            else{
+                individual.isSurvivor = false;
+            }
+        }
+    }
+
 
     private static double getFitnessDifference(Individual i1, Individual i2) {
         return (Math.abs(i1.fitness - i2.fitness));
@@ -121,7 +142,7 @@ public class Population {
             }
         }
 
-        for (int i = 0; i < (getSizeOfFeasiblePopulation() - Parameters.minimumSubPopulationSize); i++) {
+        for (int i = 0; i < (getSizeOfFeasiblePopulation() - Parameters.minimumSubIndividualPopulationSize); i++) {
             //setOfAllClones.sort(); //TODO: find a way to sort individuals based on fitness
         }
         //X = set of individuals with clones
@@ -140,7 +161,7 @@ public class Population {
             }
         }
 
-        for (int i = 0; i < (getSizeOfInfeasiblePopulation() - Parameters.minimumSubPopulationSize); i++) {
+        for (int i = 0; i < (getSizeOfInfeasiblePopulation() - Parameters.minimumSubIndividualPopulationSize); i++) {
             //setOfAllClones.sort(); //TODO: find a way to sort individuals based on fitness
         }
 
@@ -175,6 +196,34 @@ public class Population {
             }
         }
         return bestIndividual;
+    }
+
+
+    public Individual returnBestFeasibleIndividual(){
+        Individual bestIndividual = null;
+        double fitnessScore = Double.MAX_VALUE;
+        for (Individual individual : feasiblePopulation){
+            if (individual.getFitness(false) < fitnessScore){
+                bestIndividual = individual;
+                fitnessScore = individual.getFitness(false);
+            }
+        }
+        return bestIndividual;
+
+    }
+
+    public Individual returnBestInfeasibleIndividual(){
+        Individual bestIndividual = null;
+        double fitnessScore = Double.MAX_VALUE;
+
+        for (Individual individual : infeasiblePopulation){
+            if (individual.getFitness(false) < fitnessScore){
+                bestIndividual = individual;
+                fitnessScore = individual.getFitness(false);
+            }
+        }
+        return bestIndividual;
+
     }
 
 
