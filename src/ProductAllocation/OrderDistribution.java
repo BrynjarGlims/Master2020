@@ -77,7 +77,14 @@ public class OrderDistribution {
     }
 
     private void setFitness(double objectiveValue){
-        this.fitness = objectiveValue;
+        fitness = 0;
+        for (int p = 0; p < data.numberOfPeriods; p++){
+            fitness += Parameters.overtimeCost[p]*Math.max(0, this.volumePerPeriod[p] - Parameters.overtimeLimit[p]);
+        }
+
+        System.out.println( "Fitness of objective: " + objectiveValue);
+        System.out.println("Fitness of brute force calculation: " + fitness);
+        //this.fitness = objectiveValue;
     }
 
     private void setVolumePerPeriod(){

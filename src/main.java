@@ -27,6 +27,7 @@ public class main {
                 numberOfIterations < Parameters.maxNumberOfGenerations){
             population.setSurvivorsForNextGeneration();
             System.out.println("Start generation: " + numberOfIterations);
+
             //Find best OD for the distribution
             odp.calculateFillingLevelFitnessScoresPlural();
             for (Individual individual : population.infeasiblePopulation){
@@ -47,12 +48,14 @@ public class main {
                 // TODO: 04.03.2020 Add repair:
 
                 if (Math.random() < Parameters.greedyMIPValue){
+                    System.out.println("--------------------");
+                    System.out.println("Current fintness: " + newIndividual.getBiasedFitness());
                     OrderDistribution optimalOD = OrderAllocationModel.createOptimalOrderDistribution(newIndividual, data);
                     newIndividual.setOptimalOrderDistribution(optimalOD);
-                    odp.addOrderDistribution(optimalOD);
+                    odp.addOrderDistribution(optimalOD);  // todo: do not remove adsplit
+                    System.out.println("New fitness: " + newIndividual.getBiasedFitness());
                     // TODO: 04.03.2020 Implement safe trap in case no solution is found in gurobi
                 }
-                newIndividual.testNewOrderDistribution(odp.getRandomOrderDistribution());
                 population.addChildToPopulation(newIndividual);
             }
 

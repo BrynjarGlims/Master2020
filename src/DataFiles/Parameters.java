@@ -49,7 +49,7 @@ public class Parameters {
 
     //Period parameters
     //TODO: change to percentage values
-    public static final double[] overtimeLimit = {100, 100, 100, 100, 100, 100};
+    public static final double[] overtimeLimit = {10, 10, 10, 10, 10, 10};
     public static final double[] overtimeCost = {100, 100, 100, 100, 100, 100};
 
     //Time parameters

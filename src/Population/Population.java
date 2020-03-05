@@ -36,17 +36,16 @@ public class Population {
     }
 
     private void reduceFeasiblePopulation(){
-        int numoberOfIndividualsToRemove = feasiblePopulation.size() - Parameters.minimumSubIndividualPopulationSize;
-        if (numoberOfIndividualsToRemove < 0)
+        int numberOfIndividualsToRemove = feasiblePopulation.size() - Parameters.minimumSubIndividualPopulationSize;
+        if (numberOfIndividualsToRemove < 0)
             return;
         ArrayList<Individual> worstIndividuals = new ArrayList<Individual>();
         for (Individual individual : feasiblePopulation){
             if ( individual.isSurvivor){
                 continue;
             }
-            System.out.println("A feasible individual is removed");
             worstIndividuals.add(individual);
-            if(worstIndividuals.size() < numoberOfIndividualsToRemove){
+            if(worstIndividuals.size() < numberOfIndividualsToRemove){
                 Collections.sort(worstIndividuals);
             }
             else{
