@@ -87,7 +87,6 @@ public class OrderDistributionPopulation {
             }
             currentIndex++;
         }
-
         return null;
     }
 
@@ -106,7 +105,6 @@ public class OrderDistributionPopulation {
     public void addOrderDistribution(OrderDistribution od){
         setOfOrderDistributions.add(od);
     }
-
 
 
     public static void main(String[] args) {

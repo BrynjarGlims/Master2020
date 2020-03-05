@@ -223,7 +223,8 @@ public class Individual implements Comparable<Individual> {
 
     public static void main(String[] args) {
         Individual individual = Individual.makeIndividual();
-        System.out.println("Value of fitness: " + individual.getFitness(true));
+        //System.out.println("Value of fitness: " + individual.getFitness(true));
+
     }
 
     public static Individual makeIndividual() {
@@ -239,7 +240,8 @@ public class Individual implements Comparable<Individual> {
     public int compareTo(Individual individual) { // TODO: 04.03.2020 Sort by biased fitness and not fitness
         if (this.getBiasedFitness() < individual.getBiasedFitness() ) {
             return 1;
-        } else {
+        }
+        else {
             return -1;
         }
 
