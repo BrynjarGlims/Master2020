@@ -244,7 +244,7 @@ public class OrderDistribution {
     public double getOvertimeValue(){
         fitness = 0;
         for (int d = 0; d < data.numberOfPeriods; d++ ){
-            fitness += Parameters.overtimeCost[d]*Math.max(0 , Arrays.stream(this.orderVolumeDistribution[d]).sum()-Parameters.overtimeLimit[d]);
+            fitness += Parameters.overtimeCost[d]*Math.max(0 , this.volumePerPeriod[d]-Parameters.overtimeLimit[d]);
         }
         return fitness;
     }
