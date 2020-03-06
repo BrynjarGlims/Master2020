@@ -156,14 +156,15 @@ public class AdSplit {
                         //update current time and calculate time warp
                         currentTime = Math.max(individual.data.customers[customerSequence.get(counter)].timeWindow[p][0], tempTime);
                         routeTimeWarp += Math.max(0, (currentTime - individual.data.customers[customerSequence.get(counter)].timeWindow[p][1]));
+                        if ((currentTime - individual.data.customers[customerSequence.get(counter)].timeWindow[p][1]) > 0){
+                            currentTime = individual.data.customers[customerSequence.get(counter)].timeWindow[p][1];
+                        }
+
                         loadSum += individual.orderDistribution.orderVolumeDistribution[p][customerSequence.get(counter)];
 
                         //add time warp costs if depot is reached too late
                         if (counter == j) {
                             tempDistanceCost += individual.data.distanceMatrix[customerSequence.get(counter)][customerSequence.get(0)];
-                            if ((currentTime - individual.data.customers[customerSequence.get(counter)].timeWindow[p][1]) > 0){
-                                currentTime = individual.data.customers[customerSequence.get(counter)].timeWindow[p][1];
-                            }
                             routeTimeWarp += Math.max(0, (currentTime + individual.data.distanceMatrix[customerSequence.get(counter)][customerSequence.get(0)] + individual.data.customers[customerSequence.get(counter)].totalUnloadingTime) - Parameters.maxJourneyDuration);
                         }
                     }
@@ -171,7 +172,6 @@ public class AdSplit {
                     currentCost = Parameters.initialCapacityPenalty*(Math.max(0, loadSum-individual.data.vehicleTypes[vt].capacity))
                             + routeTimeWarp*Parameters.initialTimeWarpPenalty + Parameters.initialDrivingCostPenalty*(tempDistanceCost);
                     }
-
                 //Update predecessor label whenever improvements are detected
                 if (costLabel[i] + currentCost < costLabel[j]) {
                     costLabel[j] = costLabel[i] + currentCost;
@@ -180,7 +180,18 @@ public class AdSplit {
                 }
             }
         }
+        /*
+        for (int i = 0; i < timeWarp.length; i++) {
+            if (timeWarp[i] > 0) {
+                System.out.println("---------------------------------");
+                System.out.println("Time warp: "+ timeWarp[i]);
+                System.out.println("Customer: "+ customerSequence.get(i));
+                System.out.println("End time window: "+ individual.data.customers[customerSequence.get(i)].timeWindow[p][1]);
+                System.out.println("Depot distance: "+ individual.data.distanceMatrix[customerSequence.get(0)][customerSequence.get(i)]);
+            }
+        }
 
+         */
         getListOfTrips(customerSequence, predecessorLabel, p, vt);
         //extractVrpSolution(customerSequence, predecessorLabel, p, vt);
     }
