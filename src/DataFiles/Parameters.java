@@ -10,13 +10,15 @@ public class Parameters {
 
 
     //Population parameters
-    public static final int maximumSubPopulationSize = 100; //TODO: find reasonable value
-    public static final int minimumSubPopulationSize = 50;
-    public static final int initialPopulationSize = 10;
+    public static final int maximumSubIndividualPopulationSize = 200; //TODO: find reasonable value
+    public static final int minimumSubIndividualPopulationSize = 50;
+    public static final int numberOfElitismSurvivorsPerGeneration = 5;
+
+    public static final int initialPopulationSize = 100;
     public static final int initialOrderDistributionPopulationSize = 10;
 
     public static final int maxNumberIterationsWithoutImprovement = 10;
-    public static final int maxNumberOfIterations = 10;
+    public static final int maxNumberOfGenerations = 100;
     public static final double minimumFitnessDifferenceForClones = 10; //minimum fitness difference to encounter two individuals as clones
 
     //Decision parameters
@@ -27,9 +29,9 @@ public class Parameters {
 
 
     //Loading data parameters
-    public static final int numberOfCustomers = 115;
-    public static final int numberOfVehicles = 20;
 
+    public static final int numberOfCustomers = 100;
+    public static final int numberOfVehicles = 100;
 
     //Traveling parameters
     public static final double scalingDistanceParameter = 01;
@@ -47,7 +49,7 @@ public class Parameters {
 
     //Period parameters
     //TODO: change to percentage values
-    public static final double[] overtimeLimit = {100, 100, 100, 100, 100, 100};
+    public static final double[] overtimeLimit = {50, 50, 50, 50, 50, 50};
     public static final double[] overtimeCost = {100, 100, 100, 100, 100, 100};
 
     //Time parameters
@@ -56,15 +58,13 @@ public class Parameters {
     //TEMPORARY PARAMTERS
     public static final double loadingTimeAtDepotConstant = 0.03;
     public static final double loadaingTimeAtDepotVariable = 0.001;
-
     public static final double scalingUnloadingTimeAtCustomerConstant = 0.03;
     public static final double scalingUnloadingTimeAtCustomerVariable = 0.001;
-
     public static final double scalingVehicleCapacity = 0.01;
 
 
     //GUROBI PARAMETERS
-    public static final double greedyMIPValue = 0.1;
+    public static final double greedyMIPValue = 0.5;
     public static final String symmetry =  "car";      // // none, car, trips, customers, cost, duration
     public static final double modelTimeLimit = 10000;
     public static final double modelMipGap = 0.0001;
@@ -72,7 +72,6 @@ public class Parameters {
     public static final String instanceName = "testDataFromAsko";
     public static final int upperBoundQuantity = 100;  // upper bound q variable
     public static final int upperBoundOvertime = 1000;  // upper bound qO variable
-    public static final double BigM = 1.5; // TODO: 24.11.2019 Change
 
     //PLOT PARAMETERS
     public static final boolean savePlots = false;

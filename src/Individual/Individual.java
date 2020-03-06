@@ -18,6 +18,9 @@ public class Individual implements Comparable<Individual> {
     public double infeasibilityOvertimeValue;
     public double infeasibilityTimeWarpValue;
     public double infeasibilityOverCapacityValue;
+    public double feasibleTravelingCost;
+    public double feasibleVehicleUseCost;
+    public double feasibleOvertimeDepotCost;
 
     public Label[][] bestLabels;
 
@@ -31,6 +34,9 @@ public class Individual implements Comparable<Individual> {
     public double fitness = Double.MAX_VALUE;
     public double diversity = 0;
     public double biasedFitness;
+
+    public boolean isSurvivor;
+
 
     public Individual(Data data) {
         this.data = data;
@@ -59,20 +65,59 @@ public class Individual implements Comparable<Individual> {
 
     }
 
-    public void setOptimalOrderDistribution(OrderDistribution orderDistribution) {
+    public void setOptimalOrderDistribution(OrderDistribution orderDistribution){
+        setOptimalOrderDistribution(orderDistribution, true);
+    }
+
+    public void setOptimalOrderDistribution(OrderDistribution orderDistribution, boolean doAdSplit) {
         this.orderDistribution = orderDistribution;
-        AdSplit.adSplitPlural(this);
+        if (doAdSplit){
+            AdSplit.adSplitPlural(this);
+        }
         this.updateFitness();
     }
 
     public void testNewOrderDistribution(OrderDistribution orderDistribution){
         double currentFitness = this.getFitness(false);
+        System.out.println("Fitness before adsplit: " + currentFitness );
+        this.printDetailedFitness();
         OrderDistribution currentOrderDistribution = this.orderDistribution;
         this.setOptimalOrderDistribution(orderDistribution);
-        if (this.getFitness(false) > currentFitness){
-            this.setOptimalOrderDistribution(currentOrderDistribution);
+        if (this.getFitness(false) > currentFitness){  // // TODO: 05.03.2020 Make more efficient
+            this.setOptimalOrderDistribution(currentOrderDistribution);  //NOT WORKING
+
+            System.out.println("Fitness after adsplit: " + this.getFitness(false) );
+            this.printDetailedFitness();
+            System.out.println("###############################");
+        }
+        else{ //WORKING
+            //System.out.println("Fitness after adsplit: " + this.getFitness(false) );
+            //System.out.println("---------------------------------");
         }
     }
+
+    public void printDetailedFitness(){
+        System.out.println("-------------------------------------");
+        System.out.println("Biased fitness: " + biasedFitness);
+        System.out.println("Diversity: " + diversity);
+        System.out.println("Fitness: " + fitness);
+        System.out.println("OvertimeValue: " + infeasibilityOvertimeValue);
+        System.out.println("InfTimeWarp: " + infeasibilityTimeWarpValue);
+        System.out.println("InfOverCapacityValue: " + infeasibilityOverCapacityValue);
+        System.out.println("Objective cost: " + objectiveCost);
+        System.out.println("Traveling cost: " + feasibleTravelingCost);
+        System.out.println("Vehicle cost: " + feasibleVehicleUseCost);
+        System.out.println("OvertimeAtDepot: " + feasibleOvertimeDepotCost);
+
+
+
+        System.out.println("-------------------------------------");
+
+
+
+
+    }
+
 
     public boolean isFeasible() {
         return (infeasibilityCost == 0);
@@ -114,7 +159,7 @@ public class Individual implements Comparable<Individual> {
 
 
     public void updateFitness() {
-        double fitness = 0;
+        this.fitness = 0;
 
         //Calculate objective costs
         this.objectiveCost = getObjectiveCost();
@@ -123,28 +168,38 @@ public class Individual implements Comparable<Individual> {
         this.infeasibilityCost = getInfeasibilityCost();
 
         this.fitness = this.objectiveCost + this.infeasibilityCost;
+        
+        //// TODO: 05.03.2020 Move this to another place when diversity is implemented 
+        this.biasedFitness = fitness + diversity;
 
     }
 
     private double getObjectiveCost() {
-        objectiveCost = 0;
+        feasibleOvertimeDepotCost = 0;
+        feasibleTravelingCost = 0;
+        feasibleVehicleUseCost = 0;
+
         for (Label[] labels : bestLabels) {
             for (Label label : labels) {
                 if (label.isEmptyLabel) {
                     continue;
                 }
                 //Adds driving cost
-                objectiveCost += label.getLabelDrivingDistance() * data.vehicleTypes[label.vehicleTypeID].travelCost;
+                feasibleTravelingCost += label.getLabelDrivingDistance() * data.vehicleTypes[label.vehicleTypeID].travelCost;
                 //Adds vehicle use cost
-                objectiveCost += label.getNumberOfVehicles() * data.vehicleTypes[label.vehicleTypeID].usageCost;
+                feasibleVehicleUseCost += label.getNumberOfVehicles() * data.vehicleTypes[label.vehicleTypeID].usageCost;
 
             }
         }
-        objectiveCost += orderDistribution.getOvertimeValue();
-        return objectiveCost;
+        feasibleOvertimeDepotCost += orderDistribution.getOvertimeValue();
+        return feasibleTravelingCost + feasibleVehicleUseCost + feasibleOvertimeDepotCost;
     }
 
+
     private double getInfeasibilityCost() {
+        infeasibilityTimeWarpValue = 0;
+        infeasibilityOverCapacityValue = 0;
+        infeasibilityOvertimeValue = 0;
         for (Label[] labels : bestLabels) {
             for (Label label : labels) {
                 if (label.isEmptyLabel) {
@@ -171,6 +226,10 @@ public class Individual implements Comparable<Individual> {
         double biasedFitness = (1 - (Parameters.numberOfEliteIndividuals / nbIndividuals) * getRankOfIndividual());
         double fitnessScore = fitness + biasedFitness;
         return fitnessScore;
+    }
+
+    public double getBiasedFitness(){
+        return this.getFitness(false) - this.diversity;
     }
 
     public double calculateDiversity(Individual comparison) {
@@ -230,7 +289,7 @@ public class Individual implements Comparable<Individual> {
     }
 
     public int compareTo(Individual individual) { // TODO: 04.03.2020 Sort by biased fitness and not fitness
-        if (this.getFitness(false) > individual.getFitness(false) ) {
+        if (this.getBiasedFitness() < individual.getBiasedFitness() ) {
             return 1;
         }
         else {

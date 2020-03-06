@@ -8,8 +8,7 @@ import MIP.OrderAllocationModel;
 import Population.Population;
 import ProductAllocation.OrderDistribution;
 import Population.OrderDistributionPopulation;
-
-import java.util.Random;
+import Visualization.PlotIndividual;
 
 public class main {
     public static void main(String[] args){
@@ -25,39 +24,68 @@ public class main {
 
         int numberOfIterations = 0;
         while ( population.getIterationsWithoutImprovement() < Parameters.maxNumberIterationsWithoutImprovement &&
-                numberOfIterations < Parameters.maxNumberOfIterations){
+                numberOfIterations < Parameters.maxNumberOfGenerations){
+            population.setSurvivorsForNextGeneration();
             System.out.println("Start generation: " + numberOfIterations);
+
             //Find best OD for the distribution
             odp.calculateFillingLevelFitnessScoresPlural();
             for (Individual individual : population.infeasiblePopulation){
-                individual.testNewOrderDistribution(odp.getBestOrderDistribution(individual));
+                individual.testNewOrderDistribution(odp.getBestOrderDistribution(individual)); // TODO: 05.03.2020 Uncomment
             }
 
             //Generate new population
-            while (population.getPopulationSize() < Parameters.maximumSubPopulationSize){
+            while (population.getPopulationSize() < Parameters.maximumSubIndividualPopulationSize){
                 Individual parent1 = population.getRandomIndividual();
-                Individual parent2 = population.getRandomIndividual();//todo:base this on crossfitnesscstore
+                Individual parent2 = population.getRandomIndividual();  //todo:base this on crossfitnesscstore
                 OrderDistribution[] crossoverOD = ODC.crossover(parent1.orderDistribution, parent2.orderDistribution); //these will be the same
                 for (OrderDistribution od : crossoverOD){
                     odp.addOrderDistribution(od);
                 }
+                /*
+                System.out.println("####PARENT1 Before change#####");
+                //System.out.println(parent1.toString());
+                parent1.printDetailedFitness();
+                System.out.println("####PARENT2 Before change#####");
+                //System.out.println(parent2.toString());
+                parent2.printDetailedFitness();
+                */
                 Individual newIndividual = GTC.crossOver(parent1, parent2, crossoverOD[0]);
+
+                /*System.out.println("####PARENT1 After change#####");
+                //System.out.println(parent1.toString());
+                parent1.printDetailedFitness();
+                System.out.println("####PARENT2 After change#####");
+                //System.out.println(parent2.toString());
+                parent2.printDetailedFitness();
+
+
+                System.out.println("------------------------------------------------------");
+                System.out.println("------------------------------------------------------");
+                System.out.println("------------------------------------------------------");
+                System.out.println("------------------------------------------------------");
+
+                 */
 
                 // TODO: 04.03.2020 Brynjar: Add education
                 // TODO: 04.03.2020 Add repair:
 
-                Random rand = new Random();
-                if (rand.nextDouble() < Parameters.greedyMIPValue){
+                if (Math.random() < Parameters.greedyMIPValue){
+                    //System.out.println("--------------------");
+                    //System.out.println("Current fintness: " + newIndividual.getBiasedFitness());
                     OrderDistribution optimalOD = OrderAllocationModel.createOptimalOrderDistribution(newIndividual, data);
-                    newIndividual.setOptimalOrderDistribution(optimalOD);
-                    odp.addOrderDistribution(optimalOD);
+                    if (newIndividual.infeasibilityCost == 0){
+                        newIndividual.setOptimalOrderDistribution(optimalOD, true);
+                    }
+                    else{
+                        newIndividual.setOptimalOrderDistribution(optimalOD, false);
+                    }
+
+                    odp.addOrderDistribution(optimalOD);  // todo: do not remove adsplit
+                    //System.out.println("New fitness: " + newIndividual.getBiasedFitness());
                     // TODO: 04.03.2020 Implement safe trap in case no solution is found in gurobi
                 }
                 population.addChildToPopulation(newIndividual);
-
-                //remember
-                newIndividual.testNewOrderDistribution(odp.getRandomOrderDistribution());
-
             }
 
             //reduce size of both populations
@@ -67,10 +95,20 @@ public class main {
             // TODO: 04.03.2020 Implement adjust penalty parameters for overtimeInfeasibility, loadInfeasibility and timeWarpInfeasibility
 
             numberOfIterations++;
+            Individual bestIndividual = population.returnBestIndividual();
+            Individual bestFeasibleIndividual = population.returnBestFeasibleIndividual();
+            Individual bestInfeasibleIndividual = population.returnBestInfeasibleIndividual();
+            if(bestIndividual.isFeasible()){
+                System.out.println("Best feasible individual: " + bestFeasibleIndividual.fitness);
+            }
+            System.out.println("Best infeasible individual: " + bestInfeasibleIndividual.fitness);
         }
+        numberOfIterations++;
         Individual bestIndividual = population.returnBestIndividual();
-        System.out.println(bestIndividual.toString());
-        System.out.println("Individual infeasible: " + bestIndividual.isFeasible());
+        System.out.println("Individual feasible: " + bestIndividual.isFeasible());
         System.out.println("Fitness: " + bestIndividual.getFitness(false));
+        PlotIndividual visualizer = new PlotIndividual(data);
+        visualizer.visualize(bestIndividual);
+
     }
 }

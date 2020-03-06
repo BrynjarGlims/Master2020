@@ -3,14 +3,18 @@ package MIP;
 import DataFiles.Data;
 import DataFiles.DataReader;
 import DataFiles.Parameters;
+import Genetic.GiantTourCrossover;
+import Genetic.OrderDistributionCrossover;
 import Individual.Individual;
 import Individual.AdSplit;
+import Population.Population;
 import ProductAllocation.OrderDistribution;
 import gurobi.*;
-import scala.Int;
+import Population.*;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -638,6 +642,37 @@ public class OrderAllocationModel {
     public static OrderDistribution createOptimalOrderDistribution( Individual individual, Data data){
         OrderAllocationModel orderAllocationModel = new OrderAllocationModel();
         return orderAllocationModel.createODFromMIP(individual, data);
+    }
+
+    public static void main(String[] args){
+        Data data = DataReader.loadData();
+        Population population = new Population(data);
+        OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
+        GiantTourCrossover GTC = new GiantTourCrossover(data);
+        OrderDistributionCrossover ODC = new OrderDistributionCrossover(data);
+        odp.initializeOrderDistributionPopulation(population);
+        OrderDistribution firstOD = odp.getRandomOrderDistribution();
+        population.setOrderDistributionPopulation(odp);
+        population.initializePopulation(firstOD);
+        for (int i = 0; i < 3; i++) {
+            Individual individual = population.getRandomIndividual();
+            System.out.println("########################################################");
+            System.out.println("Old fitness: " + individual.getBiasedFitness());
+            individual.printDetailedFitness();
+
+            OrderDistribution optimalDistribution = OrderAllocationModel.createOptimalOrderDistribution(individual, data);
+            individual.setOptimalOrderDistribution(optimalDistribution, false);
+            System.out.println("Temporary fitness: " + individual.getBiasedFitness());
+            individual.printDetailedFitness();
+
+            individual.setOptimalOrderDistribution(optimalDistribution, true);
+
+            odp.addOrderDistribution(optimalDistribution);  // todo: do not remove adsplit
+            System.out.println("New fitness: " + individual.getBiasedFitness());
+            individual.printDetailedFitness();
+            System.out.println("########################################################");
+        }
+
     }
 
 }
