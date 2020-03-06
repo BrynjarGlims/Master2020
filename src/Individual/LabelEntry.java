@@ -100,7 +100,7 @@ public class LabelEntry implements Comparable<LabelEntry> {
     public void updateLabelEntryValues(ArrayList<Integer> customers){
         this.inUse = true;
         this.tripAssigment.add(customers);
-        this.updateTravelTime(customers);
+    this.updateTravelTime(customers);
         this.updateLoadInfeasibility(customers);
         this.updateTimeWarp(customers);
     }

@@ -3,13 +3,8 @@ import DataFiles.*;
 import Population.Population;
 import ProductAllocation.OrderDistribution;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 
-
-public class Individual {
+public class Individual implements Comparable<Individual> {
     //chromosomes
     public GiantTour giantTour;  //period, vehicleType
     public VehicleAssigment vehicleAssigment;
@@ -24,6 +19,9 @@ public class Individual {
     public double infeasibilityOvertimeValue;
     public double infeasibilityTimeWarpValue;
     public double infeasibilityOverCapacityValue;
+    public double feasibleTravelingCost;
+    public double feasibleVehicleUseCost;
+    public double feasibleOvertimeDepotCost;
 
     public Label[][] bestLabels;
 
@@ -38,12 +36,14 @@ public class Individual {
     public double diversity = 0;
     public double biasedFitness;
 
+    public boolean isSurvivor;
+
+
     public Individual(Data data) {
         this.data = data;
         this.vehicleAssigment = new VehicleAssigment(data);
         this.giantTourSplit = new GiantTourSplit(data);
         this.giantTour = new GiantTour(data);
-        this.orderDistribution = new OrderDistribution(data);
         this.bestLabels = new Label[data.numberOfPeriods][data.numberOfVehicleTypes];
         this.customerToTrips = new CustomerToTrip[data.numberOfPeriods][data.numberOfCustomers];
     }
@@ -55,9 +55,9 @@ public class Individual {
 
 
 
-    public void initializeIndividual() {
+    public void initializeIndividual(OrderDistribution od) {
         //set chromosome
-        orderDistribution.makeInitialDistribution();
+        this.orderDistribution = od;
         giantTourSplit.initialize();
         giantTour.initializeGiantTour();
 
@@ -90,6 +90,60 @@ public class Individual {
         }
     }
 
+    public void setOptimalOrderDistribution(OrderDistribution orderDistribution){
+        setOptimalOrderDistribution(orderDistribution, true);
+    }
+
+    public void setOptimalOrderDistribution(OrderDistribution orderDistribution, boolean doAdSplit) {
+        this.orderDistribution = orderDistribution;
+        if (doAdSplit){
+            AdSplit.adSplitPlural(this);
+        }
+        this.updateFitness();
+    }
+
+    public void testNewOrderDistribution(OrderDistribution orderDistribution){
+        double currentFitness = this.getFitness(false);
+        System.out.println("Fitness before adsplit: " + currentFitness );
+        this.printDetailedFitness();
+        OrderDistribution currentOrderDistribution = this.orderDistribution;
+        this.setOptimalOrderDistribution(orderDistribution);
+        if (this.getFitness(false) > currentFitness){  // // TODO: 05.03.2020 Make more efficient
+            this.setOptimalOrderDistribution(currentOrderDistribution);  //NOT WORKING
+
+            System.out.println("Fitness after adsplit: " + this.getFitness(false) );
+            this.printDetailedFitness();
+            System.out.println("###############################");
+        }
+        else{ //WORKING
+            //System.out.println("Fitness after adsplit: " + this.getFitness(false) );
+            //System.out.println("---------------------------------");
+        }
+    }
+
+    public void printDetailedFitness(){
+        System.out.println("-------------------------------------");
+        System.out.println("Biased fitness: " + biasedFitness);
+        System.out.println("Diversity: " + diversity);
+        System.out.println("Fitness: " + fitness);
+        System.out.println("OvertimeValue: " + infeasibilityOvertimeValue);
+        System.out.println("InfTimeWarp: " + infeasibilityTimeWarpValue);
+        System.out.println("InfOverCapacityValue: " + infeasibilityOverCapacityValue);
+        System.out.println("Objective cost: " + objectiveCost);
+        System.out.println("Traveling cost: " + feasibleTravelingCost);
+        System.out.println("Vehicle cost: " + feasibleVehicleUseCost);
+        System.out.println("OvertimeAtDepot: " + feasibleOvertimeDepotCost);
+
+
+
+        System.out.println("-------------------------------------");
+
+
+
+
+    }
+
+
     public boolean isFeasible() {
         return (infeasibilityCost == 0);
 
@@ -110,6 +164,9 @@ public class Individual {
         return 0.0;
     }
 
+    public OrderDistribution getOrderDistribution() {
+        return orderDistribution;
+    }
 
     public int getRankOfIndividual() {
         int rank = 0; //TODO: implement rank calculations
@@ -127,7 +184,7 @@ public class Individual {
 
 
     public void updateFitness() {
-        double fitness = 0;
+        this.fitness = 0;
 
         //Calculate objective costs
         this.objectiveCost = getObjectiveCost();
@@ -136,28 +193,38 @@ public class Individual {
         this.infeasibilityCost = getInfeasibilityCost();
 
         this.fitness = this.objectiveCost + this.infeasibilityCost;
+        
+        //// TODO: 05.03.2020 Move this to another place when diversity is implemented 
+        this.biasedFitness = fitness + diversity;
 
     }
 
     private double getObjectiveCost() {
-        objectiveCost = 0;
+        feasibleOvertimeDepotCost = 0;
+        feasibleTravelingCost = 0;
+        feasibleVehicleUseCost = 0;
+
         for (Label[] labels : bestLabels) {
             for (Label label : labels) {
                 if (label.isEmptyLabel) {
                     continue;
                 }
                 //Adds driving cost
-                objectiveCost += label.getLabelDrivingDistance() * data.vehicleTypes[label.vehicleTypeID].travelCost;
+                feasibleTravelingCost += label.getLabelDrivingDistance() * data.vehicleTypes[label.vehicleTypeID].travelCost;
                 //Adds vehicle use cost
-                objectiveCost += label.getNumberOfVehicles() * data.vehicleTypes[label.vehicleTypeID].usageCost;
+                feasibleVehicleUseCost += label.getNumberOfVehicles() * data.vehicleTypes[label.vehicleTypeID].usageCost;
 
             }
         }
-        objectiveCost += orderDistribution.getOvertimeValue();
-        return objectiveCost;
+        feasibleOvertimeDepotCost += orderDistribution.getOvertimeValue();
+        return feasibleTravelingCost + feasibleVehicleUseCost + feasibleOvertimeDepotCost;
     }
 
+
     private double getInfeasibilityCost() {
+        infeasibilityTimeWarpValue = 0;
+        infeasibilityOverCapacityValue = 0;
+        infeasibilityOvertimeValue = 0;
         for (Label[] labels : bestLabels) {
             for (Label label : labels) {
                 if (label.isEmptyLabel) {
@@ -184,6 +251,10 @@ public class Individual {
         double biasedFitness = (1 - (Parameters.numberOfEliteIndividuals / nbIndividuals) * getRankOfIndividual());
         double fitnessScore = fitness + biasedFitness;
         return fitnessScore;
+    }
+
+    public double getBiasedFitness(){
+        return this.getFitness(false) - this.diversity;
     }
 
     public double calculateDiversity(Individual comparison) {
@@ -226,10 +297,10 @@ public class Individual {
         return giantTour.toString();
     }
 
-
     public static void main(String[] args) {
         Individual individual = Individual.makeIndividual();
-        System.out.println("Value of fitness: " + individual.getFitness(true));
+        //System.out.println("Value of fitness: " + individual.getFitness(true));
+
     }
 
     public static Individual makeIndividual() {
@@ -237,12 +308,20 @@ public class Individual {
         OrderDistribution od = new OrderDistribution(data);
         od.makeInitialDistribution();
         Individual individual = new Individual(data);
-        individual.initializeIndividual();
+        individual.initializeIndividual(od);
         AdSplit.adSplitPlural(individual);
         return individual;
     }
 
+    public int compareTo(Individual individual) { // TODO: 04.03.2020 Sort by biased fitness and not fitness
+        if (this.getBiasedFitness() < individual.getBiasedFitness() ) {
+            return 1;
+        }
+        else {
+            return -1;
+        }
 
+    }
 }
 
 

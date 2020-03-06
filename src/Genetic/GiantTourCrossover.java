@@ -2,15 +2,10 @@ package Genetic;
 
 import DataFiles.Customer;
 import DataFiles.Data;
-import DataFiles.DataReader;
-import Individual.GiantTour;
 import Individual.Individual;
 import Individual.AdSplit;
-import Individual.FitnessCalculation;
-import ProductAllocation.OrderDelivery;
 import ProductAllocation.OrderDistribution;
 
-import java.sql.SQLOutput;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -43,6 +38,7 @@ public class GiantTourCrossover {
         inheritParent2(parent2, child, combined, visitedCustomers);
         bestInsertion(child, orderDistribution, findMissingCustomers(visitedCustomers));
         AdSplit.adSplitPlural(child);
+        child.updateFitness();
         return child;
     }
 
@@ -154,7 +150,7 @@ public class GiantTourCrossover {
                     child.giantTour.chromosome[p][currentBestVehicleType].add(currentBestSequence.get(0));
                 }
                 else{
-                    child.giantTour.chromosome[p][currentBestVehicleType] = (ArrayList<Integer>) currentBestSequence;
+                    child.giantTour.chromosome[p][currentBestVehicleType] = new ArrayList<>(currentBestSequence);
                 }
             }
         }
@@ -216,25 +212,6 @@ public class GiantTourCrossover {
         return individual.giantTour.chromosome[index / data.numberOfVehicleTypes][index % data.numberOfVehicleTypes];
     }
 
-    public static void main(String[] args){
-        Data data = DataReader.loadData();
-        GiantTourCrossover GTC = new GiantTourCrossover(data);
 
-
-        OrderDistribution orderDistribution1 = new OrderDistribution(data);
-        orderDistribution1.makeInitialDistribution();
-        Individual parent1 = new Individual(data);
-        parent1.initializeIndividual();
-        AdSplit.adSplitPlural(parent1);
-
-        OrderDistribution orderDistribution2 = new OrderDistribution(data);
-        orderDistribution2.makeInitialDistribution();
-        Individual parent2 = new Individual(data);
-        parent2.initializeIndividual();
-        AdSplit.adSplitPlural(parent2);
-
-
-
-    }
 
 }

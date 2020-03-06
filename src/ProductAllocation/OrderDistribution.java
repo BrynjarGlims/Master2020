@@ -77,7 +77,15 @@ public class OrderDistribution {
     }
 
     private void setFitness(double objectiveValue){
-        this.fitness = objectiveValue;
+        fitness = 0;
+        for (int p = 0; p < data.numberOfPeriods; p++){
+            fitness += Parameters.overtimeCost[p]*Math.max(0, this.volumePerPeriod[p] - Parameters.overtimeLimit[p]);
+        }
+        //System.out.println("#####");
+        //System.out.println( "Fitness of objective: " + objectiveValue);
+        //System.out.println("Fitness of brute force calculation: " + fitness);
+        //System.out.println("#####");
+        //this.fitness = objectiveValue;
     }
 
     private void setVolumePerPeriod(){
@@ -244,7 +252,7 @@ public class OrderDistribution {
     public double getOvertimeValue(){
         fitness = 0;
         for (int d = 0; d < data.numberOfPeriods; d++ ){
-            fitness += Parameters.overtimeCost[d]*Math.max(0 , Arrays.stream(this.orderVolumeDistribution[d]).sum()-Parameters.overtimeLimit[d]);
+            fitness += Parameters.overtimeCost[d]*Math.max(0 , this.volumePerPeriod[d]-Parameters.overtimeLimit[d]);
         }
         return fitness;
     }
@@ -266,13 +274,13 @@ public class OrderDistribution {
         OrderDistribution pd = new OrderDistribution(data);
         pd.makeInitialDistribution();
         for (double[] period : pd.orderVolumeDistribution) {
-            System.out.println(Arrays.toString(period));
+            //System.out.println(Arrays.toString(period));
         }
         for (ArrayList<Integer>[] period : pd.orderIdDistribution){
             for (ArrayList<Integer> customer : period){
-                System.out.println(customer);
+                //System.out.println(customer);
                 for (int i : customer){
-                    System.out.println(pd.orderDeliveries[i]);
+                    //System.out.println(pd.orderDeliveries[i]);
                 }
             }
         }

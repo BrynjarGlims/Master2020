@@ -3,14 +3,18 @@ package MIP;
 import DataFiles.Data;
 import DataFiles.DataReader;
 import DataFiles.Parameters;
+import Genetic.GiantTourCrossover;
+import Genetic.OrderDistributionCrossover;
 import Individual.Individual;
 import Individual.AdSplit;
+import Population.Population;
 import ProductAllocation.OrderDistribution;
 import gurobi.*;
-import scala.Int;
+import Population.*;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -38,13 +42,13 @@ public class OrderAllocationModel {
     private GRBVar[] qO;
 
 
-    private void initializeModel(boolean verbose) throws GRBException, FileNotFoundException {
+    private void initializeModel(Data data) throws GRBException, FileNotFoundException {
         env = new GRBEnv(true);
-        this.env.set("logFile",  "OrderAllocationModel.log");
         this.env.start();
         this.model = new GRBModel(env);
-        model.set(GRB.StringAttr.ModelName, "ArcFlowModel");
-        this.data = DataReader.loadData(verbose);
+        model.set(GRB.StringAttr.ModelName, "OrderAllocationModel");
+        this.model.set(GRB.IntParam.LogToConsole, 0); //removes print of gurobi
+        this.data = data;
     }
 
 
@@ -209,7 +213,7 @@ public class OrderAllocationModel {
                 }
             }
             lhs.addTerm(-1.0, qO[d]); // Add the over time variable for that day
-            String constraint_name = String.format("2 -Overtime on day %d. OvertimeLimit %d ", d, Parameters.overtimeLimit[d]);
+            String constraint_name = String.format("2 -Overtime on day %d. OvertimeLimit %f ", d, Parameters.overtimeLimit[d]);
             model.addConstr(lhs, GRB.LESS_EQUAL, Parameters.overtimeLimit[d], constraint_name);
         }
     }
@@ -537,12 +541,12 @@ public class OrderAllocationModel {
 
 
 
-    private Result runModel(Individual individual) {
+    private Result runModel(Individual individual, Data data) {
         try {
             this.symmetry = Parameters.symmetry;
             this.individual = individual;
             System.out.println("Initalize model");
-            initializeModel(true);
+            initializeModel(data);
             System.out.println("Initalize parameters");
             initializeParameters();
             System.out.println("Set objective");
@@ -595,11 +599,11 @@ public class OrderAllocationModel {
         this.orderDistribution.makeDistributionFromMIP( uND, uD, qND, qD, model.get(GRB.DoubleAttr.ObjVal));
     }
 
-    private OrderDistribution createODFromMIP(Individual individual, boolean verbose) {
+    private OrderDistribution createODFromMIP(Individual individual, Data data) {
         try {
             this.orderDistribution = new OrderDistribution(individual.data);
             this.individual = individual;
-            initializeModel(verbose);
+            initializeModel(data);
             initializeParameters();
             setObjective();
             activateConstraints();
@@ -631,15 +635,44 @@ public class OrderAllocationModel {
         }
     }
 
-    private OrderDistribution createODFromMIP(Individual individual){
-        return createODFromMIP(individual, false);
-    }
+
 
 
     //MASTER FUNCTION
-    public static OrderDistribution createOptimalOrderDistribution( Individual individual){
+    public static OrderDistribution createOptimalOrderDistribution( Individual individual, Data data){
         OrderAllocationModel orderAllocationModel = new OrderAllocationModel();
-        return orderAllocationModel.createODFromMIP(individual);
+        return orderAllocationModel.createODFromMIP(individual, data);
+    }
+
+    public static void main(String[] args){
+        Data data = DataReader.loadData();
+        Population population = new Population(data);
+        OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
+        GiantTourCrossover GTC = new GiantTourCrossover(data);
+        OrderDistributionCrossover ODC = new OrderDistributionCrossover(data);
+        odp.initializeOrderDistributionPopulation(population);
+        OrderDistribution firstOD = odp.getRandomOrderDistribution();
+        population.setOrderDistributionPopulation(odp);
+        population.initializePopulation(firstOD);
+        for (int i = 0; i < 3; i++) {
+            Individual individual = population.getRandomIndividual();
+            System.out.println("########################################################");
+            System.out.println("Old fitness: " + individual.getBiasedFitness());
+            individual.printDetailedFitness();
+
+            OrderDistribution optimalDistribution = OrderAllocationModel.createOptimalOrderDistribution(individual, data);
+            individual.setOptimalOrderDistribution(optimalDistribution, false);
+            System.out.println("Temporary fitness: " + individual.getBiasedFitness());
+            individual.printDetailedFitness();
+
+            individual.setOptimalOrderDistribution(optimalDistribution, true);
+
+            odp.addOrderDistribution(optimalDistribution);  // todo: do not remove adsplit
+            System.out.println("New fitness: " + individual.getBiasedFitness());
+            individual.printDetailedFitness();
+            System.out.println("########################################################");
+        }
+
     }
 
 }

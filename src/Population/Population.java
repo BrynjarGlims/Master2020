@@ -4,32 +4,90 @@ import Individual.Individual;
 import Individual.AdSplit;
 import ProductAllocation.OrderDistribution;
 
+
 import java.util.ArrayList;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.*;
+
 
 public class Population {
     private int totalPopulationSize;
     private Data data;
-    private ArrayList<Individual> feasiblePopulation;
-    private ArrayList<Individual> infeasiblePopulation;
-    private OrderDistribution currentOrderDistribution;
+    public Set<Individual> feasiblePopulation;
+    public Set<Individual> infeasiblePopulation;
+    public OrderDistributionPopulation orderDistributionPopulation;
 
     int iterationsWithoutImprovement = 0;
 
     public Population(Data data) {
         this.data = data;
-        this.totalPopulationSize = Parameters.populationSize;
-        this.currentOrderDistribution = new OrderDistribution(this.data);
-        this.currentOrderDistribution.makeInitialDistribution();
-        this.feasiblePopulation = new  ArrayList<Individual>();
-        this.infeasiblePopulation = new  ArrayList<Individual>();
+        this.orderDistributionPopulation = orderDistributionPopulation;
+        this.feasiblePopulation = new HashSet<Individual>();
+        this.infeasiblePopulation = new HashSet<Individual>();
+    }
+
+    public int getPopulationSize(){
+        return feasiblePopulation.size() + infeasiblePopulation.size();
+    }
+
+    public void reduceSizeToMin(){
+        this.reduceFeasiblePopulation();
+        this.reduceInfeasiblePopulation();
+    }
+
+    private void reduceFeasiblePopulation(){
+        int numberOfIndividualsToRemove = feasiblePopulation.size() - Parameters.minimumSubIndividualPopulationSize;
+        if (numberOfIndividualsToRemove < 0)
+            return;
+        ArrayList<Individual> worstIndividuals = new ArrayList<Individual>();
+        for (Individual individual : feasiblePopulation){
+            if ( individual.isSurvivor){
+                continue;
+            }
+            worstIndividuals.add(individual);
+            if(worstIndividuals.size() < numberOfIndividualsToRemove){
+                Collections.sort(worstIndividuals);
+            }
+            else{
+                Collections.sort(worstIndividuals);
+                worstIndividuals.remove(worstIndividuals.size()-1);
+            }
+        }
+        this.feasiblePopulation.removeAll(worstIndividuals);
+    }
+
+    private void reduceInfeasiblePopulation(){
+        int numberOfIndividualsToRemove = infeasiblePopulation.size() - Parameters.minimumSubIndividualPopulationSize;
+        if (numberOfIndividualsToRemove < 0)
+            return;
+        ArrayList<Individual> worstIndividuals = new ArrayList<Individual>();
+        for (Individual individual : infeasiblePopulation){
+            if ( individual.isSurvivor){
+                continue;
+            }
+            worstIndividuals.add(individual);
+            if(worstIndividuals.size() < numberOfIndividualsToRemove){
+                Collections.sort(worstIndividuals);
+            }
+            else{
+                Collections.sort(worstIndividuals);
+                worstIndividuals.remove(worstIndividuals.size()-1);
+            }
+        }
+        this.infeasiblePopulation.removeAll(worstIndividuals);
     }
 
 
-    public void initializePopulation() {
-        for (int i = 0; i < totalPopulationSize; i++) {
-            //System.out.println("## New Individual Generated, nr: " + (i+1) + " ##" );
+
+    public void setOrderDistributionPopulation(OrderDistributionPopulation odp){
+        this.orderDistributionPopulation = odp;
+    }
+
+
+    public void initializePopulation (OrderDistribution od) {
+        for (int i = 0; i < Parameters.initialPopulationSize; i++) {
             Individual individual = new Individual(this.data, this);
-            individual.initializeIndividual();
+            individual.initializeIndividual(od);
             AdSplit.adSplitPlural(individual);
             individual.updateFitness();
             if (individual.isFeasible()) {
@@ -37,16 +95,143 @@ public class Population {
             }
             else {
                 infeasiblePopulation.add(individual);
+
+            }
+        }
+    }
+
+    public void setSurvivorsForNextGeneration(){
+        ArrayList<Individual> listToBeSorted = new ArrayList<Individual>(this.infeasiblePopulation);
+        listToBeSorted.addAll(this.infeasiblePopulation);
+        Collections.sort(listToBeSorted);
+        int counter = 0;
+        for (Individual individual : listToBeSorted){
+            if (counter < Parameters.numberOfElitismSurvivorsPerGeneration){
+                individual.isSurvivor = true;
+                counter++;
+            }
+            else{
+                individual.isSurvivor = false;
             }
         }
     }
 
 
-    public ArrayList<Individual> getFeasiblePopulation() {
+    private static double getFitnessDifference(Individual i1, Individual i2) {
+        return (Math.abs(i1.fitness - i2.fitness));
+    }
+
+
+    private Set<Individual> getFeasibleClonesForAnIndividual(Individual individual) {
+        Set<Individual> setOfClones = new HashSet<Individual>();
+        for (Individual ind: feasiblePopulation)
+            if (getFitnessDifference(individual, ind) <= Parameters.minimumFitnessDifferenceForClones) {
+                setOfClones.add(ind);
+            }
+        return setOfClones;
+    }
+
+
+
+    public void selectFeasibleSurvivors() {
+        Set<Individual> setOfAllClones = new HashSet<Individual>();
+        //select #Individuals (size = minimumSubPopulationSize) to keep both diversity and low-cost individuals
+        for (Individual individual: feasiblePopulation) {
+            for (Individual ind: getFeasibleClonesForAnIndividual(individual)) {
+                setOfAllClones.add(ind);
+            }
+        }
+
+        for (int i = 0; i < (getSizeOfFeasiblePopulation() - Parameters.minimumSubIndividualPopulationSize); i++) {
+            //setOfAllClones.sort(); //TODO: find a way to sort individuals based on fitness
+        }
+        //X = set of individuals with clones
+        //if X not empty:
+        //remove individuals in X with max biased fitness
+        //else:
+        //remove P in the whole subpop with maximum biased fitness
+        //update distance and biased fitness measures
+    }
+
+    public void selectInfeasibleSurvivors() {
+        Set<Individual> setOfAllClones = new HashSet<Individual>();
+        for (Individual individual: feasiblePopulation) {
+            for (Individual ind: getFeasibleClonesForAnIndividual(individual)) {
+                setOfAllClones.add(ind);
+            }
+        }
+
+        for (int i = 0; i < (getSizeOfInfeasiblePopulation() - Parameters.minimumSubIndividualPopulationSize); i++) {
+            //setOfAllClones.sort(); //TODO: find a way to sort individuals based on fitness
+        }
+
+    }
+
+    public void addChildToPopulation(Individual individual){
+        if (individual.isFeasible()){
+            feasiblePopulation.add(individual);
+        }
+        else{
+            infeasiblePopulation.add(individual);
+        }
+
+    }
+
+    public Individual returnBestIndividual(){
+        Individual bestIndividual = null;
+        double fitnessScore = Double.MAX_VALUE;
+        for (Individual individual : feasiblePopulation){
+            if (individual.getFitness(false) < fitnessScore){
+                bestIndividual = individual;
+                fitnessScore = individual.getFitness(false);
+            }
+        }
+        if (bestIndividual != null){
+            return bestIndividual;
+        }
+        for (Individual individual : infeasiblePopulation){
+            if (individual.getFitness(false) < fitnessScore){
+                bestIndividual = individual;
+                fitnessScore = individual.getFitness(false);
+            }
+        }
+        return bestIndividual;
+    }
+
+
+    public Individual returnBestFeasibleIndividual(){
+        Individual bestIndividual = null;
+        double fitnessScore = Double.MAX_VALUE;
+        for (Individual individual : feasiblePopulation){
+            if (individual.getFitness(false) < fitnessScore){
+                bestIndividual = individual;
+                fitnessScore = individual.getFitness(false);
+            }
+        }
+        return bestIndividual;
+
+    }
+
+    public Individual returnBestInfeasibleIndividual(){
+        Individual bestIndividual = null;
+        double fitnessScore = Double.MAX_VALUE;
+
+        for (Individual individual : infeasiblePopulation){
+            if (individual.getFitness(false) < fitnessScore){
+                bestIndividual = individual;
+                fitnessScore = individual.getFitness(false);
+            }
+        }
+        return bestIndividual;
+
+    }
+
+
+    public Set<Individual> getFeasiblePopulation() {
         return feasiblePopulation;
     }
 
-    public ArrayList<Individual> getInfeasiblePopulation() {
+    public Set<Individual> getInfeasiblePopulation() {
         return infeasiblePopulation;
     }
 
@@ -71,7 +256,28 @@ public class Population {
     public static void main( String[] args){
         Data data = DataReader.loadData();
         Population population = new Population(data);
-        population.initializePopulation();
+        OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
+        odp.initializeOrderDistributionPopulation(population);
+        population.initializePopulation(odp.getRandomOrderDistribution());
         System.out.println("hei");
+    }
+
+    public Individual getRandomIndividual(){
+        int populationSize = infeasiblePopulation.size() + feasiblePopulation.size();
+        int randomIndex = ThreadLocalRandom.current().nextInt(0,populationSize);
+        int currentIndex = 0;
+        for (Individual individual : feasiblePopulation){
+            if (randomIndex == currentIndex) {
+                return individual;
+            }
+            currentIndex++;
+        }
+        for (Individual individual : infeasiblePopulation){
+            if (randomIndex == currentIndex) {
+                return individual;
+            }
+            currentIndex++;
+        }
+        return null;
     }
 }
