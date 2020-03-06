@@ -15,7 +15,7 @@ public class Individual implements Comparable<Individual> {
     public Data data;
     public boolean validCapacity;
 
-    public double infeasibilityOvertimeValue;
+    public double infeasibilityOvertimeDrivngValue;
     public double infeasibilityTimeWarpValue;
     public double infeasibilityOverCapacityValue;
     public double feasibleTravelingCost;
@@ -60,7 +60,7 @@ public class Individual implements Comparable<Individual> {
         giantTour.initializeGiantTour();
 
         this.infeasibilityOverCapacityValue = 0;
-        this.infeasibilityOvertimeValue = 0;
+        this.infeasibilityOvertimeDrivngValue = 0;
         this.infeasibilityTimeWarpValue = 0;
 
     }
@@ -78,30 +78,32 @@ public class Individual implements Comparable<Individual> {
     }
 
     public void testNewOrderDistribution(OrderDistribution orderDistribution){
+        if (orderDistribution.equals(this.orderDistribution)){ // TODO: 06.03.2020 Remove print
+            return;
+        }
         double currentFitness = this.getFitness(false);
-        System.out.println("Fitness before adsplit: " + currentFitness );
-        this.printDetailedFitness();
-        System.out.println("Order distribution: " + this.orderDistribution.hashCode());
+        //System.out.println("Fitness before adsplit: " + currentFitness );
+        //this.printDetailedFitness();
+        //System.out.println("Order distribution: " + this.orderDistribution.hashCode());
         OrderDistribution currentOrderDistribution = this.orderDistribution;
         this.setOptimalOrderDistribution(orderDistribution);
-        System.out.println("Fitness on new individual: " + this.getFitness(false) );
-        this.printDetailedFitness();
-        System.out.println("Order distribution: " + this.orderDistribution.hashCode());
+        //System.out.println("Fitness on new individual: " + this.getFitness(false) );
+        //this.printDetailedFitness();
+        //System.out.println("Order distribution: " + this.orderDistribution.hashCode());
 
         if (this.getFitness(false) > currentFitness){  // // TODO: 05.03.2020 Make more efficient
             this.setOptimalOrderDistribution(currentOrderDistribution);  //NOT WORKING
 
-            System.out.println("Fitness after adsplit: " + this.getFitness(false) );
-            this.printDetailedFitness();
-            System.out.println("Order distribution: " + this.orderDistribution.hashCode());
-
-
-        }
-        else{ //WORKING
             //System.out.println("Fitness after adsplit: " + this.getFitness(false) );
-            //System.out.println("---------------------------------");
+            //this.printDetailedFitness();
+            //System.out.println("Order distribution: " + this.orderDistribution.hashCode());
+
+
         }
-        System.out.println("###############################");
+        else{
+            //System.out.println("%%%%%%%%%%%%%%%%% NEW BEST OD FOUND %%%%%%%%%%%%%%%%%%%%%%");
+        }
+        //System.out.println("###############################");
     }
 
     public void printDetailedFitness(){
@@ -109,7 +111,7 @@ public class Individual implements Comparable<Individual> {
         System.out.println("Biased fitness: " + biasedFitness);
         System.out.println("Diversity: " + diversity);
         System.out.println("Fitness: " + fitness);
-        System.out.println("OvertimeValue: " + infeasibilityOvertimeValue);
+        System.out.println("InfOvertimeValue: " + infeasibilityOvertimeDrivngValue);
         System.out.println("InfTimeWarp: " + infeasibilityTimeWarpValue);
         System.out.println("InfOverCapacityValue: " + infeasibilityOverCapacityValue);
         System.out.println("Objective cost: " + objectiveCost);
@@ -207,7 +209,7 @@ public class Individual implements Comparable<Individual> {
     private double getInfeasibilityCost() {
         infeasibilityTimeWarpValue = 0;
         infeasibilityOverCapacityValue = 0;
-        infeasibilityOvertimeValue = 0;
+        infeasibilityOvertimeDrivngValue = 0;
         for (Label[] labels : bestLabels) {
             for (Label label : labels) {
                 if (label.isEmptyLabel) {
@@ -216,10 +218,10 @@ public class Individual implements Comparable<Individual> {
                 //Already added scaling parameters in label
                 infeasibilityTimeWarpValue += label.getTimeWarpInfeasibility();
                 infeasibilityOverCapacityValue += label.getLoadInfeasibility();
-                infeasibilityOvertimeValue += label.getOvertimeInfeasibility();
+                infeasibilityOvertimeDrivngValue += label.getOvertimeInfeasibility();
             }
         }
-        return infeasibilityOvertimeValue + infeasibilityOverCapacityValue + infeasibilityTimeWarpValue;
+        return infeasibilityOvertimeDrivngValue + infeasibilityOverCapacityValue + infeasibilityTimeWarpValue;
     }
 
     public double getIndividualBiasedFitnessScore() {
@@ -292,7 +294,12 @@ public class Individual implements Comparable<Individual> {
         od.makeInitialDistribution();
         Individual individual = new Individual(data);
         individual.initializeIndividual(od);
-        AdSplit.adSplitPlural(individual);
+        for( int i = 0; i < 100; i++){
+            AdSplit.adSplitPlural(individual);
+            individual.updateFitness();
+            individual.printDetailedFitness();
+        }
+
         return individual;
     }
 

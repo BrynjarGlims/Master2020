@@ -66,6 +66,11 @@ public class main {
                 population.addChildToPopulation(newIndividual);
             }
 
+            System.out.println("Number of feasible pop: " + population.feasiblePopulation.size());
+            System.out.println("Number of infeasible pop: " + population.infeasiblePopulation.size());
+
+
+
             //reduce size of both populations
             population.reduceSizeToMin();
             odp.removeNoneUsedOrderDistributions();
@@ -74,12 +79,14 @@ public class main {
 
             numberOfIterations++;
             Individual bestIndividual = population.returnBestIndividual();
+            bestIndividual.printDetailedFitness();
             Individual bestFeasibleIndividual = population.returnBestFeasibleIndividual();
             Individual bestInfeasibleIndividual = population.returnBestInfeasibleIndividual();
             if(bestIndividual.isFeasible()){
                 System.out.println("Best feasible individual: " + bestFeasibleIndividual.fitness);
             }
             System.out.println("Best infeasible individual: " + bestInfeasibleIndividual.fitness);
+
         }
         numberOfIterations++;
         Individual bestIndividual = population.returnBestIndividual();
