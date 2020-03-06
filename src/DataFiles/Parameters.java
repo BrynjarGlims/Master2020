@@ -27,22 +27,23 @@ public class Parameters {
 
 
     //Loading data parameters
-    public static final int numberOfCustomers = 50;
-    public static final int numberOfVehicles = 50;
+    public static final int numberOfCustomers = 115;
+    public static final int numberOfVehicles = 20;
 
 
     //Traveling parameters
-    public static final double scalingDistanceParameter = 1;
+    public static final double scalingDistanceParameter = 01;
     public static final double timeShift = 4;
 
 
     //Penalty parameters for genetic algorithm
     public static final double initialCapacityPenalty = 1;  // lambda
     public static final double initialOvertimePenalty = 1;  // theta
-    public static final double initialTimeWarpPenalty = 1000;  // zeta
+    public static final double initialTimeWarpPenalty = 2;  // zeta
     public static final double initialDrivingCostPenalty = 1; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
     public static final double penaltyFactorForOverFilling = 1.1;
     public static final double penaltyFactorForUnderFilling = 1.5;
+
 
     //Period parameters
     //TODO: change to percentage values
