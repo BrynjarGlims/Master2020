@@ -29,14 +29,12 @@ public class Parameters {
 
 
     //Loading data parameters
-
     public static final int numberOfCustomers = 20;
     public static final int numberOfVehicles = 115;
 
     //Traveling parameters
     public static final double scalingDistanceParameter = 1;
     public static final double timeShift = 4;
-
 
 
     //Penalty parameters for genetic algorithm
@@ -58,10 +56,8 @@ public class Parameters {
     //TEMPORARY PARAMTERS
     public static final double loadingTimeAtDepotConstant = 0.03;
     public static final double loadaingTimeAtDepotVariable = 0.001;
-
     public static final double scalingUnloadingTimeAtCustomerConstant = 0.03;
     public static final double scalingUnloadingTimeAtCustomerVariable = 0.001;
-
     public static final double scalingVehicleCapacity = 0.01;
 
 
