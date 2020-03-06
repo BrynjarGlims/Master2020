@@ -180,7 +180,7 @@ public class AdSplit {
                 }
             }
         }
-
+        /*
         for (int i = 0; i < timeWarp.length; i++) {
             if (timeWarp[i] > 0) {
                 System.out.println("---------------------------------");
@@ -190,6 +190,8 @@ public class AdSplit {
                 System.out.println("Depot distance: "+ individual.data.distanceMatrix[customerSequence.get(0)][customerSequence.get(i)]);
             }
         }
+
+         */
         getListOfTrips(customerSequence, predecessorLabel, p, vt);
         //extractVrpSolution(customerSequence, predecessorLabel, p, vt);
     }
