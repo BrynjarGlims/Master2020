@@ -81,19 +81,27 @@ public class Individual implements Comparable<Individual> {
         double currentFitness = this.getFitness(false);
         System.out.println("Fitness before adsplit: " + currentFitness );
         this.printDetailedFitness();
+        System.out.println("Order distribution: " + this.orderDistribution.hashCode());
         OrderDistribution currentOrderDistribution = this.orderDistribution;
         this.setOptimalOrderDistribution(orderDistribution);
+        System.out.println("Fitness on new individual: " + this.getFitness(false) );
+        this.printDetailedFitness();
+        System.out.println("Order distribution: " + this.orderDistribution.hashCode());
+
         if (this.getFitness(false) > currentFitness){  // // TODO: 05.03.2020 Make more efficient
             this.setOptimalOrderDistribution(currentOrderDistribution);  //NOT WORKING
 
             System.out.println("Fitness after adsplit: " + this.getFitness(false) );
             this.printDetailedFitness();
-            System.out.println("###############################");
+            System.out.println("Order distribution: " + this.orderDistribution.hashCode());
+
+
         }
         else{ //WORKING
             //System.out.println("Fitness after adsplit: " + this.getFitness(false) );
             //System.out.println("---------------------------------");
         }
+        System.out.println("###############################");
     }
 
     public void printDetailedFitness(){
@@ -188,7 +196,7 @@ public class Individual implements Comparable<Individual> {
                 feasibleTravelingCost += label.getLabelDrivingDistance() * data.vehicleTypes[label.vehicleTypeID].travelCost;
                 //Adds vehicle use cost
                 feasibleVehicleUseCost += label.getNumberOfVehicles() * data.vehicleTypes[label.vehicleTypeID].usageCost;
-
+                // todo: Cost allready calculated
             }
         }
         feasibleOvertimeDepotCost += orderDistribution.getOvertimeValue();

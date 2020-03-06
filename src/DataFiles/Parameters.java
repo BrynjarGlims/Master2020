@@ -10,7 +10,7 @@ public class Parameters {
 
 
     //Population parameters
-    public static final int maximumSubIndividualPopulationSize = 200; //TODO: find reasonable value
+    public static final int maximumSubIndividualPopulationSize = 300; //TODO: find reasonable value
     public static final int minimumSubIndividualPopulationSize = 50;
     public static final int numberOfElitismSurvivorsPerGeneration = 5;
 
@@ -18,7 +18,7 @@ public class Parameters {
     public static final int initialOrderDistributionPopulationSize = 10;
 
     public static final int maxNumberIterationsWithoutImprovement = 10;
-    public static final int maxNumberOfGenerations = 100;
+    public static final int maxNumberOfGenerations = 1000;
     public static final double minimumFitnessDifferenceForClones = 10; //minimum fitness difference to encounter two individuals as clones
 
     //Decision parameters
@@ -29,19 +29,19 @@ public class Parameters {
 
 
     //Loading data parameters
-    public static final int numberOfCustomers = 20;
+    public static final int numberOfCustomers = 100;
     public static final int numberOfVehicles = 115;
 
     //Traveling parameters
-    public static final double scalingDistanceParameter = 1;
+    public static final double scalingDistanceParameter =0.8;
     public static final double timeShift = 4;
 
 
     //Penalty parameters for genetic algorithm
-    public static final double initialCapacityPenalty = 1;  // lambda
-    public static final double initialOvertimePenalty = 1;  // theta
-    public static final double initialTimeWarpPenalty = 1000;  // zeta
-    public static final double initialDrivingCostPenalty = 1; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
+    public static final double initialCapacityPenalty = 10;  // lambda
+    public static final double initialOvertimePenalty = 10;  // theta
+    public static final double initialTimeWarpPenalty = 10;  // zeta
+    public static final double initialDrivingCostPenalty = 10; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
     public static final double penaltyFactorForOverFilling = 1.1;
     public static final double penaltyFactorForUnderFilling = 1.5;
 

@@ -42,30 +42,8 @@ public class main {
                 for (OrderDistribution od : crossoverOD){
                     odp.addOrderDistribution(od);
                 }
-                /*
-                System.out.println("####PARENT1 Before change#####");
-                //System.out.println(parent1.toString());
-                parent1.printDetailedFitness();
-                System.out.println("####PARENT2 Before change#####");
-                //System.out.println(parent2.toString());
-                parent2.printDetailedFitness();
-                */
                 Individual newIndividual = GTC.crossOver(parent1, parent2, crossoverOD[0]);
 
-                /*System.out.println("####PARENT1 After change#####");
-                //System.out.println(parent1.toString());
-                parent1.printDetailedFitness();
-                System.out.println("####PARENT2 After change#####");
-                //System.out.println(parent2.toString());
-                parent2.printDetailedFitness();
-
-
-                System.out.println("------------------------------------------------------");
-                System.out.println("------------------------------------------------------");
-                System.out.println("------------------------------------------------------");
-                System.out.println("------------------------------------------------------");
-
-                 */
 
                 // TODO: 04.03.2020 Brynjar: Add education
                 // TODO: 04.03.2020 Add repair:
