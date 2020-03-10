@@ -8,7 +8,7 @@ import java.util.Spliterator;
 public class VehicleAssigment {
 
 
-    public HashMap<Integer, Integer>[] chromosome;
+    public HashMap<Integer, Integer>[] chromosome; //maps from customer to vehicle
     Data data;
 
     VehicleAssigment(Data data){

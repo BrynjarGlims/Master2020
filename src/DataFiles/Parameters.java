@@ -18,7 +18,7 @@ public class Parameters {
     public static final int initialOrderDistributionPopulationSize = 10;
 
     public static final int maxNumberIterationsWithoutImprovement = 10;
-    public static final int maxNumberOfGenerations = 100;
+    public static final int maxNumberOfGenerations = 10;
     public static final double minimumFitnessDifferenceForClones = 10; //minimum fitness difference to encounter two individuals as clones
 
     //Decision parameters
@@ -29,9 +29,10 @@ public class Parameters {
 
 
     //Loading data parameters
-    public static final int numberOfCustomers = 100;
-    public static final int numberOfVehicles = 50;
 
+
+    public static final int numberOfCustomers = 100;
+    public static final int numberOfVehicles = 150;
 
 
     //Traveling parameters
@@ -43,12 +44,14 @@ public class Parameters {
 
 
     //Penalty parameters for genetic algorithm
+
     public static final double initialCapacityPenalty = 1;  // lambda
     public static final double initialOvertimePenalty = 1;  // theta
-    public static final double initialTimeWarpPenalty = 2;  // zeta
+    public static final double initialTimeWarpPenalty = 1000;  // zeta
     public static final double initialDrivingCostPenalty = 1; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
 
     public static final int nearestNeighbors = 3; //Neighborhood size for each customer
+
 
 
     public static final double penaltyFactorForOverFilling = 1.1;

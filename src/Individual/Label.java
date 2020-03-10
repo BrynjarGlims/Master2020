@@ -16,12 +16,12 @@ public class Label {
     public double fleetOvertime;
     public double fleetOverLoad;
     public double fleetTimeWarp;
+    public double fleetUsageCost;
+    public int numberOfVehicles;
 
     //calculational value:
     public int periodID;
     public int vehicleTypeID;
-
-
 
     //Derived from first section of adSplit
     public ArrayList<ArrayList<Integer>> listOfTrips;
@@ -31,18 +31,12 @@ public class Label {
     public Data data;
     public double[][] orderDistribution;  //period, customer
 
-
     // LabelEntry
-
     public LabelEntry[] labelEntries;
     public boolean isEmptyLabel;
 
-
-
-
     //create non-first labels
     public Label(Label parentLabel, int vehicleIndex){
-
 
         //Information attributes
         this.periodID = parentLabel.periodID;
@@ -53,7 +47,6 @@ public class Label {
         this.listOfTrips = parentLabel.listOfTrips;
         this.isEmptyLabel = false;
 
-
         // Cost of choosing arcs from the SPA
         this.cloneParentLabelEntries(parentLabel.labelEntries);
         this.labelEntries[vehicleIndex].updateLabelEntryValues(listOfTrips.get(tripNumber));
@@ -61,14 +54,6 @@ public class Label {
         this.sortLabelEntries();
         this.deriveLabelCost();
 
-        /*
-        System.out.println(" --------------  New label  ---------------");
-        System.out.print("TimeWarpCost: " + fleetTimeWarp + "\n");
-        for(LabelEntry le : labelEntries){
-            System.out.print(le.toString());
-        }
-
-         */
     }
 
 
@@ -82,7 +67,6 @@ public class Label {
         this.tripNumber = tripNumber;
         this.orderDistribution = orderDistribution;
         this.isEmptyLabel = true;
-
     }
 
 
@@ -90,8 +74,6 @@ public class Label {
     public Label(int numberOfVehicles, Data data,
                  ArrayList<ArrayList<Integer>> listOfTrips, int tripNumber, double[][] orderDistribution, int periodID,
                  int vehicleTypeID){
-
-
 
         //information variables for each label
         this.vehicleTypeID = vehicleTypeID;
@@ -102,26 +84,15 @@ public class Label {
         this.tripNumber = tripNumber;
         this.orderDistribution = orderDistribution;
         this.isEmptyLabel = false;
-
+        this.numberOfVehicles = 1;
 
         //labelEntries generated
         this.labelEntries = new LabelEntry[numberOfVehicles];
         this.initializeLabelEntries(periodID, vehicleTypeID);
         this.labelEntries[0].updateLabelEntryValues( listOfTrips.get(tripNumber));
 
-
-
         //derive cost
         this.deriveLabelCost();
-
-        /*
-        System.out.println(" --------------  New label (first label)  ---------------");
-        System.out.print("TimeWarpCost: " + fleetTimeWarp + "\n");
-        for(LabelEntry le : labelEntries){
-            System.out.print(le.toString());
-        }
-
-         */
     }
 
     private void initializeLabelEntries(int periodID, int vehicleTypeID){
@@ -149,7 +120,20 @@ public class Label {
         calculateOvertimeValue();
         calculateLoadValue();
         calculateTimeWarp();
-        this.costOfLabel = fleetTravelTime + fleetOvertime + fleetOverLoad + fleetTimeWarp;
+        calculateVehicleUseValue();
+        this.costOfLabel = fleetTravelTime + fleetOvertime + fleetOverLoad + fleetTimeWarp + fleetUsageCost;
+    }
+
+    public void calculateVehicleUseValue(){
+        numberOfVehicles = 0;
+
+        for (LabelEntry labelEntry : labelEntries) {
+            if (labelEntry.inUse)
+                numberOfVehicles += 1;
+        }
+
+        fleetUsageCost = numberOfVehicles * data.vehicleTypes[vehicleTypeID].usageCost;
+
     }
 
     public void calculateTimeWarp(){
@@ -167,11 +151,10 @@ public class Label {
     public void calculateTravelValue(){ //implement this with overtime calculation
 
         fleetTravelTime = 0;
-
         for (LabelEntry labelEntry : this.labelEntries){
             fleetTravelTime += labelEntry.getTravelTimeValue();
         }
-
+        fleetTravelTime *= data.vehicleTypes[vehicleTypeID].travelCost;
     }
 
 
@@ -182,8 +165,6 @@ public class Label {
             fleetOvertime += labelEntry.getOvertimeValue();
         }
         fleetOvertime *= Parameters.initialOvertimePenalty;
-
-
     }
 
     public void calculateLoadValue(){
@@ -222,10 +203,12 @@ public class Label {
     }
 
     public int getNumberOfVehicles() {
-        int numberOfVehicles = 0;
-        for (LabelEntry labelEntry : labelEntries) {
-            if (labelEntry.inUse)
-                numberOfVehicles += 1;
+        if (numberOfVehicles == 0) {
+            numberOfVehicles = 0;
+            for (LabelEntry labelEntry : labelEntries) {
+                if (labelEntry.inUse)
+                    numberOfVehicles += 1;
+            }
         }
         return numberOfVehicles;
     }
