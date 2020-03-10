@@ -18,7 +18,7 @@ public class Parameters {
     public static final int initialOrderDistributionPopulationSize = 10;
 
     public static final int maxNumberIterationsWithoutImprovement = 10;
-    public static final int maxNumberOfGenerations = 10;
+    public static final int maxNumberOfGenerations = 200;
     public static final double minimumFitnessDifferenceForClones = 10; //minimum fitness difference to encounter two individuals as clones
 
     //Decision parameters
@@ -29,10 +29,12 @@ public class Parameters {
 
 
     //Loading data parameters
+    public static final int numberOfCustomers = 10;
+    public static final int numberOfVehicles = 10;
 
-
-    public static final int numberOfCustomers = 100;
-    public static final int numberOfVehicles = 150;
+    //Storing data parameters
+    public static final String filePath = "results";
+    public static final String filePathDetailed = "results//results_detailed";
 
 
     //Traveling parameters

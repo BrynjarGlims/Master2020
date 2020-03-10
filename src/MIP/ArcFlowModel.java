@@ -420,7 +420,7 @@ public class ArcFlowModel {
             }
             lhs.addTerm(-1.0, qO[d]); // Add the over time variable for that day
             // Create name
-            String constraint_name = String.format("5.4 -Overtime on day %d. OvertimeLimit %d ", d, Parameters.overtimeLimit[d]);
+            String constraint_name = String.format("5.4 -Overtime on day %d. OvertimeLimit %f ", d, Parameters.overtimeLimit[d]);
             // Create constraint and defind RHS
             model.addConstr(lhs, GRB.LESS_EQUAL, Parameters.overtimeLimit[d], constraint_name);
         }
