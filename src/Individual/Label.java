@@ -49,7 +49,7 @@ public class Label {
 
         // Cost of choosing arcs from the SPA
         this.cloneParentLabelEntries(parentLabel.labelEntries);
-        this.labelEntries[vehicleIndex].updateLabelEntryValues(listOfTrips.get(tripNumber));
+        this.labelEntries[vehicleIndex].updateLabelEntryValues(listOfTrips.get(tripNumber), tripNumber);
 
         this.sortLabelEntries();
         this.deriveLabelCost();
@@ -89,7 +89,7 @@ public class Label {
         //labelEntries generated
         this.labelEntries = new LabelEntry[numberOfVehicles];
         this.initializeLabelEntries(periodID, vehicleTypeID);
-        this.labelEntries[0].updateLabelEntryValues( listOfTrips.get(tripNumber));
+        this.labelEntries[0].updateLabelEntryValues( listOfTrips.get(tripNumber), tripNumber);
 
         //derive cost
         this.deriveLabelCost();
@@ -182,7 +182,7 @@ public class Label {
 
     public HashMap<Integer, Integer> getVehicleAssignmentChromosome(){
         //number of trips could be calculated here if needed
-
+        /*
         HashMap<Integer, Integer> vehicleAssignment = new HashMap<Integer, Integer>();
         for (LabelEntry labelEntry : labelEntries) {
             for (ArrayList<Integer> customerList : labelEntry.tripAssigment){
@@ -192,6 +192,9 @@ public class Label {
            }
         }
         return vehicleAssignment;
+
+         */
+        return new  HashMap<Integer, Integer>();
     }
 
     public double getLabelDrivingDistance(){

@@ -95,7 +95,6 @@ public class Population {
             }
             else {
                 infeasiblePopulation.add(individual);
-
             }
         }
     }

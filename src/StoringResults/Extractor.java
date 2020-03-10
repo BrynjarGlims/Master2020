@@ -2,19 +2,20 @@ package StoringResults;
 
 import DataFiles.Data;
 import DataFiles.Vehicle;
+import Individual.Trip;
 
 import java.util.*;
 
 public class Extractor {
 
-    public static ArrayList<VehicleResult> giantTourResult(Data data, ArrayList<Integer>[][] giantTour , ArrayList<Integer>[][] giantTourSplit, HashMap<Integer,Integer>[] vehicleAssigment){
+    public static ArrayList<VehicleResult> giantTourResult(Data data, ArrayList<Integer>[][] giantTour , HashMap<Integer, HashMap<Integer, Trip>> tripMap, ArrayList<Trip>[][] tripList){
         HashMap<Integer, VehicleResult> vehicleResultHashMap;
         VehicleResult tempVehicleResult;
         ArrayList<TripResult> tripResults;
         for(int p = 0; p < data.numberOfPeriods; p++){
 
             for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
-                tripResults = extractTrips(giantTour[p][vt], giantTourSplit[p][vt], vehicleAssigment[p], p , vt);
+                tripResults = extractTrips(giantTour[p][vt], tripMap.get(p), tripList[p][vt], p , vt);
                 for (TripResult tr : tripResults){
                     return new ArrayList<VehicleResult>(); //todo: make feasible
                 }

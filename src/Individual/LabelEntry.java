@@ -13,7 +13,7 @@ public class LabelEntry implements Comparable<LabelEntry> {
     //Lable values
     public int vehicleID;
     public int accumulatedTravelCost;
-    public ArrayList<ArrayList<Integer>> tripAssigment;
+    public ArrayList<Integer> tripAssigment;
 
     public double vehicleTotalTravelTime;
     public double currentVehicleTime;
@@ -42,7 +42,7 @@ public class LabelEntry implements Comparable<LabelEntry> {
         this.orderDistribution = orderDistribution;
         this.vehicleID = vehicleID;
         this.accumulatedTravelCost = 0;
-        this.tripAssigment = new ArrayList<ArrayList<Integer>>();
+        this.tripAssigment = new ArrayList<Integer>();
         this.vehicleTotalTravelTime = 0;
         this.vehicleDrivingDistance = 0;
         this.currentVehicleTime = 0;
@@ -77,17 +77,14 @@ public class LabelEntry implements Comparable<LabelEntry> {
     }
 
 
-    private ArrayList<ArrayList<Integer>> cloneTripAssignment(ArrayList<ArrayList<Integer>> prevTripAssignment){
-        ArrayList<ArrayList<Integer>> tripAssignment = new ArrayList<ArrayList<Integer>>();
-        for (ArrayList<Integer> trips : prevTripAssignment){
-            ArrayList<Integer> newTrips = new ArrayList<Integer>();
-            for (int customer : trips){
-                newTrips.add(customer);
-            }
-            tripAssignment.add(newTrips);
+    private ArrayList<Integer> cloneTripAssignment(ArrayList<Integer> prevTripAssignment){
+        ArrayList<Integer> tripAssignment = new ArrayList<Integer>();
+        for (Integer trips : prevTripAssignment){
+            tripAssignment.add(trips);
         }
         return tripAssignment;
     }
+
 
     public LabelEntry copyLabelEntry(){
         return new LabelEntry(this);
@@ -97,10 +94,10 @@ public class LabelEntry implements Comparable<LabelEntry> {
 
 
 
-    public void updateLabelEntryValues(ArrayList<Integer> customers){
+    public void updateLabelEntryValues(ArrayList<Integer> customers, int tripIndex){
         this.inUse = true;
-        this.tripAssigment.add(customers);
-    this.updateTravelTime(customers);
+        this.tripAssigment.add(tripIndex);
+        this.updateTravelTime(customers);
         this.updateLoadInfeasibility(customers);
         this.updateTimeWarp(customers);
     }
@@ -220,6 +217,9 @@ public class LabelEntry implements Comparable<LabelEntry> {
 
     public String toString(){
         String string = "LabelEntry vehicle ID: " + vehicleID + " with cost " + vehicleCost + " \n ";
+
+        /*/todo:fix
+
         for (ArrayList<Integer> trips :tripAssigment){
             string += "trip: ";
             for (int customer : trips){
@@ -227,6 +227,8 @@ public class LabelEntry implements Comparable<LabelEntry> {
             }
             string += "\n ";
         }
+
+         */
         return string;
     }
 

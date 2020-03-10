@@ -3,6 +3,9 @@ import DataFiles.*;
 import Population.Population;
 import ProductAllocation.OrderDistribution;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 
 public class Individual implements Comparable<Individual> {
     //chromosomes
@@ -12,6 +15,8 @@ public class Individual implements Comparable<Individual> {
     public OrderDistribution orderDistribution;
     public Population population;
     public CustomerToTrip[][] customerToTrips; //period, customer
+    public HashMap< Integer, HashMap<Integer, Trip>> tripMap;
+    public ArrayList<Trip>[][] tripList;
 
     public Data data;
     public boolean validCapacity;
@@ -46,11 +51,30 @@ public class Individual implements Comparable<Individual> {
         this.giantTour = new GiantTour(data);
         this.bestLabels = new Label[data.numberOfPeriods][data.numberOfVehicleTypes];
         this.customerToTrips = new CustomerToTrip[data.numberOfPeriods][data.numberOfCustomers];
+        this.initializeTripMap();
+        this.initializeTripList();
     }
+
 
     public Individual(Data data, Population population) {
         this(data);
         this.population = population;
+    }
+
+    public  void initializeTripList(){
+        this.tripList = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
+        for (int p = 0 ; p < data.numberOfPeriods; p++){
+            for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
+                this.tripList[p][vt] = new ArrayList<Trip>();
+            }
+        }
+    }
+
+    public void initializeTripMap(){
+        this.tripMap = new HashMap<Integer, HashMap<Integer, Trip>>();
+        for (int p = 0; p < data.numberOfPeriods; p++){
+            this.tripMap.put(p, new HashMap<Integer, Trip>());
+        }
     }
 
 

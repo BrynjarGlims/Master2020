@@ -2,16 +2,13 @@ package Individual;
 import DataFiles.Data;
 import DataFiles.Parameters;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class AdSplit {
 
     public static Individual individual;
     public static ArrayList<ArrayList<Integer>> matrixOfTrips;
-    public static ArrayList<Double> matrixOfTripCosts;
+
 
 
 
@@ -23,9 +20,7 @@ public class AdSplit {
         }
         if (individual.giantTour.chromosome[p][vt].size() == 0) {
             individual.bestLabels[p][vt] = new Label(ind.data, 0, individual.getOrderDistribution().orderVolumeDistribution, p, vt);
-            individual.vehicleAssigment.setChromosome(new HashMap<Integer, Integer>(), p);
-            //Set giantTourSplit
-            individual.giantTourSplit.setChromosome(new ArrayList<Integer>(), p, vt);
+
         }
         else{
             //Shortest path algorithm
@@ -35,10 +30,42 @@ public class AdSplit {
 
             //Labeling algorithm
             labelingAlgorithm(p, vt, matrixOfTrips);   // Sets bestLabel.
-            //Set vehicleAssignment
-            individual.vehicleAssigment.setChromosome(getVehicleAssignmentChromosome(p, vt), p);
-            //Set giantTourSplit
-            individual.giantTourSplit.setChromosome(createSplitChromosome(matrixOfTrips), p, vt);
+
+            //Trip generation
+            tripAssignment(individual.bestLabels[p][vt], matrixOfTrips);
+        }
+    }
+
+    public static void tripAssignment( Label label, ArrayList<ArrayList<Integer>> matrixOfTrips){
+        int p = label.periodID;
+        int vt = label.vehicleTypeID;
+        Trip tempTrip;
+        individual.tripList[p][vt]= new ArrayList<Trip>(Arrays.asList(new Trip[matrixOfTrips.size()]));
+        for (LabelEntry labelEntry : label.labelEntries){
+            if (!labelEntry.inUse)
+                continue;
+            for (int tripIndex : labelEntry.tripAssigment){
+                tempTrip = new Trip(p, vt, labelEntry.vehicleID);
+                tempTrip.setCustomers(matrixOfTrips.get(tripIndex));
+                tempTrip.setTripIndex(tripIndex);
+                individual.tripList[p][vt].set(tripIndex, tempTrip);
+            }
+        }
+        setTripMap(p, vt);
+    }
+
+    public static void setTripMap(int p, int vt){
+        for (Trip trip : individual.tripList[p][vt]){
+            /*
+            if (trip.equals(null)){
+                individual.tripMap.get(p).put(customerID, trip);
+            }
+
+             */
+
+            for (int customerID : trip.customers){
+                individual.tripMap.get(p).put(customerID, trip);
+            }
         }
     }
 
@@ -49,7 +76,7 @@ public class AdSplit {
     public static void resetStaticClass(Individual ind){
         individual = ind;
         matrixOfTrips = null;
-        matrixOfTripCosts = null;
+
     }
 
     public static void testTimeWarpValues(ArrayList<ArrayList<Integer>> listOfTrips, ArrayList<Double> arcCost, Data data, int p , int vt ) {
@@ -284,6 +311,7 @@ public class AdSplit {
 
     private static HashMap<Integer, Integer> getVehicleAssignmentChromosome(int p, int vt){
         HashMap<Integer, Integer> hashMap = new HashMap<Integer, Integer>();
+        /*
         if (individual.giantTour.chromosome[p][vt].size()==0 ) {
             return hashMap;
         }
@@ -294,6 +322,8 @@ public class AdSplit {
                 }
             }
         }
+
+         */
         return hashMap;
     }
 
