@@ -14,11 +14,13 @@ public class Extractor {
         ArrayList<TripResult> tripResults;
         for(int p = 0; p < data.numberOfPeriods; p++){
 
-            for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
+            for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){/*
                 tripResults = extractTrips(giantTour[p][vt], tripMap.get(p), tripList[p][vt], p , vt);
                 for (TripResult tr : tripResults){
                     return new ArrayList<VehicleResult>(); //todo: make feasible
                 }
+                */
+
 
             }
         }
