@@ -45,7 +45,8 @@ public class AdSplit {
             if (!labelEntry.inUse)
                 continue;
             for (int tripIndex : labelEntry.tripAssigment){
-                tempTrip = new Trip(p, vt, labelEntry.vehicleID);
+                tempTrip = new Trip(individual.data);
+                tempTrip.initialize(p, vt, labelEntry.vehicleID);
                 tempTrip.setCustomers(matrixOfTrips.get(tripIndex));
                 tempTrip.setTripIndex(tripIndex);
                 individual.tripList[p][vt].set(tripIndex, tempTrip);
