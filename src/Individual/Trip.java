@@ -25,4 +25,16 @@ public class Trip {
     public void setCustomers(List<Integer> customers) {
         this.customers = customers;
     }
+
+
+    public String toString(){
+        String out = "";
+        out += "\nperiod: " + period;
+        out += "\nvehicleType: " + vehicleType;
+        out += "\ntrip index: " + tripIndex;
+        out += "\ncustomers: " + customers;
+
+        return out;
+    }
+
 }
