@@ -1,5 +1,7 @@
 package DataFiles;
 
+import Individual.Trip;
+
 public class CustomerToTrip {
 
 
@@ -8,16 +10,16 @@ public class CustomerToTrip {
     public int vehicletype;
     public int customer;
     public int index; //index of customer in the trip, not for the entire [period][vehicletype]
-    public int startIndex;
-    public int endIndex;
+    public Trip trip;
+    public int tripIndex;
 
-    public CustomerToTrip(int period, int vehicletype, int customer, int index, int startIndex, int endIndex){
+    public CustomerToTrip(int period, int vehicletype, int customer, int index, Trip trip, int tripIndex){
         this.customer = customer;
         this.period = period;
         this.vehicletype = vehicletype;
         this.index = index;
-        this.startIndex = startIndex;
-        this. endIndex = endIndex;
+        this.tripIndex = tripIndex;
+        this.trip = trip;
     }
 
 
@@ -28,8 +30,6 @@ public class CustomerToTrip {
         out += "\ncustomer: " + customer;
         out += "\nVehicleType: " + vehicletype;
         out += "\nindex of customer" + index;
-        out += "\nStart index: " + startIndex;
-        out += "\nEnd index: " + endIndex;
         return out;
     }
 }

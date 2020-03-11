@@ -15,8 +15,8 @@ public class Individual implements Comparable<Individual> {
     public OrderDistribution orderDistribution;
     public Population population;
     public CustomerToTrip[][] customerToTrips; //period, customer
-    public HashMap< Integer, HashMap<Integer, Trip>> tripMap;
-    public ArrayList<Trip>[][] tripList;
+    public HashMap< Integer, HashMap<Integer, Trip>> tripMap; //period, customer => trip
+    public ArrayList<Trip>[][] tripList; //period, vehicleType
 
     public Data data;
     public boolean validCapacity;
@@ -100,17 +100,14 @@ public class Individual implements Comparable<Individual> {
     }
 
     public void makeCustomerToTripMapSingular(int period, int vt){
-        int tripCounter;
-        int from;
+        int tripCounter = 0;
         CustomerToTrip ctt;
-        tripCounter = 0;
-        for (int customer = 0 ; customer < giantTour.chromosome[period][vt].size() ; customer++){
-            from = tripCounter == 0 ? 0 : giantTourSplit.chromosome[period][vt].get(tripCounter - 1);
-            ctt = new CustomerToTrip(period, vt, giantTour.chromosome[period][vt].get(customer), customer - from, from, giantTourSplit.chromosome[period][vt].get(tripCounter));
-            customerToTrips[period][giantTour.chromosome[period][vt].get(customer)] = ctt;
-            if (customer + 1 >= giantTourSplit.chromosome[period][vt].get(tripCounter)){
-                tripCounter++;
+        for (Trip trip : tripList[period][vt]){
+            for (int customer = 0 ; customer < trip.customers.size() ; customer++){
+                ctt = new CustomerToTrip(period, vt, trip.customers.get(customer), customer, trip, tripCounter);
+                customerToTrips[period][trip.customers.get(customer)] = ctt;
             }
+            tripCounter++;
         }
     }
 

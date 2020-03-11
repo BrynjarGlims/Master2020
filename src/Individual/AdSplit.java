@@ -51,10 +51,10 @@ public class AdSplit {
                 individual.tripList[p][vt].set(tripIndex, tempTrip);
             }
         }
-        setTripMap(p, vt);
+        updateTripMap(p, vt);
     }
 
-    public static void setTripMap(int p, int vt){
+    public static void updateTripMap(int p, int vt){
         for (Trip trip : individual.tripList[p][vt]){
             /*
             if (trip.equals(null)){

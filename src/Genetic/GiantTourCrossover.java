@@ -2,8 +2,10 @@ package Genetic;
 
 import DataFiles.Customer;
 import DataFiles.Data;
+import DataFiles.DataReader;
 import Individual.Individual;
 import Individual.AdSplit;
+import Individual.Trip;
 import ProductAllocation.OrderDistribution;
 
 import java.util.*;
@@ -117,6 +119,7 @@ public class GiantTourCrossover {
         double tempTripFitness;
         int currentBestVehicleType = 0;
         List<Integer> currentBestSequence = null;
+        AdSplit.adSplitPlural(child);
         for (int p : missingCustomers.keySet()){
             for (int c : missingCustomers.get(p)){
                 currentBestFitness = Double.MAX_VALUE;
@@ -129,10 +132,8 @@ public class GiantTourCrossover {
                         currentBestSequence = customerSequence;
                         currentBestVehicleType = vt;
                     }
-                    AdSplit.adSplitSingular(child, p, vt);
-                    for (int trip = 0 ; trip < child.giantTourSplit.chromosome[p][vt].size() ; trip++){
-                        from = trip - 1 == -1 ? 0 : child.giantTourSplit.chromosome[p][vt].get(trip - 1);
-                        customerSequence = new LinkedList<>(child.giantTour.chromosome[p][vt].subList(from, child.giantTourSplit.chromosome[p][vt].get(trip)));
+                    for (Trip trip : child.tripList[p][vt]){
+                        customerSequence = new LinkedList<>(trip.customers);
                         tripFitness = FitnessCalculation.getTripFitness(customerSequence, vt, p, child.orderDistribution.orderVolumeDistribution, data);
                         for (int i = 0 ; i <= customerSequence.size() ; i++){
                             customerSequence.add(i, c);
@@ -147,11 +148,12 @@ public class GiantTourCrossover {
                     }
                 }
                 if (currentBestSequence.size() == 1){
-                    child.giantTour.chromosome[p][currentBestVehicleType].add(currentBestSequence.get(0));
+                    child.giantTour.chromosome[p][currentBestVehicleType].add(currentBestSequence.get(0)); // create a new trip with only one custoemr
                 }
                 else{
                     child.giantTour.chromosome[p][currentBestVehicleType] = new ArrayList<>(currentBestSequence);
                 }
+                AdSplit.adSplitSingular(child, p, currentBestVehicleType);
             }
         }
     }
@@ -207,11 +209,35 @@ public class GiantTourCrossover {
         return sets;
     }
 
-
     private ArrayList<Integer> getRoute(Individual individual, int index){
         return individual.giantTour.chromosome[index / data.numberOfVehicleTypes][index % data.numberOfVehicleTypes];
     }
 
 
+
+    public static void main(String[] args){
+        Data data = DataReader.loadData();
+        OrderDistribution od1 = new OrderDistribution(data);
+        od1.makeInitialDistribution();
+        Individual individual1 = new Individual(data);
+        individual1.initializeIndividual(od1);
+        AdSplit.adSplitPlural(individual1);
+
+        OrderDistribution od2 = new OrderDistribution(data);
+        od2.makeInitialDistribution();
+        Individual individual2 = new Individual(data);
+        individual2.initializeIndividual(od1);
+        AdSplit.adSplitPlural(individual2);
+
+
+        individual1.makeCustomerToTripMap();
+
+
+        GiantTourCrossover GTC = new GiantTourCrossover(data);
+        System.out.println(individual1.getFitness(true));
+        System.out.println(individual2.getFitness(true));
+        Individual child = GTC.crossOver(individual1, individual2, individual1.orderDistribution);
+        System.out.println(child.getFitness(true));
+    }
 
 }
