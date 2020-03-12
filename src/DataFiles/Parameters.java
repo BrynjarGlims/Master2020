@@ -32,9 +32,6 @@ public class Parameters {
     public static final int numberOfCustomers = 10;
     public static final int numberOfVehicles = 10;
 
-    //Storing data parameters
-    public static final String filePath = "results";
-    public static final String filePathDetailed = "results//results_detailed";
 
 
     //Traveling parameters

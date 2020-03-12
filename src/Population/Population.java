@@ -12,7 +12,7 @@ import java.util.*;
 
 public class Population {
     private int totalPopulationSize;
-    private Data data;
+    public Data data;
     public Set<Individual> feasiblePopulation;
     public Set<Individual> infeasiblePopulation;
     public OrderDistributionPopulation orderDistributionPopulation;

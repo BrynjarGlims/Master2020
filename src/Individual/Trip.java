@@ -17,7 +17,6 @@ public class Trip {
     public int tripEndIndex = -1;
     public List<Integer> customers;
     public HashMap<Integer, Integer> customerToTripIndexMap;  // customerID to location
-    public HashMap<Integer, Integer> customerToGiantTourMap;
 
 
     public Trip(Data data){
@@ -54,7 +53,6 @@ public class Trip {
         customerToTripIndexMap = new HashMap<>();
         for (int c = 0; c < customers.size(); c++){
             customerToTripIndexMap.put(customers.get(c), c );
-            customerToGiantTourMap.put(customers.get(c), c + this.tripStartIndex);
         }
     }
 
