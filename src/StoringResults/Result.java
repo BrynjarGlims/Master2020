@@ -26,17 +26,18 @@ import java.util.Date;
 import java.util.Scanner;
 
 public class Result {
-    OrderDistribution orderDistribution;
-    ArrayList<VehicleResult> vehicleResults;
     Population population;
     Data data;
+    Individual bestIndividual;
+    OrderDistribution bestOD;
 
 
 
     public Result(Population population){
         this.population = population;
         this.data = population.data;
-        //vehicleResults = Extractor.giantTourResult(individual.data, individual.giantTour, individual.giantTourSplit, individual.vehicleAssigment)
+        this.bestIndividual = population.returnBestIndividual();
+        this.bestOD = bestIndividual.orderDistribution;
     }
 
     public void store() throws IOException {
@@ -122,7 +123,7 @@ public class Result {
             String[] CSV_COLUMNS = {"Trip Number", "Day ", "VehicleID", "Vehicle Name", "Vehicle Type", "Total Trip Time[min]","Traveling Time[min]" ,"CustomerIDs", "Customers visted"};
             csvWriter.writeNext(CSV_COLUMNS, false);
         }
-        Individual bestIndividual = population.returnBestIndividual();
+
         int tripNumber = 1;
         for (ArrayList<Trip>[] periodTrips : bestIndividual.tripList ){
             for (ArrayList<Trip> vehicleTypeTrips : periodTrips ){
@@ -191,19 +192,17 @@ public class Result {
             String[] CSV_COLUMNS = {"Order Id", "Type", "Product" ,"Volume", "Day", "CustomerID", "Customer Name", "VehicleID", "Vehicle capacity", };
             csvWriter.writeNext(CSV_COLUMNS, false);
         }
-        Individual bestInd = population.returnBestIndividual();
-        OrderDistribution bestOD = population.returnBestIndividual().orderDistribution;
         int vehicleID;
 
         for (OrderDelivery orderDelivery : bestOD.orderDeliveries){
             if (!orderDelivery.dividable){
-                if (bestInd.tripMap.get(orderDelivery.getPeriod()).containsKey(orderDelivery.order.customerID)){ //todo: change when fixed
-                    vehicleID = bestInd.tripMap.get(orderDelivery.getPeriod()).get(orderDelivery.order.customerID).vehicleID;
+                if (bestIndividual.tripMap.get(orderDelivery.getPeriod()).containsKey(orderDelivery.order.customerID)){ //todo: change when fixed
+                    vehicleID = bestIndividual.tripMap.get(orderDelivery.getPeriod()).get(orderDelivery.order.customerID).vehicleID;
                     int period = orderDelivery.getPeriod();
                     String[] results = {String.valueOf(orderDelivery.order.orderID), Converter.dividableConverter(orderDelivery.dividable),
                             orderDelivery.order.commodityFlow, formatter.format(orderDelivery.orderVolumes[period]), Converter.periodConverter(period),
                             String.valueOf(orderDelivery.order.customerID), data.customers[orderDelivery.order.customerID].customerName,
-                            String.valueOf(bestInd.tripMap.get(orderDelivery.getPeriod()).get(orderDelivery.order.customerID).vehicleID),
+                            String.valueOf(bestIndividual.tripMap.get(orderDelivery.getPeriod()).get(orderDelivery.order.customerID).vehicleID),
                             String.valueOf(data.vehicles[vehicleID].vehicleType.capacity)};
                     csvWriter.writeNext(results, false);
 
@@ -223,11 +222,11 @@ public class Result {
                         break;
                     }
                     else{
-                        vehicleID = bestInd.tripMap.get(period).get(orderDelivery.order.customerID).vehicleID;
+                        vehicleID = bestIndividual.tripMap.get(period).get(orderDelivery.order.customerID).vehicleID;
                         String[] results = {String.valueOf(orderDelivery.order.orderID), Converter.dividableConverter(orderDelivery.dividable),
                         orderDelivery.order.commodityFlow, formatter.format(orderDelivery.orderVolumes[period]), Converter.periodConverter(period),
                                 String.valueOf(orderDelivery.order.customerID), data.customers[orderDelivery.order.customerID].customerName,
-                                String.valueOf(bestInd.tripMap.get(period).get(orderDelivery.order.customerID).vehicleID),
+                                String.valueOf(bestIndividual.tripMap.get(period).get(orderDelivery.order.customerID).vehicleID),
                                 String.valueOf(data.vehicles[vehicleID].vehicleType.capacity)};
                         csvWriter.writeNext(results, false);
 
@@ -260,7 +259,7 @@ public class Result {
             csvWriter.writeNext(CSV_COLUMNS, false);
         }
 
-        String[] results = {fileName, String.valueOf(population.returnBestIndividual().fitness), "0", date_formatter.format(new Date()),
+        String[] results = {fileName, String.format("%.4f",bestIndividual.fitness), "0", date_formatter.format(new Date()),
                 String.valueOf(Parameters.maximumSubIndividualPopulationSize),String.valueOf(Parameters.maxNumberOfGenerations), String.valueOf(Parameters.numberOfCustomers)
         , String.valueOf(Parameters.numberOfVehicles)};
         csvWriter.writeNext(results, false);
