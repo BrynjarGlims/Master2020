@@ -195,17 +195,26 @@ public class Result {
 
         for (OrderDelivery orderDelivery : bestOD.orderDeliveries){
             if (!orderDelivery.dividable){
-                System.out.println(orderDelivery.getPeriod());
-                System.out.println(orderDelivery.order.customerID);
-                vehicleID = bestInd.tripMap.get(orderDelivery.getPeriod()).get(orderDelivery.order.customerID).vehicleID;
-                int period = orderDelivery.getPeriod();
-                String[] results = {String.valueOf(orderDelivery.order.orderID), Converter.dividableConverter(orderDelivery.dividable),
-                        String.valueOf(orderDelivery.orderVolumes[period]), Converter.periodConverter(period),
-                        String.valueOf(orderDelivery.order.customerID),
-                        String.valueOf(bestInd.tripMap.get(orderDelivery.getPeriod()).get(orderDelivery.order.customerID).vehicleID),
-                        String.valueOf(data.vehicles[vehicleID].vehicleType.capacity),
-                        orderDelivery.order.commodityFlow};
-                csvWriter.writeNext(results, false);
+                if (bestInd.tripMap.get(orderDelivery.getPeriod()).containsKey(orderDelivery.getPeriod())){ //todo: change when fixed
+                    vehicleID = bestInd.tripMap.get(orderDelivery.getPeriod()).get(orderDelivery.order.customerID).vehicleID;
+                    int period = orderDelivery.getPeriod();
+                    String[] results = {String.valueOf(orderDelivery.order.orderID), Converter.dividableConverter(orderDelivery.dividable),
+                            String.valueOf(orderDelivery.orderVolumes[period]), Converter.periodConverter(period),
+                            String.valueOf(orderDelivery.order.customerID),
+                            String.valueOf(bestInd.tripMap.get(orderDelivery.getPeriod()).get(orderDelivery.order.customerID).vehicleID),
+                            String.valueOf(data.vehicles[vehicleID].vehicleType.capacity),
+                            orderDelivery.order.commodityFlow};
+                    csvWriter.writeNext(results, false);
+
+
+                }
+                else{
+                    System.out.print("Impossible order found: ");
+                    System.out.print(" orderID:" + orderDelivery.order.orderID);
+                    System.out.print(" period:" + orderDelivery.getPeriod());
+                    System.out.println(" customerID:" + orderDelivery.order.customerID);
+                    System.out.println("----------------");
+                }
             }
             else{
                 for (int period = 0; period < data.numberOfPeriods; period++ ){

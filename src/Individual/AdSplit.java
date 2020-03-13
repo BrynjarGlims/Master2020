@@ -25,8 +25,6 @@ public class AdSplit {
         else{
             //Shortest path algorithm
             createTrips(p, vt);
-            //DEBUG:
-            //testTimeWarpValues(matrixOfTrips, matrixOfTripCosts, individual.data, p , vt );
 
             //Labeling algorithm
             labelingAlgorithm(p, vt, matrixOfTrips);   // Sets bestLabel.
@@ -53,18 +51,13 @@ public class AdSplit {
             }
         }
         setTripMap(p, vt);
+        System.out.println("##########");
     }
 
     public static void setTripMap(int p, int vt){
         for (Trip trip : individual.tripList[p][vt]){
-            /*
-            if (trip.equals(null)){
-                individual.tripMap.get(p).put(customerID, trip);
-            }
-
-             */
-
             for (int customerID : trip.customers){
+                System.out.printf("Generated: (P:" + p +",C:" + customerID + ",VT:"+ vt+") \n");
                 individual.tripMap.get(p).put(customerID, trip);
             }
         }
