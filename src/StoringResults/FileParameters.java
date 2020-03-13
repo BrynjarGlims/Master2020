@@ -15,5 +15,7 @@ public class FileParameters {
     public static final String tripFileName = "trip_results";
     public static final String customerFileName = "customer_results";
 
+    //Converter:
+    public static final double indifferenceValue = 0.0001;
 
 }

@@ -21,6 +21,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -90,7 +91,7 @@ public class Result {
         System.out.println("Changing detailed file...");
         if (newFile.length() == 0){
             String[] CSV_COLUMNS = {"Vehicle Name","VehicleID", "Vehicle Number", "Vehicle Type", "Trailer Plate",
-                    "Capacity", "Traveling cost", "Usage cost", "Loading time", };
+                    "Capacity", "Traveling cost", "Usage cost", "Loading time [minutes]", };
             csvWriter.writeNext(CSV_COLUMNS, false);
         }
 
@@ -98,7 +99,7 @@ public class Result {
             String[] results = {v.vehicleName, String.valueOf(v.vehicleID), String.valueOf(v.vehicleNumber),
                     String.valueOf(v.vehicleType.vehicleTypeID), v.trailerNumberPlate, String.valueOf(v.vehicleType.capacity),
                     String.valueOf(v.vehicleType.travelCost), String.valueOf(v.vehicleType.usageCost),
-                    String.valueOf(v.vehicleType.loadingTimeAtDepot)};
+                    String.format("%.3f", v.vehicleType.loadingTimeAtDepot*60)};
             csvWriter.writeNext(results, false);
         }
         csvWriter.close();
@@ -118,7 +119,7 @@ public class Result {
         SimpleDateFormat date_formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         System.out.println("Changing detailed file...");
         if (newFile.length() == 0){
-            String[] CSV_COLUMNS = {"Trip Number", "Day ", "VehicleID", "Vehicle Name", "Vehicle Type", "Customers visted"};
+            String[] CSV_COLUMNS = {"Trip Number", "Day ", "VehicleID", "Vehicle Name", "Vehicle Type", "Total Trip Time[min]","Traveling Time[min]" ,"CustomerIDs", "Customers visted"};
             csvWriter.writeNext(CSV_COLUMNS, false);
         }
         Individual bestIndividual = population.returnBestIndividual();
@@ -127,7 +128,7 @@ public class Result {
             for (ArrayList<Trip> vehicleTypeTrips : periodTrips ){
                 for (Trip t : vehicleTypeTrips){
                     String[] results = {String.valueOf(tripNumber), Converter.periodConverter(t.period),String.valueOf(t.vehicleID), data.vehicles[t.vehicleID].vehicleName,
-                            String.valueOf(data.vehicleTypes[t.vehicleType].capacity), String.valueOf(t.customers)};
+                            String.valueOf(data.vehicleTypes[t.vehicleType].capacity), Converter.calculateTotalTripTime(t, data), Converter.calculateDrivingTime(t, data), t.customers.toString()  ,Converter.findCustomersFromID((ArrayList) t.customers, data)};
                     csvWriter.writeNext(results, false);
                     tripNumber++;
                 }
@@ -152,19 +153,20 @@ public class Result {
         System.out.println("Changing detailed file...");
         if (newFile.length() == 0){
             String[] CSV_COLUMNS = {"Customer Name", "CustomerID", "Customer number", "Orders", "Dividable Orders", "NonDividable Orders",
-                    "Frequency", "Visit Monday", "Visit Tuesday", "Visit Wednesday" ,"Visit Thursday" ,"Visit Friday" ,"Visit Saturday",
-                    "Unloading time"
+                    "Frequency", "Total Volume",  "Visit Monday", "Visit Tuesday", "Visit Wednesday" ,"Visit Thursday" ,"Visit Friday" ,"Visit Saturday",
+                    "Unloading time [minutes]"
             };
             csvWriter.writeNext(CSV_COLUMNS, false);
         }
         for (Customer c : data.customers){
             String[] results = {c.customerName, String.valueOf(c.customerID), String.valueOf(c.customerNumber),
                     String.valueOf(c.numberOfOrders), String.valueOf(c.numberOfDividableOrders), String.valueOf(c.numberOfNonDividableOrders),
-                    String.valueOf(c.numberOfVisitPeriods), c.timeWindow[0][0] + " | " + c.timeWindow[0][1],
-                    c.timeWindow[1][0] + " | " + c.timeWindow[1][1], c.timeWindow[2][0] + " | " + c.timeWindow[2][1],
-                    c.timeWindow[3][0] + " | " + c.timeWindow[3][1], c.timeWindow[4][0] + " | " + c.timeWindow[4][1],
-                    c.timeWindow[4][0] + " | " + c.timeWindow[4][1], c.timeWindow[5][0] + " | " + c.timeWindow[5][1],
-                    String.valueOf(c.totalUnloadingTime)};
+                    String.valueOf(c.numberOfVisitPeriods), Converter.calculateTotalOrderVolume(c, data),
+                    Converter.convertTimeWindow(c.timeWindow[0][0], c.timeWindow[0][1]),
+                    Converter.convertTimeWindow(c.timeWindow[1][0], c.timeWindow[1][1]), Converter.convertTimeWindow(c.timeWindow[2][0], c.timeWindow[2][1]),
+                    Converter.convertTimeWindow(c.timeWindow[3][0], c.timeWindow[3][1]), Converter.convertTimeWindow(c.timeWindow[4][0], c.timeWindow[4][1]),
+                    Converter.convertTimeWindow(c.timeWindow[5][0], c.timeWindow[5][1]),
+                    String.format("%.5f", c.totalUnloadingTime*60)};
             csvWriter.writeNext(results, false);
 
         }
@@ -182,11 +184,11 @@ public class Result {
         CSVWriter csvWriter = new CSVWriter(writer, ';', CSVWriter.NO_QUOTE_CHARACTER,
                 CSVWriter.DEFAULT_ESCAPE_CHARACTER,
                 CSVWriter.DEFAULT_LINE_END);
-        NumberFormat formatter = new DecimalFormat("#0.00000000");
+        NumberFormat formatter = new DecimalFormat("#0.000000");
         SimpleDateFormat date_formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         System.out.println("Changing detailed file...");
         if (newFile.length() == 0){
-            String[] CSV_COLUMNS = {"Order Id", "Type", "Volume", "Day", "Customer", "VehicleID", "Vehicle capacity", "Info" };
+            String[] CSV_COLUMNS = {"Order Id", "Type", "Product" ,"Volume", "Day", "CustomerID", "Customer Name", "VehicleID", "Vehicle capacity", };
             csvWriter.writeNext(CSV_COLUMNS, false);
         }
         Individual bestInd = population.returnBestIndividual();
@@ -195,15 +197,14 @@ public class Result {
 
         for (OrderDelivery orderDelivery : bestOD.orderDeliveries){
             if (!orderDelivery.dividable){
-                if (bestInd.tripMap.get(orderDelivery.getPeriod()).containsKey(orderDelivery.getPeriod())){ //todo: change when fixed
+                if (bestInd.tripMap.get(orderDelivery.getPeriod()).containsKey(orderDelivery.order.customerID)){ //todo: change when fixed
                     vehicleID = bestInd.tripMap.get(orderDelivery.getPeriod()).get(orderDelivery.order.customerID).vehicleID;
                     int period = orderDelivery.getPeriod();
                     String[] results = {String.valueOf(orderDelivery.order.orderID), Converter.dividableConverter(orderDelivery.dividable),
-                            String.valueOf(orderDelivery.orderVolumes[period]), Converter.periodConverter(period),
-                            String.valueOf(orderDelivery.order.customerID),
+                            orderDelivery.order.commodityFlow, formatter.format(orderDelivery.orderVolumes[period]), Converter.periodConverter(period),
+                            String.valueOf(orderDelivery.order.customerID), data.customers[orderDelivery.order.customerID].customerName,
                             String.valueOf(bestInd.tripMap.get(orderDelivery.getPeriod()).get(orderDelivery.order.customerID).vehicleID),
-                            String.valueOf(data.vehicles[vehicleID].vehicleType.capacity),
-                            orderDelivery.order.commodityFlow};
+                            String.valueOf(data.vehicles[vehicleID].vehicleType.capacity)};
                     csvWriter.writeNext(results, false);
 
 
@@ -224,11 +225,10 @@ public class Result {
                     else{
                         vehicleID = bestInd.tripMap.get(period).get(orderDelivery.order.customerID).vehicleID;
                         String[] results = {String.valueOf(orderDelivery.order.orderID), Converter.dividableConverter(orderDelivery.dividable),
-                                String.valueOf(orderDelivery.orderVolumes[period]), Converter.periodConverter(period),
-                                String.valueOf(orderDelivery.order.customerID),
+                        orderDelivery.order.commodityFlow, formatter.format(orderDelivery.orderVolumes[period]), Converter.periodConverter(period),
+                                String.valueOf(orderDelivery.order.customerID), data.customers[orderDelivery.order.customerID].customerName,
                                 String.valueOf(bestInd.tripMap.get(period).get(orderDelivery.order.customerID).vehicleID),
-                                String.valueOf(data.vehicles[vehicleID].vehicleType.capacity),
-                                orderDelivery.order.commodityFlow};
+                                String.valueOf(data.vehicles[vehicleID].vehicleType.capacity)};
                         csvWriter.writeNext(results, false);
 
                     }
