@@ -310,37 +310,6 @@ public class AdSplit {
     }
 
 
-    private static HashMap<Integer, Integer> getVehicleAssignmentChromosome(int p, int vt){
-        HashMap<Integer, Integer> hashMap = new HashMap<Integer, Integer>();
-        /*
-        if (individual.giantTour.chromosome[p][vt].size()==0 ) {
-            return hashMap;
-        }
-        for (LabelEntry labelEntry : individual.bestLabels[p][vt].labelEntries) {
-            for (ArrayList<Integer> customerList : labelEntry.tripAssigment){
-                for (int customerID : customerList) {
-                    hashMap.put(customerID, labelEntry.vehicleID);  // TODO: 24.02.2020 Change to correct vehicle id
-                }
-            }
-        }
-
-         */
-        return hashMap;
-    }
-
-    private static ArrayList<Integer> createSplitChromosome(ArrayList<ArrayList<Integer>> customerSequence) {
-        ArrayList<Integer> splits = new ArrayList<>();
-        int split = 0;
-        if (customerSequence.isEmpty()){
-            return splits;
-        }
-
-        for (ArrayList<Integer> tripList : customerSequence) {
-            split += tripList.size();
-            splits.add(split);
-        }
-        return splits;
-    }
 
     //LABELING------------------------------------------------------------------------------------------------------------------------------------------------------------
     private static void labelingAlgorithm(int p, int vt, ArrayList<ArrayList<Integer>> listOfTrips) {

@@ -195,6 +195,8 @@ public class Result {
 
         for (OrderDelivery orderDelivery : bestOD.orderDeliveries){
             if (!orderDelivery.dividable){
+                System.out.println(orderDelivery.getPeriod());
+                System.out.println(orderDelivery.order.customerID);
                 vehicleID = bestInd.tripMap.get(orderDelivery.getPeriod()).get(orderDelivery.order.customerID).vehicleID;
                 int period = orderDelivery.getPeriod();
                 String[] results = {String.valueOf(orderDelivery.order.orderID), Converter.dividableConverter(orderDelivery.dividable),

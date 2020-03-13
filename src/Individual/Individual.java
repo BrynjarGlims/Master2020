@@ -15,11 +15,11 @@ public class Individual implements Comparable<Individual> {
     public OrderDistribution orderDistribution;
     public Population population;
     public CustomerToTrip[][] customerToTrips; //period, customer
-    public HashMap< Integer, HashMap<Integer, Trip>> tripMap;
-    public ArrayList<Trip>[][] tripList;
+    public HashMap< Integer, HashMap<Integer, Trip>> tripMap; //period, customer
+    public ArrayList<Trip>[][] tripList;  // period, vehicle type
 
     public Data data;
-    public boolean validCapacity;
+
 
     public double infeasibilityOvertimeDrivngValue;
     public double infeasibilityTimeWarpValue;
