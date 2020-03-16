@@ -10,15 +10,15 @@ public class Parameters {
 
 
     //Population parameters
-    public static final int maximumSubIndividualPopulationSize = 1; //TODO: find reasonable value
+    public static final int maximumSubIndividualPopulationSize = 200; //TODO: find reasonable value
     public static final int minimumSubIndividualPopulationSize = 50;
     public static final int numberOfElitismSurvivorsPerGeneration = 5;
 
-    public static final int initialPopulationSize = 1;
+    public static final int initialPopulationSize = 100;
     public static final int initialOrderDistributionPopulationSize = 10;
 
     public static final int maxNumberIterationsWithoutImprovement = 10;
-    public static final int maxNumberOfGenerations = 200;
+    public static final int maxNumberOfGenerations = 50;
     public static final double minimumFitnessDifferenceForClones = 10; //minimum fitness difference to encounter two individuals as clones
 
     //Decision parameters

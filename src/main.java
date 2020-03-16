@@ -8,10 +8,13 @@ import MIP.OrderAllocationModel;
 import Population.Population;
 import ProductAllocation.OrderDistribution;
 import Population.OrderDistributionPopulation;
+import StoringResults.Result;
 import Visualization.PlotIndividual;
 
+import java.io.IOException;
+
 public class main {
-    public static void main(String[] args){
+    public static void main(String[] args) throws IOException {
         Data data = DataReader.loadData();
         Population population = new Population(data);
         OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
@@ -94,6 +97,8 @@ public class main {
         System.out.println("Fitness: " + bestIndividual.getFitness(false));
         PlotIndividual visualizer = new PlotIndividual(data);
         visualizer.visualize(bestIndividual);
+        Result res = new Result(population);
+        res.store();
 
     }
 }

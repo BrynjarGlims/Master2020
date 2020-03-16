@@ -123,7 +123,6 @@ public class Result {
             String[] CSV_COLUMNS = {"Trip Number", "Day ", "VehicleID", "Vehicle Name", "Vehicle Type", "Total Trip Time[min]","Traveling Time[min]" ,"CustomerIDs", "Customers visted"};
             csvWriter.writeNext(CSV_COLUMNS, false);
         }
-
         int tripNumber = 1;
         for (ArrayList<Trip>[] periodTrips : bestIndividual.tripList ){
             for (ArrayList<Trip> vehicleTypeTrips : periodTrips ){
@@ -135,10 +134,8 @@ public class Result {
                 }
             }
         }
-
         csvWriter.close();
         writer.close();
-
     }
 
     private void storeDetailedCustomer(String fileName) throws IOException {
@@ -169,12 +166,9 @@ public class Result {
                     Converter.convertTimeWindow(c.timeWindow[5][0], c.timeWindow[5][1]),
                     String.format("%.5f", c.totalUnloadingTime*60)};
             csvWriter.writeNext(results, false);
-
         }
-
         csvWriter.close();
         writer.close();
-
     }
 
     private void storeDetailedOrders(String fileName) throws IOException {
@@ -229,17 +223,12 @@ public class Result {
                                 String.valueOf(bestIndividual.tripMap.get(period).get(orderDelivery.order.customerID).vehicleID),
                                 String.valueOf(data.vehicles[vehicleID].vehicleType.capacity)};
                         csvWriter.writeNext(results, false);
-
                     }
                 }
             }
-
-
         }
-
         csvWriter.close();
         writer.close();
-
     }
 
 

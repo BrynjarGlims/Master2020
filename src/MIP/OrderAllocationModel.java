@@ -541,7 +541,7 @@ public class OrderAllocationModel {
 
 
 
-    private Result runModel(Individual individual, Data data) {
+    private void runModel(Individual individual, Data data) {
         try {
             this.symmetry = Parameters.symmetry;
             this.individual = individual;
@@ -561,7 +561,6 @@ public class OrderAllocationModel {
                 System.out.println("no solution found");
                 System.out.println("Terminate model");
                 terminateModel();
-                return null;
             }
             else if (optimstatus == 2){
                 if (Parameters.plotArcFlow){
@@ -573,25 +572,20 @@ public class OrderAllocationModel {
                 printSolution();
                 System.out.println("Terminate model");
                 terminateModel();
-                return null;
             }
             else{
                 System.out.println("Create and store results");
                 //printSolution();
                 System.out.println("Terminate model");
                 terminateModel();
-                return null;
             }
 
         } catch (GRBException | FileNotFoundException e) {
             System.out.println("ERROR: " + e);
-            return null;
         } catch (Error e) {
             System.out.println(e);
-            return null;
         } catch (IOException e) {
             System.out.println("File directory wrong" + e);
-            return null;
         }
     }
 
