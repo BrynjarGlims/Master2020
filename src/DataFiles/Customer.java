@@ -24,7 +24,7 @@ public class Customer {
 
     public double xCoordinate;
     public double yCoordinate;
-    public HashSet<Customer> nearestNeighbors;
+    public ArrayList<Customer> nearestNeighbors;
 
     public double fixedLoadingTime;
     public double variableLoadingTime;
@@ -37,7 +37,7 @@ public class Customer {
         this.customerID = customerID;
         this.customerNumber = customerNumber;
         this.customerName = customerName;
-        nearestNeighbors = new HashSet<>();
+        nearestNeighbors = new ArrayList<>();
     }
 
     public void setCustomerID(int customerID){

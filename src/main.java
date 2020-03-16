@@ -1,6 +1,7 @@
 import DataFiles.Data;
 import DataFiles.DataReader;
 import DataFiles.Parameters;
+import Genetic.Education;
 import Genetic.GiantTourCrossover;
 import Genetic.OrderDistributionCrossover;
 import Individual.Individual;
@@ -15,7 +16,6 @@ public class main {
         Data data = DataReader.loadData();
         Population population = new Population(data);
         OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
-        GiantTourCrossover GTC = new GiantTourCrossover(data);
         OrderDistributionCrossover ODC = new OrderDistributionCrossover(data);
         odp.initializeOrderDistributionPopulation(population);
         OrderDistribution firstOD = odp.getRandomOrderDistribution();
@@ -36,16 +36,16 @@ public class main {
 
             //Generate new population
             while (population.getPopulationSize() < Parameters.maximumSubIndividualPopulationSize){
-                Individual parent1 = population.getRandomIndividual();
+                Individual parent1 = population.getRandomIndividual(); // TODO: 16.03.2020 get parents based on tournament
                 Individual parent2 = population.getRandomIndividual();  //todo:base this on crossfitnesscstore
                 OrderDistribution[] crossoverOD = ODC.crossover(parent1.orderDistribution, parent2.orderDistribution); //these will be the same
                 for (OrderDistribution od : crossoverOD){
                     odp.addOrderDistribution(od);
                 }
-                Individual newIndividual = GTC.crossOver(parent1, parent2, crossoverOD[0]);
+                Individual newIndividual = GiantTourCrossover.crossOver(parent1, parent2, crossoverOD[0]);
 
 
-                // TODO: 04.03.2020 Brynjar: Add education
+                Education.improveRoutes(newIndividual, newIndividual.orderDistribution);
                 // TODO: 04.03.2020 Add repair:
 
                 if (Math.random() < Parameters.greedyMIPValue){

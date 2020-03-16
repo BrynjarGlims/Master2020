@@ -6,131 +6,130 @@ import Population.Population;
 import ProductAllocation.OrderDistribution;
 import Population.OrderDistributionPopulation;
 
-import java.sql.SQLOutput;
 import java.util.*;
 
-public class RouteImprovements {
+public class Education {
 
 
     public static Data data;
     public static OrderDistribution orderDistribution;
 
-    public static void improveRoutes(Individual individual, OrderDistribution od){
+    public static void improveRoutes(Individual individual, OrderDistribution od) {
         data = individual.data;
         orderDistribution = od;
         HashSet<Integer> customers = new HashSet<>();
-        for (int i = 0 ; i < individual.data.numberOfCustomers ; i++){
+        for (int i = 0; i < individual.data.numberOfCustomers; i++) {
             customers.add(i);
         }
         List<Integer> moves = new ArrayList<>();
-        Collections.addAll(moves, 1);
+        Collections.addAll(moves, 0, 1, 2, 3, 4, 5, 6, 7, 8);
         boolean improved;
         boolean temp;
         boolean tabooed;
         int[] taboo;
         int index = 0;
-        int improvements;
+        individual.updateFitness();
+        System.out.println(individual.fitness);
         int totalImprovements = 0;
-        for (int c : customers){
+        for (int c : customers) {
             taboo = new int[Parameters.EducationTabooSize];
-            improvements = 0;
-            System.out.println("CUSTOMER: " + c);
-            for (int period = 0 ; period < data.numberOfPeriods ; period++){
-                if (data.customers[c].requiredVisitPeriod[period] == 0){
+            for (int period = 0; period < data.numberOfPeriods; period++) {
+                if (data.customers[c].requiredVisitPeriod[period] == 0) {
                     continue;
                 }
                 improved = true;
-                while (improved){
+                while (improved) {
+                    Collections.shuffle(data.customers[c].nearestNeighbors);
                     improved = false;
                     Collections.shuffle(moves);
-                    for (int move : moves){
+                    for (int move : moves) {
                         tabooed = false;
-//                        for (int t : taboo){
-//                            if (move == t){
-//                                tabooed = true;
-//                            }
-//                        }
-//                        if (tabooed){
-//                            continue;
-//                        }
-                        switch (move){
+                        for (int t : taboo) {
+                            if (move == t) {
+                                tabooed = true;
+                            }
+                        }
+                        if (tabooed) {
+                            continue;
+                        }
+                        switch (move) {
                             case 0:
                                 temp = insert1(individual, c, period);
-                                improved =  improved || temp;
-                                if (temp){
-                                    improvements++;
+                                improved = improved || temp;
+                                if (temp) {
+                                    totalImprovements++;
                                     taboo[index] = move;
                                     index = (index + 1) % Parameters.EducationTabooSize;
                                 }
                                 break;
                             case 1:
                                 temp = insert2(individual, c, period);
-                                improved =  improved || temp;
-                                if (temp){
-                                    improvements++;
+                                improved = improved || temp;
+                                if (temp) {
+                                    totalImprovements++;
                                     taboo[index] = move;
                                     index = (index + 1) % Parameters.EducationTabooSize;
                                 }
                                 break;
                             case 2:
                                 temp = insert3(individual, c, period);
-                                improved =  improved || temp;
-                                if (temp){
-                                    improvements++;
+                                improved = improved || temp;
+                                if (temp) {
+                                    totalImprovements++;
                                     taboo[index] = move;
                                     index = (index + 1) % Parameters.EducationTabooSize;
                                 }
                                 break;
                             case 3:
                                 temp = swap1(individual, c, period);
-                                improved =  improved || temp;
-                                if (temp){
-                                    improvements++;
+                                improved = improved || temp;
+                                if (temp) {
+                                    totalImprovements++;
                                     taboo[index] = move;
                                     index = (index + 1) % Parameters.EducationTabooSize;
                                 }
                                 break;
                             case 4:
                                 temp = swap2(individual, c, period);
-                                improved =  improved || temp;
-                                if (temp){
-                                    improvements++;
+                                improved = improved || temp;
+                                if (temp) {
+                                    totalImprovements++;
                                     taboo[index] = move;
                                     index = (index + 1) % Parameters.EducationTabooSize;
                                 }
                                 break;
                             case 5:
                                 temp = swap3(individual, c, period);
-                                improved =  improved || temp;
-                                if (temp){
-                                    improvements++;
+                                improved = improved || temp;
+                                if (temp) {
+                                    totalImprovements++;
                                     taboo[index] = move;
                                     index = (index + 1) % Parameters.EducationTabooSize;
                                 }
                                 break;
                             case 6:
                                 temp = twoOpt1(individual, c, period);
-                                improved =  improved || temp;
-                                if (temp){
-                                    improvements++;
+                                improved = improved || temp;
+                                if (temp) {
+                                    totalImprovements++;
                                     taboo[index] = move;
                                     index = (index + 1) % Parameters.EducationTabooSize;
                                 }
                                 break;
                             case 7:
                                 temp = twoOpt2(individual, c, period);
-                                improved =  improved || temp;
-                                if (temp){
-                                    improvements++;
+                                improved = improved || temp;
+                                if (temp) {
+                                    totalImprovements++;
                                     taboo[index] = move;
                                     index = (index + 1) % Parameters.EducationTabooSize;
                                 }
                                 break;
                             case 8:
                                 temp = twoOpt3(individual, c, period);
-                                improved =  improved || temp;
-                                if (temp){
-                                    improvements++;
+                                improved = improved || temp;
+                                if (temp) {
+                                    totalImprovements++;
                                     taboo[index] = move;
                                     index = (index + 1) % Parameters.EducationTabooSize;
                                 }
@@ -139,16 +138,18 @@ public class RouteImprovements {
                     }
                 }
             }
-            totalImprovements += improvements;
-            System.out.println("number of improvements: " + improvements);
-            System.out.println("new fitness: " + individual.getFitness(true));
         }
-        System.out.println("TOTAL IMPROVEMENTS: " + totalImprovements);
+        if (Parameters.verbose){
+            System.out.println("total totalImprovements in Education: " + totalImprovements);
+        }
+        individual.setGiantTourFromTrips();
+        AdSplit.adSplitPlural(individual);
+        individual.updateFitness();
+        System.out.println(individual.fitness);
     }
 
 
-
-    private static boolean insert1(Individual individual, int customer, int period){
+    private static boolean insert1(Individual individual, int customer, int period) {
         //Tries to remove a single customer from its trip, and insert it after one of its nearest neighbors
         Trip trip1;
         Trip trip2;
@@ -156,13 +157,13 @@ public class RouteImprovements {
         List<Integer> originalTrip1;
         List<Integer> originalTrip2;
         originalTrip1 = new LinkedList<>(trip1.customers);
-        for (Customer neighbor : data.customers[customer].nearestNeighbors){
-            if (neighbor.requiredVisitPeriod[period] == 0){
+        for (Customer neighbor : data.customers[customer].nearestNeighbors) {
+            if (neighbor.requiredVisitPeriod[period] == 0) {
                 continue;
             }
             trip2 = individual.tripMap.get(period).get(neighbor.customerID);
             originalTrip2 = new LinkedList<>(trip2.customers);
-            if (fitnessDifferenceOfRemovalInsertion(originalTrip1, originalTrip2, trip1, trip2, customer, neighbor.customerID) > 0){
+            if (fitnessDifferenceOfRemovalInsertion(originalTrip1, originalTrip2, trip1, trip2, customer, neighbor.customerID) > 0) {
                 doRemovalInsertion(individual, trip1, trip2, customer, neighbor.customerID);
                 return true;
             }
@@ -170,11 +171,11 @@ public class RouteImprovements {
         return false;
     }
 
-    private static boolean insert2(Individual individual, int customer, int period){
+    private static boolean insert2(Individual individual, int customer, int period) {
         return doubleInsertion(individual, customer, period, false);
     }
 
-    private static boolean insert3(Individual individual, int customer, int period){
+    private static boolean insert3(Individual individual, int customer, int period) {
         return doubleInsertion(individual, customer, period, true);
     }
 
@@ -192,26 +193,21 @@ public class RouteImprovements {
             }
             trip2 = individual.tripMap.get(period).get(neighbor.customerID);
             originalTrip2 = new LinkedList<>(trip2.customers);
-            if (fitnessDifferenceOfSwap(originalTrip1, originalTrip2, trip1, trip2, customer, neighbor.customerID) > 0){
-                System.out.println("--------performing swap--------");
-                System.out.println("trip 1 before: " + trip1.customers);
-                System.out.println("trip 2 before: " + trip2.customers);
+            if (fitnessDifferenceOfSwap(originalTrip1, originalTrip2, trip1, trip2, customer, neighbor.customerID) > 0) {
                 performSwap(individual, trip1, trip2, customer, neighbor.customerID);
-                System.out.println("trip 1 after: " + trip1.customers);
-                System.out.println("trip 2 after: " + trip2.customers);
                 return true;
             }
         }
         return false;
     }
 
-    private static boolean swap2(Individual individual, int customer, int period){
+    private static boolean swap2(Individual individual, int customer, int period) {
         Trip trip1;
         Trip trip2;
         trip1 = individual.tripMap.get(period).get(customer);
         List<Integer> originalTrip1;
         List<Integer> originalTrip2;
-        if (trip1.customers.size() - trip1.customerToTripIndexMap.get(customer) < 2){
+        if (trip1.customers.size() - trip1.customerToTripIndexMap.get(customer) < 2) {
             return false;
         }
         originalTrip1 = new LinkedList<>(trip1.customers);
@@ -225,7 +221,7 @@ public class RouteImprovements {
             trip2 = individual.tripMap.get(period).get(neighbor.customerID);
             originalTrip2 = new LinkedList<>(trip2.customers);
             fitnessDifferenceOfSwap = fitnessDifferenceOfSwapAndInsertion(originalTrip1, originalTrip2, trip1, trip2, customer, succeedingCustomer, neighbor.customerID);
-            if (fitnessDifferenceOfSwap > 0){
+            if (fitnessDifferenceOfSwap > 0) {
                 performSwap(individual, trip1, trip2, customer, neighbor.customerID);
                 doRemovalInsertion(individual, trip1, trip2, succeedingCustomer, customer);
                 return true;
@@ -234,14 +230,14 @@ public class RouteImprovements {
         return false;
     }
 
-    private static boolean swap3(Individual individual, int customer, int period){
+    private static boolean swap3(Individual individual, int customer, int period) {
         //swaps chosen customer and successor with neighbor and successor
         Trip trip1;
         Trip trip2;
         trip1 = individual.tripMap.get(period).get(customer);
         List<Integer> originalTrip1;
         List<Integer> originalTrip2;
-        if (trip1.customers.size() - trip1.customerToTripIndexMap.get(customer) < 2){
+        if (trip1.customers.size() - trip1.customerToTripIndexMap.get(customer) < 2) {
             return false;
         }
         originalTrip1 = new LinkedList<>(trip1.customers);
@@ -250,11 +246,11 @@ public class RouteImprovements {
 
         int succeedingCustomer2;
         for (Customer neighbor : data.customers[customer].nearestNeighbors) {
-            if (neighbor.requiredVisitPeriod[period] == 0){
+            if (neighbor.requiredVisitPeriod[period] == 0) {
                 continue;
             }
             trip2 = individual.tripMap.get(period).get(neighbor.customerID);
-            if (trip2.customers.size() - trip2.customerToTripIndexMap.get(neighbor.customerID) < 2){
+            if (trip2.customers.size() - trip2.customerToTripIndexMap.get(neighbor.customerID) < 2) {
                 continue;
             }
             succeedingCustomer2 = trip2.customers.get(trip2.customerToTripIndexMap.get(neighbor.customerID) + 1);
@@ -262,7 +258,7 @@ public class RouteImprovements {
                 continue;
             }
             originalTrip2 = new ArrayList<>(trip2.customers);
-            if (fitnessDifferenceOfDoubleSwap(originalTrip1, originalTrip2, trip1, trip2, customer, succeedingCustomer1, neighbor.customerID, succeedingCustomer2) > 0){
+            if (fitnessDifferenceOfDoubleSwap(originalTrip1, originalTrip2, trip1, trip2, customer, succeedingCustomer1, neighbor.customerID, succeedingCustomer2) > 0) {
                 performSwap(individual, trip1, trip2, customer, neighbor.customerID);
                 performSwap(individual, trip1, trip2, succeedingCustomer1, succeedingCustomer2);
                 return true;
@@ -271,7 +267,7 @@ public class RouteImprovements {
         return false;
     }
 
-    private static boolean twoOpt1(Individual individual, int customer, int period){
+    private static boolean twoOpt1(Individual individual, int customer, int period) {
         //if customer and neighbor is in the same route (trip), swap first successor with neighbor
 
         Trip trip1;
@@ -279,20 +275,20 @@ public class RouteImprovements {
         trip1 = individual.tripMap.get(period).get(customer);
         List<Integer> originalTrip1;
         List<Integer> originalTrip2;
-        if (trip1.customers.size() - trip1.customerToTripIndexMap.get(customer) < 2 ||trip1.customers.size() < 3){
+        if (trip1.customers.size() - trip1.customerToTripIndexMap.get(customer) < 2 || trip1.customers.size() < 3) {
             return false;
         }
         originalTrip1 = new ArrayList<>(trip1.customers);
 
         int succeedingCustomer1 = trip1.customers.get(trip1.customerToTripIndexMap.get(customer) + 1);
         for (Customer neighbor : data.customers[customer].nearestNeighbors) {
-            if (neighbor.requiredVisitPeriod[period] == 0){
+            if (neighbor.requiredVisitPeriod[period] == 0) {
                 continue;
             }
             trip2 = individual.tripMap.get(period).get(neighbor.customerID);
-            if (trip1 == trip2 && neighbor.customerID != succeedingCustomer1){
+            if (trip1 == trip2 && neighbor.customerID != succeedingCustomer1) {
                 originalTrip2 = new ArrayList<>(trip2.customers);
-                if(fitnessDifferenceOfSwap(originalTrip1, originalTrip2, trip1, trip2, succeedingCustomer1, neighbor.customerID) > 0){
+                if (fitnessDifferenceOfSwap(originalTrip1, originalTrip2, trip1, trip2, succeedingCustomer1, neighbor.customerID) > 0) {
                     performSwap(individual, trip1, trip2, succeedingCustomer1, neighbor.customerID);
                     return true;
                 }
@@ -301,27 +297,27 @@ public class RouteImprovements {
         return false;
     }
 
-    private static boolean twoOpt2(Individual individual, int customer, int period){
+    private static boolean twoOpt2(Individual individual, int customer, int period) {
         //if customer and neighbor does not come from same route (trip), replace successor with neighbor
         Trip trip1;
         Trip trip2;
         trip1 = individual.tripMap.get(period).get(customer);
         List<Integer> originalTrip1;
         List<Integer> originalTrip2;
-        if (trip1.customers.size() - trip1.customerToTripIndexMap.get(customer) < 2 ||trip1.customers.size() < 3){
+        if (trip1.customers.size() - trip1.customerToTripIndexMap.get(customer) < 2 || trip1.customers.size() < 3) {
             return false;
         }
         originalTrip1 = new ArrayList<>(trip1.customers);
 
         int succeedingCustomer1 = trip1.customers.get(trip1.customerToTripIndexMap.get(customer) + 1);
         for (Customer neighbor : data.customers[customer].nearestNeighbors) {
-            if (neighbor.requiredVisitPeriod[period] == 0){
+            if (neighbor.requiredVisitPeriod[period] == 0) {
                 continue;
             }
             trip2 = individual.tripMap.get(period).get(neighbor.customerID);
-            if (trip1 != trip2 && neighbor.customerID != succeedingCustomer1){
+            if (trip1 != trip2 && neighbor.customerID != succeedingCustomer1) {
                 originalTrip2 = new ArrayList<>(trip2.customers);
-                if(fitnessDifferenceOfSwap(originalTrip1, originalTrip2, trip1, trip2, succeedingCustomer1, neighbor.customerID) > 0){
+                if (fitnessDifferenceOfSwap(originalTrip1, originalTrip2, trip1, trip2, succeedingCustomer1, neighbor.customerID) > 0) {
                     performSwap(individual, trip1, trip2, succeedingCustomer1, neighbor.customerID);
                     return true;
                 }
@@ -330,7 +326,7 @@ public class RouteImprovements {
         return false;
     }
 
-    private static boolean twoOpt3(Individual individual, int customer, int period){
+    private static boolean twoOpt3(Individual individual, int customer, int period) {
         //if customer and neighbor not in same route (trip), swap customer - successor && neighbor - neighborSuccessor
         //with customer - neighborsuccessor && successor neighbor
         Trip trip1;
@@ -338,26 +334,25 @@ public class RouteImprovements {
         trip1 = individual.tripMap.get(period).get(customer);
         List<Integer> originalTrip1;
         List<Integer> originalTrip2;
-        if (trip1.customers.size() - trip1.customerToTripIndexMap.get(customer) < 2 ||trip1.customers.size() < 3){
+        if (trip1.customers.size() - trip1.customerToTripIndexMap.get(customer) < 2 || trip1.customers.size() < 3) {
             return false;
         }
         originalTrip1 = new ArrayList<>(trip1.customers);
         int succeedingCustomer1 = trip1.customers.get(trip1.customerToTripIndexMap.get(customer) + 1);
         int succeedingCustomer2;
         for (Customer neighbor : data.customers[customer].nearestNeighbors) {
-            if (neighbor.requiredVisitPeriod[period] == 0){
+            if (neighbor.requiredVisitPeriod[period] == 0) {
                 continue;
             }
             trip2 = individual.tripMap.get(period).get(neighbor.customerID);
-            if (trip2.customers.size() - trip2.customerToTripIndexMap.get(neighbor.customerID) < 2){
+            if (trip2.customers.size() - trip2.customerToTripIndexMap.get(neighbor.customerID) < 2) {
                 continue;
             }
-            if (trip1 != trip2 && neighbor.customerID != succeedingCustomer1){
+            if (trip1 != trip2 && neighbor.customerID != succeedingCustomer1) {
                 originalTrip2 = new ArrayList<>(trip2.customers);
                 succeedingCustomer2 = trip2.customers.get(trip2.customerToTripIndexMap.get(neighbor.customerID) + 1);
-                if(fitnessDifferenceOf3WaySwap(originalTrip1, originalTrip2, trip1, trip2, succeedingCustomer1, neighbor.customerID, succeedingCustomer2) > 0) {
+                if (fitnessDifferenceOf3WaySwap(originalTrip1, originalTrip2, trip1, trip2, succeedingCustomer1, neighbor.customerID, succeedingCustomer2) > 0) {
                     perform3WaySwap(individual, trip1, trip2, succeedingCustomer1, neighbor.customerID, succeedingCustomer2);
-                    System.out.println("two opt 3 ftw");
                     return true;
                 }
             }
@@ -366,7 +361,7 @@ public class RouteImprovements {
 
     }
 
-    private static boolean doubleInsertion(Individual individual, int customer, int period, boolean reverse){
+    private static boolean doubleInsertion(Individual individual, int customer, int period, boolean reverse) {
         //inserts  customer and its successor after customers nearest neighbor if it gives improvement
         //If reverse is true, successor is placed prior to customer
         Trip trip1;
@@ -374,36 +369,23 @@ public class RouteImprovements {
         trip1 = individual.tripMap.get(period).get(customer);
         List<Integer> originalTrip1;
         List<Integer> originalTrip2;
-        if (trip1.customers.size() - trip1.customerToTripIndexMap.get(customer) < 2){
+        if (trip1.customers.size() - trip1.customerToTripIndexMap.get(customer) < 2) {
             return false;
         }
         originalTrip1 = new LinkedList<>(trip1.customers);
         int succeedingCustomer1 = trip1.customers.get(trip1.customerToTripIndexMap.get(customer) + 1);
-        double improvementOfRemoval;
-        double detoriorationOfInsertion;
         int c1;
         int c2;
-        improvementOfRemoval = fitnessDifferenceOfRemoval2Customers(originalTrip1, period, trip1.vehicleType, trip1.customerToTripIndexMap.get(succeedingCustomer1), trip1.customerToTripIndexMap.get(customer));
-        boolean adjustIndex;
-        for (Customer neighbor : data.customers[customer].nearestNeighbors){
-            if (neighbor.requiredVisitPeriod[period] == 0 || neighbor.customerID == succeedingCustomer1){
+
+        for (Customer neighbor : data.customers[customer].nearestNeighbors) {
+            if (neighbor.requiredVisitPeriod[period] == 0 || neighbor.customerID == succeedingCustomer1) {
                 continue;
             }
             trip2 = individual.tripMap.get(period).get(neighbor.customerID);
             originalTrip2 = new LinkedList<>(trip2.customers);
-            adjustIndex = false;
-            if (trip1 == trip2){
-                int removeIndex = trip1.customerToTripIndexMap.get(customer);
-                originalTrip2.remove(removeIndex);
-                originalTrip2.remove(removeIndex);
-                if (trip1.customerToTripIndexMap.get(customer) < trip2.customerToTripIndexMap.get(neighbor.customerID)){
-                    adjustIndex = true;
-                }
-            }
             c1 = reverse ? succeedingCustomer1 : customer;
             c2 = reverse ? customer : succeedingCustomer1;
-            detoriorationOfInsertion = fitnessDifferenceOfInsertion2Customers(originalTrip2, trip2, c1, c2, neighbor.customerID, adjustIndex);
-            if (improvementOfRemoval > detoriorationOfInsertion){
+            if (fitnessDifferenceOfDoubleInsertionRemoval(originalTrip1, originalTrip2, trip1, trip2, c1, c2, neighbor.customerID, reverse) > 0) {
                 doRemovalInsertion(individual, trip1, trip2, c1, neighbor.customerID);
                 doRemovalInsertion(individual, trip1, trip2, c2, c1);
                 return true;
@@ -414,14 +396,14 @@ public class RouteImprovements {
 
 //  ------------------------------HELPER FUNCTIONS-------------------------------------------------------
 
-    private static double fitnessDifferenceOfRemovalInsertion(List<Integer> customerSequence1, List<Integer> customerSequence2, Trip trip1, Trip trip2, int customer1, int customer2){
+    private static double fitnessDifferenceOfRemovalInsertion(List<Integer> customerSequence1, List<Integer> customerSequence2, Trip trip1, Trip trip2, int customer1, int customer2) {
         double oldFitness = combinedFitnessOf2Sequences(customerSequence1, customerSequence2, trip1.vehicleType, trip1.period, trip2.vehicleType, trip2.period);
         int indexCustomer1 = trip1.customerToTripIndexMap.get(customer1);
         int indexCustomer2 = trip2.customerToTripIndexMap.get(customer2);
         int adjustment = 1;
-        if (trip1 == trip2){
+        if (trip1 == trip2) {
             customerSequence2 = customerSequence1;
-            if (indexCustomer1 < indexCustomer2){
+            if (indexCustomer1 < indexCustomer2) {
                 adjustment = 0;
             }
         }
@@ -434,40 +416,43 @@ public class RouteImprovements {
         return oldFitness - newFitness;
     }
 
-    private static double fitnessDifferenceOfRemoval2Customers(List<Integer> customerSequence, int period, int vehicleType, int maxIndex, int minIndex){
-        double oldFitness = FitnessCalculation.getTripFitness(customerSequence, vehicleType, period, orderDistribution.orderVolumeDistribution, data);
-        customerSequence.remove(maxIndex);
-        customerSequence.remove(minIndex);
-        double newFitness = FitnessCalculation.getTripFitness(customerSequence, vehicleType, period, orderDistribution.orderVolumeDistribution, data);
-        return oldFitness - newFitness;
-    }
 
-
-    private static double fitnessDifferenceOfDoubleInsertionRemoval(List<Integer> customerSequence1, List<Integer> customerSequence2, Trip trip1, Trip trip2, int insertedCustomer1, int insertedCustomer2, int targetCustomer, boolean adjustIndex){
+    private static double fitnessDifferenceOfDoubleInsertionRemoval(List<Integer> customerSequence1, List<Integer> customerSequence2, Trip trip1, Trip trip2, int insertedCustomer1, int insertedCustomer2, int targetCustomer, boolean reverse) {
         double oldFitness = combinedFitnessOf2Sequences(customerSequence1, customerSequence2, trip1.vehicleType, trip1.period, trip2.vehicleType, trip2.period);
-        int indexCustomer1 = trip1.customerToTripIndexMap.get(insertedCustomer1);
-        int indexCustomer2 = trip1.customerToTripIndexMap.get(insertedCustomer2);
+        int indexCustomer1 = Math.min(trip1.customerToTripIndexMap.get(insertedCustomer1), trip1.customerToTripIndexMap.get(insertedCustomer2));
         int indexCustomer3 = trip2.customerToTripIndexMap.get(targetCustomer);
         int adjustment = 1;
-        if (trip1 == trip2){
+        if (trip1 == trip2) {
+            if (indexCustomer3 + 1 == indexCustomer1) {
+                return -1;
+            }
             customerSequence2 = customerSequence1;
-            if (indexCustomer1 < indexCustomer2){
+            if (indexCustomer1 < indexCustomer3) {
                 adjustment = -1;
             }
         }
         customerSequence1.remove(indexCustomer1);
-        customerSequence1.remove(indexCustomer2);
+        customerSequence1.remove(indexCustomer1);
         customerSequence2.add(indexCustomer3 + adjustment, insertedCustomer2);
         customerSequence2.add(indexCustomer3 + adjustment, insertedCustomer1);
-
-        double newFitness = FitnessCalculation.getTripFitness(customerSequence, trip.vehicleType, trip.period, orderDistribution.orderVolumeDistribution, data);
+        double newFitness = combinedFitnessOf2Sequences(customerSequence1, customerSequence2, trip1.vehicleType, trip1.period, trip2.vehicleType, trip2.period);
+        //back to original
+        customerSequence2.remove(indexCustomer3 + adjustment);
+        customerSequence2.remove(indexCustomer3 + adjustment);
+        if (reverse) {
+            customerSequence1.add(indexCustomer1, insertedCustomer1);
+            customerSequence1.add(indexCustomer1, insertedCustomer2);
+        } else {
+            customerSequence1.add(indexCustomer1, insertedCustomer2);
+            customerSequence1.add(indexCustomer1, insertedCustomer1);
+        }
         return oldFitness - newFitness;
     }
 
-    private static double fitnessDifferenceOfSwap(List<Integer> customerSequence1, List<Integer> customerSequence2, Trip trip1, Trip trip2, int customer1, int customer2){
+    private static double fitnessDifferenceOfSwap(List<Integer> customerSequence1, List<Integer> customerSequence2, Trip trip1, Trip trip2, int customer1, int customer2) {
         double oldFitness = combinedFitnessOf2Sequences(customerSequence1, customerSequence2, trip1.vehicleType, trip1.period, trip2.vehicleType, trip2.period);
         //perform swap and check new fitness
-        if (trip1 == trip2){
+        if (trip1 == trip2) {
             customerSequence2 = customerSequence1;
         }
         int index1 = trip1.customerToTripIndexMap.get(customer1);
@@ -481,13 +466,13 @@ public class RouteImprovements {
         return oldFitness - newFitness;
     }
 
-    private static double fitnessDifferenceOfDoubleSwap(List<Integer> customerSequence1, List<Integer> customerSequence2, Trip trip1, Trip trip2, int customer1, int succeedingCustomer1, int customer2, int succeedingCustomer2){
+    private static double fitnessDifferenceOfDoubleSwap(List<Integer> customerSequence1, List<Integer> customerSequence2, Trip trip1, Trip trip2, int customer1, int succeedingCustomer1, int customer2, int succeedingCustomer2) {
         double oldFitness = combinedFitnessOf2Sequences(customerSequence1, customerSequence2, trip1.vehicleType, trip1.period, trip2.vehicleType, trip2.period);
         int indexCustomer1 = trip1.customerToTripIndexMap.get(customer1);
         int indexCustomer2 = trip2.customerToTripIndexMap.get(customer2);
         int indexSucceeding1 = trip1.customerToTripIndexMap.get(succeedingCustomer1);
         int indexSucceeding2 = trip2.customerToTripIndexMap.get(succeedingCustomer2);
-        if (trip1 == trip2){
+        if (trip1 == trip2) {
             customerSequence1 = customerSequence2;
         }
         customerSequence1.set(indexCustomer1, customer2);
@@ -500,10 +485,10 @@ public class RouteImprovements {
         customerSequence2.set(indexCustomer2, customer2);
         customerSequence1.set(indexSucceeding1, succeedingCustomer1);
         customerSequence2.set(indexSucceeding2, succeedingCustomer2);
-        return  oldFitness - newFitness;
+        return oldFitness - newFitness;
     }
 
-    private static double fitnessDifferenceOf3WaySwap(List<Integer> customerSequence1, List<Integer> customerSequence2, Trip trip1, Trip trip2, int succeedingCustomer1, int customer2, int succeedingCustomer2){
+    private static double fitnessDifferenceOf3WaySwap(List<Integer> customerSequence1, List<Integer> customerSequence2, Trip trip1, Trip trip2, int succeedingCustomer1, int customer2, int succeedingCustomer2) {
         //swaps ctt1 into ctt2, ctt2 into ctt3, and ctt3 into ctt1
         double oldFitness = combinedFitnessOf2Sequences(customerSequence1, customerSequence2, trip1.vehicleType, trip1.period, trip2.vehicleType, trip2.period);
         customerSequence1.set(trip1.customerToTripIndexMap.get(succeedingCustomer1), succeedingCustomer2);
@@ -518,15 +503,15 @@ public class RouteImprovements {
 
     }
 
-    private static double fitnessDifferenceOfSwapAndInsertion(List<Integer> customerSequence1, List<Integer> customerSequence2, Trip trip1, Trip trip2, int customer1, int succeedingCustomer1, int customer2){
+    private static double fitnessDifferenceOfSwapAndInsertion(List<Integer> customerSequence1, List<Integer> customerSequence2, Trip trip1, Trip trip2, int customer1, int succeedingCustomer1, int customer2) {
         double oldFitness = combinedFitnessOf2Sequences(customerSequence1, customerSequence2, trip1.vehicleType, trip1.period, trip2.vehicleType, trip2.period);
         int adjustment = 1;
         int indexCustomer1 = trip1.customerToTripIndexMap.get(customer1);
         int indexCustomer2 = trip2.customerToTripIndexMap.get(customer2);
         int indexSucceeding1 = trip1.customerToTripIndexMap.get(succeedingCustomer1);
-        if (trip1 == trip2){
+        if (trip1 == trip2) {
             customerSequence2 = customerSequence1;
-            if (indexCustomer1 < indexCustomer2){
+            if (indexCustomer1 < indexCustomer2) {
                 adjustment = 0;
             }
         }
@@ -543,19 +528,19 @@ public class RouteImprovements {
 
     }
 
-    private static double combinedFitnessOf2Sequences(List<Integer> customerSequence1, List<Integer> customerSequence2, int vt1, int period1, int vt2, int period2){
+    private static double combinedFitnessOf2Sequences(List<Integer> customerSequence1, List<Integer> customerSequence2, int vt1, int period1, int vt2, int period2) {
         return FitnessCalculation.getTripFitness(customerSequence1, vt1, period1, orderDistribution.orderVolumeDistribution, data)
                 + FitnessCalculation.getTripFitness(customerSequence2, vt2, period2, orderDistribution.orderVolumeDistribution, data);
     }
 
-    private static void doRemovalInsertion(Individual individual, Trip trip1, Trip trip2, int removeCustomer, int targetCustomer){
+    private static void doRemovalInsertion(Individual individual, Trip trip1, Trip trip2, int removeCustomer, int targetCustomer) {
         trip1.removeCustomer(removeCustomer);
         trip2.addCustomer(removeCustomer, trip2.customerToTripIndexMap.get(targetCustomer) + 1);
         individual.tripMap.get(trip2.period).put(removeCustomer, trip2);
     }
 
 
-    private static void perform3WaySwap(Individual individual, Trip trip1, Trip trip2, int succeedingCustomer1, int customer2, int succeedingCustomer2){
+    private static void perform3WaySwap(Individual individual, Trip trip1, Trip trip2, int succeedingCustomer1, int customer2, int succeedingCustomer2) {
         int setIndex1 = trip1.customerToTripIndexMap.get(succeedingCustomer1);
         int setIndex2 = trip2.customerToTripIndexMap.get(customer2);
         trip1.setCustomer(succeedingCustomer2, setIndex1);
@@ -565,7 +550,7 @@ public class RouteImprovements {
         individual.tripMap.get(trip1.period).put(succeedingCustomer2, trip1);
     }
 
-    private static void performSwap(Individual individual, Trip trip1, Trip trip2, int customer1, int customer2){
+    private static void performSwap(Individual individual, Trip trip1, Trip trip2, int customer1, int customer2) {
         int setIndex1 = trip1.customerToTripIndexMap.get(customer1);
         int setIndex2 = trip2.customerToTripIndexMap.get(customer2);
         trip1.setCustomer(customer2, setIndex1);
@@ -575,63 +560,21 @@ public class RouteImprovements {
     }
 
 
-
-    public static void main(String[] args){
+    public static void main(String[] args) {
         Data data = DataReader.loadData();
         Population population = new Population(data);
         OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
-        GiantTourCrossover GTC = new GiantTourCrossover(data);
         OrderDistributionCrossover ODC = new OrderDistributionCrossover(data);
         odp.initializeOrderDistributionPopulation(population);
         OrderDistribution firstOD = odp.getRandomOrderDistribution();
         population.setOrderDistributionPopulation(odp);
         population.initializePopulation(firstOD);
-        Individual individual = population.getRandomIndividual();
 
-        RouteImprovements.improveRoutes(individual, individual.orderDistribution);
+        for (int i = 0; i < 1; i++) {
+            Individual individual = population.getRandomIndividual();
+            Education.improveRoutes(individual, individual.orderDistribution);
 
-//        int move = 5;
-//        for (int i = 0 ; i < 10 ; i++)
-//        switch (move){
-//            case 1:
-//                System.out.println(move);
-//            case 5:
-//                System.out.println(move);
-//        }
-//
-//        System.out.println("finished");
-//
-//        HashSet<Integer> moves = new HashSet<>();
-//        for (int i = 0 ;  i < 9 ; i++){
-//            moves.add(i);
-//        }
-//        for (int move : moves){
-//            System.out.println(move);
-//        }
-
-//        List<Integer> a = new LinkedList<>();
-//        a.add(5);
-//        a.add(4);
-//        System.out.println(a);
-//        a.add(a.size(),1);
-//        a.set(1, 100);
-//
-//        List<Integer> b = new ArrayList<>(a);
-//
-//        System.out.println("b: " + b);
-//        b.add(4);
-//        b.add(123);
-//        System.out.println("b: " + b);
-//        System.out.println(a);
-
-//        System.out.println(individual.giantTour.chromosome[0][5]);
-//        System.out.println(individual.giantTourSplit.chromosome[0][5]);
-//        System.out.println(individual.customerToTrips[0].length);
-//        System.out.println(Arrays.toString(individual.customerToTrips[0]));
-
-
+        }
     }
-
-
-
 }
+

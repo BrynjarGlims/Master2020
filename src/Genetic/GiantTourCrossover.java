@@ -17,13 +17,10 @@ public class GiantTourCrossover {
     static int numPeriodVehicleTypeCouples;
     public static int count = 0;
 
-    public GiantTourCrossover(Data data){
-        this.data = data;
-        numPeriodVehicleTypeCouples = data.numberOfVehicleTypes * data.numberOfPeriods;
 
-    }
 
-    public Individual crossOver(Individual parent1, Individual parent2, OrderDistribution orderDistribution){
+    public static Individual crossOver(Individual parent1, Individual parent2, OrderDistribution orderDistribution){
+        data = parent1.data;
         Individual child = new Individual(data);
         child.orderDistribution = orderDistribution;
         HashSet<Integer>[] sets = initializeSets();
@@ -45,7 +42,7 @@ public class GiantTourCrossover {
     }
 
 
-    private void inheritParent1(Individual parent1, Individual child, HashSet<Integer> lambda1, HashSet<Integer> lambdaMix, HashMap<Integer, HashSet<Integer>> visitedCustomers){ //step one of vidal 2012
+    private static void inheritParent1(Individual parent1, Individual child, HashSet<Integer> lambda1, HashSet<Integer> lambdaMix, HashMap<Integer, HashSet<Integer>> visitedCustomers){ //step one of vidal 2012
         ArrayList<Integer> copyArrayList;
         int period;
         int vehicleType;
@@ -91,7 +88,7 @@ public class GiantTourCrossover {
         }
     }
 
-    private void inheritParent2(Individual parent2, Individual child, HashSet<Integer> combinedSet, HashMap<Integer, HashSet<Integer>> visitedCustomers){ //step 2 vidal
+    private static void inheritParent2(Individual parent2, Individual child, HashSet<Integer> combinedSet, HashMap<Integer, HashSet<Integer>> visitedCustomers){ //step 2 vidal
         ArrayList<Integer> copyArrayList;
         int period;
         int vehicleType;
@@ -111,10 +108,9 @@ public class GiantTourCrossover {
         }
     }
 
-    private void bestInsertion(Individual child, OrderDistribution orderDistribution, HashMap<Integer, HashSet<Integer>> missingCustomers){
+    private static void bestInsertion(Individual child, OrderDistribution orderDistribution, HashMap<Integer, HashSet<Integer>> missingCustomers){
         double currentBestFitness;
         List<Integer> customerSequence;
-        int from;
         double tripFitness;
         double tempTripFitness;
         int currentBestVehicleType = 0;
@@ -158,7 +154,7 @@ public class GiantTourCrossover {
         }
     }
 
-    private HashMap<Integer, HashSet<Integer>> findMissingCustomers(HashMap<Integer, HashSet<Integer>> visitedCustomers){
+    private static HashMap<Integer, HashSet<Integer>> findMissingCustomers(HashMap<Integer, HashSet<Integer>> visitedCustomers){
         HashMap<Integer, HashSet<Integer>> missingCustomers = new HashMap<>();
         for (int i = 0 ; i < data.numberOfPeriods ; i++){
             missingCustomers.put(i, new HashSet<Integer>());
@@ -176,7 +172,7 @@ public class GiantTourCrossover {
 
 
 
-    private HashSet[] initializeSets(){
+    private static HashSet[] initializeSets(){
         HashSet[] sets = new HashSet[3];
         int num1 = ThreadLocalRandom.current().nextInt(0, numPeriodVehicleTypeCouples);
         int num2 = ThreadLocalRandom.current().nextInt(0, numPeriodVehicleTypeCouples);
@@ -209,7 +205,7 @@ public class GiantTourCrossover {
         return sets;
     }
 
-    private ArrayList<Integer> getRoute(Individual individual, int index){
+    private static ArrayList<Integer> getRoute(Individual individual, int index){
         return individual.giantTour.chromosome[index / data.numberOfVehicleTypes][index % data.numberOfVehicleTypes];
     }
 
@@ -230,13 +226,10 @@ public class GiantTourCrossover {
         AdSplit.adSplitPlural(individual2);
 
 
-        individual1.makeCustomerToTripMap();
 
-
-        GiantTourCrossover GTC = new GiantTourCrossover(data);
         System.out.println(individual1.getFitness(true));
         System.out.println(individual2.getFitness(true));
-        Individual child = GTC.crossOver(individual1, individual2, individual1.orderDistribution);
+        Individual child = GiantTourCrossover.crossOver(individual1, individual2, individual1.orderDistribution);
         System.out.println(child.getFitness(true));
     }
 
