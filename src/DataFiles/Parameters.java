@@ -29,7 +29,7 @@ public class Parameters {
 
 
     //Loading data parameters
-    public static final int numberOfCustomers = 10;
+    public static final int numberOfCustomers = 50;
     public static final int numberOfVehicles = 10;
 
     //Storing data parameters
@@ -53,7 +53,7 @@ public class Parameters {
     public static final double initialDrivingCostPenalty = 1; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
 
     public static final int nearestNeighbors = 3; //Neighborhood size for each customer
-
+    public static final int EducationTabooSize = 1;
 
 
     public static final double penaltyFactorForOverFilling = 1.1;
