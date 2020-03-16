@@ -15,6 +15,7 @@ public class OrderDelivery {
         this.order = order;
         orderVolumes = new double[numberOfPeriods];
         orderPeriods = new int[numberOfPeriods];
+
     }
 
 
@@ -30,6 +31,9 @@ public class OrderDelivery {
     public void addDelivery(int period, double volume){
         orderVolumes[period] = volume;
         orderPeriods[period] = 1;
+        if (!dividable) {
+            this.period = period;
+        }
     }
 
     public void removeDelivery(int period){
@@ -45,6 +49,7 @@ public class OrderDelivery {
             return period;
         }
     }
+
 
 
     public String toString(){

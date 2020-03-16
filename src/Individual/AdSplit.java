@@ -1,6 +1,9 @@
 package Individual;
 import DataFiles.Data;
 import DataFiles.Parameters;
+import ProductAllocation.OrderDelivery;
+import ProductAllocation.OrderDistribution;
+import org.nustaq.kson.KsonCharOutput;
 
 import java.util.*;
 
@@ -25,14 +28,26 @@ public class AdSplit {
         else{
             //Shortest path algorithm
             createTrips(p, vt);
-            //DEBUG:
-            //testTimeWarpValues(matrixOfTrips, matrixOfTripCosts, individual.data, p , vt );
 
             //Labeling algorithm
             labelingAlgorithm(p, vt, matrixOfTrips);   // Sets bestLabel.
 
             //Trip generation
             tripAssignment(individual.bestLabels[p][vt], matrixOfTrips);
+
+
+        }
+    }
+
+    public static void checkIfAllOrdersAreSatisfied(int p){
+        for (OrderDelivery orderDelivery : individual.orderDistribution.orderDeliveries){
+            if (orderDelivery.getPeriod() != p)
+                continue;
+            if (!orderDelivery.dividable){
+                if (!individual.tripMap.get(orderDelivery.getPeriod()).containsKey(orderDelivery.order.customerID)){
+                    System.out.println("Missing hashmap: P:" + orderDelivery.getPeriod() + ", C:" + orderDelivery.order.customerID );
+                }
+            }
         }
     }
 
@@ -52,18 +67,13 @@ public class AdSplit {
                 individual.tripList[p][vt].set(tripIndex, tempTrip);
             }
         }
-        updateTripMap(p, vt);
+        setTripMap(p, vt);
     }
 
-    public static void updateTripMap(int p, int vt){
+
+
+    public static void setTripMap(int p, int vt){
         for (Trip trip : individual.tripList[p][vt]){
-            /*
-            if (trip.equals(null)){
-                individual.tripMap.get(p).put(customerID, trip);
-            }
-
-             */
-
             for (int customerID : trip.customers){
                 individual.tripMap.get(p).put(customerID, trip);
             }
@@ -130,6 +140,7 @@ public class AdSplit {
             for (int vt = 0; vt < individual.data.numberOfVehicleTypes; vt++) {
                 adSplitSingular(individual, p , vt, false);
             }
+            checkIfAllOrdersAreSatisfied(p);  //todo: to be removed
         }
     }
 
@@ -165,7 +176,7 @@ public class AdSplit {
 
                     currentCost = (tempDistanceCost)*Parameters.initialDrivingCostPenalty
                             + routeTimeWarp*Parameters.initialTimeWarpPenalty + Parameters.initialCapacityPenalty*(Math.max(0, loadSum-individual.data.vehicleTypes[vt].capacity));
-                    }
+                }
 
                 else if (j != (i+1)) {
                     //add driving time from depot to the first customer
@@ -199,7 +210,7 @@ public class AdSplit {
 
                     currentCost = Parameters.initialCapacityPenalty*(Math.max(0, loadSum-individual.data.vehicleTypes[vt].capacity))
                             + routeTimeWarp*Parameters.initialTimeWarpPenalty + Parameters.initialDrivingCostPenalty*(tempDistanceCost);
-                    }
+                }
                 //Update predecessor label whenever improvements are detected
                 if (costLabel[i] + currentCost < costLabel[j]) {
                     costLabel[j] = costLabel[i] + currentCost;
@@ -224,68 +235,7 @@ public class AdSplit {
         //extractVrpSolution(customerSequence, predecessorLabel, p, vt);
     }
 
-    /*
-    private static void extractVrpSolution(ArrayList<Integer> customerSequence, int[] predecessorLabel, int p, int vt) {
-        //extract VRP solution by backtracking the shortest path label
-        ArrayList<ArrayList<Integer>> listOfTrips = setListOfTrips(customerSequence, predecessorLabel);
-        double tripCost;
-        //Calculate trip costs
-        ArrayList<Double> listOfTripCosts = new ArrayList<Double>(listOfTrips.size());
-        for (List<Integer> list : listOfTrips) {
-            tripCost = 0;
-            if (list.size() == 1) {
-                tripCost += individual.data.distanceMatrix[individual.data.customers.length][list.get(0)] + individual.data.distanceMatrix[list.get(list.size() - 1)][individual.data.customers.length];
-            }
-            if (list.size() > 1) {
-                tripCost += individual.data.distanceMatrix[individual.data.customers.length][list.get(0)] + individual.data.distanceMatrix[list.get(list.size() - 1)][individual.data.customers.length];
-                for (int i = 1; i < list.size() - 1; i++) {
-                    tripCost += individual.data.distanceMatrix[list.get(i)][list.get(i + 1)];
-                }
-            }
-            listOfTripCosts.add(tripCost);
-        }
-        matrixOfTrips = listOfTrips;
-        matrixOfTripCosts = listOfTripCosts;
 
-    }
-
-    private static ArrayList<ArrayList<Integer>> setListOfTrips(ArrayList<Integer> customerSequence, int[] predecessorLabel) {
-        ArrayList<ArrayList<Integer>> listOfTrips = new ArrayList<ArrayList<Integer>>();
-        ArrayList<Integer> tempListOfTrips = new ArrayList<Integer>();
-        //System.out.println("Customer sequence: "+ customerSequence);
-
-        if (predecessorLabel.length == 2) {
-            tempListOfTrips.add(0,customerSequence.get(1));
-            listOfTrips.add(0,tempListOfTrips);
-        }
-
-        else if (predecessorLabel.length > 2) {
-            int currentNodeIndex = customerSequence.size()-1;
-            int numberOfAddedCustomers = 0;
-
-            while (numberOfAddedCustomers != (customerSequence.size()-1)) {
-                if (predecessorLabel[currentNodeIndex] == 0) {
-                    tempListOfTrips.add(0, customerSequence.get(currentNodeIndex));
-                    numberOfAddedCustomers += 1;
-                    listOfTrips.add(0,tempListOfTrips);
-                    tempListOfTrips = new ArrayList<Integer>();
-                    currentNodeIndex -=1;
-                }
-                else {
-                    for (int i = currentNodeIndex; i > predecessorLabel[currentNodeIndex]; i--) {
-                        tempListOfTrips.add(0,customerSequence.get(i));
-                        numberOfAddedCustomers += 1;
-                    }
-                    listOfTrips.add(0,tempListOfTrips);
-                    tempListOfTrips = new ArrayList<Integer>();
-                    currentNodeIndex = predecessorLabel[currentNodeIndex];
-                }
-            }
-        }
-        System.out.println("list of trips added: " + listOfTrips);
-        return listOfTrips;
-    }
-     */
 
     private static ArrayList<ArrayList<Integer>> getListOfTrips(ArrayList<Integer> customerSequence, int[] predecessorLabel, int p, int vt) {
         ArrayList<ArrayList<Integer>> listOfTrips = new ArrayList<ArrayList<Integer>>();
@@ -310,37 +260,6 @@ public class AdSplit {
     }
 
 
-    private static HashMap<Integer, Integer> getVehicleAssignmentChromosome(int p, int vt){
-        HashMap<Integer, Integer> hashMap = new HashMap<Integer, Integer>();
-        /*
-        if (individual.giantTour.chromosome[p][vt].size()==0 ) {
-            return hashMap;
-        }
-        for (LabelEntry labelEntry : individual.bestLabels[p][vt].labelEntries) {
-            for (ArrayList<Integer> customerList : labelEntry.tripAssigment){
-                for (int customerID : customerList) {
-                    hashMap.put(customerID, labelEntry.vehicleID);  // TODO: 24.02.2020 Change to correct vehicle id
-                }
-            }
-        }
-
-         */
-        return hashMap;
-    }
-
-    private static ArrayList<Integer> createSplitChromosome(ArrayList<ArrayList<Integer>> customerSequence) {
-        ArrayList<Integer> splits = new ArrayList<>();
-        int split = 0;
-        if (customerSequence.isEmpty()){
-            return splits;
-        }
-
-        for (ArrayList<Integer> tripList : customerSequence) {
-            split += tripList.size();
-            splits.add(split);
-        }
-        return splits;
-    }
 
     //LABELING------------------------------------------------------------------------------------------------------------------------------------------------------------
     private static void labelingAlgorithm(int p, int vt, ArrayList<ArrayList<Integer>> listOfTrips) {
@@ -383,11 +302,3 @@ public class AdSplit {
     }
 
 }
-
-
-
-
-
-
-
-

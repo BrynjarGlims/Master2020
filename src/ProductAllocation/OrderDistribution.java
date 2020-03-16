@@ -17,7 +17,7 @@ public class OrderDistribution {
 
 
     public double[][] orderVolumeDistribution;  //period, customer
-    public ArrayList<Integer>[][] orderIdDistribution;
+    public ArrayList<Integer>[][] orderIdDistribution;   //period, customer
     public Data data;
     public OrderDelivery[] orderDeliveries;  //orderids
     public double[] volumePerPeriod;

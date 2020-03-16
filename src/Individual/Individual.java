@@ -18,7 +18,7 @@ public class Individual implements Comparable<Individual> {
     public ArrayList<Trip>[][] tripList; //period, vehicleType
 
     public Data data;
-    public boolean validCapacity;
+
 
     public double infeasibilityOvertimeDrivngValue;
     public double infeasibilityTimeWarpValue;

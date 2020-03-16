@@ -160,8 +160,6 @@ public class DataReader {
         String[] convertedTime = time.split(":");
         double number = Double.parseDouble(convertedTime[0]) + Double.parseDouble(convertedTime[1])/60 - Parameters.timeShift;
         number = inConsistencyCheck(number);
-        DecimalFormat numberFormat = new DecimalFormat("#,00");
-        number = Double.parseDouble(numberFormat.format(number));
         return number;
 
 

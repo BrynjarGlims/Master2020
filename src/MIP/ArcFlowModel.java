@@ -12,7 +12,6 @@ public class ArcFlowModel {
     public GRBEnv env;
     public GRBModel model;
     public Data data;
-    public Result result;
     public int optimstatus;
     public double objval;
     public String symmetry;
@@ -255,35 +254,7 @@ public class ArcFlowModel {
         this.model.set(GRB.IntAttr.ModelSense, GRB.MINIMIZE); // TODO: 20.11.2019 Change objective
     }
 
-    public Result createAndStoreModelResults(boolean hasObjective, int isOptimal) throws IOException, GRBException {
-        /*
-        calculateResultValues();
-        if (hasObjective){
-            System.out.println("Success: "+optimstatus);
-            this.result = new Result(model.get(GRB.DoubleAttr.Runtime), model.get(GRB.DoubleAttr.ObjVal), model.get(GRB.DoubleAttr.MIPGap),model.get(GRB.DoubleAttr.ObjBound), model.get(GRB.DoubleAttr.ObjBoundC),
-                    model.get(GRB.StringAttr.ModelName), dataPath, isOptimal, optimstatus, numVehiclesUsed, numArcsUsed,numTripsUsed, numJourneysUsed, numArcVariables, numTripsGenerated, numJourneyVariables,
-                    volumeOvertime, model.get(GRB.IntAttr.NumVars), model.get(GRB.IntAttr.NumConstrs),
-                    model.get(GRB.IntAttr.NumVars)-model.get(GRB.IntAttr.NumBinVars), model.get(GRB.IntAttr.NumBinVars), model.get(GRB.IntAttr.NumQNZs),
-                    model.get(GRB.IntAttr.SolCount), data.numVehicles, data.numCustomers, numDivCommodity, numNondivCommodity, data.numTrips, data.numPeriods, model.get(GRB.DoubleAttr.NodeCount),0,
-                    preProcessTime, numGeneratedTrips, numGeneratedJourneys, pathsUsed,  symmetry);
-        }
-        else {
-            this.result = new Result(model.get(GRB.DoubleAttr.Runtime), 1000000.00, model.get(GRB.DoubleAttr.MIPGap),model.get(GRB.DoubleAttr.ObjBound), model.get(GRB.DoubleAttr.ObjBoundC),
-                    model.get(GRB.StringAttr.ModelName), dataPath, isOptimal, optimstatus, numVehiclesUsed, numArcsUsed,numTripsUsed, numJourneysUsed, numArcVariables, numTripsGenerated, numJourneyVariables,
-                    volumeOvertime, model.get(GRB.IntAttr.NumVars), model.get(GRB.IntAttr.NumConstrs),
-                    model.get(GRB.IntAttr.NumVars)-model.get(GRB.IntAttr.NumBinVars), model.get(GRB.IntAttr.NumBinVars), model.get(GRB.IntAttr.NumQNZs),
-                    model.get(GRB.IntAttr.SolCount), data.numVehicles, data.numCustomers, numDivCommodity, numNondivCommodity, data.numTrips, data.numPeriods, model.get(GRB.DoubleAttr.NodeCount),0,
-                    preProcessTime, numGeneratedTrips, numGeneratedJourneys, pathsUsed, symmetry);
-        }
-        result.store();
-        System.out.println("Solution stored");
-        return result;
 
-         */
-        System.out.println("not in use");
-        return null;
-
-    }
 
     public void terminateModel() throws GRBException {
         model.dispose();
@@ -1225,7 +1196,7 @@ public class ArcFlowModel {
         
     }
 
-    public Result runModel() {
+    public void runModel() {
         try {
             this.symmetry = Parameters.symmetry;
             System.out.println("Initalize model");
@@ -1242,10 +1213,8 @@ public class ArcFlowModel {
             displayResults(true);
             if (optimstatus == 3) {
                 System.out.println("no solution found");
-                Result res = createAndStoreModelResults(false, 0);
                 System.out.println("Terminate model");
                 terminateModel();
-                return res;
             }
             else if (optimstatus == 2){
                 if (Parameters.plotArcFlow){
@@ -1255,33 +1224,26 @@ public class ArcFlowModel {
 
                 System.out.println("Create and store results");
                 storePath();
-                Result res = createAndStoreModelResults(true,  1);
                 printSolution();
                 System.out.println("Terminate model");
                 terminateModel();
-                return res;
             }
             else{
                 System.out.println("Create and store results");
                 storePath();
-                Result res = createAndStoreModelResults(true, 0);
                 printSolution();
                 System.out.println("Terminate model");
                 terminateModel();
-                return res;
             }
             
 
 
         } catch (GRBException | FileNotFoundException e) {
             System.out.println("ERROR: " + e);
-            return null;
         } catch (Error e) {
             System.out.println(e);
-            return null;
         } catch (IOException e) {
             System.out.println("File directory wrong" + e);
-            return null;
         }
     }
 
