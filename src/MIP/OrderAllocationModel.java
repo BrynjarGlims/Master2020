@@ -6,7 +6,6 @@ import DataFiles.Parameters;
 import Genetic.GiantTourCrossover;
 import Genetic.OrderDistributionCrossover;
 import Individual.Individual;
-import Individual.AdSplit;
 import Population.Population;
 import ProductAllocation.OrderDistribution;
 import gurobi.*;
@@ -14,8 +13,6 @@ import Population.*;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.SQLOutput;
-import java.util.ArrayList;
 import java.util.Iterator;
 
 public class OrderAllocationModel {
@@ -35,11 +32,11 @@ public class OrderAllocationModel {
     private double volumeOvertime = 0;
 
     //variables
-    private GRBVar[][][] uND;
-    private GRBVar[][][] uD;
-    private GRBVar[][][] qND;
-    private GRBVar[][][] qD;
-    private GRBVar[] qO;
+    public GRBVar[][][] uND;
+    public GRBVar[][][] uD;
+    public GRBVar[][][] qND;
+    public GRBVar[][][] qD;
+    public GRBVar[] qO;
 
 
     private void initializeModel(Data data) throws GRBException, FileNotFoundException {
@@ -590,7 +587,7 @@ public class OrderAllocationModel {
     }
 
     private void initializeODObject() throws GRBException {
-        this.orderDistribution.makeDistributionFromMIP( uND, uD, qND, qD, model.get(GRB.DoubleAttr.ObjVal));
+        this.orderDistribution.makeDistributionFromOrderAllocationModel(this);
     }
 
     private OrderDistribution createODFromMIP(Individual individual, Data data) {

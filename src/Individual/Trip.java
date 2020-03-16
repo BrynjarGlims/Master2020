@@ -2,6 +2,7 @@ package Individual;
 
 import DataFiles.Data;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -54,6 +55,10 @@ public class Trip {
         for (int c = 0; c < customers.size(); c++){
             customerToTripIndexMap.put(customers.get(c), c );
         }
+    }
+
+    public List<Integer> getCustomers(){
+        return customers;
     }
 
 

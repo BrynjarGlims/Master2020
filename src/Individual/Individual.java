@@ -1,5 +1,6 @@
 package Individual;
 import DataFiles.*;
+import MIP.ArcFlowModel;
 import Population.Population;
 import ProductAllocation.OrderDistribution;
 
@@ -20,17 +21,14 @@ public class Individual implements Comparable<Individual> {
 
     public Data data;
 
-
     public double infeasibilityOvertimeDrivngValue;
     public double infeasibilityTimeWarpValue;
     public double infeasibilityOverCapacityValue;
     public double feasibleTravelingCost;
     public double feasibleVehicleUseCost;
     public double feasibleOvertimeDepotCost;
-
     public Label[][] bestLabels;
 
-    //// TODO: 18.02.2020 TO be removed
     public Population Population;
 
     //fitness values:
@@ -88,7 +86,6 @@ public class Individual implements Comparable<Individual> {
         this.infeasibilityOverCapacityValue = 0;
         this.infeasibilityOvertimeDrivngValue = 0;
         this.infeasibilityTimeWarpValue = 0;
-
     }
 
     public void makeCustomerToTripMap(){
@@ -98,6 +95,22 @@ public class Individual implements Comparable<Individual> {
             }
         }
     }
+
+    public void setTripMap( HashMap< Integer, HashMap<Integer, Trip>> tripMap ){
+        this.tripMap = tripMap;
+
+    }
+
+    public void setTripList( ArrayList<Trip>[][] tripList){
+        this.tripList = tripList;
+    }
+
+    public void setGiantTour(GiantTour gt){
+        this.giantTour = gt;
+    }
+
+
+
 
     public void makeCustomerToTripMapSingular(int period, int vt){
         int tripCounter;

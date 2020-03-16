@@ -5,6 +5,8 @@ import DataFiles.Data;
 import DataFiles.DataReader;
 import DataFiles.Order;
 import DataFiles.*;
+import MIP.ArcFlowModel;
+import MIP.OrderAllocationModel;
 import gurobi.GRB;
 import gurobi.GRBException;
 import gurobi.GRBVar;
@@ -43,17 +45,57 @@ public class OrderDistribution {
     }
 
 
+
     public void makeInitialDistribution() {
         distributeDividables();
         distributeNonDividables();
     }
 
 
-    public void makeDistributionFromMIP(GRBVar[][][] uND, GRBVar[][][] uD, GRBVar[][][] qND, GRBVar[][][] qD, double objectiveValue) throws GRBException {
-        setVolumeAndOrdersFromMIP( uND, uD, qND, qD);
+    public void makeDistributionFromOrderAllocationModel(OrderAllocationModel oam ) throws GRBException {
+        setVolumeAndOrdersFromMIP( oam.uND, oam.uD, oam.qND, oam.qD);
         setVolumePerPeriod();
-        setFitness(objectiveValue);
+        setFitness();
     }
+
+    public void makeDistributionFromArcFlowModel(ArcFlowModel afm) throws GRBException {
+        setVolumeAndOrdersFromMIP( afm.uND, afm.uD, afm.qND, afm.qD);
+        setVolumePerPeriod();
+        setFitness();
+    }
+
+
+
+    private void setVolumeAndOrdersFromMIP(GRBVar[][][] uND, GRBVar[][][] uD, GRBVar[][][][][] qND, GRBVar[][][][][] qD ) throws GRBException {
+        for (int d = 0; d < data.numberOfPeriods; d++){
+            for (int i = 0; i < data.numberOfCustomers; i++) {
+                for (int m = 0; m < data.customers[i].numberOfDividableOrders; m++){
+                    if (uD[d][i][m].get(GRB.DoubleAttr.X) == 1) {
+                        for (int v = 0; v < data.numberOfVehicles; v++){
+                            for (int r = 0; r < data.numberOfTrips; r++) {
+                                this.orderIdDistribution[d][i].add(data.customers[i].dividableOrders[m].orderID);
+                                this.orderDeliveries[data.customers[i].dividableOrders[m].orderID].addDelivery(d, qD[d][v][r][i][m].get(GRB.DoubleAttr.X));
+                                this.orderVolumeDistribution[d][i] += qD[d][v][r][i][m].get(GRB.DoubleAttr.X);
+                            }
+                        }
+
+                    }
+                }
+                for (int m = 0; m < data.customers[i].numberOfNonDividableOrders; m++){
+                    if (uND[d][i][m].get(GRB.DoubleAttr.X) == 1) {
+                        for (int v = 0; v < data.numberOfVehicles; v++) {
+                            for (int r = 0; r < data.numberOfTrips; r++) {
+                                this.orderIdDistribution[d][i].add(data.customers[i].nonDividableOrders[m].orderID);
+                                this.orderDeliveries[data.customers[i].nonDividableOrders[m].orderID].addDelivery(d, qND[d][v][r][i][m].get(GRB.DoubleAttr.X));
+                                this.orderVolumeDistribution[d][i] += qND[d][v][r][i][m].get(GRB.DoubleAttr.X);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 
     private void setVolumeAndOrdersFromMIP(GRBVar[][][] uND, GRBVar[][][] uD, GRBVar[][][] qND, GRBVar[][][] qD ) throws GRBException {
         for (int d = 0; d < data.numberOfPeriods; d++){
@@ -76,7 +118,7 @@ public class OrderDistribution {
         }
     }
 
-    private void setFitness(double objectiveValue){
+    private void setFitness(){
         fitness = 0;
         for (int p = 0; p < data.numberOfPeriods; p++){
             fitness += Parameters.overtimeCost[p]*Math.max(0, this.volumePerPeriod[p] - Parameters.overtimeLimit[p]);

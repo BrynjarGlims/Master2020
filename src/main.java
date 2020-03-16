@@ -33,7 +33,7 @@ public class main {
 
             //Find best OD for the distribution
             odp.calculateFillingLevelFitnessScoresPlural();
-            for (Individual individual : population.infeasiblePopulation){
+            for (Individual individual : population.infeasiblePopulation){ // TODO: 16/03/2020 Add for feasible population as well
                 individual.testNewOrderDistribution(odp.getBestOrderDistribution(individual)); // TODO: 05.03.2020 Uncomment
             }
 
@@ -71,8 +71,6 @@ public class main {
 
             System.out.println("Number of feasible pop: " + population.feasiblePopulation.size());
             System.out.println("Number of infeasible pop: " + population.infeasiblePopulation.size());
-
-
 
             //reduce size of both populations
             population.reduceSizeToMin();
