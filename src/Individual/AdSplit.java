@@ -176,7 +176,7 @@ public class AdSplit {
 
                     currentCost = (tempDistanceCost)*Parameters.initialDrivingCostPenalty
                             + routeTimeWarp*Parameters.initialTimeWarpPenalty + Parameters.initialCapacityPenalty*(Math.max(0, loadSum-individual.data.vehicleTypes[vt].capacity));
-                    }
+                }
 
                 else if (j != (i+1)) {
                     //add driving time from depot to the first customer
@@ -210,7 +210,7 @@ public class AdSplit {
 
                     currentCost = Parameters.initialCapacityPenalty*(Math.max(0, loadSum-individual.data.vehicleTypes[vt].capacity))
                             + routeTimeWarp*Parameters.initialTimeWarpPenalty + Parameters.initialDrivingCostPenalty*(tempDistanceCost);
-                    }
+                }
                 //Update predecessor label whenever improvements are detected
                 if (costLabel[i] + currentCost < costLabel[j]) {
                     costLabel[j] = costLabel[i] + currentCost;
@@ -302,11 +302,3 @@ public class AdSplit {
     }
 
 }
-
-
-
-
-
-
-
-

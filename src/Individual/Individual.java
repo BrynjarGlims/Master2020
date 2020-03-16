@@ -15,9 +15,8 @@ public class Individual implements Comparable<Individual> {
     public GiantTourSplit giantTourSplit;
     public OrderDistribution orderDistribution;
     public Population population;
-    public CustomerToTrip[][] customerToTrips; //period, customer
-    public HashMap< Integer, HashMap<Integer, Trip>> tripMap; //period, customer
-    public ArrayList<Trip>[][] tripList;  // period, vehicle type
+    public HashMap< Integer, HashMap<Integer, Trip>> tripMap; //period, customer => trip
+    public ArrayList<Trip>[][] tripList; //period, vehicleType
 
     public Data data;
 
@@ -48,7 +47,6 @@ public class Individual implements Comparable<Individual> {
         this.giantTourSplit = new GiantTourSplit(data);
         this.giantTour = new GiantTour(data);
         this.bestLabels = new Label[data.numberOfPeriods][data.numberOfVehicleTypes];
-        this.customerToTrips = new CustomerToTrip[data.numberOfPeriods][data.numberOfCustomers];
         this.initializeTripMap();
         this.initializeTripList();
     }
@@ -88,14 +86,6 @@ public class Individual implements Comparable<Individual> {
         this.infeasibilityTimeWarpValue = 0;
     }
 
-    public void makeCustomerToTripMap(){
-        for (int period = 0 ; period < data.numberOfPeriods ; period++){
-            for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
-                makeCustomerToTripMapSingular(period, vt);
-            }
-        }
-    }
-
     public void setTripMap( HashMap< Integer, HashMap<Integer, Trip>> tripMap ){
         this.tripMap = tripMap;
 
@@ -109,23 +99,7 @@ public class Individual implements Comparable<Individual> {
         this.giantTour = gt;
     }
 
-
-
-
-    public void makeCustomerToTripMapSingular(int period, int vt){
-        int tripCounter;
-        int from;
-        CustomerToTrip ctt;
-        tripCounter = 0;
-        for (int customer = 0 ; customer < giantTour.chromosome[period][vt].size() ; customer++){
-            from = tripCounter == 0 ? 0 : giantTourSplit.chromosome[period][vt].get(tripCounter - 1);
-            ctt = new CustomerToTrip(period, vt, giantTour.chromosome[period][vt].get(customer), customer - from, from, giantTourSplit.chromosome[period][vt].get(tripCounter));
-            customerToTrips[period][giantTour.chromosome[period][vt].get(customer)] = ctt;
-            if (customer + 1 >= giantTourSplit.chromosome[period][vt].get(tripCounter)){
-                tripCounter++;
-            }
-        }
-    }
+    
 
     public void setOptimalOrderDistribution(OrderDistribution orderDistribution){
         setOptimalOrderDistribution(orderDistribution, true);
@@ -166,6 +140,22 @@ public class Individual implements Comparable<Individual> {
             //System.out.println("%%%%%%%%%%%%%%%%% NEW BEST OD FOUND %%%%%%%%%%%%%%%%%%%%%%");
         }
         //System.out.println("###############################");
+    }
+
+    public void setGiantTourFromTrips(){
+        //updates giantTour chromosome from trips changed in education
+        GiantTour gt = new GiantTour(data);
+        ArrayList<Integer> giantTourEntry;
+        for (int period = 0 ; period < data.numberOfPeriods ; period++){
+            for (int vehicleType = 0 ; vehicleType < data.numberOfVehicleTypes ; vehicleType++){
+                giantTourEntry = new ArrayList<>();
+                gt.chromosome[period][vehicleType] = giantTourEntry;
+                for (Trip trip : tripList[period][vehicleType]){
+                    giantTourEntry.addAll(trip.customers);
+                }
+            }
+        }
+        this.giantTour = gt;
     }
 
     public void printDetailedFitness(){

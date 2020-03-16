@@ -44,6 +44,29 @@ public class Trip {
 
     }
 
+    public void removeCustomer(int customer){
+        int index = customerToTripIndexMap.get(customer);
+        customers.remove(index);
+        adjustIndices(customerToTripIndexMap.get(customer));
+        customerToTripIndexMap.remove(customer);
+    }
+
+    public void addCustomer(int customer, int index){
+        customers.add(index, customer);
+        adjustIndices(index);
+    }
+
+    private void adjustIndices(int fromIndex){
+        for (int i = fromIndex ; i < customers.size() ; i++){
+            customerToTripIndexMap.put(customers.get(i), i);
+        }
+    }
+
+    public void setCustomer(int customer, int index){
+        customers.set(index, customer);
+        customerToTripIndexMap.put(customer, index);
+    }
+
 
     public void setCustomers(List<Integer> customers) {
         this.setCustomers(customers, -1);
@@ -61,5 +84,15 @@ public class Trip {
         return customers;
     }
 
+
+    public String toString(){
+        String out = "";
+        out += "\nperiod: " + period;
+        out += "\nvehicleType: " + vehicleType;
+        out += "\ntrip index: " + tripIndex;
+        out += "\ncustomers: " + customers;
+
+        return out;
+    }
 
 }
