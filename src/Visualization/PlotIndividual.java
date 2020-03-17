@@ -100,32 +100,28 @@ public class PlotIndividual {
             }
             addEdge(data.numberOfCustomers, individual.giantTour.chromosome[period][vt].get(0),
                     period + "-" + data.numberOfCustomers + "-" + individual.giantTour.chromosome[period][vt].get(0),
-                    data.vehicles[individual.vehicleAssigment.chromosome[period].get(individual.giantTour.chromosome[period][vt].get(0))], graph);
-            int tempDividerIndex = 0;
-            int tripDivider = individual.giantTourSplit.chromosome[period][vt].get(tempDividerIndex);
-            System.out.println(tripDivider);
-            for (int customer = 1 ; customer < individual.giantTour.chromosome[period][vt].size() ; customer++){
-                if (customer == tripDivider){
+                    data.vehicles[individual.tripList[period][vt].get(0).vehicleID], graph);
+
+            for (int customer = 1 ; customer < individual.tripList[period][vt].size() ; customer++){
+                if (customer == individual.tripList[period][vt].size() -1){
                     addEdge(individual.giantTour.chromosome[period][vt].get(customer - 1), data.numberOfCustomers,
                             period + "-" + individual.giantTour.chromosome[period][vt].get(customer - 1) + "-" + data.numberOfCustomers,
-                            data.vehicles[individual.vehicleAssigment.chromosome[period] .get(individual.giantTour.chromosome[period][vt].get(customer - 1))], graph);
+                            data.vehicles[individual.tripMap.get(period).get(individual.giantTour.chromosome[period][vt].get(customer - 1)).vehicleID], graph);
 
                     addEdge(data.numberOfCustomers, individual.giantTour.chromosome[period][vt].get(customer),
                             period + "-" + data.numberOfCustomers + "-" + individual.giantTour.chromosome[period][vt].get(customer),
-                            data.vehicles[individual.vehicleAssigment.chromosome[period].get(individual.giantTour.chromosome[period][vt].get(customer))], graph);
-                    tempDividerIndex++;
-                    tripDivider = individual.giantTourSplit.chromosome[period][vt].get(tempDividerIndex);
+                            data.vehicles[individual.tripMap.get(period).get(individual.giantTour.chromosome[period][vt].get(customer)).vehicleID], graph);
                 }
                 else {
                     addEdge(individual.giantTour.chromosome[period][vt].get(customer - 1), individual.giantTour.chromosome[period][vt].get(customer),
                             period + "-" + individual.giantTour.chromosome[period][vt].get(customer - 1) + "-" + individual.giantTour.chromosome[period][vt].get(customer),
-                            data.vehicles[individual.vehicleAssigment.chromosome[period].get(individual.giantTour.chromosome[period][vt].get(customer))], graph);
+                            data.vehicles[individual.tripMap.get(period).get(individual.giantTour.chromosome[period][vt].get(customer)).vehicleID], graph);
                 }
             }
             System.out.println(individual.giantTour.chromosome[period][vt].get(individual.giantTour.chromosome[period][vt].size() - 1));
             addEdge(individual.giantTour.chromosome[period][vt].get(individual.giantTour.chromosome[period][vt].size() - 1), data.numberOfCustomers,
                     period + "-" + individual.giantTour.chromosome[period][vt].get(individual.giantTour.chromosome[period][vt].size() - 1) + "-" + data.numberOfCustomers,
-                    data.vehicles[individual.vehicleAssigment.chromosome[period].get(individual.giantTour.chromosome[period][vt].get(individual.giantTour.chromosome[period][vt].size() - 1))], graph);
+                    data.vehicles[individual.tripList[period][vt].get(individual.tripList[period][vt].size()-1).vehicleID], graph);
         }
     }
 

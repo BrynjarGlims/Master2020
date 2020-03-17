@@ -10,6 +10,7 @@ import MIP.OrderAllocationModel;
 import gurobi.GRB;
 import gurobi.GRBException;
 import gurobi.GRBVar;
+import org.nustaq.kson.KsonCharOutput;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -19,9 +20,9 @@ public class OrderDistribution {
 
 
     public double[][] orderVolumeDistribution;  //period, customer
-    public ArrayList<Integer>[][] orderIdDistribution;   //period, customer
+    public ArrayList<Integer>[][] orderIdDistribution;   //period, customer -- orderids, tilsvarende order volumes
     public Data data;
-    public OrderDelivery[] orderDeliveries;  //orderids
+    public OrderDelivery[] orderDeliveries;  //orderids, slår opp på orderIdDistribution verdien
     public double[] volumePerPeriod;
 
     // fitness values
@@ -67,14 +68,17 @@ public class OrderDistribution {
 
 
     private void setVolumeAndOrdersFromMIP(GRBVar[][][] uND, GRBVar[][][] uD, GRBVar[][][][][] qND, GRBVar[][][][][] qD ) throws GRBException {
+        int orderID;
         for (int d = 0; d < data.numberOfPeriods; d++){
             for (int i = 0; i < data.numberOfCustomers; i++) {
                 for (int m = 0; m < data.customers[i].numberOfDividableOrders; m++){
+                    if (d == 0 && i == 0 && m == 0)
                     if (uD[d][i][m].get(GRB.DoubleAttr.X) == 1) {
                         for (int v = 0; v < data.numberOfVehicles; v++){
                             for (int r = 0; r < data.numberOfTrips; r++) {
-                                this.orderIdDistribution[d][i].add(data.customers[i].dividableOrders[m].orderID);
-                                this.orderDeliveries[data.customers[i].dividableOrders[m].orderID].addDelivery(d, qD[d][v][r][i][m].get(GRB.DoubleAttr.X));
+                                orderID = data.customers[i].dividableOrders[m].orderID;
+                                this.orderIdDistribution[d][i].add(orderID);
+                                this.orderDeliveries[orderID].addDelivery(d, qD[d][v][r][i][m].get(GRB.DoubleAttr.X));
                                 this.orderVolumeDistribution[d][i] += qD[d][v][r][i][m].get(GRB.DoubleAttr.X);
                             }
                         }
@@ -85,8 +89,9 @@ public class OrderDistribution {
                     if (uND[d][i][m].get(GRB.DoubleAttr.X) == 1) {
                         for (int v = 0; v < data.numberOfVehicles; v++) {
                             for (int r = 0; r < data.numberOfTrips; r++) {
-                                this.orderIdDistribution[d][i].add(data.customers[i].nonDividableOrders[m].orderID);
-                                this.orderDeliveries[data.customers[i].nonDividableOrders[m].orderID].addDelivery(d, qND[d][v][r][i][m].get(GRB.DoubleAttr.X));
+                                orderID = data.customers[i].nonDividableOrders[m].orderID;
+                                this.orderIdDistribution[d][i].add(orderID);
+                                this.orderDeliveries[orderID].addDelivery(d, qND[d][v][r][i][m].get(GRB.DoubleAttr.X));
                                 this.orderVolumeDistribution[d][i] += qND[d][v][r][i][m].get(GRB.DoubleAttr.X);
                             }
                         }

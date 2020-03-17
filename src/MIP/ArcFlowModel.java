@@ -1234,7 +1234,7 @@ public class ArcFlowModel {
                 System.out.println("Create and store results");
                 storePath();
                 printSolution();
-                createIndividualAndOrderDistributionObject();
+                createIndividualAndOrderDistributionObject();   //this stores the new individual and od
                 System.out.println("Terminate model");
                 terminateModel();
             }
@@ -1261,9 +1261,7 @@ public class ArcFlowModel {
     public void createIndividualAndOrderDistributionObject() throws GRBException {
         this.individual = new Individual(data);
         this.orderDistribution = new OrderDistribution(data);
-        orderDistribution.makeDistributionFromArcFlowModel(this);
-        individual.initializeIndividual(this.orderDistribution);
-
+        ArcFlowConverter.initializeIndividualFromArcFlowModel(this);
     }
 
     public Individual getIndividual(){
@@ -1274,11 +1272,8 @@ public class ArcFlowModel {
         Data data = DataReader.loadData();
         ArcFlowModel arcFlowModel = new ArcFlowModel(data);
         arcFlowModel.runModel();
-        ArcFlowConverter.initializeIndividualFromArcFlowModel(arcFlowModel);
         Individual individual = arcFlowModel.getIndividual();
-        Population pop = new Population(data);
-        pop.addChildToPopulation(individual);
-        Result res = new Result(pop);
+        Result res = new Result(individual);
         res.store();
     }
 

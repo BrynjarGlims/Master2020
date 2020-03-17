@@ -166,10 +166,10 @@ public class OrderAllocationModel {
 
         for (int d = 0; d < data.numberOfPeriods; d++) {
             for (int vt = 0; vt < data.numberOfVehicleTypes; vt++) {
-                if (individual.giantTourSplit.chromosome[d][vt].isEmpty()){
+                if (individual.tripList[d][vt].isEmpty()){
                     break;
                 }
-                Iterator iterator = individual.giantTourSplit.chromosome[d][vt].iterator();
+                Iterator iterator = individual.tripList[d][vt].iterator();
                 int split = (Integer) iterator.next();
                 for (int i = 0; i < individual.giantTour.chromosome[d][vt].size(); i++) {
                     customerID = individual.giantTour.chromosome[d][vt].get(i);

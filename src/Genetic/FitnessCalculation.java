@@ -7,6 +7,7 @@ import Individual.Individual;
 import ProductAllocation.OrderDistribution;
 import ProjectReport.Journey;
 import scala.xml.PrettyPrinter;
+import Individual.Trip;
 
 
 public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove parts of code in LabelEntryClass
@@ -39,17 +40,13 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
     public static double getSingleChromosomeFitness(int vt, int p, Individual individual, OrderDistribution orderDistribution) {
         double tripLoad = 0;
         double singleChromosomeFitness = 0;
-        if (!individual.giantTourSplit.chromosome[p][vt].isEmpty()) {
-            Iterator iterator = individual.giantTourSplit.chromosome[p][vt].iterator();
-            int split = (Integer) iterator.next();
-            for (int i = 0; i < individual.giantTour.chromosome[p][vt].size(); i++) {
-                tripLoad += orderDistribution.orderVolumeDistribution[p][individual.giantTour.chromosome[p][vt].get(i)];
-                if (i == split-1) {
-                    singleChromosomeFitness += calculateJourneyLoadPunishment(tripLoad, vt, individual);
-                    tripLoad = 0;
-                    if (i != individual.giantTour.chromosome[p][vt].size() - 1)
-                        split = (Integer) iterator.next();
-                    }
+        if (!individual.tripList[p][vt].isEmpty()) {
+            for (Trip trip : individual.tripList[p][vt]){
+                for (int customerID : trip.getCustomers()){
+                    tripLoad += orderDistribution.orderVolumeDistribution[p][customerID];
+                }
+                singleChromosomeFitness += calculateJourneyLoadPunishment(tripLoad, vt, individual);
+                tripLoad = 0;
             }
         }
         return singleChromosomeFitness;

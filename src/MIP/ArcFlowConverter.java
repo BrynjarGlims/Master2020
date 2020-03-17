@@ -23,12 +23,12 @@ public class ArcFlowConverter {
     public static void initializeIndividualFromArcFlowModel(ArcFlowModel afm) throws GRBException {
         arcFlowModel = afm;
         data = arcFlowModel.data;
-        orderDistribution = new OrderDistribution(data);
+        orderDistribution = afm.getOrderDistribution();
         orderDistribution.makeDistributionFromArcFlowModel(arcFlowModel);
-        individual = new Individual(data);
+        individual = afm.getIndividual();
         //set giant tour chromosome and support strucutres in new individual
         initializeGiantTourInIndividual(arcFlowModel);
-
+        individual.setOrderDistribution(orderDistribution);
     }
 
 
@@ -105,7 +105,8 @@ public class ArcFlowConverter {
                         for( int i = 0; i < data.numberOfCustomers; i++){
                             if (arcFlowModel.x[p][v][r][data.numberOfCustomers][i].get(GRB.DoubleAttr.X) == 1){
                                 currentTrip = new Trip(data);
-                                customers = new ArrayList<>(i);
+                                customers = new ArrayList<>();
+                                customers.add(i);
                                 currentTrip.initialize(p, data.vehicles[v].vehicleType.vehicleTypeID, v);
                                 fromCustomer = i;
                                 while (arcFlowModel.x[p][v][r][fromCustomer][data.numberOfCustomers+1].get(GRB.DoubleAttr.X) == 0){
@@ -126,6 +127,22 @@ public class ArcFlowConverter {
                 }
             }
         }
+        for(int p = 0; p < data.numberOfPeriods; p++){
+            for (int vt = 0; vt < data.numberOfVehicleTypes; vt ++){
+                checkIfEmpty(tripList[p][vt]);
+            }
+        }
+    }
+
+    private static void checkIfEmpty( ArrayList<Trip> tripList){
+        for(Trip trip : tripList){
+            if (trip.getCustomers().size() == 0){
+                System.out.println("Empty trip is found");
+
+
+            }
+        }
+
     }
 
     private static ArrayList<Trip>[][] setTripList(){

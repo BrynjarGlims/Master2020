@@ -11,13 +11,10 @@ import java.util.HashMap;
 public class Individual implements Comparable<Individual> {
     //chromosomes
     public GiantTour giantTour;  //period, vehicleType
-    public VehicleAssigment vehicleAssigment;
-    public GiantTourSplit giantTourSplit;
     public OrderDistribution orderDistribution;
     public Population population;
     public HashMap< Integer, HashMap<Integer, Trip>> tripMap; //period, customer => trip
     public ArrayList<Trip>[][] tripList; //period, vehicleType
-
     public Data data;
 
     public double infeasibilityOvertimeDrivngValue;
@@ -43,8 +40,6 @@ public class Individual implements Comparable<Individual> {
 
     public Individual(Data data) {
         this.data = data;
-        this.vehicleAssigment = new VehicleAssigment(data);
-        this.giantTourSplit = new GiantTourSplit(data);
         this.giantTour = new GiantTour(data);
         this.bestLabels = new Label[data.numberOfPeriods][data.numberOfVehicleTypes];
         this.initializeTripMap();
@@ -78,7 +73,6 @@ public class Individual implements Comparable<Individual> {
     public void initializeIndividual(OrderDistribution od) {
         //set chromosome
         this.orderDistribution = od;
-        giantTourSplit.initialize();
         giantTour.initializeGiantTour();
 
         this.infeasibilityOverCapacityValue = 0;
@@ -99,7 +93,7 @@ public class Individual implements Comparable<Individual> {
         this.giantTour = gt;
     }
 
-    
+
 
     public void setOptimalOrderDistribution(OrderDistribution orderDistribution){
         setOptimalOrderDistribution(orderDistribution, true);
@@ -113,33 +107,22 @@ public class Individual implements Comparable<Individual> {
         this.updateFitness();
     }
 
+    public void setOrderDistribution(OrderDistribution od){
+        this.orderDistribution = od;
+    }
+
     public void testNewOrderDistribution(OrderDistribution orderDistribution){
         if (orderDistribution.equals(this.orderDistribution)){ // TODO: 06.03.2020 Remove print
             return;
         }
         double currentFitness = this.getFitness(false);
-        //System.out.println("Fitness before adsplit: " + currentFitness );
-        //this.printDetailedFitness();
-        //System.out.println("Order distribution: " + this.orderDistribution.hashCode());
         OrderDistribution currentOrderDistribution = this.orderDistribution;
         this.setOptimalOrderDistribution(orderDistribution);
-        //System.out.println("Fitness on new individual: " + this.getFitness(false) );
-        //this.printDetailedFitness();
-        //System.out.println("Order distribution: " + this.orderDistribution.hashCode());
 
         if (this.getFitness(false) > currentFitness){  // // TODO: 05.03.2020 Make more efficient
             this.setOptimalOrderDistribution(currentOrderDistribution);  //NOT WORKING
-
-            //System.out.println("Fitness after adsplit: " + this.getFitness(false) );
-            //this.printDetailedFitness();
-            //System.out.println("Order distribution: " + this.orderDistribution.hashCode());
-
-
         }
-        else{
-            //System.out.println("%%%%%%%%%%%%%%%%% NEW BEST OD FOUND %%%%%%%%%%%%%%%%%%%%%%");
-        }
-        //System.out.println("###############################");
+
     }
 
     public void setGiantTourFromTrips(){

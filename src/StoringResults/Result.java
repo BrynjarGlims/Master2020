@@ -31,7 +31,7 @@ public class Result {
     Data data;
     Individual bestIndividual;
     OrderDistribution bestOD;
-    ArcFlowModel afm;
+
 
 
 
@@ -40,6 +40,12 @@ public class Result {
         this.data = population.data;
         this.bestIndividual = population.returnBestIndividual();
         this.bestOD = bestIndividual.orderDistribution;
+    }
+
+    public Result(Individual individual){
+        this.data = individual.data;
+        this.bestIndividual = individual;
+        this.bestOD = individual.orderDistribution;
     }
 
 
@@ -217,9 +223,15 @@ public class Result {
             else{
                 for (int period = 0; period < data.numberOfPeriods; period++ ){
                     if (orderDelivery.orderPeriods[period] == 0){
-                        break;
+                        continue;
                     }
                     else{
+                        if (!bestIndividual.tripMap.get(period).containsKey(orderDelivery.order.customerID)){
+                            int custid = orderDelivery.order.customerID;
+                            System.out.println("Wrong delivery");
+                            continue;
+
+                        }
                         vehicleID = bestIndividual.tripMap.get(period).get(orderDelivery.order.customerID).vehicleID;
                         String[] results = {String.valueOf(orderDelivery.order.orderID), Converter.dividableConverter(orderDelivery.dividable),
                         orderDelivery.order.commodityFlow, formatter.format(orderDelivery.orderVolumes[period]), Converter.periodConverter(period),
@@ -264,7 +276,7 @@ public class Result {
         Data data = DataReader.loadData();
         Population population = new Population(data);
         OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
-        GiantTourCrossover GTC = new GiantTourCrossover(data);
+        GiantTourCrossover GTC = new GiantTourCrossover();
         OrderDistributionCrossover ODC = new OrderDistributionCrossover(data);
         odp.initializeOrderDistributionPopulation(population);
         OrderDistribution firstOD = odp.getRandomOrderDistribution();

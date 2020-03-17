@@ -77,7 +77,7 @@ public class GiantTourCrossover {
                 for (int j = 0; j < beta ; j++){
                     copyArrayList.add(getRoute(parent1, i).get(j));
                 }
-                for (int j = alpha ; j <getRoute(parent1, i).size() ; j++){
+                for (int j = alpha ; j < getRoute(parent1, i).size() ; j++){
                     copyArrayList.add(getRoute(parent1, i).get(j));
                 }
             }
@@ -213,6 +213,13 @@ public class GiantTourCrossover {
 
     public static void main(String[] args){
         Data data = DataReader.loadData();
+        int correctCustomers = 0;
+        for (Customer customer : data.customers){
+            if(customer.numberOfNonDividableOrders == customer.numberOfVisitPeriods){
+                correctCustomers++;
+            }
+        }
+
         OrderDistribution od1 = new OrderDistribution(data);
         od1.makeInitialDistribution();
         Individual individual1 = new Individual(data);
