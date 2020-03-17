@@ -29,7 +29,6 @@ public class Education {
         int[] taboo;
         int index = 0;
         individual.updateFitness();
-        System.out.println(individual.fitness);
         int totalImprovements = 0;
         for (int c : customers) {
             taboo = new int[Parameters.EducationTabooSize];
@@ -145,7 +144,6 @@ public class Education {
         individual.setGiantTourFromTrips();
         AdSplit.adSplitPlural(individual);
         individual.updateFitness();
-        System.out.println(individual.fitness);
     }
 
 
