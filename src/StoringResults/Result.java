@@ -260,7 +260,6 @@ public class Result {
         Data data = DataReader.loadData();
         Population population = new Population(data);
         OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
-        GiantTourCrossover GTC = new GiantTourCrossover(data);
         OrderDistributionCrossover ODC = new OrderDistributionCrossover(data);
         odp.initializeOrderDistributionPopulation(population);
         OrderDistribution firstOD = odp.getRandomOrderDistribution();
