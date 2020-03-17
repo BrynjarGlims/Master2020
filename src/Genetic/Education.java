@@ -28,7 +28,6 @@ public class Education {
         boolean tabooed;
         int[] taboo;
         int index = 0;
-        individual.updateFitness();
         int totalImprovements = 0;
         for (int c : customers) {
             taboo = new int[Parameters.EducationTabooSize];
@@ -143,7 +142,6 @@ public class Education {
         }
         individual.setGiantTourFromTrips();
         AdSplit.adSplitPlural(individual);
-        individual.updateFitness();
     }
 
 
