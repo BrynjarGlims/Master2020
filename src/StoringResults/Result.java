@@ -174,7 +174,7 @@ public class Result {
                     Converter.convertTimeWindow(c.timeWindow[1][0], c.timeWindow[1][1]), Converter.convertTimeWindow(c.timeWindow[2][0], c.timeWindow[2][1]),
                     Converter.convertTimeWindow(c.timeWindow[3][0], c.timeWindow[3][1]), Converter.convertTimeWindow(c.timeWindow[4][0], c.timeWindow[4][1]),
                     Converter.convertTimeWindow(c.timeWindow[5][0], c.timeWindow[5][1]),
-                    String.format("%.5f", c.totalUnloadingTime*60)};
+                    String.format("%.0f", c.totalUnloadingTime*60)};
             csvWriter.writeNext(results, false);
         }
         csvWriter.close();

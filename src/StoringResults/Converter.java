@@ -58,11 +58,10 @@ public class Converter {
 
     public static String convertTimeWindow(double startTime, double endTime) {
         if (startTime < endTime + FileParameters.indifferenceValue && startTime + FileParameters.indifferenceValue > endTime) {
-            return "------";
+            return "--------------";
         }
-        return String.format("%.0f", Parameters.timeShift + startTime) + ":" + String.format("%.0f", (startTime - (int) startTime) * 60)
-                + " | " + String.format("%.0f", Parameters.timeShift + endTime) + ":" +
-                String.format("%.0f", (endTime - (int) endTime) * 60);
+        return String.format("%02d:%02d", (int)((Parameters.timeShift + startTime) ), (int) ((60*(Parameters.timeShift + startTime)) % 60)) +
+                 " | " + String.format("%02d:%02d", (int) (Parameters.timeShift + endTime), (int) ((60*(Parameters.timeShift + endTime)) % 60));
     }
 
     public static String calculateTotalOrderVolume(Customer c, Data data) {
