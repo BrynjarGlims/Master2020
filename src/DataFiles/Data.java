@@ -3,6 +3,7 @@ package DataFiles;
 
 import gurobi.GRBVar;
 import org.numenta.nupic.util.ArrayUtils;
+import scala.xml.PrettyPrinter;
 
 import java.lang.*;
 import java.util.Arrays;
@@ -107,7 +108,7 @@ public class Data {
                 intDistanceCopy[i] = (int) distanceCopy[i];
             }
             argSortedDistance = ArrayUtils.argsort(intDistanceCopy);
-            for (int n = 1 ; n <= Parameters.nearestNeighbors; n++){
+            for (int n = 1 ; n <= Math.min(numberOfCustomers, Parameters.nearestNeighbors); n++){
                 customers[customer].nearestNeighbors.add(customers[argSortedDistance[n]]);
             }
         }

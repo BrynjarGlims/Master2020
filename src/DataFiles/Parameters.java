@@ -9,15 +9,15 @@ public class Parameters {
     public static final String vehicleFilePath = "data/Vehicles.csv";
 
     //Population parameters
-    public static final int maximumSubIndividualPopulationSize = 200; //TODO: find reasonable value
-    public static final int minimumSubIndividualPopulationSize = 50;
+    public static final int maximumSubIndividualPopulationSize = 60; //TODO: find reasonable value
+    public static final int minimumSubIndividualPopulationSize = 40;
     public static final int numberOfElitismSurvivorsPerGeneration = 5;
 
-    public static final int initialPopulationSize = 100;
+    public static final int initialPopulationSize = 20;
     public static final int initialOrderDistributionPopulationSize = 10;
 
     public static final int maxNumberIterationsWithoutImprovement = 10;
-    public static final int maxNumberOfGenerations = 50;
+    public static final int maxNumberOfGenerations = 10;
     public static final double minimumFitnessDifferenceForClones = 10; //minimum fitness difference to encounter two individuals as clones
 
     //Decision parameters
@@ -75,7 +75,7 @@ public class Parameters {
 
 
     //GUROBI PARAMETERS
-    public static final double greedyMIPValue = 0.5;
+    public static final double greedyMIPValue = 0;
     public static final String symmetry =  "car";      // // none, car, trips, customers, cost, duration
     public static final double modelTimeLimit = 10000;
     public static final double modelMipGap = 0.0001;
