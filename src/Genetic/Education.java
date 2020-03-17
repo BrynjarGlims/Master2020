@@ -145,7 +145,6 @@ public class Education {
         individual.setGiantTourFromTrips();
         AdSplit.adSplitPlural(individual);
         individual.updateFitness();
-        System.out.println(individual.fitness);
     }
 
 
