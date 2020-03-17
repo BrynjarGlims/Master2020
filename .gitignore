@@ -22,6 +22,7 @@
 *.xml
 *.iml
 *.ilp
+*.DS_Store
 
 # folders
 .idea/
