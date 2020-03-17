@@ -108,7 +108,7 @@ public class Data {
                 intDistanceCopy[i] = (int) distanceCopy[i];
             }
             argSortedDistance = ArrayUtils.argsort(intDistanceCopy);
-            for (int n = 1 ; n <= Math.min(numberOfCustomers, Parameters.nearestNeighbors); n++){
+            for (int n = 1 ; n <= Math.min(numberOfCustomers - 1, Parameters.nearestNeighbors); n++){
                 customers[customer].nearestNeighbors.add(customers[argSortedDistance[n]]);
             }
         }
