@@ -8,7 +8,6 @@ public class Parameters {
     public static final String timeWindowsFilePath = "data/Time_windows.csv";
     public static final String vehicleFilePath = "data/Vehicles.csv";
 
-
     //Population parameters
     public static final int maximumSubIndividualPopulationSize = 200; //TODO: find reasonable value
     public static final int minimumSubIndividualPopulationSize = 50;
@@ -29,8 +28,9 @@ public class Parameters {
 
 
     //Loading data parameters
-    public static final int numberOfCustomers = 50;
-    public static final int numberOfVehicles = 10;
+    public static final int numberOfCustomers = 5;
+    public static final int numberOfVehicles = 5;
+
 
 
 

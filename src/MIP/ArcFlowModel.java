@@ -1,5 +1,9 @@
 package MIP;
 import DataFiles.*;
+import Individual.Individual;
+import Population.Population;
+import ProductAllocation.OrderDistribution;
+import StoringResults.Result;
 import gurobi.*;
 
 import java.io.FileNotFoundException;
@@ -7,6 +11,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class ArcFlowModel {
+
+    private Individual individual;
+    private OrderDistribution orderDistribution;
 
 
     public GRBEnv env;
@@ -45,6 +52,9 @@ public class ArcFlowModel {
 
     public ArrayList<ArrayList<ArrayList<ArrayList<Integer>>>> pathsUsed; // TODO: 23.11.2019 Remove
 
+    public ArcFlowModel(Data data){
+        this.data = data;
+    }
 
 
     public void initializeModel() throws GRBException, FileNotFoundException {
@@ -53,7 +63,6 @@ public class ArcFlowModel {
         this.env.start();
         this.model = new GRBModel(env);
         model.set(GRB.StringAttr.ModelName, "ArcFlowModel");
-        this.data = DataReader.loadData();
     }
 
 
@@ -1225,6 +1234,7 @@ public class ArcFlowModel {
                 System.out.println("Create and store results");
                 storePath();
                 printSolution();
+                createIndividualAndOrderDistributionObject();
                 System.out.println("Terminate model");
                 terminateModel();
             }
@@ -1235,9 +1245,6 @@ public class ArcFlowModel {
                 System.out.println("Terminate model");
                 terminateModel();
             }
-            
-
-
         } catch (GRBException | FileNotFoundException e) {
             System.out.println("ERROR: " + e);
         } catch (Error e) {
@@ -1247,10 +1254,32 @@ public class ArcFlowModel {
         }
     }
 
-    public static void main(String[] args) {
-        ArcFlowModel arcFlowModel = new ArcFlowModel();
-        arcFlowModel.runModel();
+    public OrderDistribution getOrderDistribution(){
+        return this.orderDistribution;
+    }
 
+    public void createIndividualAndOrderDistributionObject() throws GRBException {
+        this.individual = new Individual(data);
+        this.orderDistribution = new OrderDistribution(data);
+        orderDistribution.makeDistributionFromArcFlowModel(this);
+        individual.initializeIndividual(this.orderDistribution);
+
+    }
+
+    public Individual getIndividual(){
+        return this.individual;
+    }
+
+    public static void main(String[] args) throws GRBException, IOException {
+        Data data = DataReader.loadData();
+        ArcFlowModel arcFlowModel = new ArcFlowModel(data);
+        arcFlowModel.runModel();
+        ArcFlowConverter.initializeIndividualFromArcFlowModel(arcFlowModel);
+        Individual individual = arcFlowModel.getIndividual();
+        Population pop = new Population(data);
+        pop.addChildToPopulation(individual);
+        Result res = new Result(pop);
+        res.store();
     }
 
 }

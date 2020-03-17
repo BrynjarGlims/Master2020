@@ -4,6 +4,7 @@ import DataFiles.*;
 import Genetic.GiantTourCrossover;
 import Genetic.OrderDistributionCrossover;
 import Individual.Individual;
+import MIP.ArcFlowModel;
 import Population.Population;
 import ProductAllocation.OrderDelivery;
 import ProductAllocation.OrderDistribution;
@@ -30,6 +31,7 @@ public class Result {
     Data data;
     Individual bestIndividual;
     OrderDistribution bestOD;
+    ArcFlowModel afm;
 
 
 
@@ -39,6 +41,8 @@ public class Result {
         this.bestIndividual = population.returnBestIndividual();
         this.bestOD = bestIndividual.orderDistribution;
     }
+
+
 
     public void store() throws IOException {
 

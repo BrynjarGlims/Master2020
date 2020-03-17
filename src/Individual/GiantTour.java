@@ -19,6 +19,9 @@ public class GiantTour {
         chromosome = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
     }
 
+    public void setChromosome(ArrayList<Integer>[][] chromosome) {
+        this.chromosome = chromosome;
+    }
 
     public void initializeGiantTour() {
         constructChromosome(data.numberOfPeriods, data.numberOfVehicleTypes);
