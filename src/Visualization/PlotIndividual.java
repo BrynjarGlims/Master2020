@@ -118,7 +118,6 @@ public class PlotIndividual {
                             data.vehicles[individual.tripMap.get(period).get(individual.giantTour.chromosome[period][vt].get(customer)).vehicleID], graph);
                 }
             }
-            System.out.println(individual.giantTour.chromosome[period][vt].get(individual.giantTour.chromosome[period][vt].size() - 1));
             addEdge(individual.giantTour.chromosome[period][vt].get(individual.giantTour.chromosome[period][vt].size() - 1), data.numberOfCustomers,
                     period + "-" + individual.giantTour.chromosome[period][vt].get(individual.giantTour.chromosome[period][vt].size() - 1) + "-" + data.numberOfCustomers,
                     data.vehicles[individual.tripList[period][vt].get(individual.tripList[period][vt].size()-1).vehicleID], graph);
@@ -128,7 +127,7 @@ public class PlotIndividual {
 
     private void addEdge(int from, int to, String edgeId, Vehicle vehicle, Graph graph){
         Edge edge = graph.addEdge(edgeId + counter, from, to, true);
-        System.out.println("from " + from + " to " + to);
+        //System.out.println("from " + from + " to " + to);
         edge.setAttribute("ui.style", String.format("fill-color: %s;", colorMap.get(vehicle.vehicleType.vehicleTypeID).get(vehicle.vehicleID)));
         counter++;
     }

@@ -86,6 +86,6 @@ public class Parameters {
 
     //PLOT PARAMETERS
     public static final boolean savePlots = false;
-    public static final boolean verbose = true;
+    public static final boolean verbose = false;
 
 }
