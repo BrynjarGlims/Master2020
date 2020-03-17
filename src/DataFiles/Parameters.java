@@ -9,15 +9,15 @@ public class Parameters {
     public static final String vehicleFilePath = "data/Vehicles.csv";
 
     //Population parameters
-    public static final int maximumSubIndividualPopulationSize = 60; //TODO: find reasonable value
+    public static final int maximumSubIndividualPopulationSize = 100; //TODO: find reasonable value
     public static final int minimumSubIndividualPopulationSize = 40;
     public static final int numberOfElitismSurvivorsPerGeneration = 5;
 
-    public static final int initialPopulationSize = 20;
+    public static final int initialPopulationSize = 50;
     public static final int initialOrderDistributionPopulationSize = 10;
 
     public static final int maxNumberIterationsWithoutImprovement = 10;
-    public static final int maxNumberOfGenerations = 10;
+    public static final int maxNumberOfGenerations = 50;
     public static final double minimumFitnessDifferenceForClones = 10; //minimum fitness difference to encounter two individuals as clones
 
     //Decision parameters

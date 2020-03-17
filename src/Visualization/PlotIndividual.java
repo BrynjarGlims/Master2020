@@ -163,18 +163,9 @@ public class PlotIndividual {
         }
     }
 
-
     public static void main(String[] args){
         Data data = DataReader.loadData();
         OrderDistribution od = new OrderDistribution(data);
-
-
         //todo: implement
-
-
     }
-
-
-
-
 }

@@ -39,19 +39,20 @@ public class AdSplit {
         }
     }
 
-    public static void checkIfAllOrdersAreSatisfied(int p){
+    private static void checkIfAllOrdersAreSatisfied(int p){
         for (OrderDelivery orderDelivery : individual.orderDistribution.orderDeliveries){
             if (orderDelivery.getPeriod() != p)
                 continue;
             if (!orderDelivery.dividable){
                 if (!individual.tripMap.get(orderDelivery.getPeriod()).containsKey(orderDelivery.order.customerID)){
                     System.out.println("Missing hashmap: P:" + orderDelivery.getPeriod() + ", C:" + orderDelivery.order.customerID );
+                    System.out.println("Is this combination a valid visit day: " + individual.data.customers[orderDelivery.order.customerID].requiredVisitPeriod[orderDelivery.getPeriod()]);
                 }
             }
         }
     }
 
-    public static void tripAssignment( Label label, ArrayList<ArrayList<Integer>> matrixOfTrips){
+    private static void tripAssignment( Label label, ArrayList<ArrayList<Integer>> matrixOfTrips){
         int p = label.periodID;
         int vt = label.vehicleTypeID;
         Trip tempTrip;
@@ -72,7 +73,7 @@ public class AdSplit {
 
 
 
-    public static void setTripMap(int p, int vt){
+    private static void setTripMap(int p, int vt){
         for (Trip trip : individual.tripList[p][vt]){
             for (int customerID : trip.customers){
                 individual.tripMap.get(p).put(customerID, trip);
@@ -90,7 +91,7 @@ public class AdSplit {
 
     }
 
-    public static void testTimeWarpValues(ArrayList<ArrayList<Integer>> listOfTrips, ArrayList<Double> arcCost, Data data, int p , int vt ) {
+    private static void testTimeWarpValues(ArrayList<ArrayList<Integer>> listOfTrips, ArrayList<Double> arcCost, Data data, int p , int vt ) {
         boolean fromDepot = true;
         int lastCustomerID = -1;
         double currentVehicleTime = 0;

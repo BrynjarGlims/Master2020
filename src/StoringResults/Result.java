@@ -57,6 +57,7 @@ public class Result {
         storeSummary(fileName);
         createDetailedDirectory(fileName);
         storeDetailed(fileName);
+        System.out.println("Storing complete");
 
     }
 

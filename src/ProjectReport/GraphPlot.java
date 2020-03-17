@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 public class GraphPlot {
     private HashMap<Integer, String> colorMap = new HashMap<>();
-    private Data data;
+    private DataMIP dataMIP;
     FileSinkImages fs = new FileSinkImages(FileSinkImages.OutputType.png, FileSinkImages.Resolutions.HD720);
 
     private String[] COLORS = {
@@ -20,12 +20,12 @@ public class GraphPlot {
     }; // pink, yellow, teal, green, blue, purple, orange, red, olive, brown, violet, lime, dark green, turquise, dark blue, dark purple
 
 
-    public GraphPlot(Data data) {
-        this.data = data;
+    public GraphPlot(DataMIP dataMIP) {
+        this.dataMIP = dataMIP;
     }
 
     private Graph makeGraph(int day, boolean arcFlow){
-        String graphId = arcFlow ? data.instanceName + "-arcFlow-day-" + day : data.instanceName + "-pathFlow-day-" + day;
+        String graphId = arcFlow ? dataMIP.instanceName + "-arcFlow-day-" + day : dataMIP.instanceName + "-pathFlow-day-" + day;
         Graph graph = new MultiGraph(graphId);
         System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
         graph.addAttribute("ui.stylesheet", "url('resources/style.css')");
@@ -35,22 +35,22 @@ public class GraphPlot {
     }
 
     private void setColorMap(){
-        for (Vehicle v : data.vehicles){
+        for (Vehicle v : dataMIP.vehicles){
             colorMap.putIfAbsent(v.vehicleID, COLORS[v.vehicleID]);
         }
     }
 
     private void addDepotToGraph(Graph graph){
-        int id = data.numCustomers;
-        double x = data.xCoordinateDepot;
-        double y = data.yCoordinateDepot;
+        int id = dataMIP.numCustomers;
+        double x = dataMIP.xCoordinateDepot;
+        double y = dataMIP.yCoordinateDepot;
         Node node;
         String nodeId = "d" + id;
         node = graph.addNode(nodeId);
         node.setAttribute("xy", x, y);
         node.addAttribute("ui.class", "depot");
         node.addAttribute("ui.label", "depot");
-        System.out.println("node: " + graph.getNode(data.numCustomers));
+        System.out.println("node: " + graph.getNode(dataMIP.numCustomers));
 
     }
 
@@ -71,16 +71,16 @@ public class GraphPlot {
         int from;
         int to;
         String edgeId;
-        for (int v = 0; v < data.numVehicles; v++) {
-            for (int r = 0; r < data.numTrips; r++) {
-                for (int i = 0; i < data.numNodes; i++) {
-                    for (int j = 0; j < data.numNodes; j++) {
-                        if (data.arcs[d][v][r][i][j].get(GRB.DoubleAttr.X) == 1){
-                            from = Math.min(i, data.numCustomers);
-                            to = Math.min(j, data.numCustomers);
+        for (int v = 0; v < dataMIP.numVehicles; v++) {
+            for (int r = 0; r < dataMIP.numTrips; r++) {
+                for (int i = 0; i < dataMIP.numNodes; i++) {
+                    for (int j = 0; j < dataMIP.numNodes; j++) {
+                        if (dataMIP.arcs[d][v][r][i][j].get(GRB.DoubleAttr.X) == 1){
+                            from = Math.min(i, dataMIP.numCustomers);
+                            to = Math.min(j, dataMIP.numCustomers);
                             edgeId = d + "-" + v + "-" + r + "-" + from + "-" + to;
                             Edge edge = graph.addEdge(edgeId, from, to, true);
-                            edge.setAttribute("ui.style", String.format("fill-color: %s;", colorMap.get(data.vehicles[v].vehicleID)));
+                            edge.setAttribute("ui.style", String.format("fill-color: %s;", colorMap.get(dataMIP.vehicles[v].vehicleID)));
                         }
                     }
                 }
@@ -98,24 +98,24 @@ public class GraphPlot {
         int from;
         int to;
         String edgeId;
-        for (int v = 0; v < data.numVehicles; v++) {
-            for (int r = 0; r < data.numTrips; r++) {
-                for (Path p : data.pathMap.get(d).get(data.vehicles[v].vehicleType.type)) {
-                    if (data.paths[d][v][r][p.pathId].get(GRB.DoubleAttr.X) == 1){
-                        from = data.numCustomers;
+        for (int v = 0; v < dataMIP.numVehicles; v++) {
+            for (int r = 0; r < dataMIP.numTrips; r++) {
+                for (Path p : dataMIP.pathMap.get(d).get(dataMIP.vehicles[v].vehicleType.type)) {
+                    if (dataMIP.paths[d][v][r][p.pathId].get(GRB.DoubleAttr.X) == 1){
+                        from = dataMIP.numCustomers;
                         to = p.customers[0].customerID;
                         edgeId = d + "-" + v + "-" + r + "-" + from + "-" + to;
-                        addEdge(from, to, edgeId, data.vehicles[v].vehicleID, graph);
+                        addEdge(from, to, edgeId, dataMIP.vehicles[v].vehicleID, graph);
                         for (int i = 1 ; i < p.customers.length ; i++){
                             from = p.customers[i-1].customerID;
                             to = p.customers[i].customerID;
                             edgeId = d + "-" + v + "-" + r + "-" + from + "-" + to;
-                            addEdge(from, to, edgeId, data.vehicles[v].vehicleID, graph);
+                            addEdge(from, to, edgeId, dataMIP.vehicles[v].vehicleID, graph);
                         }
                         from = p.customers[p.customers.length-1].customerID;
-                        to = data.numCustomers;
+                        to = dataMIP.numCustomers;
                         edgeId = d + "-" + v + "-" + r + "-" + from + "-" + to;
-                        addEdge(from, to, edgeId, data.vehicles[v].vehicleID, graph);
+                        addEdge(from, to, edgeId, dataMIP.vehicles[v].vehicleID, graph);
                     }
                 }
             }
@@ -127,7 +127,7 @@ public class GraphPlot {
     private Graph fillGraph(int day, boolean save, boolean arcFlow) throws GRBException {
         Graph graph = makeGraph(day, arcFlow);
         // add customers to graph
-        for (Customer c : data.customers){
+        for (Customer c : dataMIP.customers){
             addCustomerToGraph(c, graph);
         }
         //add depot to graph
@@ -147,7 +147,7 @@ public class GraphPlot {
         // initialize colors
         setColorMap();
         ArrayList<Graph> graphs = new ArrayList<>();
-        for (int d = 0 ; d < data.numPeriods ; d++){
+        for (int d = 0; d < dataMIP.numPeriods ; d++){
             Graph g = fillGraph(d, true, arcFlow);
             graphs.add(g);
         }

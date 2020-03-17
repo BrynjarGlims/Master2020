@@ -5,14 +5,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class PathGenerator {
 
 
-    private Data data;
+    private DataMIP dataMIP;
 
-    public PathGenerator(Data data) {
-        this.data = data;
+    public PathGenerator(DataMIP dataMIP) {
+        this.dataMIP = dataMIP;
     }
 
     private Customer[] sortCustomerByVisitTime(int period) {
-        Customer[] customers = Arrays.copyOf(data.customers, data.numCustomers);
+        Customer[] customers = Arrays.copyOf(dataMIP.customers, dataMIP.numCustomers);
         Customer[] reduced = Arrays.stream(customers).filter(c -> c.visitDays[period] == 1).toArray(Customer[]::new);
         Arrays.stream(reduced).forEach(c -> c.setCurrentPeriod(period));
         Customer[] sorted = Arrays.stream(reduced).sorted(Comparator.comparing(Customer::getEndTimeWindow)).toArray(Customer[]::new);
@@ -43,7 +43,7 @@ public class PathGenerator {
         updatedVisit.add(newVisit);
         paths.add(createPath(updatedVisit, customers, vehicle, period, latestTimes, earliestTimes, pathIndex));
 
-        double travelTime = lastVisit == -1 ? customers[newVisit].distanceToDepot : data.getDistance(customers[lastVisit], customers[newVisit]); //checks if it is start of route
+        double travelTime = lastVisit == -1 ? customers[newVisit].distanceToDepot : dataMIP.getDistance(customers[lastVisit], customers[newVisit]); //checks if it is start of route
         double newTime = Math.max(currentTime + travelTime, earliestTimes[newVisit]) + customers[newVisit].fixedUnloadingTime;
         double newRemainingCapacity = remainingCapacity + customers[newVisit].minAmountProductQuantity;
         HashSet<Integer> possibleVisits = getPossibleVisits(customers, latestTimes, earliestTimes, updatedVisit, newTime, newRemainingCapacity);
@@ -72,9 +72,9 @@ public class PathGenerator {
         duration += p.customers[0].distanceToDepot;
 
         for (int i = 0 ; i < p.customers.length - 1 ; i++){
-            distance += data.getDistance(p.customers[i], p.customers[i + 1]);
+            distance += dataMIP.getDistance(p.customers[i], p.customers[i + 1]);
             duration += p.customers[i].fixedUnloadingTime;
-            duration = Math.max(p.customers[i + 1].getTimeWindow(p.period)[0], duration + data.getDistance(p.customers[i], p.customers[i + 1]));
+            duration = Math.max(p.customers[i + 1].getTimeWindow(p.period)[0], duration + dataMIP.getDistance(p.customers[i], p.customers[i + 1]));
         }
 
         distance += p.customers[p.customers.length - 1].distanceToDepot;
@@ -91,7 +91,7 @@ public class PathGenerator {
         double latestPossibleVisitTime;
         double reduceBuffer;
         for (int i = 1; i < visits.size() ; i++){
-            totalTravelTime += customers[visits.get(i - 1)].fixedUnloadingTime + data.getDistance(customers[visits.get(i)], customers[visits.get(i - 1)]);
+            totalTravelTime += customers[visits.get(i - 1)].fixedUnloadingTime + dataMIP.getDistance(customers[visits.get(i)], customers[visits.get(i - 1)]);
             latestPossibleVisitTime = Math.min(latestTimes[visits.get(i)], (startTime + totalTravelTime + timeBuffer));
             reduceBuffer = (startTime + totalTravelTime + timeBuffer) - latestTimes[visits.get(i)];
             timeBuffer = reduceBuffer > 0 ? timeBuffer - reduceBuffer : timeBuffer;
@@ -104,7 +104,7 @@ public class PathGenerator {
         }
 
         totalTravelTime = totalTravelTime + customers[visits.get(visits.size() - 1)].fixedUnloadingTime + customers[visits.get(visits.size() - 1)].distanceToDepot;
-        timeBuffer = timeBuffer - Math.max(0, startTime + totalTravelTime + timeBuffer - data.latestInTime);
+        timeBuffer = timeBuffer - Math.max(0, startTime + totalTravelTime + timeBuffer - dataMIP.latestInTime);
         return new double[]{startTime, startTime+timeBuffer};
     }
 
@@ -112,14 +112,14 @@ public class PathGenerator {
         HashSet<Integer> possibleVisits = new HashSet<>();
         double distance;
         for (int i = 0; i < customers.length; i++) { //can be quicker ways to check this. currently looking through all customers many times, inefficient
-            distance = data.getDistance(customers[visited.get(visited.size() - 1)], customers[i]);
+            distance = dataMIP.getDistance(customers[visited.get(visited.size() - 1)], customers[i]);
             if (customers[i].minAmountProductQuantity > remainingCapacity) {
                 continue;
             }
             if (latestTimes[i] < currentTime + distance) {
                 continue;
             }
-            if (Math.max(currentTime + distance, earliestTimes[i]) + customers[i].fixedUnloadingTime + customers[i].distanceToDepot > data.latestInTime) {
+            if (Math.max(currentTime + distance, earliestTimes[i]) + customers[i].fixedUnloadingTime + customers[i].distanceToDepot > dataMIP.latestInTime) {
                 continue;
             }
             possibleVisits.add(i);
@@ -130,9 +130,9 @@ public class PathGenerator {
 
     public Map<Integer, Map<Integer, HashSet<Path>>> generateAllPaths() {
         Map<Integer, Map<Integer, HashSet<Path>>> periodVehiclePathMap = new HashMap<>();
-        for (int i = 0; i < data.numPeriods; i++) {
+        for (int i = 0; i < dataMIP.numPeriods; i++) {
             periodVehiclePathMap.put(i, new HashMap<>());
-            for (VehicleType v : data.vehicleTypes) {
+            for (VehicleType v : dataMIP.vehicleTypes) {
                 periodVehiclePathMap.get(i).put(v.type, generatePaths(i, v));
             }
         }

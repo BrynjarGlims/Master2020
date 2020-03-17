@@ -5,22 +5,22 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class JourneyGenerator {
 
-    private Data data;
+    private DataMIP dataMIP;
 
-    public JourneyGenerator(Data data){
-        this.data = data;
+    public JourneyGenerator(DataMIP dataMIP){
+        this.dataMIP = dataMIP;
     }
 
     private HashSet<Journey> generateJourneys(int period, VehicleType vehicleType){
         AtomicInteger journeyId = new AtomicInteger(0);
-        HashSet<Path> paths = data.pathMap.get(period).get(vehicleType.type);
+        HashSet<Path> paths = dataMIP.pathMap.get(period).get(vehicleType.type);
         List<Path> sortedPaths = new ArrayList<>(paths);
         Collections.sort(sortedPaths);
         HashSet<Journey> allJourneys = new HashSet<>();
 
         double currentTime;
         for (Path p : sortedPaths){
-            int[] visited = new int[data.numCustomers];
+            int[] visited = new int[dataMIP.numCustomers];
             for (Customer c : p.customers){
                 visited[c.customerID] = 1;
             }
@@ -38,7 +38,7 @@ public class JourneyGenerator {
     private HashSet<Journey> createJourneys(HashSet<Path> usedPaths, List<Path> sortedPaths, int[] visitedCustomers, double currentTime, int period, VehicleType vehicleType, AtomicInteger journeyId){
         HashSet<Journey> journeys = new HashSet<>();
         journeys.add(createJourney(usedPaths, period, vehicleType, journeyId));
-        currentTime += data.loadingTime[vehicleType.type];
+        currentTime += dataMIP.loadingTime[vehicleType.type];
         HashSet<Path> viablePaths = viablePaths(sortedPaths, visitedCustomers, usedPaths.size(), currentTime);
 
 
@@ -60,7 +60,7 @@ public class JourneyGenerator {
     private HashSet<Path> viablePaths(List<Path> sortedPaths, int[] visitedCustomers, int numTrips, double currentTime){
         HashSet<Path> viablePaths = new HashSet<>();
 
-        if (numTrips >= data.numTrips){
+        if (numTrips >= dataMIP.numTrips){
             return viablePaths;
         }
         int startIndex = 0;
@@ -107,9 +107,9 @@ public class JourneyGenerator {
 
     public Map<Integer, Map<Integer, HashSet<Journey>>> generateAllJourneys() {
         Map<Integer, Map<Integer, HashSet<Journey>>> periodVehicleJourneyMap = new HashMap<>();
-        for (int i = 0; i < data.numPeriods; i++) {
+        for (int i = 0; i < dataMIP.numPeriods; i++) {
             periodVehicleJourneyMap.put(i, new HashMap<>());
-            for (VehicleType v : data.vehicleTypes) {
+            for (VehicleType v : dataMIP.vehicleTypes) {
                 periodVehicleJourneyMap.get(i).put(v.type, generateJourneys(i, v));
             }
         }

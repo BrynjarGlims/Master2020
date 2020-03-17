@@ -52,6 +52,7 @@ public class main {
                 // TODO: 04.03.2020 Add repair:
 
                 if (Math.random() < Parameters.greedyMIPValue){
+                    System.out.println("------------------Optimal orderdis is gathered---------------------");
                     //System.out.println("--------------------");
                     //System.out.println("Current fintness: " + newIndividual.getBiasedFitness());
                     OrderDistribution optimalOD = OrderAllocationModel.createOptimalOrderDistribution(newIndividual, data);

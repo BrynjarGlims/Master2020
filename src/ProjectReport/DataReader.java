@@ -31,27 +31,27 @@ public class DataReader {
         }
         return output;
     }
-    public static void readParameters(String line, Data data){
+    public static void readParameters(String line, DataMIP dataMIP){
         String[] tokens = line.split("\t");
-        data.numCustomers = Integer.parseInt(tokens[0]);
-        data.customers = new Customer[data.numCustomers];
-        data.numVehicles = Integer.parseInt(tokens[1]);
-        data.vehicles = new Vehicle[data.numVehicles];
-        data.numVehicleTypes = Integer.parseInt(tokens[2]);
-        data.vehicleTypes = new VehicleType[data.numVehicleTypes];
-        data.numPeriods = Integer.parseInt(tokens[3]);
-        data.latestInTime = Integer.parseInt(tokens[4]);
-        data.numTrips =Integer.parseInt(tokens[5]);
-        data.costOvertime = Integer.parseInt(tokens[6]);
-        double[] overtimes = new double[data.numPeriods];
+        dataMIP.numCustomers = Integer.parseInt(tokens[0]);
+        dataMIP.customers = new Customer[dataMIP.numCustomers];
+        dataMIP.numVehicles = Integer.parseInt(tokens[1]);
+        dataMIP.vehicles = new Vehicle[dataMIP.numVehicles];
+        dataMIP.numVehicleTypes = Integer.parseInt(tokens[2]);
+        dataMIP.vehicleTypes = new VehicleType[dataMIP.numVehicleTypes];
+        dataMIP.numPeriods = Integer.parseInt(tokens[3]);
+        dataMIP.latestInTime = Integer.parseInt(tokens[4]);
+        dataMIP.numTrips =Integer.parseInt(tokens[5]);
+        dataMIP.costOvertime = Integer.parseInt(tokens[6]);
+        double[] overtimes = new double[dataMIP.numPeriods];
         Arrays.fill(overtimes, Double.parseDouble(tokens[7]));
-        data.overtimeLimit = overtimes;
-        data.xCoordinateDepot = Double.parseDouble(tokens[8]);
-        data.yCoordinateDepot = Double.parseDouble(tokens[9]);
+        dataMIP.overtimeLimit = overtimes;
+        dataMIP.xCoordinateDepot = Double.parseDouble(tokens[8]);
+        dataMIP.yCoordinateDepot = Double.parseDouble(tokens[9]);
 
     }
 
-    public static void readCustomer(String line, Data data){
+    public static void readCustomer(String line, DataMIP dataMIP){
         String[] tokens = line.split("\t");
         int ID = Integer.parseInt(tokens[0]);
 
@@ -94,11 +94,11 @@ public class DataReader {
         double fixedUnloading = Double.parseDouble(tokens[9]);
         double xCoordinate = Double.parseDouble(tokens[10]);
         double yCoordinate = Double.parseDouble(tokens[11]);
-        double distanceToDepot = Math.sqrt(Math.pow(xCoordinate - data.xCoordinateDepot, 2) + Math.pow(yCoordinate - data.yCoordinateDepot, 2));
-        data.addCustomer(new Customer(ID, products, types, timeWindows, visitDays, minFrequencyProduct, maxFrequencyProduct, minQuantityProduct, maxQuantityProduct, fixedUnloading, xCoordinate, yCoordinate, distanceToDepot));
+        double distanceToDepot = Math.sqrt(Math.pow(xCoordinate - dataMIP.xCoordinateDepot, 2) + Math.pow(yCoordinate - dataMIP.yCoordinateDepot, 2));
+        dataMIP.addCustomer(new Customer(ID, products, types, timeWindows, visitDays, minFrequencyProduct, maxFrequencyProduct, minQuantityProduct, maxQuantityProduct, fixedUnloading, xCoordinate, yCoordinate, distanceToDepot));
     }
 
-    public static void readVehicle(String line, Data data, AtomicInteger vehicleCounter){
+    public static void readVehicle(String line, DataMIP dataMIP, AtomicInteger vehicleCounter){
         String[] tokens = line.split("\t");
         int type = Integer.parseInt(tokens[0]);
         int numVehicles = Integer.parseInt(tokens[1]);
@@ -107,12 +107,12 @@ public class DataReader {
         int capacity = Integer.parseInt(tokens[4]);
         double loadingTime = Double.parseDouble(tokens[5]);
         VehicleType vehicleType = new VehicleType(type, drivingCost, unitCost, capacity, loadingTime, numVehicles);
-        data.addVehicleType(vehicleType);
+        dataMIP.addVehicleType(vehicleType);
         Vehicle vehicle;
         for (int i = 0 ; i < numVehicles ; i++){
             int ID = vehicleCounter.getAndIncrement();
             vehicle = new Vehicle(ID, vehicleType);
-            data.addVehicle(vehicle);
+            dataMIP.addVehicle(vehicle);
             vehicleType.addVehicle(vehicle, i);
         }
 
@@ -126,19 +126,19 @@ public class DataReader {
         }
         distances.add(row);
     }
-    public static void makeDistanceData(ArrayList<double[]> distances, Data data){
+    public static void makeDistanceData(ArrayList<double[]> distances, DataMIP dataMIP){
         double[][] distanceMatrix = new double[distances.size()][distances.size()];
         for (int row = 0 ; row < distances.size() ; row++){
             for (int col = 0 ; col < distances.get(row).length ; col++){
                 distanceMatrix[row][col] = distances.get(row)[col];
             }
         }
-        data.setDistances(distanceMatrix);
+        dataMIP.setDistances(distanceMatrix);
     }
 
-    public static Data readFile(String inputPath) throws FileNotFoundException {
-        Data data = new Data();
-        data.instanceName = inputPath;
+    public static DataMIP readFile(String inputPath) throws FileNotFoundException {
+        DataMIP dataMIP = new DataMIP();
+        dataMIP.instanceName = inputPath;
         ArrayList<double[]> distances = new ArrayList<>();
         File file = new File(inputPath);
         Scanner scanner = new Scanner(file);
@@ -152,27 +152,27 @@ public class DataReader {
             }
             switch (mode){
                 case 0:
-                    readParameters(line, data);
+                    readParameters(line, dataMIP);
                     break;
                 case 1:
-                    readCustomer(line, data);
+                    readCustomer(line, dataMIP);
                     break;
                 case 2:
-                    readVehicle(line, data, vehicleCounter);
+                    readVehicle(line, dataMIP, vehicleCounter);
                     break;
                 case 3:
                     readDistances(line, distances);
                     break;
             }
         }
-        makeDistanceData(distances, data);
-        data.initialize();
-        return data;
+        makeDistanceData(distances, dataMIP);
+        dataMIP.initialize();
+        return dataMIP;
     }
 
-    public static Data initialieNewData(DataFiles.Data data ) {
+    public static DataMIP initialieNewData(DataFiles.Data data ) {
 
-        return new Data();
+        return new DataMIP();
 
 
     }
