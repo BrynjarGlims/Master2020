@@ -1,4 +1,6 @@
-package ProjectReport;
+package PR;
+import DataFiles.Data;
+import MIP.DataConverter;
 import gurobi.*;
 
 import java.io.FileNotFoundException;
@@ -48,17 +50,16 @@ public class ArcFlowModel {
 
     public ArrayList<ArrayList<ArrayList<ArrayList<Integer>>>> pathsUsed; // TODO: 23.11.2019 Remove
 
-    public ArcFlowModel(String filePath){
-        this.dataPath = filePath;
+    public ArcFlowModel(DataMIP dataMIP){
+        this.dataMIP = dataMIP;
     }
 
     public void initializeModel() throws GRBException, FileNotFoundException {
         env = new GRBEnv(true);
-        //this.env.set("logFile",  "ArcFlowModel_" + dataPath.substring(5, dataPath.length()-4) +".log");
+        this.env.set("logFile",  "ArcFlowModel.log");
         this.env.start();
         this.model = new GRBModel(env);
         model.set(GRB.StringAttr.ModelName, "ArcFlowModel");
-        this.dataMIP = DataReader.readFile(dataPath);
         this.pg = new PathGenerator(dataMIP);
         dataMIP.setPathMap(pg.generateAllPaths());
     }
@@ -70,8 +71,22 @@ public class ArcFlowModel {
         this.y = new GRBVar[dataMIP.numPeriods][dataMIP.numVehicles][dataMIP.numTrips][dataMIP.numCustomers];
         this.z = new GRBVar[dataMIP.numPeriods][dataMIP.numVehicles][dataMIP.numTrips];
         this.k = new GRBVar[dataMIP.numVehicles];
-        this.u = new GRBVar[dataMIP.numPeriods][dataMIP.numCustomers][dataMIP.numProducts];
-        this.q = new GRBVar[dataMIP.numPeriods][dataMIP.numVehicles][dataMIP.numTrips][dataMIP.numCustomers][dataMIP.numProducts];
+        this.u = new GRBVar[dataMIP.numPeriods][dataMIP.numCustomers][];
+        for (int p = 0; p < dataMIP.numPeriods; p++){
+            for (int c = 0; c < dataMIP.numCustomers; c++){
+                this.u[p][c] = new GRBVar[dataMIP.numProductsPrCustomer[c]];
+            }
+        }
+        this.q = new GRBVar[dataMIP.numPeriods][dataMIP.numVehicles][dataMIP.numTrips][dataMIP.numCustomers][];
+        for (int p = 0; p < dataMIP.numPeriods; p++){
+            for (int v = 0; v < dataMIP.numVehicles; v++){
+                for (int r = 0; r < dataMIP.numTrips; r++){
+                    for (int c = 0; c < dataMIP.numCustomers; c++){
+                        this.q[p][v][r][c] = new GRBVar[dataMIP.numProductsPrCustomer[c]];
+                    }
+                }
+            }
+        }
         this.t = new GRBVar[dataMIP.numPeriods][dataMIP.numVehicles][dataMIP.numTrips][dataMIP.numNodes];
         this.qO = new GRBVar[dataMIP.numPeriods];
 
@@ -121,8 +136,8 @@ public class ArcFlowModel {
 
 
         // Create u variables:
-        for (int m = 0; m < dataMIP.numProducts; m++) {
-            for (int i = 0; i < dataMIP.numCustomers; i++) {
+        for (int i = 0; i < dataMIP.numCustomers; i++) {
+            for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                 if (dataMIP.productQuantity[i][m] == 0) {
                     continue;
                 }
@@ -136,7 +151,7 @@ public class ArcFlowModel {
 
         //Create q variables
         for (int i = 0; i < dataMIP.numCustomers; i++) {
-            for (int m = 0; m < dataMIP.numProducts; m++) {
+            for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                 if (dataMIP.productQuantity[i][m] == 0){
                     continue;
                 }
@@ -171,7 +186,7 @@ public class ArcFlowModel {
         //Create qO (overtime) variables
         for (int d = 0; d < dataMIP.numPeriods; d++) {
             String variable_name = String.format("qO[%d]", d);
-            qO[d] = model.addVar(0.0, upperBoundOvertime, dataMIP.costOvertime, GRB.CONTINUOUS, variable_name);
+            qO[d] = model.addVar(0.0, upperBoundOvertime, dataMIP.costOvertime[d], GRB.CONTINUOUS, variable_name);
         }
     }
 
@@ -198,7 +213,7 @@ public class ArcFlowModel {
                     model.get(GRB.IntAttr.SolCount), dataMIP.numVehicles, dataMIP.numCustomers, numDivCommodity, numNondivCommodity, dataMIP.numTrips, dataMIP.numPeriods, model.get(GRB.DoubleAttr.NodeCount),0,
                     preProcessTime, numGeneratedTrips, numGeneratedJourneys, pathsUsed, symmetry);
         }
-        result.store();
+        //result.store();
         System.out.println("Solution stored");
         return result;
     }
@@ -289,7 +304,7 @@ public class ArcFlowModel {
                     GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
                     //loop through all customers and products
                     for (int i = 0; i < dataMIP.numCustomers; i++) {
-                        for (int m = 0; m < dataMIP.numProducts; m++) {
+                        for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                             if (dataMIP.productQuantity[i][m] > 0) {
                                 lhs.addTerm(1.0, q[d][v][r][i][m]);
                             }
@@ -312,7 +327,7 @@ public class ArcFlowModel {
             for (int v = 0; v < dataMIP.numVehicles; v++) {
                 for (int r = 0; r < dataMIP.numTrips; r++) {
                     for (int i = 0; i < dataMIP.numCustomers; i++) {
-                        for (int m = 0; m < dataMIP.numProducts; m++) {
+                        for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                             if (dataMIP.productQuantity[i][m] > 0)
                                 lhs.addTerm(1.0, q[d][v][r][i][m]);
                         }
@@ -323,7 +338,7 @@ public class ArcFlowModel {
             // Create name
             String constraint_name = String.format("5.4 -Overtime on day %d. OvertimeLimit %f ", d, dataMIP.overtimeLimit[d]);
             // Create constraint and defind RHS
-            model.addConstr(lhs, GRB.LESS_EQUAL, dataMIP.overtimeLimitAveraged, constraint_name);
+            model.addConstr(lhs, GRB.LESS_EQUAL, dataMIP.overtimeLimit[d], constraint_name);
         }
     }
 
@@ -482,7 +497,7 @@ public class ArcFlowModel {
                 for (int r = 0; r < dataMIP.numTrips; r++) {
                     for (int i = 0; i < dataMIP.numCustomers; i++) {
                         GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
-                        for (int m = 0; m < dataMIP.numProducts; m++) {
+                        for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                             if (dataMIP.productQuantity[i][m] > 0){
                                 lhs.addTerm(1, q[d][v][r][i][m]);
                             }
@@ -501,7 +516,7 @@ public class ArcFlowModel {
         // than the overtime limit
         for (int d = 0; d < dataMIP.numPeriods; d++) {
             for (int i = 0; i < dataMIP.numCustomers; i++) {
-                for (int m = 0; m < dataMIP.numProducts; m++) {
+                for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                     if (dataMIP.productTypes[i][m] == 0 && dataMIP.productQuantity[i][m] > 0) {
                         GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
                         lhs.addTerm(dataMIP.productQuantity[i][m], u[d][i][m]);
@@ -510,7 +525,7 @@ public class ArcFlowModel {
                                 lhs.addTerm(-1, q[d][v][r][i][m]);
                             }
                         }
-                        String constraint_name = String.format("5.5 -Fixed quantity for store %d of product %d on day %d. Fixed quantitiy %f. Number of products: %d", i, m, d, dataMIP.productQuantity[i][m], dataMIP.numProducts);
+                        String constraint_name = String.format("5.5 -Fixed quantity for store %d of product %d on day %d. Fixed quantitiy %f. Number of products: %d", i, m, d, dataMIP.productQuantity[i][m], dataMIP.numProductsPrCustomer[d]);
                         // Activate the constraint
                         model.addConstr(lhs, GRB.EQUAL, 0, constraint_name);
                     }
@@ -524,7 +539,7 @@ public class ArcFlowModel {
         // Constraint 5.7 a): Lower bound for delivery for non-div product.
         for (int d = 0; d < dataMIP.numPeriods; d++) {
             for (int i = 0; i < dataMIP.numCustomers; i++) {
-                for (int m = 0; m < dataMIP.numProducts; m++) {
+                for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                     if (dataMIP.productTypes[i][m] == 1  && dataMIP.productQuantity[i][m] > 0) {
                         GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
                         for (int v = 0; v < dataMIP.numVehicles; v++) {
@@ -544,7 +559,7 @@ public class ArcFlowModel {
         // Constraint 5.7 b): Upper bound for delivery for non-div product.
         for (int d = 0; d < dataMIP.numPeriods; d++) {
             for (int i = 0; i < dataMIP.numCustomers; i++) {
-                for (int m = 0; m < dataMIP.numProducts; m++) {
+                for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                     if (dataMIP.productTypes[i][m] == 1  && dataMIP.productQuantity[i][m] > 0) {
                         GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
                         for (int v = 0; v < dataMIP.numVehicles; v++) {
@@ -565,7 +580,7 @@ public class ArcFlowModel {
     public void constraint520() throws GRBException {
         // Constraint 5.8: Demand of every product must be satisfied in the planning horizon
         for (int i = 0; i < dataMIP.numCustomers; i++) {
-            for (int m = 0; m < dataMIP.numProducts; m++) {
+            for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                 if (dataMIP.productQuantity[i][m] > 0) {
                     GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
                     for (int d = 0; d < dataMIP.numPeriods; d++) {
@@ -577,6 +592,7 @@ public class ArcFlowModel {
                     }
                     String constraint_name = String.format("5.8 -Delivery of div product %d to customer %d. Quantity %f", m, i, dataMIP.productQuantity[i][m] );
                     // Activate the constraint
+                    System.out.println(dataMIP.numPeriods + "  " + dataMIP.numVehicles + "  " + dataMIP.numTrips );
                     model.addConstr(lhs, GRB.EQUAL, dataMIP.productQuantity[i][m], constraint_name);
                 }
             }
@@ -588,7 +604,7 @@ public class ArcFlowModel {
         for (int d = 0; d < dataMIP.numPeriods; d++) {
             for (int i = 0; i < dataMIP.numCustomers; i++) {
                 GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
-                for (int m = 0; m < dataMIP.numProducts; m++) {
+                for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                     if (dataMIP.productTypes[i][m] == 0 && dataMIP.productQuantity[i][m] > 0) {
                         lhs.addTerm(1, u[d][i][m]);
                     }
@@ -605,7 +621,7 @@ public class ArcFlowModel {
         // Non-dividable good has to be delivered during t
 
         for (int i = 0; i < dataMIP.numCustomers; i++) {
-            for (int m = 0; m < dataMIP.numProducts; m++) {
+            for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                 GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
                 if (dataMIP.productTypes[i][m] == 0 && dataMIP.productQuantity[i][m] > 0) {
                     for (int d = 0; d < dataMIP.numPeriods; d++) {
@@ -621,7 +637,7 @@ public class ArcFlowModel {
         // Constraint 5.22
         // Dividable good has to be delivered at least above the minimum frequenzy
         for (int i = 0; i < dataMIP.numCustomers; i++) {
-            for (int m = 0; m < dataMIP.numProducts; m++) {
+            for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                 GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
                 if (dataMIP.productTypes[i][m] == 1  && dataMIP.productQuantity[i][m] > 0) {
                     for (int d = 0; d < dataMIP.numPeriods; d++) {
@@ -638,7 +654,7 @@ public class ArcFlowModel {
         // Dividable good has to be delivered at most the maximum number of times
 
         for (int i = 0; i < dataMIP.numCustomers; i++) {
-            for (int m = 0; m < dataMIP.numProducts; m++) {
+            for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                 GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
                 if (dataMIP.productTypes[i][m] == 1  && dataMIP.productQuantity[i][m] > 0) {
                     for (int d = 0; d < dataMIP.numPeriods; d++) {
@@ -943,7 +959,7 @@ public class ArcFlowModel {
         System.out.println("Print of u-variables: If a product m is delivered to customer i");
         for (int d = 0; d < dataMIP.numPeriods; d++) {
             for (int i = 0; i < dataMIP.numCustomers; i++) {
-                for (int m = 0; m < dataMIP.numProducts; m++) {
+                for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                     if (dataMIP.productQuantity[i][m] == 0 )
                         continue;
                     if (u[d][i][m].get(GRB.DoubleAttr.X) == 1) {
@@ -965,7 +981,7 @@ public class ArcFlowModel {
                     double quantitiyTrip = 0;
                     for (int i = 0; i < dataMIP.numCustomers; i++) {
                         double quantitiyCust = 0 ;
-                        for (int m = 0; m < dataMIP.numProducts; m++) {
+                        for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                             if (dataMIP.productQuantity[i][m] == 0)
                                 continue;
                             if (q[d][v][r][i][m].get(GRB.DoubleAttr.X) >= 0.001) {
@@ -1090,7 +1106,7 @@ public class ArcFlowModel {
         }
 
         for (int i = 0; i < dataMIP.numCustomers; i++) {
-            for (int m = 0; m < dataMIP.numProducts; m++) {
+            for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                 if (dataMIP.productQuantity[i][m] >= 0.001) {
                     continue;
                 }
@@ -1163,8 +1179,11 @@ public class ArcFlowModel {
     }
 
     public static void main(String[] args) {
-        ArcFlowModel afm = new ArcFlowModel("data\\inst(c=5,v=6,t=093202).txt");
-        Result res = afm.runModel("none");
+        Data data = DataFiles.DataReader.loadData();
+        DataMIP dataMip = DataConverter.convert(data);
+        ArcFlowModel afm = new ArcFlowModel(dataMip);
+        Result res = afm.runModel("None");
+
     }
 
 }

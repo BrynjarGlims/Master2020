@@ -1,4 +1,4 @@
-package ProjectReport;
+package PR;
 public class Parameters {
 
     //Chose which models to run. Results are written to csv in folder results/result-files

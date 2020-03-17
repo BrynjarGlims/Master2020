@@ -1,4 +1,4 @@
-package ProjectReport;
+package PR;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -42,7 +42,7 @@ public class DataReader {
         dataMIP.numPeriods = Integer.parseInt(tokens[3]);
         dataMIP.latestInTime = Integer.parseInt(tokens[4]);
         dataMIP.numTrips =Integer.parseInt(tokens[5]);
-        dataMIP.costOvertime = Integer.parseInt(tokens[6]);
+        //dataMIP.costOvertime = Integer.parseInt(tokens[6]);
         double[] overtimes = new double[dataMIP.numPeriods];
         Arrays.fill(overtimes, Double.parseDouble(tokens[7]));
         dataMIP.overtimeLimit = overtimes;

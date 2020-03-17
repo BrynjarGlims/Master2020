@@ -1,14 +1,14 @@
-package ProjectReport;
+package PR;
 public class VehicleType {
 
     public int type;
-    public int drivingCost;
-    public int unitCost;
-    public int capacity;
+    public double drivingCost;
+    public double unitCost;
+    public double capacity;
     public double loadingTime;
     public Vehicle[] vehicles;
 
-    public VehicleType(int type, int drivingCost, int unitCost, int capacity, double loadingTime, int numVehicles) {
+    public VehicleType(int type, double drivingCost, double unitCost, double capacity, double loadingTime, int numVehicles) {
         this.type = type;
         this.drivingCost = drivingCost;
         this.unitCost = unitCost;

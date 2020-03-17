@@ -1,4 +1,4 @@
-package ProjectReport;
+package PR;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.StandardOpenOption;

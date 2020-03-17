@@ -1,5 +1,4 @@
-package ProjectReport;
-import java.util.ArrayList;
+package PR;
 import java.util.Arrays;
 
 public class Customer {

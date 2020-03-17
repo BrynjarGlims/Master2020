@@ -28,7 +28,7 @@ public class Parameters {
 
 
     //Loading data parameters
-    public static final int numberOfCustomers = 7;
+    public static final int numberOfCustomers = 5;
     public static final int numberOfVehicles = 5;
 
 

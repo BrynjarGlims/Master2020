@@ -1,4 +1,4 @@
-package ProjectReport;
+package PR;
 public class Journey {
 
 

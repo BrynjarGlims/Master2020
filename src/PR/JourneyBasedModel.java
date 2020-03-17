@@ -1,4 +1,4 @@
-package ProjectReport;
+package PR;
 import gurobi.*;
 
 import java.io.FileNotFoundException;
@@ -68,9 +68,22 @@ public class JourneyBasedModel {
     public void initializeParameters() throws GRBException {
         this.gamma = new GRBVar[dataMIP.numPeriods][dataMIP.numVehicles][];
         this.k = new GRBVar[dataMIP.numVehicles];
-        this.u = new GRBVar[dataMIP.numPeriods][dataMIP.numCustomers][dataMIP.numProducts];
-        this.q = new GRBVar[dataMIP.numPeriods][dataMIP.numVehicles][dataMIP.numTrips][dataMIP.numCustomers][dataMIP.numProducts];
-        this.qO = new GRBVar[dataMIP.numPeriods];
+        this.u = new GRBVar[dataMIP.numPeriods][dataMIP.numCustomers][];
+        for (int p = 0; p < dataMIP.numPeriods; p++){
+            for (int c = 0; c < dataMIP.numCustomers; c++){
+                this.u[p][c] = new GRBVar[dataMIP.numProductsPrCustomer[c]];
+            }
+        }
+        this.q = new GRBVar[dataMIP.numPeriods][dataMIP.numVehicles][dataMIP.numTrips][dataMIP.numCustomers][];
+        for (int p = 0; p < dataMIP.numPeriods; p++){
+            for (int v = 0; v < dataMIP.numVehicles; v++){
+                for (int r = 0; r < dataMIP.numTrips; r++){
+                    for (int c = 0; c < dataMIP.numCustomers; c++){
+                        this.q[p][v][r][c] = new GRBVar[dataMIP.numProductsPrCustomer[c]];
+                    }
+                }
+            }
+        }this.qO = new GRBVar[dataMIP.numPeriods];
 
 
         for (int d = 0; d < dataMIP.numPeriods; d++) {
@@ -89,8 +102,9 @@ public class JourneyBasedModel {
         }
 
 
-        for (int m = 0; m < dataMIP.numProducts; m++) {
-            for (int i = 0; i < dataMIP.numCustomers; i++) {
+
+        for (int i = 0; i < dataMIP.numCustomers; i++) {
+            for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                 if (dataMIP.productQuantity[i][m] == 0){
                     continue;
                 }
@@ -102,7 +116,7 @@ public class JourneyBasedModel {
         }
 
         for (int i = 0; i < dataMIP.numCustomers; i++) {
-            for (int m = 0; m < dataMIP.numProducts; m++) {
+            for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                 if (dataMIP.productQuantity[i][m] == 0){
                     continue;
                 }
@@ -119,7 +133,7 @@ public class JourneyBasedModel {
         }
         for (int d = 0; d < dataMIP.numPeriods; d++) {
             String variable_name = String.format("qO[%d]", d);
-            qO[d] = model.addVar(0.0, DataMIP.upperBoundOvertime, dataMIP.costOvertime, GRB.CONTINUOUS, variable_name);
+            qO[d] = model.addVar(0.0, DataMIP.upperBoundOvertime, dataMIP.costOvertime[d], GRB.CONTINUOUS, variable_name);
         }
     }
 
@@ -219,7 +233,7 @@ public class JourneyBasedModel {
                 for (int i = 0; i < dataMIP.numCustomers; i++) {
                     for (int r = 0; r < dataMIP.numTrips; r++) {
                         GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
-                        for (int m = 0; m < dataMIP.numProducts; m++) {
+                        for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                             if (dataMIP.productQuantity[i][m] > 0) {
                                 lhs.addTerm(1, q[d][v][r][i][m]);
                             }
@@ -250,7 +264,7 @@ public class JourneyBasedModel {
                 for (int r = 0; r < dataMIP.numTrips; r++){
                     GRBLinExpr lhs = new GRBLinExpr();
                     for (int i = 0; i < dataMIP.numCustomers; i++) {
-                        for (int m = 0; m < dataMIP.numProducts; m++) {
+                        for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                             if (dataMIP.productQuantity[i][m] > 0) {
                                 lhs.addTerm(1.0, q[d][v][r][i][m]);
                             }
@@ -271,7 +285,7 @@ public class JourneyBasedModel {
             for (int v = 0; v < dataMIP.numVehicles; v++) {
                 for (int r = 0; r < dataMIP.numTrips; r++) {
                     for (int i = 0; i < dataMIP.numCustomers; i++) {
-                        for (int m = 0; m < dataMIP.numProducts; m++) {
+                        for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                             if (dataMIP.productQuantity[i][m] > 0)
                                 lhs.addTerm(1.0, q[d][v][r][i][m]);
                         }
@@ -290,7 +304,7 @@ public class JourneyBasedModel {
         // If one choose to deliver a non-div good, than a certain Q must be delivered
         for (int d = 0; d < dataMIP.numPeriods; d++) {
             for (int i = 0; i < dataMIP.numCustomers; i++) {
-                for (int m = 0; m < dataMIP.numProducts; m++) {
+                for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                     if (dataMIP.productTypes[i][m] == 0 && dataMIP.productQuantity[i][m] > 0) {
                         GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
                         lhs.addTerm(dataMIP.productQuantity[i][m], u[d][i][m]);
@@ -299,7 +313,7 @@ public class JourneyBasedModel {
                                 lhs.addTerm(-1, q[d][v][r][i][m]);
                             }
                         }
-                        String constraint_name = String.format("5.75 -Fixed quantity for store %d of product %d on day %d. Fixed quantitiy %f. Number of products: %d", i, m, d, dataMIP.productQuantity[i][m], dataMIP.numProducts);
+                        String constraint_name = String.format("5.75 -Fixed quantity for store %d of product %d on day %d. Fixed quantitiy %f. Number of products: %d", i, m, d, dataMIP.productQuantity[i][m], dataMIP.numProductsPrCustomer);
                         // Activate the constraint
                         model.addConstr(lhs, GRB.EQUAL, 0, constraint_name);
                     }
@@ -313,7 +327,7 @@ public class JourneyBasedModel {
         // Lower bound for delivery for non-div product. (same as before)
         for (int d = 0; d < dataMIP.numPeriods; d++) {
             for (int i = 0; i < dataMIP.numCustomers; i++) {
-                for (int m = 0; m < dataMIP.numProducts; m++) {
+                for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                     if (dataMIP.productTypes[i][m] == 1 && dataMIP.productQuantity[i][m] > 0) {
                         GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
                         for (int v = 0; v < dataMIP.numVehicles; v++) {
@@ -333,7 +347,7 @@ public class JourneyBasedModel {
         // Upper bound for delivery for non-div product. (same as before)
         for (int d = 0; d < dataMIP.numPeriods; d++) {
             for (int i = 0; i < dataMIP.numCustomers; i++) {
-                for (int m = 0; m < dataMIP.numProducts; m++) {
+                for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                     if (dataMIP.productTypes[i][m] == 1 && dataMIP.productQuantity[i][m] > 0) {
                         GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
                         for (int v = 0; v < dataMIP.numVehicles; v++) {
@@ -355,7 +369,7 @@ public class JourneyBasedModel {
         // Constraint 5.77
         // Demand of every product must be satisfied in the planning horizon (same as before)
         for (int i = 0; i < dataMIP.numCustomers; i++) {
-            for (int m = 0; m < dataMIP.numProducts; m++) {
+            for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                 if (dataMIP.productQuantity[i][m] > 0) {
                     GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
                     for (int d = 0; d < dataMIP.numPeriods; d++) {
@@ -378,7 +392,7 @@ public class JourneyBasedModel {
         for (int d = 0; d < dataMIP.numPeriods; d++) {
             for (int i = 0; i < dataMIP.numCustomers; i++) {
                 GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
-                for (int m = 0; m < dataMIP.numProducts; m++) {
+                for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                     if (dataMIP.productTypes[i][m] == 0 && dataMIP.productQuantity[i][m] > 0) {
                         lhs.addTerm(1, u[d][i][m]);
                     }
@@ -393,7 +407,7 @@ public class JourneyBasedModel {
         // Constraint 5.79
         // Non-dividable good has to be delivered during t
         for (int i = 0; i < dataMIP.numCustomers; i++) {
-            for (int m = 0; m < dataMIP.numProducts; m++) {
+            for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                 GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
                 if (dataMIP.productTypes[i][m] == 0 && dataMIP.productQuantity[i][m] > 0) {
                     for (int d = 0; d < dataMIP.numPeriods; d++) {
@@ -410,7 +424,7 @@ public class JourneyBasedModel {
         // Constraint 5.80
         // Dividable good has to be delivered at least above the minimum frequenzy
         for (int i = 0; i < dataMIP.numCustomers; i++) {
-            for (int m = 0; m < dataMIP.numProducts; m++) {
+            for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                 GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
                 if (dataMIP.productTypes[i][m] == 1 && dataMIP.productQuantity[i][m] > 0) {
                     for (int d = 0; d < dataMIP.numPeriods; d++) {
@@ -427,7 +441,7 @@ public class JourneyBasedModel {
         // Constraint 5.81
         // Dividable good has to be delivered at most the maximum number of times
         for (int i = 0; i < dataMIP.numCustomers; i++) {
-            for (int m = 0; m < dataMIP.numProducts; m++) {
+            for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                 GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
                 if (dataMIP.productTypes[i][m] == 1 && dataMIP.productQuantity[i][m] > 0) {
                     for (int d = 0; d < dataMIP.numPeriods; d++) {
@@ -629,7 +643,7 @@ public class JourneyBasedModel {
         System.out.println("Print of u-variables: If a product m is delivered to customer i");
         for (int d = 0; d < dataMIP.numPeriods; d++) {
             for (int i = 0; i < dataMIP.numCustomers; i++) {
-                for (int m = 0; m < dataMIP.numProducts; m++) {
+                for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                     if (dataMIP.productQuantity[i][m] == 0 )
                         continue;
                     if (u[d][i][m].get(GRB.DoubleAttr.X) == 1) {
@@ -647,7 +661,7 @@ public class JourneyBasedModel {
             for (int v = 0; v < dataMIP.numVehicles; v++) {
                 for (int r = 0; r < dataMIP.numTrips; r++) {
                     for (int i = 0; i < dataMIP.numCustomers; i++) {
-                        for (int m = 0; m < dataMIP.numProducts; m++) {
+                        for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                             if (dataMIP.productQuantity[i][m] == 0)
                                 continue;
                             if (q[d][v][r][i][m].get(GRB.DoubleAttr.X) >= 0.001) {
@@ -733,7 +747,7 @@ public class JourneyBasedModel {
         }
 
         for (int i = 0; i < dataMIP.numCustomers; i++) {
-            for (int m = 0; m < dataMIP.numProducts; m++) {
+            for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                 if (dataMIP.productQuantity[i][m] >= 0.001) {
                     continue;
                 }

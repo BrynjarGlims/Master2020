@@ -1,4 +1,4 @@
-package ProjectReport;
+package PR;
 import gurobi.GRB;
 import gurobi.GRBException;
 import org.graphstream.graph.*;

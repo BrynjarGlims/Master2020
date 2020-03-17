@@ -5,8 +5,6 @@ import java.util.*;
 import DataFiles.*;
 import Individual.Individual;
 import ProductAllocation.OrderDistribution;
-import ProjectReport.Journey;
-import scala.xml.PrettyPrinter;
 import Individual.Trip;
 
 
