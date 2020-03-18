@@ -53,7 +53,7 @@ public class DataReader {
             productList.add(new Order(productID, customerID,
                     Double.parseDouble(productData.get(line)[12]),
                     checkSplitAttribute(productData.get(line)[6], line),
-                    productData.get(line)[3],
+                    productData.get(line)[5],
                     Integer.parseInt(productData.get(line)[7]),
                     Integer.parseInt(productData.get(line)[8]),
                     Integer.parseInt(productData.get(line)[9])));

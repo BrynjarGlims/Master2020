@@ -28,14 +28,14 @@ public class Parameters {
 
 
     //Loading data parameters
-    public static final int numberOfCustomers = 7;
+    public static final int numberOfCustomers = 20;
     public static final int numberOfVehicles = 5;
 
 
 
 
     //Traveling parameters
-    public static final double scalingDistanceParameter = 0.8;
+    public static final double scalingDistanceParameter = 2.2;
     public static final double timeShift = 4;
 
 
