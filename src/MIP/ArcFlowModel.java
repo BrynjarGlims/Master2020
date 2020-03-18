@@ -253,7 +253,7 @@ public class ArcFlowModel {
         //Create qO (overtime) variables
         for (int d = 0; d < data.numberOfPeriods; d++) {
             String variable_name = String.format("qO[%d]", d);
-            qO[d] = model.addVar(0.0, Parameters.upperBoundOvertime, Parameters.overtimeCost[d], GRB.CONTINUOUS, variable_name);
+            qO[d] = model.addVar(0.0, Parameters.overtimeLimit[d], Parameters.overtimeCost[d], GRB.CONTINUOUS, variable_name);
         }
 
 

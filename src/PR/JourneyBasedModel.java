@@ -1,4 +1,7 @@
 package PR;
+import DataFiles.Data;
+import DataFiles.Parameters;
+import MIP.DataConverter;
 import gurobi.*;
 
 import java.io.FileNotFoundException;
@@ -43,18 +46,17 @@ public class JourneyBasedModel {
     public ArrayList<ArrayList<ArrayList<ArrayList<Integer>>>> pathsUsed;
 
 
-    public JourneyBasedModel(String filePath){
-        this.dataPath = filePath;
+    public JourneyBasedModel(DataMIP dataMIP){
+        this.dataMIP = dataMIP;
     }
 
 
     public void initializeModel() throws GRBException, FileNotFoundException {
         env = new GRBEnv(true);
-        //this.env.set("logFile",  "JourneyBasedModel_" + dataPath.substring(5, dataPath.length()-4) +".log");
+        this.env.set("logFile",  "JourneyBasedModel.log");
         this.env.start();
         this.model = new GRBModel(env);
         model.set(GRB.StringAttr.ModelName, "JourneyBasedModel");
-        this.dataMIP = DataReader.readFile(dataPath);
         this.pg = new PathGenerator(dataMIP);
         double time = System.currentTimeMillis();
         dataMIP.setPathMap(pg.generateAllPaths());
@@ -83,7 +85,8 @@ public class JourneyBasedModel {
                     }
                 }
             }
-        }this.qO = new GRBVar[dataMIP.numPeriods];
+        }
+        this.qO = new GRBVar[dataMIP.numPeriods];
 
 
         for (int d = 0; d < dataMIP.numPeriods; d++) {
@@ -133,7 +136,7 @@ public class JourneyBasedModel {
         }
         for (int d = 0; d < dataMIP.numPeriods; d++) {
             String variable_name = String.format("qO[%d]", d);
-            qO[d] = model.addVar(0.0, DataMIP.upperBoundOvertime, dataMIP.costOvertime[d], GRB.CONTINUOUS, variable_name);
+            qO[d] = model.addVar(0.0, DataFiles.Parameters.overtimeLimit[d], dataMIP.costOvertime[d], GRB.CONTINUOUS, variable_name);
         }
     }
 
@@ -160,7 +163,7 @@ public class JourneyBasedModel {
                     model.get(GRB.IntAttr.SolCount), dataMIP.numVehicles, dataMIP.numCustomers, numDivCommodity, numNondivCommodity, dataMIP.numTrips, dataMIP.numPeriods, model.get(GRB.DoubleAttr.NodeCount),0,
                     preProcessTime, numGeneratedTrips, numGeneratedJourneys, pathsUsed, symmetry);
         }
-        result.store();
+        //result.store();
         System.out.println("Solution stored");
         return result;
     }
@@ -295,7 +298,7 @@ public class JourneyBasedModel {
             lhs.addTerm(-1.0, qO[d]); // Add the over time variable for that day
             // Create name
             String constraint_name = String.format("5.74 -Overtime on day %d. OvertimeLimit %f ", d, dataMIP.overtimeLimit[d]);
-            model.addConstr(lhs, GRB.LESS_EQUAL, dataMIP.overtimeLimitAveraged, constraint_name);
+            model.addConstr(lhs, GRB.LESS_EQUAL, dataMIP.overtimeLimit[d], constraint_name);
         }
     }
 
@@ -313,7 +316,7 @@ public class JourneyBasedModel {
                                 lhs.addTerm(-1, q[d][v][r][i][m]);
                             }
                         }
-                        String constraint_name = String.format("5.75 -Fixed quantity for store %d of product %d on day %d. Fixed quantitiy %f. Number of products: %d", i, m, d, dataMIP.productQuantity[i][m], dataMIP.numProductsPrCustomer);
+                        String constraint_name = String.format("5.75 -Fixed quantity for store %d of product %d on day %d. Fixed quantitiy %f. Number of products: %d", i, m, d, dataMIP.productQuantity[i][m], dataMIP.numProductsPrCustomer[i]);
                         // Activate the constraint
                         model.addConstr(lhs, GRB.EQUAL, 0, constraint_name);
                     }
@@ -399,7 +402,7 @@ public class JourneyBasedModel {
                 }
                 // Activate the constraint
                 String constraint_name = String.format("5.78 -Only one nondiv product for customer %d on day %d", i, d);
-                model.addConstr(lhs, GRB.EQUAL, dataMIP.possibleDeliveryDays[d][i], constraint_name);
+                model.addConstr(lhs, GRB.LESS_EQUAL, dataMIP.possibleDeliveryDays[d][i], constraint_name);
             }
         }
     }
@@ -537,8 +540,12 @@ public class JourneyBasedModel {
         constraint75();
         constraint76();
         constraint77();
+
+        /*// TODO: 17/03/2020 Implement
         constraint78();
         constraint79();
+
+         */
 
         // ----------------- Symmetry breaking constraints ------------
 
@@ -566,9 +573,9 @@ public class JourneyBasedModel {
 
     }
 
-    public void optimizeModel(int timeLimit) throws GRBException {
-        //model.set(GRB.DoubleParam.MIPGap, 0);
-        model.set(GRB.DoubleParam.TimeLimit, timeLimit);
+    public void optimizeModel() throws GRBException {
+        model.set(GRB.DoubleParam.MIPGap, Parameters.modelMipGap);
+        model.set(GRB.DoubleParam.TimeLimit, Parameters.modelTimeLimit);
         model.optimize();
         model.get(GRB.DoubleAttr.Runtime);
         System.out.println(GRB.Status.OPTIMAL);
@@ -772,9 +779,9 @@ public class JourneyBasedModel {
             System.out.println("Activate constraints");
             activateConstraints(symmetry);
             System.out.println("Optimize model");
-            optimizeModel(Parameters.timeOut);
+            optimizeModel();
             System.out.println("Print results:");
-            displayResults(false);
+            displayResults(true);
             if (optimstatus == 3) {
                 System.out.println("no solution found");
                 Result res = createAndStoreModelResults( false,  0);
@@ -786,7 +793,8 @@ public class JourneyBasedModel {
                 System.out.println("Create and store results");
                 storePath();
                 Result res = createAndStoreModelResults(true,  1);
-                printSolution();
+                if (Parameters.verboseJourneyBased)
+                    printSolution();
                 System.out.println("Terminate model");
                 terminateModel();
                 return res;
@@ -795,7 +803,8 @@ public class JourneyBasedModel {
                 System.out.println("Create and store results");
                 storePath();
                 Result res = createAndStoreModelResults(true, 0);
-                printSolution();
+                if (Parameters.verboseJourneyBased)
+                    printSolution();
                 System.out.println("Terminate model");
                 terminateModel();
                 return res;
@@ -811,5 +820,13 @@ public class JourneyBasedModel {
             System.out.println("File directory wrong" + e);
             return null;
         }
+    }
+
+    public static void main (String[] args){
+        Data data = DataFiles.DataReader.loadData();
+        DataMIP dataMip = DataConverter.convert(data);
+        JourneyBasedModel jbm = new JourneyBasedModel(dataMip);
+        jbm.runModel(DataFiles.Parameters.symmetry);
+
     }
 }

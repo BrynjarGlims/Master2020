@@ -1,4 +1,7 @@
 package PR;
+import DataFiles.Data;
+import DataFiles.Parameters;
+import MIP.DataConverter;
 import gurobi.*;
 
 import java.io.FileNotFoundException;
@@ -44,17 +47,16 @@ public class PathFlowModel {
     public GRBVar[] qO;
     public ArrayList<ArrayList<ArrayList<ArrayList<Integer>>>> pathsUsed = null ;
 
-    public PathFlowModel(String filePath){
-        this.dataPath = filePath;
+    public PathFlowModel(DataMIP dataMIP){
+        this.dataMIP = dataMIP;
     }
 
     public void initializeModel() throws GRBException, FileNotFoundException {
         env = new GRBEnv(true);
-        //this.env.set("logFile",  "PathFlowModel_" + dataPath.substring(5, dataPath.length()-4) +".log");
+        this.env.set("logFile",  "PathFlowModel.log");
         this.env.start();
         this.model = new GRBModel(env);
         model.set(GRB.StringAttr.ModelName, "PathFlowModel");
-        this.dataMIP = DataReader.readFile(dataPath);
         this.pg = new PathGenerator(dataMIP);
         double time = System.currentTimeMillis();
         dataMIP.setPathMap(pg.generateAllPaths());
@@ -103,7 +105,7 @@ public class PathFlowModel {
         }
 
         for (int i = 0; i < dataMIP.numCustomers; i++) {
-            for (int m = 0; m < dataMIP.numProductsPrCustomer[m]; m++) {
+            for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                 if (dataMIP.productQuantity[i][m] == 0){
                     continue;
                 }
@@ -115,7 +117,7 @@ public class PathFlowModel {
         }
 
         for (int i = 0; i < dataMIP.numCustomers; i++) {
-            for (int m = 0; m < dataMIP.numProductsPrCustomer[m]; m++) {
+            for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                 if (dataMIP.productQuantity[i][m] == 0){
                     continue;
                 }
@@ -168,7 +170,7 @@ public class PathFlowModel {
                     model.get(GRB.IntAttr.SolCount), dataMIP.numVehicles, dataMIP.numCustomers, numDivCommodity, numNondivCommodity, dataMIP.numTrips, dataMIP.numPeriods, model.get(GRB.DoubleAttr.NodeCount),0,
                     preProcessTime, numGeneratedTrips, numGeneratedJourneys, pathsUsed, symmetry);
         }
-        result.store();
+        //result.store();
         System.out.println("Solution stored");
         return result;
     }
@@ -361,7 +363,7 @@ public class PathFlowModel {
             // Create name
             String constraint_name = String.format("5.43 -Overtime on day %d. OvertimeLimit %f ", d, dataMIP.overtimeLimit[d]);
             // Create constraint and defind RHS
-            model.addConstr(lhs, GRB.LESS_EQUAL, dataMIP.overtimeLimitAveraged, constraint_name);
+            model.addConstr(lhs, GRB.LESS_EQUAL, dataMIP.overtimeLimit[d], constraint_name);
         }
     }
 
@@ -379,7 +381,7 @@ public class PathFlowModel {
                                 lhs.addTerm(-1, q[d][v][r][i][m]);
                             }
                         }
-                        String constraint_name = String.format("5.44 -Fixed quantity for store %d of product %d on day %d. Fixed quantitiy %f. Number of products: %d", i, m, d, dataMIP.productQuantity[i][m], dataMIP.numProductsPrCustomer);
+                        String constraint_name = String.format("5.44 -Fixed quantity for store %d of product %d on day %d. Fixed quantitiy %f. Number of products: %d", i, m, d, dataMIP.productQuantity[i][m], dataMIP.numProductsPrCustomer[i]);
                         // Activate the constraint
                         model.addConstr(lhs, GRB.EQUAL, 0, constraint_name);
                     }
@@ -466,7 +468,7 @@ public class PathFlowModel {
                 }
                 // Activate the constraint
                 String constraint_name = String.format("5.51 -Only one nondiv product for customer %d on day %d", i, d);
-                model.addConstr(lhs, GRB.EQUAL, dataMIP.possibleDeliveryDays[d][i], constraint_name);
+                model.addConstr(lhs, GRB.LESS_EQUAL, dataMIP.possibleDeliveryDays[d][i], constraint_name);
             }
         }
     }
@@ -632,9 +634,11 @@ public class PathFlowModel {
         constraint49();
         constraint50();
         constraint51();
+        
+        /*// TODO: 17/03/2020 Implement 
         constraint52();
         constraint53();
-
+         */
         // ----------------- Symmetry breaking constraints ------------
         if (symmetry.equals("none")){
             System.out.println("----------------------------No symmetry chosen----------------------------------------");
@@ -657,9 +661,9 @@ public class PathFlowModel {
         }
     }
 
-    public void optimizeModel(int timeLimit) throws GRBException {
-        //model.set(GRB.DoubleParam.MIPGap, 0);
-        model.set(GRB.DoubleParam.TimeLimit, timeLimit);
+    public void optimizeModel() throws GRBException {
+        model.set(GRB.DoubleParam.MIPGap, Parameters.modelMipGap);
+        model.set(GRB.DoubleParam.TimeLimit,Parameters.modelTimeLimit);
         model.optimize();
         model.get(GRB.DoubleAttr.Runtime);
         System.out.println(GRB.Status.OPTIMAL);
@@ -893,9 +897,9 @@ public class PathFlowModel {
             System.out.println("Activate constraints");
             activateConstraints(symmetry);
             System.out.println("Optimize model");
-            optimizeModel(Parameters.timeOut);
+            optimizeModel();
             System.out.println("Print results:");
-            displayResults(false);
+            displayResults(true);
             if (optimstatus == 3) {
                 System.out.println("no solution found");
                 Result res = createAndStoreModelResults( false,  0);
@@ -904,14 +908,15 @@ public class PathFlowModel {
                 return res;
             }
             else if (optimstatus == 2){
-                if (Parameters.plotPathFlow){
+                if (Parameters.plotArcFlow){
                     GraphPlot plotter = new GraphPlot(dataMIP);
                     plotter.visualize(false);
                 }
                 System.out.println("Create and store results");
                 storePath();
                 Result res = createAndStoreModelResults(true,  1);
-                printSolution();
+                if (Parameters.verbosePathFlow)
+                    printSolution();
                 System.out.println("Terminate model");
                 terminateModel();
                 return res;
@@ -920,7 +925,8 @@ public class PathFlowModel {
                 System.out.println("Create and store results");
                 storePath();
                 Result res = createAndStoreModelResults(true, 0);
-                printSolution();
+                if (Parameters.verbosePathFlow)
+                    printSolution();
                 System.out.println("Terminate model");
                 terminateModel();
                 return res;
@@ -937,6 +943,16 @@ public class PathFlowModel {
             System.out.println("File directory wrong" + e);
             return null;
         }
+
+
+    }
+    public static void main(String[] args) {
+
+        Data data = DataFiles.DataReader.loadData();
+        DataMIP dataMip = DataConverter.convert(data);
+        PathFlowModel pfm = new PathFlowModel(dataMip);
+        pfm.runModel(DataFiles.Parameters.symmetry);
+
     }
 
 }

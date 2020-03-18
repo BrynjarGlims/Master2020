@@ -32,11 +32,24 @@ public class DataConverter {
         for (int v = 0; v < data.numberOfVehicles; v++){
             vehicles[v] = convertVehicle(data.vehicles[v]);
         }
+        setVehiclesInVehicleTypes(vehicles, vehicleTypes);
 
         dm.storeMainData(customers,vehicleTypes,vehicles);
         dm.storeAdditionalData(data);
 
         return dm;
+    }
+
+    private static void setVehiclesInVehicleTypes(PR.Vehicle[] vehicles, PR.VehicleType[] vehicleTypes){
+        for (PR.VehicleType vt : vehicleTypes){
+            int counter = 0;
+            for (PR.Vehicle v : vehicles){
+                if (v.vehicleType.type == vt.type){
+                    vt.addVehicle(v, counter);
+                    counter++;
+                }
+            }
+        }
     }
 
     private static PR.Vehicle convertVehicle (Vehicle vehicle){
@@ -60,7 +73,7 @@ public class DataConverter {
     }
 
     public static double distanceToDepot(Customer customer, Depot depot){
-        return Math.sqrt(Math.pow(customer.xCoordinate - depot.xCoordinate, 2) + Math.pow(customer.yCoordinate - depot.xCoordinate, 2));
+        return Math.sqrt(Math.pow(customer.xCoordinate - depot.xCoordinate, 2) + Math.pow(customer.yCoordinate - depot.yCoordinate, 2))* Parameters.scalingDistanceParameter;
 
     }
 

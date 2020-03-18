@@ -1,5 +1,5 @@
 package PR;
-public class Parameters {
+public class OldParameters {
 
     //Chose which models to run. Results are written to csv in folder results/result-files
     public static final boolean runArcFlow = false;

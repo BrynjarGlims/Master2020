@@ -191,16 +191,5 @@ public class Result {
         csvWriter.writeNext(results, false);
         csvWriter.close();
         writer.close();
-
     }
-
-
-    public static void main(String[] args) throws FileNotFoundException {
-
-    }
-
-
-
-
-
 }

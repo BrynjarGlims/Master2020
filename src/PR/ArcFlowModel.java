@@ -1,7 +1,9 @@
 package PR;
 import DataFiles.Data;
+import DataFiles.Parameters;
 import MIP.DataConverter;
 import gurobi.*;
+import scala.xml.PrettyPrinter;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -9,9 +11,6 @@ import java.util.ArrayList;
 
 public class ArcFlowModel {
 
-    public static int upperBoundQuantity = 100;  // upper bound q variable
-    public static int upperBoundOvertime = 1000;  // upper bound qO variable
-    public static double BigM = 1.5; // TODO: 24.11.2019 Change
 
     public GRBEnv env;
     public GRBModel model;
@@ -159,7 +158,7 @@ public class ArcFlowModel {
                     for (int v = 0; v < dataMIP.numVehicles; v++) {
                         for (int r = 0; r < dataMIP.numTrips; r++) {
                             String variable_name = String.format("q[%d][%d][%d][%d][%d]", d, v, r, i, m);
-                            q[d][v][r][i][m] = model.addVar(0.0, upperBoundQuantity , 0, GRB.CONTINUOUS, variable_name);
+                            q[d][v][r][i][m] = model.addVar(0.0, DataFiles.Parameters.upperBoundQuantity, 0, GRB.CONTINUOUS, variable_name);
                         }
                     }
                 }
@@ -171,13 +170,20 @@ public class ArcFlowModel {
             for (int v = 0; v < dataMIP.numVehicles; v++) {
                 for (int r = 0; r < dataMIP.numTrips; r++) {
                     for (int i = 0; i < dataMIP.numNodes; i++) {
+                        //System.out.println("TimeWindow: P:"+d +", V:" + v + ", R:" + r + ", i:" + i );
                         if (i == dataMIP.numCustomers || i == dataMIP.numCustomers + 1) {   // Constraint 5.12
                             String variable_name = String.format("t[%d][%d][%d][%d]", d, v, r, i);
-                            t[d][v][r][i] = model.addVar(0, dataMIP.latestInTime, 0, GRB.CONTINUOUS, variable_name);
+                            t[d][v][r][i] = model.addVar(dataMIP.earliestDepartureTime, dataMIP.latestInTime, 0, GRB.CONTINUOUS, variable_name);
+                            //System.out.println("Time window start: " + dataMIP.earliestDepartureTime);
+                            //System.out.println("Time window end: " + dataMIP.latestInTime);
                         } else {
                             String variable_name = String.format("t[%d][%d][%d][%d]", d, v, r, i);
                             t[d][v][r][i] = model.addVar(dataMIP.timeWindowStart[d][i], dataMIP.timeWindowEnd[d][i], 0, GRB.CONTINUOUS, variable_name);
+                            //System.out.println("Time window start: " + dataMIP.timeWindowStart[d][i]);
+                            //System.out.println("Time window end: " + dataMIP.timeWindowEnd[d][i]);
                         }
+                        //System.out.println("------------------------------");
+
                     }
                 }
             }
@@ -186,7 +192,7 @@ public class ArcFlowModel {
         //Create qO (overtime) variables
         for (int d = 0; d < dataMIP.numPeriods; d++) {
             String variable_name = String.format("qO[%d]", d);
-            qO[d] = model.addVar(0.0, upperBoundOvertime, dataMIP.costOvertime[d], GRB.CONTINUOUS, variable_name);
+            qO[d] = model.addVar(0.0, dataMIP.upperBoundOvertime, dataMIP.costOvertime[d], GRB.CONTINUOUS, variable_name);
         }
     }
 
@@ -525,7 +531,7 @@ public class ArcFlowModel {
                                 lhs.addTerm(-1, q[d][v][r][i][m]);
                             }
                         }
-                        String constraint_name = String.format("5.5 -Fixed quantity for store %d of product %d on day %d. Fixed quantitiy %f. Number of products: %d", i, m, d, dataMIP.productQuantity[i][m], dataMIP.numProductsPrCustomer[d]);
+                        String constraint_name = String.format("5.5 -Fixed quantity for store %d of product %d on day %d. Fixed quantitiy %f. Number of products: %d", i, m, d, dataMIP.productQuantity[i][m], dataMIP.numProductsPrCustomer[i]);
                         // Activate the constraint
                         model.addConstr(lhs, GRB.EQUAL, 0, constraint_name);
                     }
@@ -592,12 +598,13 @@ public class ArcFlowModel {
                     }
                     String constraint_name = String.format("5.8 -Delivery of div product %d to customer %d. Quantity %f", m, i, dataMIP.productQuantity[i][m] );
                     // Activate the constraint
-                    System.out.println(dataMIP.numPeriods + "  " + dataMIP.numVehicles + "  " + dataMIP.numTrips );
                     model.addConstr(lhs, GRB.EQUAL, dataMIP.productQuantity[i][m], constraint_name);
                 }
             }
         }
     }
+
+
 
     public void constraint521() throws GRBException {
         // Constraint 5.21: Only one non-div product is delivered to the store. // TODO: 23.11.2019 Change numbering to correct
@@ -633,6 +640,8 @@ public class ArcFlowModel {
             }
         }
     }
+
+
     public void constraint523() throws GRBException {
         // Constraint 5.22
         // Dividable good has to be delivered at least above the minimum frequenzy
@@ -666,6 +675,8 @@ public class ArcFlowModel {
             }
         }
     }
+
+
 
     public void fixation1() throws GRBException {
         //fix: have all arcs from i to j where i == j equal to 0
@@ -811,9 +822,11 @@ public class ArcFlowModel {
         constraint520();
         constraint521();
         constraint522();
+
+        /* Frequency constraints
         constraint523();
         constraint524();
-
+        */
         //Fixation of variables
         fixation1();
         fixation2();
@@ -842,10 +855,10 @@ public class ArcFlowModel {
 
     }
 
-    public void optimizeModel(int timeLimit) throws GRBException {
+    public void optimizeModel() throws GRBException {
         //if gap is needed to be changed:
-        //model.set(GRB.DoubleParam.MIPGap, 0);
-        model.set(GRB.DoubleParam.TimeLimit, timeLimit);
+        model.set(GRB.DoubleParam.MIPGap, Parameters.modelMipGap);
+        model.set(GRB.DoubleParam.TimeLimit, Parameters.modelTimeLimit);
         model.optimize();
         model.get(GRB.DoubleAttr.Runtime);
         System.out.println(GRB.Status.OPTIMAL);
@@ -1131,7 +1144,7 @@ public class ArcFlowModel {
             System.out.println("Activate constraints");
             activateConstraints(symmetry);
             System.out.println("Optimize model");
-            optimizeModel(Parameters.timeOut);
+            optimizeModel();
             System.out.println("Print results:");
             displayResults(true);
             if (optimstatus == 3) {
@@ -1150,7 +1163,8 @@ public class ArcFlowModel {
                 System.out.println("Create and store results");
                 storePath();
                 Result res = createAndStoreModelResults(true,  1);
-                printSolution();
+                if (Parameters.verboseArcFlow)
+                    printSolution();
                 System.out.println("Terminate model");
                 terminateModel();
                 return res;
@@ -1159,7 +1173,8 @@ public class ArcFlowModel {
                 System.out.println("Create and store results");
                 storePath();
                 Result res = createAndStoreModelResults(true, 0);
-                printSolution();
+                if (Parameters.verboseArcFlow)
+                    printSolution();
                 System.out.println("Terminate model");
                 terminateModel();
                 return res;
@@ -1182,7 +1197,7 @@ public class ArcFlowModel {
         Data data = DataFiles.DataReader.loadData();
         DataMIP dataMip = DataConverter.convert(data);
         ArcFlowModel afm = new ArcFlowModel(dataMip);
-        Result res = afm.runModel("None");
+        afm.runModel(DataFiles.Parameters.symmetry);
 
     }
 

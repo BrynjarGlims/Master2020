@@ -57,13 +57,7 @@ public class Customer {
             return new double[]{0,0};
         }
         else{
-            int visitcounter = 0;
-            for (int i = 0 ; i < period ; i++){
-                if (visitDays[i] == 1){
-                    visitcounter++;
-                }
-            }
-            return timeWindow[visitcounter];
+            return timeWindow[period];
         }
     }
 

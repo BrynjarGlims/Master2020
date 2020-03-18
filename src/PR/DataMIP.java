@@ -18,7 +18,7 @@ public class DataMIP {
     VehicleType[] vehicleTypes;
     double xCoordinateDepot;
     double yCoordinateDepot;
-    double latestInTime;
+    double latestInTime = Parameters.maxJourneyDuration;
     GRBVar[][][][][] arcs;
     GRBVar[][][][] paths;
 
@@ -32,6 +32,8 @@ public class DataMIP {
     int numNodes;  //this should be 2 larger than customers, since we have a N+1 depot
     int numVehicles;
     int numVehicleTypes;
+    double earliestDepartureTime = 0;
+
 
     double[] products;  // [i] total quantum of products for customer i
     int[][] productTypes; //  (i,m) // 1 is dividable and 0 is non dividable. first index is customer i, second is product m
@@ -47,7 +49,7 @@ public class DataMIP {
 
     double[] travelCost; //[v] unit cost per unit travelled by vehicle v
     double[] vehicleCapacity; // [v] capacity per vehicle
-    double[] overtimeLimit; // [d] limit of products delivered day d before overtime is inferred
+    double[] overtimeLimit = Parameters.overtimeLimit;; // [d] limit of products delivered day d before overtime is inferred
     double[][] maxAmountDivProduct; // (i,m) upper limit of dividable product m for customer i
     double[][] minAmountDivProduct; // (i,m) lower limit of dividable product m for customer i
     int[][] minFrequencyProduct; //(i,m) min amount of days to deliver a product
@@ -188,6 +190,8 @@ public class DataMIP {
         calculateTravelTime();
         overtimeLimit = Parameters.overtimeLimit;
         costOvertime = Parameters.overtimeCost;
+
+
     }
 
 
@@ -282,13 +286,13 @@ public class DataMIP {
                     travelTime[i][j] = 0;
                 } else if (i < numCustomers && j >= numCustomers) {
                     travelTime[i][j] = Math.sqrt(Math.pow(customers[i].xCoordinate - this.xCoordinateDepot, 2)
-                            + Math.pow(customers[i].yCoordinate - this.yCoordinateDepot, 2));
+                            + Math.pow(customers[i].yCoordinate - this.yCoordinateDepot, 2)) * Parameters.scalingDistanceParameter;
                 } else if (j < numCustomers && i >= numCustomers) {
                     travelTime[i][j] = Math.sqrt(Math.pow(customers[j].xCoordinate - this.xCoordinateDepot, 2)
-                            + Math.pow(customers[j].yCoordinate - this.yCoordinateDepot, 2));
+                            + Math.pow(customers[j].yCoordinate - this.yCoordinateDepot, 2)) * Parameters.scalingDistanceParameter;
                 } else {
                     travelTime[i][j] = Math.sqrt(Math.pow(customers[i].xCoordinate - customers[j].xCoordinate, 2)
-                            + Math.pow(customers[i].yCoordinate - customers[j].yCoordinate, 2));
+                            + Math.pow(customers[i].yCoordinate - customers[j].yCoordinate, 2)) * Parameters.scalingDistanceParameter;
 
                 }
             }
