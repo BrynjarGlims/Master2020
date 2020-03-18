@@ -68,7 +68,7 @@ public class Converter {
         for (Order order : c.orders) {
             orderVolume += order.volume;
         }
-        return Double.toString(orderVolume);
+        return String.format(" %.2f", orderVolume);
     }
 
     public static String calculateTotalTripTime(Trip t, Data data) {
