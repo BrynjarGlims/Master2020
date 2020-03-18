@@ -35,7 +35,7 @@ public class Parameters {
 
 
     //Traveling parameters
-    public static final double scalingDistanceParameter = 0.8;
+    public static final double scalingDistanceParameter = 2.2;
     public static final double timeShift = 4;
 
 
