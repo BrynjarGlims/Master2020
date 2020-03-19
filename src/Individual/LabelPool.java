@@ -55,7 +55,7 @@ public class LabelPool {
 
         // Creating labels based on a new vehicle in use.
         if (predecessorLabel.labelEntries[vehicleCostOrderNumber].vehicleCost == 0){
-            tryToAddNewLabel(new Label(predecessorLabel, vehicleCostOrderNumber));
+            tryToAddNewLabel(new Label(predecessorLabel, vehicleCostOrderNumber, penaltyMultiplier));
         }
     }
 

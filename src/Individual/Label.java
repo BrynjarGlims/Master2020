@@ -36,9 +36,6 @@ public class Label {
     public boolean isEmptyLabel;
 
     //create non-first labels
-    public Label(Label parentLabel, int vehicleIndex){
-        this(parentLabel, vehicleIndex, 1);
-    }
 
     public Label(Label parentLabel, int vehicleIndex, double penaltyMultiplier){
 
@@ -56,14 +53,13 @@ public class Label {
         this.labelEntries[vehicleIndex].updateLabelEntryValues(listOfTrips.get(tripNumber), tripNumber);
 
         this.sortLabelEntries();
-        this.deriveLabelCost();
+        this.deriveLabelCost(penaltyMultiplier);
 
     }
 
 
     //generate empty label
-    public Label(Data data, int tripNumber, double[][] orderDistribution, int periodID,
-                 int vehicleTypeID){
+    public Label(Data data, int tripNumber, double[][] orderDistribution, int periodID, int vehicleTypeID){
         this.vehicleTypeID = vehicleTypeID;
         this.periodID = periodID;
         this.data = data;
@@ -125,11 +121,8 @@ public class Label {
         }
     }
 
-    public void deriveLabelCost(){
-        deriveLabelCost(1);
-    }
 
-    public void deriveLabelCost(double penaltyMulitplier) {  //todo: implement for new structure
+    private void deriveLabelCost(double penaltyMulitplier) {  //todo: implement for new structure
         calculateTravelValue();  //must be used before calculateOvertimeValue
         calculateOvertimeValue(penaltyMulitplier);
         calculateLoadValue(penaltyMulitplier);

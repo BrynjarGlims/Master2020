@@ -212,8 +212,6 @@ public class Individual implements Comparable<Individual> {
     }
 
     public void updateFitness(double penaltyMultiplier) {
-        this.fitness = 0;
-
         //Calculate objective costs
         this.objectiveCost = getObjectiveCost(penaltyMultiplier);
 
@@ -329,7 +327,18 @@ public class Individual implements Comparable<Individual> {
     }
 
     public String toString(){
-        return giantTour.toString();
+        String out = "";
+        for (int p = 0 ; p < data.numberOfPeriods ; p++){
+            out += "\n PERIOD: " + p + "\n";
+            for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
+                out += "vehicle type " + vt + " take trips: ";
+                for (Trip trip : tripList[p][vt]){
+                    out += "trip " + trip.tripIndex + ": " + trip.customers + "\t";
+                }
+                out += "\n";
+            }
+        }
+        return out;
     }
 
     public static void main(String[] args) {

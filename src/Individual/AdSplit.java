@@ -23,17 +23,16 @@ public class AdSplit {
         resetStaticClass(ind);
         for (int p = 0; p < individual.data.numberOfPeriods; p++) {
             for (int vt = 0; vt < individual.data.numberOfVehicleTypes; vt++) {
-                adSplitSingular(individual, p , vt, false, penaltyMultiplier);
+                adSplitSingular(individual, p , vt, penaltyMultiplier);
             }
             checkIfAllOrdersAreSatisfied(p);  //todo: to be removed
         }
     }
 
 
-    public static void adSplitSingular (Individual ind, int p, int vt, boolean reset, double penaltyMultiplier) {
-        if (reset){
+    public static void adSplitSingular (Individual ind, int p, int vt, double penaltyMultiplier) {
             resetStaticClass(ind);
-        }
+
         if (individual.giantTour.chromosome[p][vt].size() == 0) {
             individual.bestLabels[p][vt] = new Label(ind.data, 0, individual.getOrderDistribution().orderVolumeDistribution, p, vt);
         }
@@ -50,12 +49,10 @@ public class AdSplit {
     }
 
     public static void adSplitSingular(Individual ind, int p, int vt){
-        adSplitSingular(ind, p, vt, true, 1);
+        adSplitSingular(ind, p, vt, 1);
     }
 
-    public static void adSplitSingular (Individual ind, int p, int vt, double penaltyMultiplier) {
-        adSplitSingular(ind, p, vt, true, penaltyMultiplier);
-    }
+
 
     private static void checkIfAllOrdersAreSatisfied(int p){
         for (OrderDelivery orderDelivery : individual.orderDistribution.orderDeliveries){

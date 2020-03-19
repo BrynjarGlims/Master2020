@@ -9,6 +9,7 @@ public class Parameters {
     public static final String vehicleFilePath = "data/Vehicles.csv";
 
     //Population parameters
+
     public static final int maximumSubIndividualPopulationSize = 100; //TODO: find reasonable value
     public static final int minimumSubIndividualPopulationSize = 40;
     public static final int numberOfElitismSurvivorsPerGeneration = 5;
@@ -18,6 +19,7 @@ public class Parameters {
 
     public static final int maxNumberIterationsWithoutImprovement = 10;
     public static final int maxNumberOfGenerations = 50;
+
     public static final double minimumFitnessDifferenceForClones = 10; //minimum fitness difference to encounter two individuals as clones
 
     //Decision parameters
@@ -28,8 +30,8 @@ public class Parameters {
 
 
     //Loading data parameters
-    public static final int numberOfCustomers = 50;
-    public static final int numberOfVehicles = 10;
+    public static final int numberOfCustomers = 5;
+    public static final int numberOfVehicles = 5;
 
 
 
@@ -38,6 +40,7 @@ public class Parameters {
     public static final int EducationTabooSize = 2;
     public static final double repairProbability = 1;
     public static final double greedyMIPValue = 0;
+
 
     //Traveling parameters
     public static final double scalingDistanceParameter = 2.2;
@@ -53,8 +56,6 @@ public class Parameters {
     public static final double initialOvertimePenalty = 1;  // theta
     public static final double initialTimeWarpPenalty = 1000;  // zeta
     public static final double initialDrivingCostPenalty = 1; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
-
-
 
 
     public static final double penaltyFactorForOverFilling = 1.1;
@@ -79,6 +80,7 @@ public class Parameters {
 
 
     //GUROBI PARAMETERS
+
     public static final String symmetry =  "car";      // // none, car, trips, customers, cost, duration
     public static final double modelTimeLimit = 3600;
     public static final double modelMipGap = 0.001;
@@ -86,13 +88,14 @@ public class Parameters {
     public static final String instanceName = "testDataFromAsko";
     public static final int upperBoundQuantity = 100;  // upper bound q variable
     public static final int upperBoundOvertime = 1000;  // upper bound qO variable
-    public static boolean verboseArcFlow = false;
-    public static boolean verbosePathFlow = false;
-    public static boolean verboseJourneyBased = false;
+
+    public static final boolean verboseArcFlow = false;
+    public static final boolean verbosePathFlow = false;
+    public static final boolean verboseJourneyBased = false;
 
 
     //PLOT PARAMETERS
-    public static final boolean savePlots = false;
+    public static final boolean savePlots = true;
     public static final boolean verbose = false;
-
+    public static final char separator = ',';
 }
