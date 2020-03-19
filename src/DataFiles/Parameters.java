@@ -33,7 +33,6 @@ public class Parameters {
 
 
 
-
     //Traveling parameters
     public static final double scalingDistanceParameter = 2.2;
     public static final double timeShift = 4;
@@ -49,7 +48,7 @@ public class Parameters {
     public static final double initialTimeWarpPenalty = 1000;  // zeta
     public static final double initialDrivingCostPenalty = 1; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
 
-    public static final int nearestNeighbors = 1; //Neighborhood size for each customer
+    public static final int nearestNeighbors = 5; //Neighborhood size for each customer
     public static final int EducationTabooSize = 2;
 
 

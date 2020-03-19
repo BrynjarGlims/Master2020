@@ -17,7 +17,7 @@ public class Education {
     public static void improveRoutes(Individual individual, OrderDistribution od) {
         data = individual.data;
         orderDistribution = od;
-        HashSet<Integer> customers = new HashSet<>();
+        List<Integer> customers = new ArrayList<>();
         for (int i = 0; i < individual.data.numberOfCustomers; i++) {
             customers.add(i);
         }
@@ -29,6 +29,7 @@ public class Education {
         int[] taboo;
         int index = 0;
         int totalImprovements = 0;
+        Collections.shuffle(customers);
         for (int c : customers) {
             taboo = new int[Parameters.EducationTabooSize];
             for (int period = 0; period < data.numberOfPeriods; period++) {
