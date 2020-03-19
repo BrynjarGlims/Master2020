@@ -1,8 +1,8 @@
 package PR;
 import DataFiles.Data;
-import DataFiles.Parameters;
 import MIP.DataConverter;
 import gurobi.GRBVar;
+import DataFiles.Parameters;
 
 import java.util.Arrays;
 import java.util.HashSet;

@@ -1,14 +1,11 @@
 package PR;
 import DataFiles.Data;
-import DataFiles.DataReader;
 import DataFiles.Parameters;
 import Individual.Individual;
-import MIP.ArcFlowConverter;
 import MIP.DataConverter;
 import ProductAllocation.OrderDistribution;
 import Visualization.PlotIndividual;
 import gurobi.*;
-import scala.xml.PrettyPrinter;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

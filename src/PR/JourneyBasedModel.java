@@ -1,7 +1,7 @@
 package PR;
 import DataFiles.Data;
-import DataFiles.Parameters;
 import MIP.DataConverter;
+import DataFiles.Parameters;
 import gurobi.*;
 
 import java.io.FileNotFoundException;

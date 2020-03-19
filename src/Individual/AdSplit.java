@@ -1,9 +1,8 @@
 package Individual;
+
 import DataFiles.Data;
-import DataFiles.Parameters;
 import ProductAllocation.OrderDelivery;
-import ProductAllocation.OrderDistribution;
-import org.nustaq.kson.KsonCharOutput;
+import DataFiles.Parameters;
 
 import java.util.*;
 
@@ -45,9 +44,14 @@ public class AdSplit {
                 continue;
             if (!orderDelivery.dividable){
                 if (!individual.tripMap.get(orderDelivery.getPeriod()).containsKey(orderDelivery.order.customerID)){
+                    /*
                     System.out.println("Missing hashmap: P:" + orderDelivery.getPeriod() + ", C:" + orderDelivery.order.customerID );
                     System.out.println("Is this combination a valid visit day: " + individual.data.customers[orderDelivery.order.customerID].requiredVisitPeriod[orderDelivery.getPeriod()]);
+
+
+                     */
                 }
+
             }
         }
     }
