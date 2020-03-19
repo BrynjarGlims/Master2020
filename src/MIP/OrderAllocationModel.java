@@ -3,7 +3,6 @@ package MIP;
 import DataFiles.Data;
 import DataFiles.DataReader;
 import DataFiles.Parameters;
-import Genetic.GiantTourCrossover;
 import Genetic.OrderDistributionCrossover;
 import Individual.Individual;
 import Population.Population;

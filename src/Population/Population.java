@@ -101,7 +101,7 @@ public class Population {
 
     public void setSurvivorsForNextGeneration(){
         ArrayList<Individual> listToBeSorted = new ArrayList<Individual>(this.infeasiblePopulation);
-        listToBeSorted.addAll(this.infeasiblePopulation);
+        listToBeSorted.addAll(this.feasiblePopulation);
         Collections.sort(listToBeSorted);
         int counter = 0;
         for (Individual individual : listToBeSorted){

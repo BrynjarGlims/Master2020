@@ -28,9 +28,10 @@
 .idea/
 src/python/venv/
 src/python/dataMIP.txt
-src/datafiles/Parameters.java
+src/Datafiles/Parameters.java
 out/
 results/
+results/results_detailed
 dataMIP/
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml

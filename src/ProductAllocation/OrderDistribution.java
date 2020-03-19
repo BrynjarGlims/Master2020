@@ -7,10 +7,12 @@ import DataFiles.Order;
 import DataFiles.*;
 import MIP.ArcFlowModel;
 import MIP.OrderAllocationModel;
+import PR.DataMIP;
 import gurobi.GRB;
 import gurobi.GRBException;
 import gurobi.GRBVar;
 import org.nustaq.kson.KsonCharOutput;
+
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -65,6 +67,39 @@ public class OrderDistribution {
         setFitness();
     }
 
+    public void makeDistributionFromArcFlowModel(PR.ArcFlowModel afm) throws GRBException {
+        setVolumeAndOrdersFromMIP( afm.u, afm.q, afm.dataMIP);
+        setVolumePerPeriod();
+        setFitness();
+    }
+
+    private void setVolumeAndOrdersFromMIP(GRBVar[][][] u, GRBVar[][][][][] q, DataMIP dataMIP) throws GRBException {
+        int orderID;
+        for (int d = 0; d < data.numberOfPeriods; d++) {
+            for (int i = 0; i < data.numberOfCustomers; i++) {
+                for (int m = 0; m < data.customers[i].orders.length; m++) {
+                    //System.out.println("day: "+ d + " i: " + i + " product: " + m);
+                    if (u[d][i][m].get(GRB.DoubleAttr.X) == 1) {
+                        for (int v = 0; v < data.numberOfVehicles; v++) {
+                            for (int r = 0; r < data.numberOfTrips; r++) {
+                                if (dataMIP.getProductTypes()[i][m] == 1) {
+                                    orderID = data.customers[i].orders[m].orderID;
+                                    this.orderIdDistribution[d][i].add(orderID);
+                                    this.orderDeliveries[orderID].addDelivery(d, q[d][v][r][i][m].get(GRB.DoubleAttr.X));
+                                    this.orderVolumeDistribution[d][i] += q[d][v][r][i][m].get(GRB.DoubleAttr.X);
+                                } else {
+                                    orderID = data.customers[i].orders[m].orderID;
+                                    this.orderIdDistribution[d][i].add(orderID);
+                                    this.orderDeliveries[orderID].addDelivery(d, q[d][v][r][i][m].get(GRB.DoubleAttr.X));
+                                    this.orderVolumeDistribution[d][i] += q[d][v][r][i][m].get(GRB.DoubleAttr.X);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
 
     private void setVolumeAndOrdersFromMIP(GRBVar[][][] uND, GRBVar[][][] uD, GRBVar[][][][][] qND, GRBVar[][][][][] qD ) throws GRBException {
@@ -72,7 +107,6 @@ public class OrderDistribution {
         for (int d = 0; d < data.numberOfPeriods; d++){
             for (int i = 0; i < data.numberOfCustomers; i++) {
                 for (int m = 0; m < data.customers[i].numberOfDividableOrders; m++){
-                    if (d == 0 && i == 0 && m == 0)
                     if (uD[d][i][m].get(GRB.DoubleAttr.X) == 1) {
                         for (int v = 0; v < data.numberOfVehicles; v++){
                             for (int r = 0; r < data.numberOfTrips; r++) {

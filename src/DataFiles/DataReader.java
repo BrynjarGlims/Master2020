@@ -192,10 +192,10 @@ public class DataReader {
                 if ( !vehicleTypeHashMap.containsKey(tempCapacity)){
                     //create new vehicle type
                     vehicleTypeHashMap.put(tempCapacity, new VehicleType(vehiclesData.get(line)[24],
-                            Integer.parseInt(vehiclesData.get(line)[18]),
-                            Integer.parseInt(vehiclesData.get(line)[19]),
                             Integer.parseInt(vehiclesData.get(line)[20]),
-                            Integer.parseInt(vehiclesData.get(line)[21])));
+                            Integer.parseInt(vehiclesData.get(line)[21]),
+                            Integer.parseInt(vehiclesData.get(line)[18]),
+                            Integer.parseInt(vehiclesData.get(line)[19])));
 
                 }
                 //create new vehicle object
@@ -345,6 +345,7 @@ public class DataReader {
 
     public static void main(String[] args){
         Data data = loadData();
+        System.out.println("test");
     }
 
 }

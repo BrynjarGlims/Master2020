@@ -1,8 +1,8 @@
 package PR;
 import DataFiles.Data;
-import DataFiles.Parameters;
 import MIP.DataConverter;
 import gurobi.GRBVar;
+import DataFiles.Parameters;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -11,8 +11,9 @@ import java.util.Map;
 
 public class DataMIP {
 
-    String instanceName;
+    public Data newData;
 
+    String instanceName;
     Customer[] customers;
     Vehicle[] vehicles;
     VehicleType[] vehicleTypes;
@@ -192,6 +193,14 @@ public class DataMIP {
         costOvertime = Parameters.overtimeCost;
 
 
+    }
+
+    public void setNewData(Data data){
+        this.newData = data;
+    }
+
+    public int[][] getProductTypes(){
+        return this.productTypes;
     }
 
 

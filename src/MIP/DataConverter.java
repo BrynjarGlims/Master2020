@@ -17,6 +17,7 @@ public class DataConverter {
     public static DataMIP convert( Data newData ){
         data = newData;
         dm = new DataMIP();
+        dm.setNewData(data);
 
         PR.Customer[] customers = new PR.Customer[data.numberOfCustomers];
         for (int i = 0; i < data.numberOfCustomers; i++){

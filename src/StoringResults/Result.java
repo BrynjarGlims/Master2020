@@ -52,7 +52,6 @@ public class Result {
 
     public void store() throws IOException {
 
-
         String fileName = getFileName();
         storeSummary(fileName);
         createDetailedDirectory(fileName);
@@ -95,7 +94,7 @@ public class Result {
         File newFile = new File(filePath);
         System.out.println("Path : " + newFile.getAbsolutePath());
         Writer writer = Files.newBufferedWriter( Paths.get(filePath), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-        CSVWriter csvWriter = new CSVWriter(writer, ';', CSVWriter.NO_QUOTE_CHARACTER,
+        CSVWriter csvWriter = new CSVWriter(writer, Parameters.separator, CSVWriter.NO_QUOTE_CHARACTER,
                 CSVWriter.DEFAULT_ESCAPE_CHARACTER,
                 CSVWriter.DEFAULT_LINE_END);
         NumberFormat formatter = new DecimalFormat("#0.00000000");
@@ -124,7 +123,7 @@ public class Result {
         File newFile = new File(filePath);
         System.out.println("Path : " + newFile.getAbsolutePath());
         Writer writer = Files.newBufferedWriter( Paths.get(filePath), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-        CSVWriter csvWriter = new CSVWriter(writer, ';', CSVWriter.NO_QUOTE_CHARACTER,
+        CSVWriter csvWriter = new CSVWriter(writer, Parameters.separator, CSVWriter.NO_QUOTE_CHARACTER,
                 CSVWriter.DEFAULT_ESCAPE_CHARACTER,
                 CSVWriter.DEFAULT_LINE_END);
         NumberFormat formatter = new DecimalFormat("#0.00000000");
@@ -158,7 +157,7 @@ public class Result {
         File newFile = new File(filePath);
         System.out.println("Path : " + newFile.getAbsolutePath());
         Writer writer = Files.newBufferedWriter( Paths.get(filePath), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-        CSVWriter csvWriter = new CSVWriter(writer, ';', CSVWriter.NO_QUOTE_CHARACTER,
+        CSVWriter csvWriter = new CSVWriter(writer, Parameters.separator, CSVWriter.NO_QUOTE_CHARACTER,
                 CSVWriter.DEFAULT_ESCAPE_CHARACTER,
                 CSVWriter.DEFAULT_LINE_END);
         NumberFormat formatter = new DecimalFormat("#0.00000000");
@@ -191,7 +190,7 @@ public class Result {
         File newFile = new File(filePath);
         System.out.println("Path : " + newFile.getAbsolutePath());
         Writer writer = Files.newBufferedWriter( Paths.get(filePath), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-        CSVWriter csvWriter = new CSVWriter(writer, ';', CSVWriter.NO_QUOTE_CHARACTER,
+        CSVWriter csvWriter = new CSVWriter(writer, Parameters.separator, CSVWriter.NO_QUOTE_CHARACTER,
                 CSVWriter.DEFAULT_ESCAPE_CHARACTER,
                 CSVWriter.DEFAULT_LINE_END);
         NumberFormat formatter = new DecimalFormat("#0.0000");
@@ -257,7 +256,7 @@ public class Result {
         String filePath  = FileParameters.filePathSummary + "/main_results.csv";
         File newFile = new File(filePath);
         Writer writer = Files.newBufferedWriter(Paths.get(filePath), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-        CSVWriter csvWriter = new CSVWriter(writer, ';', CSVWriter.NO_QUOTE_CHARACTER,
+        CSVWriter csvWriter = new CSVWriter(writer, Parameters.separator, CSVWriter.NO_QUOTE_CHARACTER,
                 CSVWriter.DEFAULT_ESCAPE_CHARACTER,
                 CSVWriter.DEFAULT_LINE_END);
         NumberFormat formatter = new DecimalFormat("#0.00000000");
@@ -269,7 +268,7 @@ public class Result {
             csvWriter.writeNext(CSV_COLUMNS, false);
         }
 
-        String[] results = {fileName, String.format("%.4f",bestIndividual.fitness), "0", date_formatter.format(new Date()),
+        String[] results = {fileName, String.format("%.4f",bestIndividual.getFitness(false)), "0", date_formatter.format(new Date()),
                 String.valueOf(Parameters.maximumSubIndividualPopulationSize),String.valueOf(Parameters.maxNumberOfGenerations), String.valueOf(Parameters.numberOfCustomers)
         , String.valueOf(Parameters.numberOfVehicles)};
         csvWriter.writeNext(results, false);

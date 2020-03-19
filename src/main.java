@@ -120,5 +120,7 @@ public class main {
         Result res = new Result(population);
         res.store();
 
+
+
     }
 }
