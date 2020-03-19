@@ -1,4 +1,4 @@
-package MIP;
+package PR;
 
 import DataFiles.Data;
 import Individual.Individual;
@@ -9,21 +9,24 @@ import Individual.Trip;
 import Individual.GiantTour;
 import PR.DataMIP;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ArcFlowConverter {
+
+public class OldArcFlowConverter {
 
     private static OrderDistribution orderDistribution;
     private static Individual individual;
-    private static ArcFlowModel arcFlowModel;
+    private static PR.ArcFlowModel arcFlowModel;
     private static Data data;
 
 
-    public static void initializeIndividualFromArcFlowModel(ArcFlowModel afm) throws GRBException {
+
+
+    //function working on old ArcFlowModel
+    public static void initializeIndividualFromArcFlowModel(PR.ArcFlowModel afm) throws GRBException {
         arcFlowModel = afm;
-        data = arcFlowModel.data;
+        data = arcFlowModel.dataMIP.newData;
         orderDistribution = afm.getOrderDistribution();
         orderDistribution.makeDistributionFromArcFlowModel(arcFlowModel);
         individual = afm.getIndividual();
@@ -34,16 +37,13 @@ public class ArcFlowConverter {
 
 
 
-
-
-
-    private static void initializeGiantTourInIndividual(ArcFlowModel afm) throws GRBException {
-
+    private static void initializeGiantTourInIndividual(PR.ArcFlowModel afm) throws GRBException {
+        //todo: implement
         ArrayList<Trip>[][] tripList = setTripList();
         updateTripList(tripList);
         ArrayList<Integer>[][] giantTour = initializeGiantTourChromosome();
         updateGiantTourChromosome(giantTour,tripList);
-        HashMap<Integer, HashMap<Integer,Trip>> tripMap = getTripMap(tripList);
+        HashMap<Integer, HashMap<Integer, Trip>> tripMap = getTripMap(tripList);
         individual.setTripMap(tripMap);
         individual.setTripList(tripList);
         individual.setGiantTour(createGiantTour(giantTour));
@@ -51,16 +51,14 @@ public class ArcFlowConverter {
     }
 
 
-
-
-    private static GiantTour createGiantTour( ArrayList<Integer>[][] giantTour){
+    private static GiantTour createGiantTour(ArrayList<Integer>[][] giantTour){
         GiantTour gt = new GiantTour(data);
         gt.setChromosome(giantTour);
         return gt;
     }
 
-    private static HashMap<Integer, HashMap<Integer,Trip>> getTripMap(ArrayList<Trip>[][] tripList) {
-        HashMap<Integer, HashMap<Integer,Trip>> tripMap = new HashMap<Integer, HashMap<Integer,Trip>>();
+    private static HashMap<Integer, HashMap<Integer, Trip>> getTripMap(ArrayList<Trip>[][] tripList) {
+        HashMap<Integer, HashMap<Integer, Trip>> tripMap = new HashMap<Integer, HashMap<Integer, Trip>>();
         for (int p = 0; p < data.numberOfPeriods; p++){
             tripMap.put(p, new HashMap<Integer, Trip>());
             for (int vt = 0; vt < data.numberOfVehicleTypes; vt ++){
@@ -160,3 +158,5 @@ public class ArcFlowConverter {
         return tripList;
     }
 }
+
+

@@ -5,7 +5,10 @@ import Genetic.Education;
 import Genetic.GiantTourCrossover;
 import Genetic.OrderDistributionCrossover;
 import Individual.Individual;
+import MIP.DataConverter;
 import MIP.OrderAllocationModel;
+import PR.ArcFlowModel;
+import PR.DataMIP;
 import Population.Population;
 import ProductAllocation.OrderDistribution;
 import Population.OrderDistributionPopulation;
@@ -98,6 +101,8 @@ public class main {
         visualizer.visualize(bestIndividual);
         Result res = new Result(population);
         res.store();
+
+
 
     }
 }

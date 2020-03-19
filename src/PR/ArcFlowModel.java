@@ -1,7 +1,12 @@
 package PR;
 import DataFiles.Data;
+import DataFiles.DataReader;
 import DataFiles.Parameters;
+import Individual.Individual;
+import MIP.ArcFlowConverter;
 import MIP.DataConverter;
+import ProductAllocation.OrderDistribution;
+import Visualization.PlotIndividual;
 import gurobi.*;
 import scala.xml.PrettyPrinter;
 
@@ -21,6 +26,10 @@ public class ArcFlowModel {
     public int optimstatus;
     public double objval;
     public String symmetry;
+
+    //NEW RESULT VARIABLES:
+    public Individual individual;
+    public OrderDistribution orderDistribution;
 
     // derived variables
     public int numVehiclesUsed = 0;
@@ -137,9 +146,6 @@ public class ArcFlowModel {
         // Create u variables:
         for (int i = 0; i < dataMIP.numCustomers; i++) {
             for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
-                if (dataMIP.productQuantity[i][m] == 0) {
-                    continue;
-                }
                 for (int d = 0; d < dataMIP.numPeriods; d++) {
                     String variable_name = String.format("u[%d][%d][%d]", d, i, m);
                     u[d][i][m] = model.addVar(0.0, 1.0, 0, GRB.BINARY, variable_name);
@@ -1132,7 +1138,7 @@ public class ArcFlowModel {
         }
     }
 
-    public Result runModel(String symmetry) {
+    public void runModel(String symmetry) {
         try {
             this.symmetry = symmetry;
             System.out.println("Initalize model");
@@ -1149,10 +1155,8 @@ public class ArcFlowModel {
             displayResults(true);
             if (optimstatus == 3) {
                 System.out.println("no solution found");
-                Result res = createAndStoreModelResults( false,  0);
                 System.out.println("Terminate model");
                 terminateModel();
-                return res;
             }
             else if (optimstatus == 2){
                 if (Parameters.plotArcFlow){
@@ -1162,43 +1166,57 @@ public class ArcFlowModel {
 
                 System.out.println("Create and store results");
                 storePath();
-                Result res = createAndStoreModelResults(true,  1);
+                createIndividualAndOrderDistributionObject();
                 if (Parameters.verboseArcFlow)
                     printSolution();
                 System.out.println("Terminate model");
                 terminateModel();
-                return res;
             }
             else{
                 System.out.println("Create and store results");
                 storePath();
-                Result res = createAndStoreModelResults(true, 0);
                 if (Parameters.verboseArcFlow)
                     printSolution();
                 System.out.println("Terminate model");
                 terminateModel();
-                return res;
             }
 
 
         } catch (GRBException | FileNotFoundException e) {
             System.out.println("ERROR: " + e);
-            return null;
         } catch (Error e) {
             System.out.println(e);
-            return null;
         } catch (IOException e) {
             System.out.println("File directory wrong" + e);
-            return null;
         }
     }
 
-    public static void main(String[] args) {
+    //arc flow converter
+    public void createIndividualAndOrderDistributionObject() throws GRBException {
+        this.individual = new Individual(dataMIP.newData);
+        this.orderDistribution = new OrderDistribution(dataMIP.newData);
+        OldArcFlowConverter.initializeIndividualFromArcFlowModel(this);
+        this.individual.setFitness(this.model.get(GRB.DoubleAttr.ObjVal));
+    }
+
+    public OrderDistribution getOrderDistribution(){
+        return orderDistribution;
+    }
+
+    public Individual getIndividual(){
+        return individual;
+    }
+
+    public static void main(String[] args) throws IOException {
         Data data = DataFiles.DataReader.loadData();
         DataMIP dataMip = DataConverter.convert(data);
         ArcFlowModel afm = new ArcFlowModel(dataMip);
         afm.runModel(DataFiles.Parameters.symmetry);
-
+        Individual individual = afm.getIndividual();
+        StoringResults.Result res = new StoringResults.Result(individual);
+        res.store();
+        PlotIndividual visualizer = new PlotIndividual(data);
+        visualizer.visualize(individual);
+        System.out.println();
     }
-
 }

@@ -323,6 +323,10 @@ public class Individual implements Comparable<Individual> {
 
     }
 
+    public void setFitness(double fitness){ //USE WITH CARE. ONLY WHEN SETTING FITNESS FROM MIP
+        this.fitness = fitness;
+    }
+
     public static Individual makeIndividual() {
         Data data = DataReader.loadData();
         OrderDistribution od = new OrderDistribution(data);

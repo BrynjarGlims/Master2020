@@ -11,8 +11,9 @@ import java.util.Map;
 
 public class DataMIP {
 
-    String instanceName;
+    public Data newData;
 
+    String instanceName;
     Customer[] customers;
     Vehicle[] vehicles;
     VehicleType[] vehicleTypes;
@@ -192,6 +193,14 @@ public class DataMIP {
         costOvertime = Parameters.overtimeCost;
 
 
+    }
+
+    public void setNewData(Data data){
+        this.newData = data;
+    }
+
+    public int[][] getProductTypes(){
+        return this.productTypes;
     }
 
 
