@@ -64,8 +64,8 @@ public class AdSplit {
                 continue;
             if (!orderDelivery.dividable){
                 if (!individual.tripMap.get(orderDelivery.getPeriod()).containsKey(orderDelivery.order.customerID)){
-                    System.out.println("Missing hashmap: P:" + orderDelivery.getPeriod() + ", C:" + orderDelivery.order.customerID );
-                    System.out.println("Is this combination a valid visit day: " + individual.data.customers[orderDelivery.order.customerID].requiredVisitPeriod[orderDelivery.getPeriod()]);
+//                    System.out.println("Missing hashmap: P:" + orderDelivery.getPeriod() + ", C:" + orderDelivery.order.customerID );
+//                    System.out.println("Is this combination a valid visit day: " + individual.data.customers[orderDelivery.order.customerID].requiredVisitPeriod[orderDelivery.getPeriod()]);
                 }
             }
         }

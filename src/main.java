@@ -4,6 +4,7 @@ import DataFiles.Parameters;
 import Genetic.Education;
 import Genetic.GiantTourCrossover;
 import Genetic.OrderDistributionCrossover;
+import Genetic.Repair;
 import Individual.Individual;
 import MIP.OrderAllocationModel;
 import Population.Population;
@@ -13,6 +14,8 @@ import StoringResults.Result;
 import Visualization.PlotIndividual;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class main {
     public static void main(String[] args) throws IOException {
@@ -25,6 +28,8 @@ public class main {
         population.setOrderDistributionPopulation(odp);
         population.initializePopulation(firstOD);
 
+
+        HashSet<Individual> repaired = new HashSet<>();
         int numberOfIterations = 0;
         while ( population.getIterationsWithoutImprovement() < Parameters.maxNumberIterationsWithoutImprovement &&
                 numberOfIterations < Parameters.maxNumberOfGenerations){
@@ -49,9 +54,11 @@ public class main {
 
 
                 Education.improveRoutes(newIndividual, newIndividual.orderDistribution);
+
+
                 // TODO: 04.03.2020 Add repair:
 
-                if (Math.random() < Parameters.greedyMIPValue){
+                if (ThreadLocalRandom.current().nextDouble() < Parameters.greedyMIPValue){
                     System.out.println("------------------Optimal orderdis is gathered---------------------");
                     //System.out.println("--------------------");
                     //System.out.println("Current fintness: " + newIndividual.getBiasedFitness());
@@ -73,15 +80,26 @@ public class main {
             System.out.println("Number of feasible pop: " + population.feasiblePopulation.size());
             System.out.println("Number of infeasible pop: " + population.infeasiblePopulation.size());
 
-            //reduce size of both populations
-            population.reduceSizeToMin();
-            odp.removeNoneUsedOrderDistributions();
-
-            // TODO: 04.03.2020 Implement adjust penalty parameters for overtimeInfeasibility, loadInfeasibility and timeWarpInfeasibility
+            repaired.clear();
+            for (Individual infeasibleIndividual : population.infeasiblePopulation){
+                if (ThreadLocalRandom.current().nextDouble() < Parameters.repairProbability){
+                    if (Repair.repair(infeasibleIndividual, infeasibleIndividual.orderDistribution)){
+                        repaired.add(infeasibleIndividual);
+                    }
+                }
+            }
+            population.infeasiblePopulation.removeAll(repaired);
+            population.feasiblePopulation.addAll(repaired);
 
             // TODO: 19.03.2020 all individuals must have updated fitness before selection is done, because penalties for infeasible individuals
             // TODO: 19.03.2020  which did not complete repair have values in label which is scaled with penalties, but in getFitness calculation
             // TODO: 19.03.2020 the values have been scaled down manually
+            //reduce size of both populations
+            population.reduceSizeToMin();
+            odp.removeNoneUsedOrderDistributions();
+
+
+            // TODO: 04.03.2020 Implement adjust penalty parameters for overtimeInfeasibility, loadInfeasibility and timeWarpInfeasibility
             numberOfIterations++;
             Individual bestIndividual = population.returnBestIndividual();
             bestIndividual.printDetailedFitness();

@@ -198,6 +198,7 @@ public class Individual implements Comparable<Individual> {
     }
 
     public double getFitness(boolean update, double penaltyMultiplier) {
+        //penalty multiplier is used during repair, in order to scale down
         if (update || this.fitness == Double.MAX_VALUE) {
             updateFitness(penaltyMultiplier);
             return fitness;

@@ -33,6 +33,11 @@ public class Parameters {
 
 
 
+    //Runtime parameters
+    public static final int nearestNeighbors = 5; //Neighborhood size for each customer
+    public static final int EducationTabooSize = 2;
+    public static final double repairProbability = 1;
+    public static final double greedyMIPValue = 0;
 
     //Traveling parameters
     public static final double scalingDistanceParameter = 2.2;
@@ -49,8 +54,7 @@ public class Parameters {
     public static final double initialTimeWarpPenalty = 1000;  // zeta
     public static final double initialDrivingCostPenalty = 1; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
 
-    public static final int nearestNeighbors = 5; //Neighborhood size for each customer
-    public static final int EducationTabooSize = 2;
+
 
 
     public static final double penaltyFactorForOverFilling = 1.1;
@@ -75,7 +79,6 @@ public class Parameters {
 
 
     //GUROBI PARAMETERS
-    public static final double greedyMIPValue = 0;
     public static final String symmetry =  "car";      // // none, car, trips, customers, cost, duration
     public static final double modelTimeLimit = 3600;
     public static final double modelMipGap = 0.001;
