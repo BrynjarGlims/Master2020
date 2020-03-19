@@ -82,9 +82,9 @@ public class Parameters {
     public static final String instanceName = "testDataFromAsko";
     public static final int upperBoundQuantity = 100;  // upper bound q variable
     public static final int upperBoundOvertime = 1000;  // upper bound qO variable
-    public static boolean verboseArcFlow = false;
-    public static boolean verbosePathFlow = false;
-    public static boolean verboseJourneyBased = false;
+    public static final boolean verboseArcFlow = false;
+    public static final boolean verbosePathFlow = false;
+    public static final boolean verboseJourneyBased = false;
 
 
     //PLOT PARAMETERS
