@@ -193,21 +193,28 @@ public class Individual implements Comparable<Individual> {
         return rank;
     }
 
-    public double getFitness(boolean update) {
+    public double getFitness(boolean update){
+        return getFitness(update, 1);
+    }
+
+    public double getFitness(boolean update, double penaltyMultiplier) {
         if (update || this.fitness == Double.MAX_VALUE) {
-            updateFitness();
+            updateFitness(penaltyMultiplier);
             return fitness;
         } else {
             return fitness;
         }
     }
 
+    public void updateFitness(){
+        updateFitness(1);
+    }
 
-    public void updateFitness() {
+    public void updateFitness(double penaltyMultiplier) {
         this.fitness = 0;
 
         //Calculate objective costs
-        this.objectiveCost = getObjectiveCost();
+        this.objectiveCost = getObjectiveCost(penaltyMultiplier);
 
         //Add infeasibility costs
         this.infeasibilityCost = getInfeasibilityCost();
@@ -219,7 +226,11 @@ public class Individual implements Comparable<Individual> {
 
     }
 
-    private double getObjectiveCost() {
+    private double getObjectiveCost(){
+        return getObjectiveCost(1);
+    }
+
+    private double getObjectiveCost(double penaltyMultiplier) {
         feasibleOvertimeDepotCost = 0;
         feasibleTravelingCost = 0;
         feasibleVehicleUseCost = 0;
@@ -240,8 +251,11 @@ public class Individual implements Comparable<Individual> {
         return feasibleTravelingCost + feasibleVehicleUseCost + feasibleOvertimeDepotCost;
     }
 
+    private double getInfeasibilityCost(){
+        return getInfeasibilityCost(1);
+    }
 
-    private double getInfeasibilityCost() {
+    private double getInfeasibilityCost(double penaltyMultiplier) {
         infeasibilityTimeWarpValue = 0;
         infeasibilityOverCapacityValue = 0;
         infeasibilityOvertimeDrivngValue = 0;
@@ -251,9 +265,9 @@ public class Individual implements Comparable<Individual> {
                     continue;
                 }
                 //Already added scaling parameters in label
-                infeasibilityTimeWarpValue += label.getTimeWarpInfeasibility();
-                infeasibilityOverCapacityValue += label.getLoadInfeasibility();
-                infeasibilityOvertimeDrivngValue += label.getOvertimeInfeasibility();
+                infeasibilityTimeWarpValue += penaltyMultiplier*label.getTimeWarpInfeasibility();
+                infeasibilityOverCapacityValue += penaltyMultiplier*label.getLoadInfeasibility();
+                infeasibilityOvertimeDrivngValue += penaltyMultiplier*label.getOvertimeInfeasibility();
             }
         }
         return infeasibilityOvertimeDrivngValue + infeasibilityOverCapacityValue + infeasibilityTimeWarpValue;

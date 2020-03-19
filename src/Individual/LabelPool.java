@@ -24,25 +24,30 @@ public class LabelPool {
         this.orderDistribution = orderDistribution;
     }
 
-    public void generateFirstLabel(int numberOfVehicles, int periodID, int vehicleTypeID) {
-        this.labels.add(new Label(numberOfVehicles, data, listOfTrips, tripNumber, orderDistribution,
-                periodID, vehicleTypeID));
+    public void generateFirstLabel(int numberOfVehicles, int periodID, int vehicleTypeID){
+        generateFirstLabel(numberOfVehicles, periodID, vehicleTypeID, 1);
     }
 
+    public void generateFirstLabel(int numberOfVehicles, int periodID, int vehicleTypeID, double penaltyMultiplier) {
+        this.labels.add(new Label(numberOfVehicles, data, listOfTrips, tripNumber, orderDistribution,
+                periodID, vehicleTypeID, penaltyMultiplier));
+    }
 
-    public void generateAndRemoveDominatedLabels(LabelPool previousLabelPool) {
+    public void generateAndRemoveDominatedLabels(LabelPool previousLabelPool){
+        generateAndRemoveDominatedLabels(previousLabelPool, 1);
+    }
+
+    public void generateAndRemoveDominatedLabels(LabelPool previousLabelPool, double penaltyMultiplier) {
         for (Label label : previousLabelPool.getLabels()) {
-            addExtendedDominantLabels(label);
+            addExtendedDominantLabels(label, penaltyMultiplier);
         }
     }
 
-    private void addExtendedDominantLabels(Label predecessorLabel){
-
+    private void addExtendedDominantLabels(Label predecessorLabel, double penaltyMultiplier){
         int vehicleCostOrderNumber = 0;
-
         // Generate labels by adding cost on already existing vehicles
         while (predecessorLabel.labelEntries[vehicleCostOrderNumber].inUse){
-            tryToAddNewLabel(new Label(predecessorLabel, vehicleCostOrderNumber));
+            tryToAddNewLabel(new Label(predecessorLabel, vehicleCostOrderNumber, penaltyMultiplier));
             if (vehicleCostOrderNumber == predecessorLabel.labelEntries.length-1)
                 break;
             vehicleCostOrderNumber++;

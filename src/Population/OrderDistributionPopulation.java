@@ -70,7 +70,7 @@ public class OrderDistributionPopulation {
     private HashMap<OrderDistribution, Double> getFillingLevelFitnessSingular(Individual individual) {
         HashMap<OrderDistribution, Double> tempHashMap = new HashMap<OrderDistribution, Double>();
         for (OrderDistribution od : this.setOfOrderDistributions) {
-            tempHashMap.put(od, FitnessCalculation.getFitnessForAnIndividualAndAnOrderDistribution(individual, od));
+            tempHashMap.put(od, FitnessCalculation.getFillLevelFitnessAnIndividualAndAnOrderDistribution(individual, od));
         }
         return tempHashMap;
     }

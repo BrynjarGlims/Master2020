@@ -13,10 +13,16 @@ public class Education {
 
     public static Data data;
     public static OrderDistribution orderDistribution;
+    public static double penaltyMultiplier;
 
     public static void improveRoutes(Individual individual, OrderDistribution od) {
+        improveRoutes(individual, od, 1);
+    }
+
+    public static void improveRoutes(Individual individual, OrderDistribution od, double pm) {
         data = individual.data;
         orderDistribution = od;
+        penaltyMultiplier = pm;
         List<Integer> customers = new ArrayList<>();
         for (int i = 0; i < individual.data.numberOfCustomers; i++) {
             customers.add(i);
@@ -138,11 +144,11 @@ public class Education {
                 }
             }
         }
-        if (Parameters.verbose){
+        if (Parameters.verbose) {
             System.out.println("total totalImprovements in Education: " + totalImprovements);
         }
         individual.setGiantTourFromTrips();
-        AdSplit.adSplitPlural(individual);
+        AdSplit.adSplitPlural(individual, penaltyMultiplier);
     }
 
 
@@ -526,8 +532,8 @@ public class Education {
     }
 
     private static double combinedFitnessOf2Sequences(List<Integer> customerSequence1, List<Integer> customerSequence2, int vt1, int period1, int vt2, int period2) {
-        return FitnessCalculation.getTripFitness(customerSequence1, vt1, period1, orderDistribution.orderVolumeDistribution, data)
-                + FitnessCalculation.getTripFitness(customerSequence2, vt2, period2, orderDistribution.orderVolumeDistribution, data);
+        return FitnessCalculation.getTripFitness(customerSequence1, vt1, period1, orderDistribution.orderVolumeDistribution, data, penaltyMultiplier)
+                + FitnessCalculation.getTripFitness(customerSequence2, vt2, period2, orderDistribution.orderVolumeDistribution, data, penaltyMultiplier);
     }
 
     private static void doRemovalInsertion(Individual individual, Trip trip1, Trip trip2, int removeCustomer, int targetCustomer) {
@@ -574,4 +580,6 @@ public class Education {
         }
     }
 }
+
+
 

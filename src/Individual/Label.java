@@ -37,6 +37,10 @@ public class Label {
 
     //create non-first labels
     public Label(Label parentLabel, int vehicleIndex){
+        this(parentLabel, vehicleIndex, 1);
+    }
+
+    public Label(Label parentLabel, int vehicleIndex, double penaltyMultiplier){
 
         //Information attributes
         this.periodID = parentLabel.periodID;
@@ -71,9 +75,16 @@ public class Label {
 
 
     //create first label
+
     public Label(int numberOfVehicles, Data data,
                  ArrayList<ArrayList<Integer>> listOfTrips, int tripNumber, double[][] orderDistribution, int periodID,
                  int vehicleTypeID){
+        this(numberOfVehicles, data, listOfTrips, tripNumber, orderDistribution, periodID, vehicleTypeID, 1);
+    }
+
+    public Label(int numberOfVehicles, Data data,
+                 ArrayList<ArrayList<Integer>> listOfTrips, int tripNumber, double[][] orderDistribution, int periodID,
+                 int vehicleTypeID, double penaltyMultiplier){
 
         //information variables for each label
         this.vehicleTypeID = vehicleTypeID;
@@ -92,7 +103,7 @@ public class Label {
         this.labelEntries[0].updateLabelEntryValues( listOfTrips.get(tripNumber), tripNumber);
 
         //derive cost
-        this.deriveLabelCost();
+        this.deriveLabelCost(penaltyMultiplier);
     }
 
     private void initializeLabelEntries(int periodID, int vehicleTypeID){
@@ -114,17 +125,20 @@ public class Label {
         }
     }
 
+    public void deriveLabelCost(){
+        deriveLabelCost(1);
+    }
 
-    public void deriveLabelCost() {  //todo: implement for new structure
+    public void deriveLabelCost(double penaltyMulitplier) {  //todo: implement for new structure
         calculateTravelValue();  //must be used before calculateOvertimeValue
-        calculateOvertimeValue();
-        calculateLoadValue();
-        calculateTimeWarp();
+        calculateOvertimeValue(penaltyMulitplier);
+        calculateLoadValue(penaltyMulitplier);
+        calculateTimeWarp(penaltyMulitplier);
         calculateVehicleUseValue();
         this.costOfLabel = fleetTravelTime + fleetOvertime + fleetOverLoad + fleetTimeWarp + fleetUsageCost;
     }
 
-    public void calculateVehicleUseValue(){
+    private void calculateVehicleUseValue(){
         numberOfVehicles = 0;
 
         for (LabelEntry labelEntry : labelEntries) {
@@ -136,19 +150,19 @@ public class Label {
 
     }
 
-    public void calculateTimeWarp(){
+    public void calculateTimeWarp(double penaltyMultiplier){
         fleetTimeWarp = 0;
 
         for (LabelEntry labelEntry : this.labelEntries){
             fleetTimeWarp += labelEntry.getTimeWarpInfeasibility();
         }
 
-        fleetTimeWarp *= Parameters.initialTimeWarpPenalty;
+        fleetTimeWarp *= penaltyMultiplier*Parameters.initialTimeWarpPenalty;
 
     }
 
 
-    public void calculateTravelValue(){ //implement this with overtime calculation
+    private void calculateTravelValue(){ //implement this with overtime calculation
 
         fleetTravelTime = 0;
         for (LabelEntry labelEntry : this.labelEntries){
@@ -158,16 +172,16 @@ public class Label {
     }
 
 
-    public void calculateOvertimeValue(){
+    private void calculateOvertimeValue(double penaltyMultiplier){
 
         fleetOvertime = 0;
         for (LabelEntry labelEntry : this.labelEntries){
             fleetOvertime += labelEntry.getOvertimeValue();
         }
-        fleetOvertime *= Parameters.initialOvertimePenalty;
+        fleetOvertime *= penaltyMultiplier*Parameters.initialOvertimePenalty;
     }
 
-    public void calculateLoadValue(){
+    private void calculateLoadValue(double penaltyMultiplier){
 
         fleetOverLoad = 0;
 
@@ -175,7 +189,7 @@ public class Label {
             fleetOverLoad += labelEntry.getLoadInfeasibility();
         }
 
-        fleetOverLoad *= Parameters.initialCapacityPenalty;
+        fleetOverLoad *= penaltyMultiplier*Parameters.initialCapacityPenalty;
 
     }
 
