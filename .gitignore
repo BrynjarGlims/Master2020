@@ -28,7 +28,7 @@
 .idea/
 src/python/venv/
 src/python/dataMIP.txt
-src/datafiles/Parameters.java
+src/datafiles/Parameters.class
 out/
 results/
 results/results_detailed
