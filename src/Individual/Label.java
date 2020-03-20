@@ -67,6 +67,8 @@ public class Label {
         this.tripNumber = tripNumber;
         this.orderDistribution = orderDistribution;
         this.isEmptyLabel = true;
+        this.labelEntries = new LabelEntry[numberOfVehicles];
+//        initializeLabelEntries(periodID, vehicleTypeID);
     }
 
 

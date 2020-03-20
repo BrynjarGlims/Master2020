@@ -44,7 +44,7 @@ public class Parameters {
 
     //Traveling parameters
     public static final double scalingDistanceParameter = 2.2;
-    public static final double timeShift = 4;
+    public static final double timeShift = 2;
 
 
 
@@ -95,7 +95,7 @@ public class Parameters {
 
 
     //PLOT PARAMETERS
-    public static final boolean savePlots = true;
+    public static final boolean savePlots = false;
     public static final boolean verbose = false;
     public static final char separator = ',';
 }
