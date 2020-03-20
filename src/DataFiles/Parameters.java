@@ -25,21 +25,13 @@ public class Parameters {
     public static final int numberOfTrips = 5;
     public static final int numberOfEliteIndividuals = 50; //TODO: find reasonable value
 
-
-
     //Loading data parameters
     public static final int numberOfCustomers = 5;
     public static final int numberOfVehicles = 5;
 
-
-
     //Traveling parameters
     public static final double scalingDistanceParameter = 2.2;
     public static final double timeShift = 4;
-
-
-
-
 
     //Penalty parameters for genetic algorithm
 
@@ -50,11 +42,8 @@ public class Parameters {
 
     public static final int nearestNeighbors = 5; //Neighborhood size for each customer
     public static final int EducationTabooSize = 2;
-
-
     public static final double penaltyFactorForOverFilling = 1.1;
     public static final double penaltyFactorForUnderFilling = 1.5;
-
 
 
     //Period parameters
@@ -85,7 +74,6 @@ public class Parameters {
     public static final boolean verboseArcFlow = false;
     public static final boolean verbosePathFlow = false;
     public static final boolean verboseJourneyBased = false;
-
 
     //PLOT PARAMETERS
     public static final boolean savePlots = true;
