@@ -6,6 +6,7 @@ import DataFiles.*;
 import Individual.Individual;
 import ProductAllocation.OrderDistribution;
 import Individual.Trip;
+import Individual.Journey;
 
 
 public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove parts of code in LabelEntryClass
@@ -22,6 +23,14 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
         fitness += overloadScore(customerOrder, vt, p, orderDistribution, data, penaltyMultiplier);
         fitness += travelingDistanceScoreAndOvertimeScore(customerOrder, vt, p, orderDistribution, data, penaltyMultiplier);
         fitness += timeWarpScore(customerOrder, vt, p, data, penaltyMultiplier);
+        return fitness;
+    }
+
+    public static double getJourneyFitness(Journey journey, double penaltyMultiplier){
+        double fitness = 0;
+        journey.updateFitness();
+
+
         return fitness;
     }
 

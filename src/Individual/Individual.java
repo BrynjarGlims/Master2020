@@ -15,6 +15,7 @@ public class Individual implements Comparable<Individual> {
     public Population population;
     public HashMap< Integer, HashMap<Integer, Trip>> tripMap; //period, customer => trip
     public ArrayList<Trip>[][] tripList; //period, vehicleType
+    public ArrayList<Journey>[][] journeyList; //period, vehicleType
     public Data data;
 
     public double infeasibilityOvertimeDrivngValue;
@@ -44,6 +45,7 @@ public class Individual implements Comparable<Individual> {
         this.bestLabels = new Label[data.numberOfPeriods][data.numberOfVehicleTypes];
         this.initializeTripMap();
         this.initializeTripList();
+        this.initializeJourneyList();
     }
 
 
@@ -68,6 +70,14 @@ public class Individual implements Comparable<Individual> {
         }
     }
 
+    public void initializeJourneyList(){
+        this.journeyList = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
+        for (int p = 0 ; p < data.numberOfPeriods; p++){
+            for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
+                this.journeyList[p][vt] = new ArrayList<Journey>();
+            }
+        }
+    }
 
 
     public void initializeIndividual(OrderDistribution od) {

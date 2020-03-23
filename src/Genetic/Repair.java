@@ -21,35 +21,35 @@ public class Repair {
         int i;
         for (i = 1 ; i < 4 ; i++){
             double penaltyMultiplier = Math.pow(10,i);
-            System.out.println("INDIVIDUAL PRIOR:");
-            System.out.println(individual);
+//            System.out.println("INDIVIDUAL PRIOR:");
+//            System.out.println(individual);
             AdSplit.adSplitPlural(individual, penaltyMultiplier);
             Education.improveRoutes(individual, orderDistribution, penaltyMultiplier);
-            System.out.println("EDUCATED");
-            System.out.println(individual);
+//            System.out.println("EDUCATED");
+//            System.out.println(individual);
 
             individual.updateFitness();
-            System.out.println("IS FEASIBLE: " + individual.isFeasible() + " infeasibility cost: " + individual.infeasibilityCost);
-            System.out.println("time warp: " + individual.infeasibilityTimeWarpValue + "\ncapacity: " + individual.infeasibilityOverCapacityValue
-                + "\ndriving time: " + individual.infeasibilityOvertimeDrivngValue);
-            for (int p = 0 ; p < individual.data.numberOfPeriods ; p++){
-                for (int vt =  0 ; vt < individual.data.numberOfVehicleTypes ; vt++){
-                    System.out.println("best label for period " + p + " vehicletype " + vt + " timewarp: " + individual.bestLabels[p][vt].fleetTimeWarp);
-                    for (LabelEntry le : individual.bestLabels[p][vt].labelEntries){
-                        System.out.println("vehicle: " + le.vehicleID + " has timewarp: " + le.timeWarpInfeasibility + " and current time: " + le.currentVehicleTime);
-                    }
-                }
-            }
-            for (int p = 0 ; p < individual.data.numberOfPeriods ; p++){
-                for (int vt =  0 ; vt < individual.data.numberOfVehicleTypes ; vt++){
-                    for (Trip trip : individual.tripList[p][vt]){
-                        System.out.println("vehicle: " + trip.vehicleID + " takes trip " + trip.tripIndex + " in period " + p);
-                        for (int c : trip.customers){
-                            System.out.println("customer " + c + " has timewindow: " + Arrays.toString(individual.data.customers[c].timeWindow[p]));
-                        }
-                    }
-                }
-            }
+//            System.out.println("IS FEASIBLE: " + individual.isFeasible() + " infeasibility cost: " + individual.infeasibilityCost);
+//            System.out.println("time warp: " + individual.infeasibilityTimeWarpValue + "\ncapacity: " + individual.infeasibilityOverCapacityValue
+//                + "\ndriving time: " + individual.infeasibilityOvertimeDrivngValue);
+//            for (int p = 0 ; p < individual.data.numberOfPeriods ; p++){
+//                for (int vt =  0 ; vt < individual.data.numberOfVehicleTypes ; vt++){
+//                    System.out.println("best label for period " + p + " vehicletype " + vt + " timewarp: " + individual.bestLabels[p][vt].fleetTimeWarp);
+//                    for (LabelEntry le : individual.bestLabels[p][vt].labelEntries){
+//                        System.out.println("vehicle: " + le.vehicleID + " has timewarp: " + le.timeWarpInfeasibility + " and current time: " + le.currentVehicleTime);
+//                    }
+//                }
+//            }
+//            for (int p = 0 ; p < individual.data.numberOfPeriods ; p++){
+//                for (int vt =  0 ; vt < individual.data.numberOfVehicleTypes ; vt++){
+//                    for (Trip trip : individual.tripList[p][vt]){
+//                        System.out.println("vehicle: " + trip.vehicleID + " takes trip " + trip.tripIndex + " in period " + p);
+//                        for (int c : trip.customers){
+//                            System.out.println("customer " + c + " has timewindow: " + Arrays.toString(individual.data.customers[c].timeWindow[p]));
+//                        }
+//                    }
+//                }
+//            }
 
 
                     if (individual.isFeasible()){

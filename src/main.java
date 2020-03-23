@@ -85,6 +85,7 @@ public class main {
                 if (ThreadLocalRandom.current().nextDouble() < Parameters.repairProbability){
                     if (Repair.repair(infeasibleIndividual, infeasibleIndividual.orderDistribution)){
                         repaired.add(infeasibleIndividual);
+
                     }
                 }
             }
@@ -119,8 +120,5 @@ public class main {
         visualizer.visualize(bestIndividual);
         Result res = new Result(population);
         res.store();
-
-
-
     }
 }
