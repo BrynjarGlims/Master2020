@@ -15,6 +15,7 @@ public class Individual implements Comparable<Individual> {
     public Population population;
     public HashMap< Integer, HashMap<Integer, Trip>> tripMap; //period, customer => trip
     public ArrayList<Trip>[][] tripList; //period, vehicleType
+    public ArrayList<Journey>[][] journeyList; //period, vehicleType
     public Data data;
 
     public double infeasibilityOvertimeDrivngValue;
@@ -44,6 +45,7 @@ public class Individual implements Comparable<Individual> {
         this.bestLabels = new Label[data.numberOfPeriods][data.numberOfVehicleTypes];
         this.initializeTripMap();
         this.initializeTripList();
+        this.initializeJourneyList();
     }
 
 
@@ -68,6 +70,14 @@ public class Individual implements Comparable<Individual> {
         }
     }
 
+    public void initializeJourneyList(){
+        this.journeyList = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
+        for (int p = 0 ; p < data.numberOfPeriods; p++){
+            for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
+                this.journeyList[p][vt] = new ArrayList<Journey>();
+            }
+        }
+    }
 
 
     public void initializeIndividual(OrderDistribution od) {
@@ -193,21 +203,27 @@ public class Individual implements Comparable<Individual> {
         return rank;
     }
 
-    public double getFitness(boolean update) {
+    public double getFitness(boolean update){
+        return getFitness(update, 1);
+    }
+
+    public double getFitness(boolean update, double penaltyMultiplier) {
+        //penalty multiplier is used during repair, in order to scale down
         if (update || this.fitness == Double.MAX_VALUE) {
-            updateFitness();
+            updateFitness(penaltyMultiplier);
             return fitness;
         } else {
             return fitness;
         }
     }
 
+    public void updateFitness(){
+        updateFitness(1);
+    }
 
-    public void updateFitness() {
-        this.fitness = 0;
-
+    public void updateFitness(double penaltyMultiplier) {
         //Calculate objective costs
-        this.objectiveCost = getObjectiveCost();
+        this.objectiveCost = getObjectiveCost(penaltyMultiplier);
 
         //Add infeasibility costs
         this.infeasibilityCost = getInfeasibilityCost();
@@ -221,7 +237,11 @@ public class Individual implements Comparable<Individual> {
 
     }
 
-    private double getObjectiveCost() {
+    private double getObjectiveCost(){
+        return getObjectiveCost(1);
+    }
+
+    private double getObjectiveCost(double penaltyMultiplier) {
         feasibleOvertimeDepotCost = 0;
         feasibleTravelingCost = 0;
         feasibleVehicleUseCost = 0;
@@ -242,8 +262,11 @@ public class Individual implements Comparable<Individual> {
         return feasibleTravelingCost + feasibleVehicleUseCost + feasibleOvertimeDepotCost;
     }
 
+    private double getInfeasibilityCost(){
+        return getInfeasibilityCost(1);
+    }
 
-    private double getInfeasibilityCost() {
+    private double getInfeasibilityCost(double penaltyMultiplier) {
         infeasibilityTimeWarpValue = 0;
         infeasibilityOverCapacityValue = 0;
         infeasibilityOvertimeDrivngValue = 0;
@@ -253,9 +276,9 @@ public class Individual implements Comparable<Individual> {
                     continue;
                 }
                 //Already added scaling parameters in label
-                infeasibilityTimeWarpValue += label.getTimeWarpInfeasibility();
-                infeasibilityOverCapacityValue += label.getLoadInfeasibility();
-                infeasibilityOvertimeDrivngValue += label.getOvertimeInfeasibility();
+                infeasibilityTimeWarpValue += penaltyMultiplier*label.getTimeWarpInfeasibility();
+                infeasibilityOverCapacityValue += penaltyMultiplier*label.getLoadInfeasibility();
+                infeasibilityOvertimeDrivngValue += penaltyMultiplier*label.getOvertimeInfeasibility();
             }
         }
         return infeasibilityOvertimeDrivngValue + infeasibilityOverCapacityValue + infeasibilityTimeWarpValue;
@@ -316,7 +339,18 @@ public class Individual implements Comparable<Individual> {
     }
 
     public String toString(){
-        return giantTour.toString();
+        String out = "";
+        for (int p = 0 ; p < data.numberOfPeriods ; p++){
+            out += "\n PERIOD: " + p + "\n";
+            for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
+                out += "vehicle type " + vt + " take trips: ";
+                for (Trip trip : tripList[p][vt]){
+                    out += "trip " + trip.tripIndex + ": " + trip.customers + "\t";
+                }
+                out += "\n";
+            }
+        }
+        return out;
     }
 
     public static void main(String[] args) {

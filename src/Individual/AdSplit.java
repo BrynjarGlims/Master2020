@@ -15,28 +15,44 @@ public class AdSplit {
 
 
     //MAIN ADSPLIT ALGORITHM------------------------------------------------------------------------------------------------------------------------------------------------------
+    public static void adSplitPlural(Individual ind){
+        adSplitPlural(ind, 1);
+    }
 
-    public static void adSplitSingular (Individual ind, int p, int vt, boolean reset) {
-        if (reset){
-            resetStaticClass(ind);
+    public static void adSplitPlural(Individual ind, double penaltyMultiplier) {
+        resetStaticClass(ind);
+        for (int p = 0; p < individual.data.numberOfPeriods; p++) {
+            for (int vt = 0; vt < individual.data.numberOfVehicleTypes; vt++) {
+                adSplitSingular(individual, p , vt, penaltyMultiplier);
+            }
+            checkIfAllOrdersAreSatisfied(p);  //todo: to be removed
         }
+    }
+
+
+    public static void adSplitSingular (Individual ind, int p, int vt, double penaltyMultiplier) {
+            resetStaticClass(ind);
+
         if (individual.giantTour.chromosome[p][vt].size() == 0) {
             individual.bestLabels[p][vt] = new Label(ind.data, 0, individual.getOrderDistribution().orderVolumeDistribution, p, vt);
-
         }
         else{
             //Shortest path algorithm
-            createTrips(p, vt);
+            createTrips(p, vt, penaltyMultiplier);
 
             //Labeling algorithm
-            labelingAlgorithm(p, vt, matrixOfTrips);   // Sets bestLabel.
+            labelingAlgorithm(p, vt, matrixOfTrips, penaltyMultiplier);   // Sets bestLabel.
 
             //Trip generation
             tripAssignment(individual.bestLabels[p][vt], matrixOfTrips);
-
-
         }
     }
+
+    public static void adSplitSingular(Individual ind, int p, int vt){
+        adSplitSingular(ind, p, vt, 1);
+    }
+
+
 
     private static void checkIfAllOrdersAreSatisfied(int p){
         for (OrderDelivery orderDelivery : individual.orderDistribution.orderDeliveries){
@@ -44,12 +60,8 @@ public class AdSplit {
                 continue;
             if (!orderDelivery.dividable){
                 if (!individual.tripMap.get(orderDelivery.getPeriod()).containsKey(orderDelivery.order.customerID)){
-                    /*
-                    System.out.println("Missing hashmap: P:" + orderDelivery.getPeriod() + ", C:" + orderDelivery.order.customerID );
-                    System.out.println("Is this combination a valid visit day: " + individual.data.customers[orderDelivery.order.customerID].requiredVisitPeriod[orderDelivery.getPeriod()]);
-
-
-                     */
+//                    System.out.println("Missing hashmap: P:" + orderDelivery.getPeriod() + ", C:" + orderDelivery.order.customerID );
+//                    System.out.println("Is this combination a valid visit day: " + individual.data.customers[orderDelivery.order.customerID].requiredVisitPeriod[orderDelivery.getPeriod()]);
                 }
 
             }
@@ -76,7 +88,6 @@ public class AdSplit {
     }
 
 
-
     private static void setTripMap(int p, int vt){
         for (Trip trip : individual.tripList[p][vt]){
             for (int customerID : trip.customers){
@@ -85,9 +96,6 @@ public class AdSplit {
         }
     }
 
-    public static void adSplitSingular (Individual ind, int p, int vt) {
-        adSplitSingular(ind, p, vt, true);
-    }
 
     public static void resetStaticClass(Individual ind){
         individual = ind;
@@ -139,20 +147,13 @@ public class AdSplit {
         }
     }
 
-    public static void adSplitPlural(Individual ind) {
-        resetStaticClass(ind);
-        for (int p = 0; p < individual.data.numberOfPeriods; p++) {
-            for (int vt = 0; vt < individual.data.numberOfVehicleTypes; vt++) {
-                adSplitSingular(individual, p , vt, false);
-            }
-            checkIfAllOrdersAreSatisfied(p);  //todo: to be removed
-        }
-    }
-
-
     //SHORTEST PATH --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    private static void createTrips(int p, int vt) {
+    private static void createTrips(int p, int vt){
+        createTrips(p, vt, 1);
+    }
+
+    private static void createTrips(int p, int vt, double penaltyMultiplier) {
         ArrayList<Integer> customerSequence = (ArrayList<Integer>) individual.giantTour.chromosome[p][vt].clone();  //// TODO: 18.02.2020 Brynjar: is this superfast or only fast?
         //insert depot to be in the 0th position
         customerSequence.add(0, individual.data.customers.length);
@@ -181,7 +182,9 @@ public class AdSplit {
                     loadSum = individual.orderDistribution.orderVolumeDistribution[p][customerSequence.get(j)];
 
                     currentCost = (tempDistanceCost)*Parameters.initialDrivingCostPenalty
-                            + routeTimeWarp*Parameters.initialTimeWarpPenalty + Parameters.initialCapacityPenalty*(Math.max(0, loadSum-individual.data.vehicleTypes[vt].capacity));
+                            + routeTimeWarp*Parameters.initialTimeWarpPenalty
+                            + Parameters.initialCapacityPenalty*(Math.max(0, loadSum-individual.data.vehicleTypes[vt].capacity));
+                    currentCost *= penaltyMultiplier;
                 }
 
                 else if (j != (i+1)) {
@@ -216,6 +219,7 @@ public class AdSplit {
 
                     currentCost = Parameters.initialCapacityPenalty*(Math.max(0, loadSum-individual.data.vehicleTypes[vt].capacity))
                             + routeTimeWarp*Parameters.initialTimeWarpPenalty + Parameters.initialDrivingCostPenalty*(tempDistanceCost);
+                    currentCost *= penaltyMultiplier;
                 }
                 //Update predecessor label whenever improvements are detected
                 if (costLabel[i] + currentCost < costLabel[j]) {
@@ -268,7 +272,7 @@ public class AdSplit {
 
 
     //LABELING------------------------------------------------------------------------------------------------------------------------------------------------------------
-    private static void labelingAlgorithm(int p, int vt, ArrayList<ArrayList<Integer>> listOfTrips) {
+    private static void labelingAlgorithm(int p, int vt, ArrayList<ArrayList<Integer>> listOfTrips, double penaltyMultiplier) {
 
         int tripNumber = 0;
         LabelPool currentLabelPool = new LabelPool(individual.data, listOfTrips, tripNumber, individual.orderDistribution.orderVolumeDistribution);
@@ -279,11 +283,11 @@ public class AdSplit {
 
         while(tripNumber < listOfTrips.size()) {
             if (tripNumber == 0) {
-                currentLabelPool.generateFirstLabel(individual.data.numberOfVehiclesInVehicleType[vt], p, vt);
+                currentLabelPool.generateFirstLabel(individual.data.numberOfVehiclesInVehicleType[vt], p, vt, penaltyMultiplier);
                 tripNumber++;
             } else {
                 nextLabelPool = new LabelPool(individual.data, listOfTrips, tripNumber, individual.orderDistribution.orderVolumeDistribution);
-                nextLabelPool.generateAndRemoveDominatedLabels(currentLabelPool);
+                nextLabelPool.generateAndRemoveDominatedLabels(currentLabelPool, penaltyMultiplier);
                 //System.out.println("Number of labels after removal: " + nextLabelPool.labels.size());
                 currentLabelPool = nextLabelPool;
                 tripNumber++;
@@ -296,7 +300,7 @@ public class AdSplit {
 
     private static double[] getInitialCostLabel(int size){
         double[] costLabel =  new double[size];
-        Arrays.fill(costLabel, 1000000000);
+        Arrays.fill(costLabel, Double.MAX_VALUE);
         costLabel[0] = 0;
         return costLabel;
     }

@@ -9,15 +9,17 @@ public class Parameters {
     public static final String vehicleFilePath = "data/Vehicles.csv";
 
     //Population parameters
-    public static final int maximumSubIndividualPopulationSize = 200; //TODO: find reasonable value
+
+    public static final int maximumSubIndividualPopulationSize = 100; //TODO: find reasonable value
     public static final int minimumSubIndividualPopulationSize = 40;
     public static final int numberOfElitismSurvivorsPerGeneration = 5;
 
-    public static final int initialPopulationSize = 100;
+    public static final int initialPopulationSize = 50;
     public static final int initialOrderDistributionPopulationSize = 10;
 
     public static final int maxNumberIterationsWithoutImprovement = 10;
-    public static final int maxNumberOfGenerations = 1000;
+    public static final int maxNumberOfGenerations = 50;
+
     public static final double minimumFitnessDifferenceForClones = 10; //minimum fitness difference to encounter two individuals as clones
 
     //Decision parameters
@@ -29,9 +31,20 @@ public class Parameters {
     public static final int numberOfCustomers = 5;
     public static final int numberOfVehicles = 5;
 
+<<<<<<< HEAD
+=======
+
+
+    //Runtime parameters
+    public static final int nearestNeighbors = 5; //Neighborhood size for each customer
+    public static final int EducationTabooSize = 2;
+    public static final double repairProbability = 1;
+    public static final double greedyMIPValue = 0;
+
+    
     //Traveling parameters
     public static final double scalingDistanceParameter = 2.2;
-    public static final double timeShift = 4;
+    public static final double timeShift = 2;
 
     //Penalty parameters for genetic algorithm
 
@@ -69,7 +82,7 @@ public class Parameters {
 
 
     //GUROBI PARAMETERS
-    public static final double greedyMIPValue = 0;
+
     public static final String symmetry =  "car";      // // none, car, trips, customers, cost, duration
     public static final double modelTimeLimit = 3600;
     public static final double modelMipGap = 0.001;
@@ -77,13 +90,13 @@ public class Parameters {
     public static final String instanceName = "testDataFromAsko";
     public static final int upperBoundQuantity = 100;  // upper bound q variable
     public static final int upperBoundOvertime = 1000;  // upper bound qO variable
+
     public static final boolean verboseArcFlow = false;
     public static final boolean verbosePathFlow = false;
     public static final boolean verboseJourneyBased = false;
 
     //PLOT PARAMETERS
-    public static final boolean savePlots = true;
+    public static final boolean savePlots = false;
     public static final boolean verbose = false;
     public static final char separator = ',';
-
 }
