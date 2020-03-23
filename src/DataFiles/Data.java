@@ -111,7 +111,13 @@ public class Data {
             for (int n = 1 ; n <= Math.min(numberOfCustomers - 1, Parameters.nearestNeighbors); n++){
                 customers[customer].nearestNeighbors.add(customers[argSortedDistance[n]]);
             }
+
+            //Diversity neighbours
+            for (int n = 1 ; n <= Math.min(numberOfCustomers - 1, Parameters.nearestNeighborsDiversity); n++){
+                customers[customer].nearestNeighborsDiversity.add(customers[argSortedDistance[n]]);
+            }
         }
+
     }
 
     private void setDistanceMatrix() {
@@ -173,6 +179,9 @@ public class Data {
         for (Customer c : data.customers[0].nearestNeighbors){
             System.out.println(c.customerID);
         }
+        for (Customer c : data.customers[0].nearestNeighborsDiversity){
+            System.out.println(c.customerID);
         }
+    }
 
 }

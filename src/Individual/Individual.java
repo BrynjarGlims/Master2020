@@ -213,7 +213,9 @@ public class Individual implements Comparable<Individual> {
         this.infeasibilityCost = getInfeasibilityCost();
 
         this.fitness = this.objectiveCost + this.infeasibilityCost;
-        
+
+
+
         //// TODO: 05.03.2020 Move this to another place when diversity is implemented 
         this.biasedFitness = fitness + diversity;
 

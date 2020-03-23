@@ -25,6 +25,7 @@ public class Customer {
     public double xCoordinate;
     public double yCoordinate;
     public ArrayList<Customer> nearestNeighbors;
+    public ArrayList<Customer> nearestNeighborsDiversity;
 
     public double fixedLoadingTime;
     public double variableLoadingTime;
@@ -38,6 +39,7 @@ public class Customer {
         this.customerNumber = customerNumber;
         this.customerName = customerName;
         nearestNeighbors = new ArrayList<>();
+        nearestNeighborsDiversity = new ArrayList<>();
     }
 
     public void setCustomerID(int customerID){

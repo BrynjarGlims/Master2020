@@ -45,6 +45,12 @@ public class Parameters {
     public static final double penaltyFactorForOverFilling = 1.1;
     public static final double penaltyFactorForUnderFilling = 1.5;
 
+    //Tournament selection parameters
+    public static final int nearestNeighborsDiversity = 7;  // Neighbours from calculating diversity
+    public static final double besIndividualProbability = 0.2;
+    public static final int tournamentSize = 2;  // 2 or larger, size = 2 --> binary tournament selection
+    public static final boolean binarySelection = false;
+
 
     //Period parameters
     //TODO: change to percentage values

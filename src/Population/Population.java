@@ -1,5 +1,6 @@
 package Population;
 import DataFiles.*;
+import Genetic.TournamentSelection;
 import Individual.Individual;
 import Individual.AdSplit;
 import ProductAllocation.OrderDistribution;
@@ -251,19 +252,6 @@ public class Population {
         return sizeOfFeasiblePopulation;
     }
 
-    public int getIterationsWithoutImprovement(){
-        return iterationsWithoutImprovement;
-    }
-
-    public static void main( String[] args){
-        Data data = DataReader.loadData();
-        Population population = new Population(data);
-        OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
-        odp.initializeOrderDistributionPopulation(population);
-        population.initializePopulation(odp.getRandomOrderDistribution());
-        System.out.println("hei");
-    }
-
     public Individual getRandomIndividual(){
         int populationSize = infeasiblePopulation.size() + feasiblePopulation.size();
         int randomIndex = ThreadLocalRandom.current().nextInt(0,populationSize);
@@ -282,4 +270,20 @@ public class Population {
         }
         return null;
     }
+
+    public int getIterationsWithoutImprovement(){
+        return iterationsWithoutImprovement;
+    }
+
+    public static void main( String[] args){
+        Data data = DataReader.loadData();
+        Population population = new Population(data);
+        OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
+        odp.initializeOrderDistributionPopulation(population);
+        population.initializePopulation(odp.getRandomOrderDistribution());
+        Individual individual = TournamentSelection.performSelection(population);
+        individual.printDetailedFitness();
+    }
+
+
 }
