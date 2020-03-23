@@ -31,17 +31,12 @@ public class Parameters {
     public static final int numberOfCustomers = 5;
     public static final int numberOfVehicles = 5;
 
-<<<<<<< HEAD
-=======
-
 
     //Runtime parameters
-    public static final int nearestNeighbors = 5; //Neighborhood size for each customer
-    public static final int EducationTabooSize = 2;
     public static final double repairProbability = 1;
     public static final double greedyMIPValue = 0;
 
-    
+
     //Traveling parameters
     public static final double scalingDistanceParameter = 2.2;
     public static final double timeShift = 2;

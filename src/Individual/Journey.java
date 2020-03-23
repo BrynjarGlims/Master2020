@@ -83,6 +83,11 @@ public class Journey {
         System.out.println(individual.journeyList[0][0]);
     }
 
+    public String[] getArcsUsed(){
+
+        return new String[1];
+    }
+
 
 
 
