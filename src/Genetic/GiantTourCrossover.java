@@ -140,6 +140,7 @@ public class GiantTourCrossover {
                         }
                     }
                 }
+                
                 currentBestTrip.addCustomer(c, currentBestIndex);
                 child.setGiantTourFromTripsPerPeriodVehicleType(p, currentBestVehicleType, child.giantTour);
                 AdSplit.adSplitSingular(child, p, currentBestVehicleType);
