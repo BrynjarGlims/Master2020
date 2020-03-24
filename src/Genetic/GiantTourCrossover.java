@@ -1,5 +1,6 @@
 package Genetic;
 
+
 import DataFiles.Customer;
 import DataFiles.Data;
 import DataFiles.DataReader;
@@ -23,7 +24,7 @@ public class GiantTourCrossover {
     public static Individual crossOver(Individual parent1, Individual parent2, OrderDistribution orderDistribution){
         data = parent1.data;
         numPeriodVehicleTypeCouples = data.numberOfPeriods * data.numberOfVehicleTypes;
-        Individual child = new Individual(data);
+        Individual child = new Individual(data, parent1.population);
         child.orderDistribution = orderDistribution;
         HashSet<Integer>[] sets = initializeSets();
         HashMap<Integer, HashSet<Integer>> visitedCustomers = new HashMap<>();
@@ -99,7 +100,7 @@ public class GiantTourCrossover {
             vehicleType = i % data.numberOfVehicleTypes;
             if (child.giantTour.chromosome[period][vehicleType] == null){
                 child.giantTour.chromosome[period][vehicleType] = new ArrayList<>();
-                }
+            }
             copyArrayList = child.giantTour.chromosome[period][vehicleType];
             for (int c : getRoute(parent2, i)){
                 if (!visitedCustomers.get(period).contains(c)){
@@ -139,6 +140,7 @@ public class GiantTourCrossover {
                         }
                     }
                 }
+
                 if(currentBestTrip == null){
                     Trip newTrip = makeNewTrip(p, c);
                     child.tripList[p][newTrip.vehicleType].add(newTrip);
@@ -147,6 +149,7 @@ public class GiantTourCrossover {
                 else{
                     currentBestTrip.addCustomer(c, currentBestIndex);
                 }
+
                 child.setGiantTourFromTripsPerPeriodVehicleType(p, currentBestVehicleType, child.giantTour);
                 AdSplit.adSplitSingular(child, p, currentBestVehicleType);
             }

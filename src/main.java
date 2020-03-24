@@ -1,17 +1,16 @@
 import DataFiles.Data;
 import DataFiles.DataReader;
 import DataFiles.Parameters;
-import Genetic.Education;
-import Genetic.GiantTourCrossover;
-import Genetic.OrderDistributionCrossover;
-import Genetic.Repair;
+import Genetic.*;
 import Individual.Individual;
 import MIP.OrderAllocationModel;
 import Population.Population;
 import ProductAllocation.OrderDistribution;
 import Population.OrderDistributionPopulation;
 import StoringResults.Result;
+import Testing.IndividualTest;
 import Visualization.PlotIndividual;
+import Genetic.BiasedFitness;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -96,7 +95,9 @@ public class main {
             // TODO: 19.03.2020  which did not complete repair have values in label which is scaled with penalties, but in getFitness calculation
             // TODO: 19.03.2020 the values have been scaled down manually
             //reduce size of both populations
-            population.reduceSizeToMin();
+
+            BiasedFitness.setBiasedFitnessScore(population);
+            population.survivorSelection();
             odp.removeNoneUsedOrderDistributions();
 
 
@@ -107,9 +108,16 @@ public class main {
             Individual bestFeasibleIndividual = population.returnBestFeasibleIndividual();
             Individual bestInfeasibleIndividual = population.returnBestInfeasibleIndividual();
             if(bestIndividual.isFeasible()){
-                System.out.println("Best feasible individual: " + bestFeasibleIndividual.fitness);
+                System.out.println("Best feasible individual: " + bestFeasibleIndividual.getFitness(false));
             }
-            System.out.println("Best infeasible individual: " + bestInfeasibleIndividual.fitness);
+            System.out.println("Best infeasible individual: " + bestInfeasibleIndividual.getFitness(false));
+            for (Individual individual : population.getTotalPopulation()){
+                try {
+                    IndividualTest.checkIfIndividualIsComplete(individual);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
 
         }
         numberOfIterations++;

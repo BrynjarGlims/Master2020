@@ -16,7 +16,6 @@ public class Parameters {
 
     public static final int initialPopulationSize = 50;
     public static final int initialOrderDistributionPopulationSize = 10;
-
     public static final int maxNumberIterationsWithoutImprovement = 10;
     public static final int maxNumberOfGenerations = 50;
 
@@ -25,19 +24,16 @@ public class Parameters {
     //Decision parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static final int numberOfEliteIndividuals = 50; //TODO: find reasonable value
 
     //Loading data parameters
-    public static final int numberOfCustomers = 5;
-    public static final int numberOfVehicles = 5;
+    public static final int numberOfCustomers = 20;
+    public static final int numberOfVehicles = 15;
+
 
 
     //Runtime parameters
-    public static final int nearestNeighbors = 5; //Neighborhood size for each customer
-    public static final int EducationTabooSize = 2;
     public static final double repairProbability = 1;
     public static final double greedyMIPValue = 0;
-
 
 
     //Traveling parameters
@@ -52,8 +48,8 @@ public class Parameters {
     public static final double initialDrivingCostPenalty = 1; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
 
 
-
-
+    public static final int nearestNeighbors = 5; //Neighborhood size for each customer
+    public static final int EducationTabooSize = 2;
     public static final double penaltyFactorForOverFilling = 1.1;
     public static final double penaltyFactorForUnderFilling = 1.5;
 
