@@ -4,6 +4,9 @@ import DataFiles.Customer;
 import DataFiles.Data;
 import Individual.Individual;
 
+import java.util.HashMap;
+import java.util.HashSet;
+
 public class IndividualTest {
     public static void checkIfIndividualIsComplete( Individual individual) throws Exception {
         for (int p = 0; p < individual.data.numberOfPeriods; p++){
@@ -24,6 +27,7 @@ public class IndividualTest {
         }
     }
 
+
     public static boolean testTripMap(Individual individual){
         Data data = individual.data;
         for (int p = 0 ; p < data.numberOfPeriods ; p++){
@@ -37,6 +41,24 @@ public class IndividualTest {
             }
         }
         return true;
+    }
+
+    public static void isMissingCustomersAdded( HashMap<Integer, HashSet<Integer>> missingCustomers, Individual individual){
+        for ( int p : missingCustomers.keySet()){
+            for (int i : missingCustomers.get(p)){
+                boolean foundCustomer = false;
+                for (int vt = 0; vt < individual.data.numberOfVehicleTypes; vt ++){
+                    if (individual.giantTour.chromosome[p][vt].contains(i)){
+                        foundCustomer = true;
+                        break;
+                    }
+                }
+                if (!foundCustomer){
+                    System.out.println("Cannot find trip for period "+p+ " customer " +i );
+                }
+
+            }
+        }
     }
 
 }
