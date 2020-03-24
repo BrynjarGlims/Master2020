@@ -140,8 +140,16 @@ public class GiantTourCrossover {
                         }
                     }
                 }
-                
-                currentBestTrip.addCustomer(c, currentBestIndex);
+
+                if(currentBestTrip == null){
+                    Trip newTrip = makeNewTrip(p, c);
+                    child.tripList[p][newTrip.vehicleType].add(newTrip);
+                    currentBestVehicleType = newTrip.vehicleType;
+                }
+                else{
+                    currentBestTrip.addCustomer(c, currentBestIndex);
+                }
+
                 child.setGiantTourFromTripsPerPeriodVehicleType(p, currentBestVehicleType, child.giantTour);
                 AdSplit.adSplitSingular(child, p, currentBestVehicleType);
             }
@@ -165,6 +173,20 @@ public class GiantTourCrossover {
     }
 
 
+    private static Trip makeNewTrip(int period, int customer){
+        int vt = ThreadLocalRandom.current().nextInt(data.numberOfVehicleTypes);
+        int vehicleID = -1;
+        for (int v : data.vehicleTypes[vt].vehicleSet){
+            vehicleID = v;
+            break;
+        }
+        Trip newTrip = new Trip();
+        newTrip.initialize(period, vt, vehicleID);
+        List<Integer> customers = new ArrayList<>();
+        customers.add(customer);
+        newTrip.setCustomers(customers, 0);
+        return newTrip;
+    }
 
     private static HashSet[] initializeSets(){
         HashSet[] sets = new HashSet[3];
