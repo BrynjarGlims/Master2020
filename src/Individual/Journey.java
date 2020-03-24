@@ -6,6 +6,7 @@ import java.util.List;
 import DataFiles.Data;
 import DataFiles.DataReader;
 import DataFiles.Parameters;
+import Genetic.Education;
 import Genetic.OrderDistributionCrossover;
 import Population.Population;
 import ProductAllocation.OrderDistribution;
@@ -61,6 +62,9 @@ public class Journey {
     }
 
     private void updateTimes(Trip trip){
+        if (trip.customers.isEmpty()){
+            return;
+        }
         currentTime = Math.max(currentTime + data.distanceMatrix[data.numberOfCustomers][trip.customers.get(0)], data.customers[trip.customers.get(0)].timeWindow[period][0]);
         travelDistance += data.distanceMatrix[data.numberOfCustomers][trip.customers.get(0)];
         if (currentTime > data.customers[trip.customers.get(0)].timeWindow[period][1]){
@@ -114,11 +118,11 @@ public class Journey {
         population.initializePopulation(firstOD);
         Individual individual = population.getRandomIndividual();
         AdSplit.adSplitPlural(individual);
-        System.out.println(individual.journeyList[0][0].get(0).updateFitness(individual.orderDistribution));
         Individual parent1 = population.getRandomIndividual();
         Individual parent2 = population.getRandomIndividual();
         Individual child = Genetic.GiantTourCrossover.crossOver(parent1, parent2, parent1.orderDistribution);
-        System.out.println(child);
+        Genetic.Education.improveRoutes(child, child.orderDistribution);
+//
 
 
     }
