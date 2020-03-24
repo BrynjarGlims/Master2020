@@ -51,8 +51,6 @@ public class main {
                 }
                 Individual newIndividual = GiantTourCrossover.crossOver(parent1, parent2, crossoverOD[0]);
                 IndividualTest.checkIfIndividualIsComplete(newIndividual);
-
-
                 Education.improveRoutes(newIndividual, newIndividual.orderDistribution);
                 IndividualTest.checkIfIndividualIsComplete(newIndividual);
 
@@ -84,6 +82,7 @@ public class main {
             for (Individual infeasibleIndividual : population.infeasiblePopulation){
                 if (ThreadLocalRandom.current().nextDouble() < Parameters.repairProbability){
                     if (Repair.repair(infeasibleIndividual, infeasibleIndividual.orderDistribution)){
+                        IndividualTest.checkIfIndividualIsComplete(infeasibleIndividual);
                         repaired.add(infeasibleIndividual);
 
                     }

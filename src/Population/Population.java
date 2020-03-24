@@ -209,16 +209,6 @@ public class Population {
         return populationSet;
     }
 
-    public int getSizeOfInfeasiblePopulation() {
-        int sizeOfInfeasiblePopulation = 50;
-        return sizeOfInfeasiblePopulation;
-    }
-
-    public int getSizeOfFeasiblePopulation() {
-        int sizeOfFeasiblePopulation = 50;
-        return sizeOfFeasiblePopulation;
-    }
-
     public Individual getRandomIndividual(){
         int populationSize = infeasiblePopulation.size() + feasiblePopulation.size();
         int randomIndex = ThreadLocalRandom.current().nextInt(0,populationSize);
