@@ -63,7 +63,6 @@ public class AdSplit {
 //                    System.out.println("Missing hashmap: P:" + orderDelivery.getPeriod() + ", C:" + orderDelivery.order.customerID );
 //                    System.out.println("Is this combination a valid visit day: " + individual.data.customers[orderDelivery.order.customerID].requiredVisitPeriod[orderDelivery.getPeriod()]);
                 }
-
             }
         }
     }
@@ -72,18 +71,25 @@ public class AdSplit {
         int p = label.periodID;
         int vt = label.vehicleTypeID;
         Trip tempTrip;
+        Journey tempJourney;
+        ArrayList<Journey> journeyList;
         individual.tripList[p][vt]= new ArrayList<Trip>(Arrays.asList(new Trip[matrixOfTrips.size()]));
+        journeyList = new ArrayList<Journey>();
         for (LabelEntry labelEntry : label.labelEntries){
             if (!labelEntry.inUse)
                 continue;
+            tempJourney = new Journey(individual.data, p, vt, labelEntry.vehicleID);
             for (int tripIndex : labelEntry.tripAssigment){
-                tempTrip = new Trip(individual.data);
+                tempTrip = new Trip();
                 tempTrip.initialize(p, vt, labelEntry.vehicleID);
                 tempTrip.setCustomers(matrixOfTrips.get(tripIndex));
                 tempTrip.setTripIndex(tripIndex);
+                tempJourney.addTrip(tempTrip);
                 individual.tripList[p][vt].set(tripIndex, tempTrip);
             }
+            journeyList.add(tempJourney);
         }
+        individual.journeyList[p][vt] = journeyList;
         setTripMap(p, vt);
     }
 
@@ -100,7 +106,6 @@ public class AdSplit {
     public static void resetStaticClass(Individual ind){
         individual = ind;
         matrixOfTrips = null;
-
     }
 
     private static void testTimeWarpValues(ArrayList<ArrayList<Integer>> listOfTrips, ArrayList<Double> arcCost, Data data, int p , int vt ) {
