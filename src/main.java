@@ -50,24 +50,14 @@ public class main {
                 for (OrderDistribution od : crossoverOD){
                     odp.addOrderDistribution(od);
                 }
-                if (!IndividualTest.testTripMap(parent1)){
-                    System.out.println("FOUND MISTAKE");
-                }
-
-                if (!IndividualTest.testTripMap(parent2)){
-                    System.out.println("FOUND MISTAKE");
-                }
 
                 Individual newIndividual = GiantTourCrossover.crossOver(parent1, parent2, crossoverOD[0]);
                 IndividualTest.checkIfIndividualIsComplete(newIndividual);
 
-                if (!IndividualTest.testTripMap(newIndividual)){
-                    System.out.println("FOUND MISTAKE");
+                if (ThreadLocalRandom.current().nextDouble() < Parameters.educationProbability){
+                    Education.improveRoutes(newIndividual, newIndividual.orderDistribution);
                 }
 
-
-                Education.improveRoutes(newIndividual, newIndividual.orderDistribution);
-                IndividualTest.checkIfIndividualIsComplete(newIndividual);
 
                 // TODO: 04.03.2020 Add repair:
 
