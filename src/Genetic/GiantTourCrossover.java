@@ -9,6 +9,7 @@ import Individual.AdSplit;
 import Individual.Trip;
 import Individual.Journey;
 import ProductAllocation.OrderDistribution;
+import Testing.IndividualTest;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -154,6 +155,7 @@ public class GiantTourCrossover {
                 AdSplit.adSplitSingular(child, p, currentBestVehicleType);
             }
         }
+        IndividualTest.isMissingCustomersAdded(missingCustomers, child);
     }
 
     private static HashMap<Integer, HashSet<Integer>> findMissingCustomers(HashMap<Integer, HashSet<Integer>> visitedCustomers){

@@ -8,6 +8,8 @@ import Population.OrderDistributionPopulation;
 
 import java.util.*;
 
+import static Testing.IndividualTest.testTripMap;
+
 public class Education {
 
 
@@ -139,6 +141,9 @@ public class Education {
                                     index = (index + 1) % Parameters.EducationTabooSize;
                                 }
                                 break;
+                        }
+                        if (!testTripMap(individual)){
+                            System.out.println("Total improvements: " + totalImprovements + " move: " + move);
                         }
                     }
                 }
@@ -344,7 +349,6 @@ public class Education {
             }
         }
         return false;
-
     }
 
     private static boolean doubleInsertion(Individual individual, int customer, int period, boolean reverse) {
@@ -353,13 +357,8 @@ public class Education {
         Trip trip1;
         Trip trip2;
         trip1 = individual.tripMap.get(period).get(customer);
-        List<Integer> originalTrip1;
-        List<Integer> originalTrip2;
         if (trip1 == null){
-            System.out.println("Check trip");
-        }
-        if (trip1.customerToTripIndexMap == null){
-            System.out.println("check individual");
+            System.out.println();
         }
         if (trip1.customers.size() - trip1.customerToTripIndexMap.get(customer) < 2) {
             return false;
@@ -547,6 +546,7 @@ public class Education {
         individual.tripMap.get(trip1.period).put(customer1, trip2);
         individual.tripMap.get(trip2.period).put(customer2, trip1);
     }
+
 
 
     public static void main(String[] args) {
