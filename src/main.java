@@ -44,6 +44,7 @@ public class main {
 
             //Generate new population
             while (population.getPopulationSize() < Parameters.maximumSubIndividualPopulationSize){
+<<<<<<< HEAD
 
                 // Select parents
                 Individual parent1 = TournamentSelection.performSelection(population);
@@ -54,13 +55,17 @@ public class main {
 
                 OrderDistribution[] crossoverOD = ODC.crossover(parent1.orderDistribution, parent2.orderDistribution); //these will be the same
 
-                for (OrderDistribution od : crossoverOD){
+                for (OrderDistribution od : crossoverOD) { //todo: EVALUEATE IF THIS IS DECENT
                     odp.addOrderDistribution(od);
                 }
 
-                Individual newIndividual = GiantTourCrossover.crossOver(parent1, parent2, crossoverOD[0]);
 
-                Education.improveRoutes(newIndividual, newIndividual.orderDistribution);
+
+
+                Individual newIndividual = GiantTourCrossover.crossOver(parent1, parent2, crossoverOD[0]);
+                if (ThreadLocalRandom.current().nextDouble() < Parameters.educationProbability){
+                    Education.improveRoutes(newIndividual, newIndividual.orderDistribution);
+                }
 
                 // TODO: 04.03.2020 Add repair:
 

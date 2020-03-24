@@ -30,8 +30,11 @@ public class Parameters {
     public static final int numberOfVehicles = 5;
 
 
+    public static final int nearestNeighbors = 5; //Neighborhood size for each customer
+    public static final int EducationTabooSize = 2;
 
     //Runtime parameters
+    public static final double educationProbability = 0.7;
     public static final double repairProbability = 1;
     public static final double greedyMIPValue = 0;
 
@@ -48,8 +51,6 @@ public class Parameters {
     public static final double initialDrivingCostPenalty = 1; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
 
 
-    public static final int nearestNeighbors = 5; //Neighborhood size for each customer
-    public static final int EducationTabooSize = 2;
     public static final double penaltyFactorForOverFilling = 1.1;
     public static final double penaltyFactorForUnderFilling = 1.5;
 
