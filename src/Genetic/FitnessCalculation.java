@@ -26,9 +26,13 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
         return fitness;
     }
 
-    public static double getJourneyFitness(Journey journey, double penaltyMultiplier){
+    public static double getJourneyFitness(Journey journey, OrderDistribution orderDistribution){
+        return getJourneyFitness(journey, orderDistribution, 1);
+    }
+
+    public static double getJourneyFitness(Journey journey, OrderDistribution orderDistribution, double penaltyMultiplier){
         double fitness = 0;
-        journey.updateFitness();
+        journey.updateFitness(orderDistribution);
 
 
         return fitness;

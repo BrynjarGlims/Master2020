@@ -138,17 +138,20 @@ public class Individual implements Comparable<Individual> {
     public void setGiantTourFromTrips(){
         //updates giantTour chromosome from trips changed in education
         GiantTour gt = new GiantTour(data);
-        ArrayList<Integer> giantTourEntry;
         for (int period = 0 ; period < data.numberOfPeriods ; period++){
             for (int vehicleType = 0 ; vehicleType < data.numberOfVehicleTypes ; vehicleType++){
-                giantTourEntry = new ArrayList<>();
-                gt.chromosome[period][vehicleType] = giantTourEntry;
-                for (Trip trip : tripList[period][vehicleType]){
-                    giantTourEntry.addAll(trip.customers);
-                }
+                setGiantTourFromTripsPerPeriodVehicleType(period, vehicleType, gt);
             }
         }
         this.giantTour = gt;
+    }
+
+    public void setGiantTourFromTripsPerPeriodVehicleType(int p, int vt, GiantTour gt){
+        ArrayList<Integer> giantTourEntry = new ArrayList<>();
+        gt.chromosome[p][vt] = giantTourEntry;
+        for (Trip trip : tripList[p][vt]){
+            giantTourEntry.addAll(trip.customers);
+        }
     }
 
     public void printDetailedFitness(){
