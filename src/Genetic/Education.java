@@ -200,6 +200,9 @@ public class Education {
         Trip trip1;
         Trip trip2;
         trip1 = individual.tripMap.get(period).get(customer);
+        if (trip1 == null){
+            System.out.println("check trip");
+        }
         if (trip1.customers.size() - trip1.customerToTripIndexMap.get(customer) < 2) {
             return false;
         }
@@ -226,6 +229,10 @@ public class Education {
         Trip trip1;
         Trip trip2;
         trip1 = individual.tripMap.get(period).get(customer);
+        if(trip1 == null){
+            System.out.println("Check if trip exists");
+        }
+
         if (trip1.customers.size() - trip1.customerToTripIndexMap.get(customer) < 2) {
             return false;
         }
@@ -281,6 +288,9 @@ public class Education {
         Trip trip1;
         Trip trip2;
         trip1 = individual.tripMap.get(period).get(customer);
+        if (trip1 == null ){
+            System.out.println("Check trip");
+        }
         if (trip1.customers.size() - trip1.customerToTripIndexMap.get(customer) < 2 || trip1.customers.size() < 3) {
             return false;
         }
@@ -308,6 +318,10 @@ public class Education {
         trip1 = individual.tripMap.get(period).get(customer);
         List<Integer> originalTrip1;
         List<Integer> originalTrip2;
+        if (trip1 == null){
+            System.out.println("Check trip");
+        }
+
         if (trip1.customers.size() - trip1.customerToTripIndexMap.get(customer) < 2 || trip1.customers.size() < 3) {
             return false;
         }
@@ -341,7 +355,10 @@ public class Education {
         trip1 = individual.tripMap.get(period).get(customer);
         List<Integer> originalTrip1;
         List<Integer> originalTrip2;
-        if (trip1.customerToTripIndexMap.get(customer) == null){
+        if (trip1 == null){
+            System.out.println("Check trip");
+        }
+        if (trip1.customerToTripIndexMap == null){
             System.out.println("check individual");
         }
         if (trip1.customers.size() - trip1.customerToTripIndexMap.get(customer) < 2) {

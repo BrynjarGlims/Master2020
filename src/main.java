@@ -8,6 +8,7 @@ import Population.Population;
 import ProductAllocation.OrderDistribution;
 import Population.OrderDistributionPopulation;
 import StoringResults.Result;
+import Testing.IndividualTest;
 import Visualization.PlotIndividual;
 import Genetic.BiasedFitness;
 
@@ -110,6 +111,13 @@ public class main {
                 System.out.println("Best feasible individual: " + bestFeasibleIndividual.getFitness(false));
             }
             System.out.println("Best infeasible individual: " + bestInfeasibleIndividual.getFitness(false));
+            for (Individual individual : population.getTotalPopulation()){
+                try {
+                    IndividualTest.checkIfIndividualIsComplete(individual);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
 
         }
         numberOfIterations++;
