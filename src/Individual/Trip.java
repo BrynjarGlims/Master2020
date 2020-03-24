@@ -50,13 +50,13 @@ public class Trip {
 
     public void addCustomer(int customer, int index){
         customers.add(index, customer);
-        System.out.println(customers);
+        //System.out.println(customers);
         adjustIndices(index);
     }
 
     private void adjustIndices(int fromIndex){
         for (int i = fromIndex ; i < customers.size() ; i++){
-            System.out.println("index: " + i);
+            //System.out.println("index: " + i);
             customerToTripIndexMap.put(customers.get(i), i);
         }
     }
