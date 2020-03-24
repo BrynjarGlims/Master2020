@@ -24,7 +24,7 @@ public class GiantTourCrossover {
     public static Individual crossOver(Individual parent1, Individual parent2, OrderDistribution orderDistribution){
         data = parent1.data;
         numPeriodVehicleTypeCouples = data.numberOfPeriods * data.numberOfVehicleTypes;
-        Individual child = new Individual(data);
+        Individual child = new Individual(data, parent1.population);
         child.orderDistribution = orderDistribution;
         HashSet<Integer>[] sets = initializeSets();
         HashMap<Integer, HashSet<Integer>> visitedCustomers = new HashMap<>();

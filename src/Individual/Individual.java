@@ -35,12 +35,12 @@ public class Individual implements Comparable<Individual> {
     public double objectiveCost;
     public double infeasibilityCost;
 
-    public double fitness = Double.MAX_VALUE;
-    public double diversity = -1;
-    public double biasedFitness;
+    private double fitness = Double.MAX_VALUE;
+    private double diversity = -1;
+    private double biasedFitness;
 
-    private int diversityRank;
-    private int fitnessRank;
+    private double diversityRank;
+    private double fitnessRank;
 
     public boolean isSurvivor;
 
@@ -181,8 +181,10 @@ public class Individual implements Comparable<Individual> {
     public void printDetailedFitness(){
         System.out.println("-------------------------------------");
         System.out.println("Biased fitness: " + biasedFitness);
+        System.out.println("Diversity Rank: "  +diversityRank);
         System.out.println("Diversity: " + diversity);
         System.out.println("Fitness: " + fitness);
+        System.out.println("Fitness Rank:" + fitnessRank);
         System.out.println("InfOvertimeValue: " + infeasibilityOvertimeDrivngValue);
         System.out.println("InfTimeWarp: " + infeasibilityTimeWarpValue);
         System.out.println("InfOverCapacityValue: " + infeasibilityOverCapacityValue);
@@ -190,9 +192,6 @@ public class Individual implements Comparable<Individual> {
         System.out.println("Traveling cost: " + feasibleTravelingCost);
         System.out.println("Vehicle cost: " + feasibleVehicleUseCost);
         System.out.println("OvertimeAtDepot: " + feasibleOvertimeDepotCost);
-
-
-
         System.out.println("-------------------------------------");
 
 
@@ -268,12 +267,6 @@ public class Individual implements Comparable<Individual> {
         this.infeasibilityCost = getInfeasibilityCost();
 
         this.fitness = this.objectiveCost + this.infeasibilityCost;
-
-
-
-        //// TODO: 05.03.2020 Move this to another place when diversity is implemented 
-        this.biasedFitness = fitness + diversity;
-
     }
 
     private double getObjectiveCost(){
@@ -323,16 +316,23 @@ public class Individual implements Comparable<Individual> {
         return infeasibilityOvertimeDrivngValue + infeasibilityOverCapacityValue + infeasibilityTimeWarpValue;
     }
 
-    public double getIndividualBiasedFitnessScore() {
-        //calculate biased fitness element
-        biasedFitness = fitnessRank + (1 - (Parameters.numberOfElitismSurvivorsPerGeneration /
-                Parameters.numberOfElitismSurvivorsPerGeneration) * diversityRank);
+    public double getBiasedFitness() {
         return biasedFitness;
     }
 
-    public double getBiasedFitness(){
-        return this.getFitness(false) - this.diversity;
+    public void calculateBiasedFitness(){
+        double diversityScaling = 1.0 - (double) Parameters.numberOfElitismSurvivorsPerGeneration/ (double) this.population.getTotalPopulation().size();
+        biasedFitness = (double) fitnessRank + (diversityScaling* (double) diversityRank);
+        //System.out.println("FitnessRank: " + fitnessRank);
+        //System.out.println("DiversityRank: " + diversityRank);
+        //System.out.println("PopulationSize: " + this.population.getTotalPopulation().size());
+        //System.out.println("Elite individuals: " + Parameters.numberOfElitismSurvivorsPerGeneration);
+        //System.out.println("Diversity Scaling: " + diversityScaling);
+        //System.out.println("Biased fitness: " + biasedFitness);
+        //System.out.println("-------------------------");
     }
+
+
 
     public void setDiversity(double diversity){
         this.diversity = diversity;

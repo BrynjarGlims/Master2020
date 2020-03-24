@@ -122,7 +122,7 @@ public class Population {
 
 
     private static double getFitnessDifference(Individual i1, Individual i2) {
-        return (Math.abs(i1.fitness - i2.fitness));
+        return (Math.abs(i1.getFitness(false) - i2.getFitness(false)));
     }
 
 

@@ -13,7 +13,7 @@ import java.util.stream.DoubleStream;
 
 public class BiasedFitness {
 
-    public void setBiasedFitnessScore(Population population){
+    public static void setBiasedFitnessScore(Population population){
         calculateSimplePopulationDiversity(population);
         Comparator<Individual> sortByFitness = new SortByFitness();
         Comparator<Individual> sortByDiversity = new SortByDiversity();
@@ -25,10 +25,13 @@ public class BiasedFitness {
             diversityRank.get(i).setDiversityRank(i+1);
             fitnessRank.get(i).setFitnessRank(i+1);
         }
+        for (Individual individual: population.getTotalPopulation()){
+            individual.calculateBiasedFitness();
+        }
 
     }
 
-    private void calculateSimplePopulationDiversity(Population population){
+    private static void calculateSimplePopulationDiversity(Population population){
 
         for (Individual ind1 : population.getTotalPopulation()){
             ArrayList<Double> diversityList = new ArrayList<>();
@@ -36,7 +39,7 @@ public class BiasedFitness {
                 diversityList.add(calculateSimpleDiversityBetweenIndividuals(ind1, ind2)); //todo: implement
             }
             Collections.sort(diversityList);
-            ArrayList<Double> nearestDiversity = (ArrayList) diversityList.subList(0, Parameters.nearestNeighborsDiversity);
+            ArrayList<Double> nearestDiversity = new ArrayList<>(diversityList.subList(0,Parameters.nearestNeighborsDiversity));
             double diversity = nearestDiversity.stream().collect(Collectors.summingDouble(Double::doubleValue));
             diversity /= nearestDiversity.size();
             ind1.setDiversity(diversity);
@@ -45,7 +48,7 @@ public class BiasedFitness {
 
 
 
-    private HashSet<SimpleArc> getSimpleArc(ArrayList<Integer> giantTour){
+    private static HashSet<SimpleArc> getSimpleArc(ArrayList<Integer> giantTour){
         HashSet<SimpleArc> arcs = new HashSet<>();
         int previousCustomer = -1;  //depot
         for (int customerID : giantTour){
@@ -56,11 +59,11 @@ public class BiasedFitness {
         return arcs;
     }
 
-    private ArrayList<Individual> getNearestIndividuals(Individual individual, Population population){
+    private static ArrayList<Individual> getNearestIndividuals(Individual individual, Population population){
         return new ArrayList<Individual>();
     }
 
-    private double calculateSimpleDiversityBetweenIndividuals(Individual ind1, Individual ind2){
+    private static double calculateSimpleDiversityBetweenIndividuals(Individual ind1, Individual ind2){
         double diversity = 0;
         for (int p = 0; p < ind1.data.numberOfPeriods; p++){
             ArrayList<Integer> gt1 = new ArrayList<>();
@@ -74,7 +77,7 @@ public class BiasedFitness {
         return diversity;
     }
 
-    private double calculateSimpleSimilarityBetweenGiantTours(ArrayList<Integer> gt1, ArrayList<Integer> gt2){
+    private static double calculateSimpleSimilarityBetweenGiantTours(ArrayList<Integer> gt1, ArrayList<Integer> gt2){
         double diversity = 0;
         HashMap<Integer, Integer> gt1Map = new HashMap<>();
         HashMap<Integer, Integer> gt2Map = new HashMap<>();
@@ -103,10 +106,10 @@ class SortByFitness implements Comparator<Individual>{
     @Override
     public int compare(Individual o1, Individual o2) {
         if (o1.getFitness(false) - o2.getFitness(false) < 0){
-            return 1;
+            return -1;
         }
         else{
-            return -1;
+            return 1;
         }
     }
 }
@@ -117,10 +120,10 @@ class SortByDiversity implements Comparator<Individual>{
     @Override
     public int compare(Individual o1, Individual o2) {
         if (o1.getDiversity() - o2.getDiversity() < 0){
-            return -1;
+            return 1;
         }
         else{
-            return 1;
+            return -1;
         }
     }
 }

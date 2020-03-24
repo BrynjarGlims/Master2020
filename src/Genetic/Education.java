@@ -341,6 +341,9 @@ public class Education {
         trip1 = individual.tripMap.get(period).get(customer);
         List<Integer> originalTrip1;
         List<Integer> originalTrip2;
+        if (trip1.customerToTripIndexMap.get(customer) == null){
+            System.out.println("check individual");
+        }
         if (trip1.customers.size() - trip1.customerToTripIndexMap.get(customer) < 2) {
             return false;
         }
