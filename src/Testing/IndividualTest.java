@@ -1,5 +1,7 @@
 package Testing;
 
+import DataFiles.Customer;
+import DataFiles.Data;
 import Individual.Individual;
 
 public class IndividualTest {
@@ -20,6 +22,21 @@ public class IndividualTest {
                 }
             }
         }
+    }
+
+    public static boolean testTripMap(Individual individual){
+        Data data = individual.data;
+        for (int p = 0 ; p < data.numberOfPeriods ; p++){
+            for (Customer customer : data.customers){
+                if (customer.requiredVisitPeriod[p] == 1){
+                    if (!individual.tripMap.get(p).containsKey(customer.customerID)){
+                        System.out.println("missing customer: " + customer.customerID + " in period " + p);
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
 }

@@ -8,6 +8,8 @@ import Population.OrderDistributionPopulation;
 
 import java.util.*;
 
+import static Testing.IndividualTest.testTripMap;
+
 public class Education {
 
 
@@ -141,7 +143,7 @@ public class Education {
                                 break;
                         }
                         if (!testTripMap(individual)){
-                            System.out.println(move);
+                            System.out.println("Total improvements: " + totalImprovements + " move: " + move);
                         }
                     }
                 }
@@ -545,20 +547,7 @@ public class Education {
         individual.tripMap.get(trip2.period).put(customer2, trip1);
     }
 
-    public static boolean testTripMap(Individual individual){
-        Data data = individual.data;
-        for (int p = 0 ; p < data.numberOfPeriods ; p++){
-            for (Customer customer : data.customers){
-                if (customer.requiredVisitPeriod[p] == 1){
-                    if (!individual.tripMap.get(p).containsKey(customer.customerID)){
-                        System.out.println("missing customer: " + customer.customerID + " in period " + p);
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
-    }
+
 
     public static void main(String[] args) {
         Data data = DataReader.loadData();

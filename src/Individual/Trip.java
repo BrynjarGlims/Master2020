@@ -14,8 +14,6 @@ public class Trip {
     public int vehicleType;
     public int vehicleID;
     public int tripIndex;
-    public int tripStartIndex = -1;
-    public int tripEndIndex = -1;
     public List<Integer> customers;
     public Journey journey;
     public HashMap<Integer, Integer> customerToTripIndexMap;  // customerID to location
@@ -32,11 +30,7 @@ public class Trip {
     }
 
     public void setCustomers(List<Integer> customers, int tripStartIndex) {
-        if (!(tripStartIndex == -1)){
-            this.tripStartIndex = tripStartIndex;
-        }
         this.customers = customers;
-        this.tripEndIndex = this.tripStartIndex + customers.size();
         this.setCustomerMaps();
 
     }

@@ -11,6 +11,7 @@ import StoringResults.Result;
 import Testing.IndividualTest;
 import Visualization.PlotIndividual;
 import Genetic.BiasedFitness;
+import Testing.*;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -51,6 +52,9 @@ public class main {
                 }
                 Individual newIndividual = GiantTourCrossover.crossOver(parent1, parent2, crossoverOD[0]);
 
+                if (!IndividualTest.testTripMap(newIndividual)){
+                    System.out.println("FOUND MISTAKE");
+                }
 
                 Education.improveRoutes(newIndividual, newIndividual.orderDistribution);
 
