@@ -1,6 +1,7 @@
 package Individual;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import DataFiles.Data;
 import DataFiles.DataReader;
@@ -83,9 +84,19 @@ public class Journey {
         System.out.println(individual.journeyList[0][0]);
     }
 
-    public String[] getArcsUsed(){
-
-        return new String[1];
+    public HashSet<String> getArcsUsed(){
+        HashSet<String> arcs = new HashSet<>();
+        String previousCustomer;
+        
+        for (Trip trip : trips){
+            previousCustomer = "#";
+            for (int customerID: trip.customers){
+                arcs.add(period + vehicleType + previousCustomer + customerID);  // # indicates depot. First entry is from, second entry is to
+                previousCustomer = Integer.toString(customerID);
+            }
+            arcs.add(period + vehicleType + previousCustomer + "#");
+        }
+        return arcs;  //// TODO: 23/03/2020 Make object store the arcs it uses for every adsplit
     }
 
 

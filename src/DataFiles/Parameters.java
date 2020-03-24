@@ -16,7 +16,6 @@ public class Parameters {
 
     public static final int initialPopulationSize = 50;
     public static final int initialOrderDistributionPopulationSize = 10;
-
     public static final int maxNumberIterationsWithoutImprovement = 10;
     public static final int maxNumberOfGenerations = 50;
 
@@ -25,7 +24,6 @@ public class Parameters {
     //Decision parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static final int numberOfEliteIndividuals = 50; //TODO: find reasonable value
 
     //Loading data parameters
     public static final int numberOfCustomers = 5;

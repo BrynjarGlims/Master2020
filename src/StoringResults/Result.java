@@ -1,10 +1,8 @@
 package StoringResults;
 
 import DataFiles.*;
-import Genetic.GiantTourCrossover;
 import Genetic.OrderDistributionCrossover;
 import Individual.Individual;
-import MIP.ArcFlowModel;
 import Population.Population;
 import ProductAllocation.OrderDelivery;
 import ProductAllocation.OrderDistribution;
@@ -22,7 +20,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Scanner;
 

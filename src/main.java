@@ -96,7 +96,7 @@ public class main {
             // TODO: 19.03.2020  which did not complete repair have values in label which is scaled with penalties, but in getFitness calculation
             // TODO: 19.03.2020 the values have been scaled down manually
             //reduce size of both populations
-            population.reduceSizeToMin();
+            population.survivorSelection();
             odp.removeNoneUsedOrderDistributions();
 
 

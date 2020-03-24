@@ -1,5 +1,6 @@
 package Genetic;
 
+
 import DataFiles.Customer;
 import DataFiles.Data;
 import DataFiles.DataReader;
@@ -98,7 +99,7 @@ public class GiantTourCrossover {
             vehicleType = i % data.numberOfVehicleTypes;
             if (child.giantTour.chromosome[period][vehicleType] == null){
                 child.giantTour.chromosome[period][vehicleType] = new ArrayList<>();
-                }
+            }
             copyArrayList = child.giantTour.chromosome[period][vehicleType];
             for (int c : getRoute(parent2, i)){
                 if (!visitedCustomers.get(period).contains(c)){

@@ -31,10 +31,11 @@ public class Population {
         return feasiblePopulation.size() + infeasiblePopulation.size();
     }
 
-    public void reduceSizeToMin(){
+    public void survivorSelection(){
         this.reduceFeasiblePopulation();
         this.reduceInfeasiblePopulation();
     }
+
 
     private void reduceFeasiblePopulation(){
         int numberOfIndividualsToRemove = feasiblePopulation.size() - Parameters.minimumSubIndividualPopulationSize;
@@ -134,42 +135,6 @@ public class Population {
         return setOfClones;
     }
 
-
-
-    public void selectFeasibleSurvivors() {
-        Set<Individual> setOfAllClones = new HashSet<Individual>();
-        //select #Individuals (size = minimumSubPopulationSize) to keep both diversity and low-cost individuals
-        for (Individual individual: feasiblePopulation) {
-            for (Individual ind: getFeasibleClonesForAnIndividual(individual)) {
-                setOfAllClones.add(ind);
-            }
-        }
-
-        for (int i = 0; i < (getSizeOfFeasiblePopulation() - Parameters.minimumSubIndividualPopulationSize); i++) {
-            //setOfAllClones.sort(); //TODO: find a way to sort individuals based on fitness
-        }
-        //X = set of individuals with clones
-        //if X not empty:
-        //remove individuals in X with max biased fitness
-        //else:
-        //remove P in the whole subpop with maximum biased fitness
-        //update distance and biased fitness measures
-    }
-
-    public void selectInfeasibleSurvivors() {
-        Set<Individual> setOfAllClones = new HashSet<Individual>();
-        for (Individual individual: feasiblePopulation) {
-            for (Individual ind: getFeasibleClonesForAnIndividual(individual)) {
-                setOfAllClones.add(ind);
-            }
-        }
-
-        for (int i = 0; i < (getSizeOfInfeasiblePopulation() - Parameters.minimumSubIndividualPopulationSize); i++) {
-            //setOfAllClones.sort(); //TODO: find a way to sort individuals based on fitness
-        }
-
-    }
-
     public void addChildToPopulation(Individual individual){
         if (individual.isFeasible()){
             feasiblePopulation.add(individual);
@@ -238,8 +203,10 @@ public class Population {
         return infeasiblePopulation;
     }
 
-    public int getTotalPopulationSize() {
-        return totalPopulationSize;
+    public HashSet<Individual> getTotalPopulation(){
+        HashSet<Individual> populationSet = new HashSet<Individual>(feasiblePopulation);
+        populationSet.addAll(infeasiblePopulation);
+        return populationSet;
     }
 
     public int getSizeOfInfeasiblePopulation() {

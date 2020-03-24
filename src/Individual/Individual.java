@@ -3,9 +3,12 @@ import DataFiles.*;
 import MIP.ArcFlowModel;
 import Population.Population;
 import ProductAllocation.OrderDistribution;
+import scala.xml.PrettyPrinter;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 
 
 public class Individual implements Comparable<Individual> {
@@ -33,8 +36,11 @@ public class Individual implements Comparable<Individual> {
     public double infeasibilityCost;
 
     public double fitness = Double.MAX_VALUE;
-    public double diversity = 0;
+    public double diversity = -1;
     public double biasedFitness;
+
+    private int diversityRank;
+    private int fitnessRank;
 
     public boolean isSurvivor;
 
@@ -70,6 +76,14 @@ public class Individual implements Comparable<Individual> {
         }
     }
 
+    public void setFitnessRank(int rank){
+        this.fitnessRank = rank;
+    }
+
+    public void setDiversityRank(int rank){
+        this.diversityRank = rank;
+    }
+
     public void initializeJourneyList(){
         this.journeyList = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
         for (int p = 0 ; p < data.numberOfPeriods; p++){
@@ -78,6 +92,16 @@ public class Individual implements Comparable<Individual> {
             }
         }
     }
+
+    public double getDiversity(){
+        if (diversity == -1){
+            System.out.println("Diversity not calculated, returns 0");
+            return 0;
+        }
+        return diversity;
+    }
+
+
 
 
     public void initializeIndividual(OrderDistribution od) {
@@ -171,6 +195,18 @@ public class Individual implements Comparable<Individual> {
 
 
 
+    }
+
+    public HashSet<String> getArcs(){
+        HashSet<String> arcs = new HashSet<>();
+        for (ArrayList<Journey>[] journeysPeriod : journeyList){
+            for (ArrayList<Journey> journeys : journeysPeriod){
+                for( Journey journey : journeys){
+                    arcs.addAll(journey.getArcsUsed());
+                }
+            }
+        }
+        return arcs;
     }
 
 
@@ -285,57 +321,18 @@ public class Individual implements Comparable<Individual> {
     }
 
     public double getIndividualBiasedFitnessScore() {
-        fitness = 0.0; //TODO: implement fitness calculations
         //calculate biased fitness element
-        int nbIndividuals = 0;
-        if (this.isFeasible()) {
-            nbIndividuals = Population.getSizeOfFeasiblePopulation();
-        } else if (!this.isFeasible()) {
-            nbIndividuals = Population.getSizeOfInfeasiblePopulation();
-        }
-        double biasedFitness = (1 - (Parameters.numberOfEliteIndividuals / nbIndividuals) * getRankOfIndividual());
-        double fitnessScore = fitness + biasedFitness;
-        return fitnessScore;
+        biasedFitness = fitnessRank + (1 - (Parameters.numberOfElitismSurvivorsPerGeneration /
+                Parameters.numberOfElitismSurvivorsPerGeneration) * diversityRank);
+        return biasedFitness;
     }
 
     public double getBiasedFitness(){
         return this.getFitness(false) - this.diversity;
     }
 
-    public double calculateDiversity(Individual comparison) {
-
-        return 0;
-
-    }
-
-    public double hammingDistance(GiantTour gt) {
-        double customerDistance = 0;
-        double vehicleTypeDistance = 0;
-        int vt1 = 0;
-        int vt2 = 0;
-        int counter1 = 0;
-        int counter2 = 0;
-        for (int p = 0; p < data.numberOfPeriods; p++) {
-            for (int c = 0; c < data.numberOfCustomerVisitsInPeriod[p]; c++) {
-                if (gt.chromosome[p][vt2].size() == counter2) {
-                    counter2 = 0;
-                    vt2++;
-                }
-                if (this.giantTour.chromosome[p][vt1].size() - 1 == counter1) {
-                    counter1 = 0;
-                    vt1++;
-                }
-                customerDistance += (this.giantTour.chromosome[p][vt1].get(counter1) != gt.chromosome[p][vt2].get(counter2)) ? 1 : 0;
-                vehicleTypeDistance += (vt2 != vt1) ? 1 : 0;
-                counter1++;
-                counter2++;
-            }
-
-        }
-        customerDistance /= 2 * data.numberOfCustomerVisitsInPlanningHorizon;
-
-        // TODO: 26.02.2020 Check if the proportional customer distance and vehicle type distance
-        return customerDistance + vehicleTypeDistance; //larger distance, more diversity
+    public void setDiversity(double diversity){
+        this.diversity = diversity;
     }
 
     public String toString(){
@@ -387,8 +384,9 @@ public class Individual implements Comparable<Individual> {
         }
 
     }
-}
 
+
+}
 
 
 
