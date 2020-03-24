@@ -6,6 +6,7 @@ import DataFiles.DataReader;
 import Individual.Individual;
 import Individual.AdSplit;
 import Individual.Trip;
+import Individual.Journey;
 import ProductAllocation.OrderDistribution;
 
 import java.util.*;
@@ -111,45 +112,35 @@ public class GiantTourCrossover {
 
     private static void bestInsertion(Individual child, OrderDistribution orderDistribution, HashMap<Integer, HashSet<Integer>> missingCustomers){
         double currentBestFitness;
-        List<Integer> customerSequence;
-        double tripFitness;
-        double tempTripFitness;
-        int currentBestVehicleType = 0;
-        List<Integer> currentBestSequence = null;
+        double journeyFitness;
+        double tempJourneyFitness;
+        int currentBestVehicleType = -1;
+        Trip currentBestTrip = null;
+        int currentBestIndex = -1;
         AdSplit.adSplitPlural(child);
         for (int p : missingCustomers.keySet()){
             for (int c : missingCustomers.get(p)){
                 currentBestFitness = Double.MAX_VALUE;
-                customerSequence = new ArrayList<>();
                 for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
-                    customerSequence.add(c);
-                    tempTripFitness = FitnessCalculation.getTripFitness(customerSequence, vt, p, orderDistribution.orderVolumeDistribution, data);
-                    if (tempTripFitness < currentBestFitness){
-                        currentBestFitness = tempTripFitness;
-                        currentBestSequence = customerSequence;
-                        currentBestVehicleType = vt;
-                    }
-                    for (Trip trip : child.tripList[p][vt]){
-                        customerSequence = new LinkedList<>(trip.customers);
-                        tripFitness = FitnessCalculation.getTripFitness(customerSequence, vt, p, child.orderDistribution.orderVolumeDistribution, data);
-                        for (int i = 0 ; i <= customerSequence.size() ; i++){
-                            customerSequence.add(i, c);
-                            tempTripFitness = FitnessCalculation.getTripFitness(customerSequence, vt, p, child.orderDistribution.orderVolumeDistribution, data);
-                            if(tempTripFitness - tripFitness < currentBestFitness){
-                                currentBestSequence = new ArrayList<>(customerSequence);
-                                currentBestFitness = tripFitness - currentBestFitness;
-                                currentBestVehicleType = vt;
+                    for (Journey journey : child.journeyList[p][vt]){
+                        journeyFitness = FitnessCalculation.getJourneyFitness(journey, orderDistribution);
+                        for (Trip trip : journey.trips){
+                            for (int i = 0 ; i < trip.customers.size() ; i++){
+                                trip.addCustomer(c, i);
+                                tempJourneyFitness = FitnessCalculation.getJourneyFitness(journey, orderDistribution) - journeyFitness;
+                                if(tempJourneyFitness < currentBestFitness){
+                                    currentBestTrip = trip;
+                                    currentBestIndex = i;
+                                    currentBestFitness = tempJourneyFitness;
+                                    currentBestVehicleType = vt;
+                                }
+                                trip.removeCustomer(c);
                             }
-                            customerSequence.remove(i);
                         }
                     }
                 }
-                if (currentBestSequence.size() == 1){
-                    child.giantTour.chromosome[p][currentBestVehicleType].add(currentBestSequence.get(0)); // create a new trip with only one custoemr
-                }
-                else{
-                    child.giantTour.chromosome[p][currentBestVehicleType] = new ArrayList<>(currentBestSequence);
-                }
+                currentBestTrip.addCustomer(c, currentBestIndex);
+                child.setGiantTourFromTripsPerPeriodVehicleType(p, currentBestVehicleType, child.giantTour);
                 AdSplit.adSplitSingular(child, p, currentBestVehicleType);
             }
         }

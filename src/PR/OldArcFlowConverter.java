@@ -107,7 +107,7 @@ public class OldArcFlowConverter {
                     if (arcFlowModel.z[p][v][r].get(GRB.DoubleAttr.X) == 1){
                         for( int i = 0; i < data.numberOfCustomers; i++){
                             if (arcFlowModel.x[p][v][r][data.numberOfCustomers][i].get(GRB.DoubleAttr.X) == 1){
-                                currentTrip = new Trip(data);
+                                currentTrip = new Trip();
                                 customers = new ArrayList<>();
                                 customers.add(i);
                                 currentTrip.initialize(p, data.vehicles[v].vehicleType.vehicleTypeID, v);

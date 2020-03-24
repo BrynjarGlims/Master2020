@@ -330,6 +330,7 @@ public class OrderDistribution {
         orderDeliveries[order.orderID].addDelivery(period, volume);
     }
 
+
     public double getOvertimeValue(){
         fitness = 0;
         for (int d = 0; d < data.numberOfPeriods; d++ ){

@@ -17,12 +17,9 @@ public class Trip {
     public int tripStartIndex = -1;
     public int tripEndIndex = -1;
     public List<Integer> customers;
+    public Journey journey;
     public HashMap<Integer, Integer> customerToTripIndexMap;  // customerID to location
 
-
-    public Trip(Data data){
-        this.data = data;
-    }
 
     public void initialize(int period, int vehicleType, int vehicleID){
         this.period = period;

@@ -6,24 +6,40 @@ import DataFiles.*;
 import Individual.Individual;
 import ProductAllocation.OrderDistribution;
 import Individual.Trip;
+import Individual.Journey;
 
 
 public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove parts of code in LabelEntryClass
 
     public static double getTripFitness(List<Integer> customerOrder, int vt, int p, double[][] orderDistribution, Data data){
+        return getTripFitness(customerOrder, vt, p, orderDistribution, data, 1);
+    }
+
+    public static double getTripFitness(List<Integer> customerOrder, int vt, int p, double[][] orderDistribution, Data data, double penaltyMultiplier){
         double fitness = 0;
         if (customerOrder.isEmpty()){
             return 0;
         }
-        fitness += overloadScore(customerOrder, vt, p, orderDistribution, data);
-        fitness += travelingDistanceScoreAndOvertimeScore(customerOrder, vt, p, orderDistribution, data);
-        fitness += timeWarpScore(customerOrder, vt, p, orderDistribution, data);
+        fitness += overloadScore(customerOrder, vt, p, orderDistribution, data, penaltyMultiplier);
+        fitness += travelingDistanceScoreAndOvertimeScore(customerOrder, vt, p, orderDistribution, data, penaltyMultiplier);
+        fitness += timeWarpScore(customerOrder, vt, p, data, penaltyMultiplier);
+        return fitness;
+    }
+
+    public static double getJourneyFitness(Journey journey, OrderDistribution orderDistribution){
+        return getJourneyFitness(journey, orderDistribution, 1);
+    }
+
+    public static double getJourneyFitness(Journey journey, OrderDistribution orderDistribution, double penaltyMultiplier){
+        double fitness = journey.updateFitness(orderDistribution);
+
+
         return fitness;
     }
 
 
     //-----------------------------------------Order distribution fitness based on filling level------------------------------------------
-    public static double getFitnessForAnIndividualAndAnOrderDistribution (Individual individual, OrderDistribution orderDistribution) {
+    public static double getFillLevelFitnessAnIndividualAndAnOrderDistribution(Individual individual, OrderDistribution orderDistribution) {
         double totalFitness = 0;
         for (int p = 0; p < Parameters.numberOfPeriods; p++) {
             double periodicFitness = 0;
@@ -35,7 +51,7 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
         return totalFitness;
     }
 
-    public static double getSingleChromosomeFitness(int vt, int p, Individual individual, OrderDistribution orderDistribution) {
+    private static double getSingleChromosomeFitness(int vt, int p, Individual individual, OrderDistribution orderDistribution) {
         double tripLoad = 0;
         double singleChromosomeFitness = 0;
         if (!individual.tripList[p][vt].isEmpty()) {
@@ -50,7 +66,7 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
         return singleChromosomeFitness;
     }
 
-    public static double calculateJourneyLoadPunishment(double tripLoad, int vt, Individual individual) {
+    private static double calculateJourneyLoadPunishment(double tripLoad, int vt, Individual individual) {
         double fitness = 0;
         if (tripLoad > individual.data.vehicleTypes[vt].capacity) {
             fitness = Parameters.penaltyFactorForOverFilling*((tripLoad - individual.data.vehicleTypes[vt].capacity)/individual.data.vehicleTypes[vt].capacity);
@@ -67,31 +83,29 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
 
     public static double getPeriodicOvertimeFitness (OrderDistribution orderDistribution, int p) {
         double periodicOvertime = 0;
-        double loadSumForVehicleType = 0;
-        int tripLoad = 0;
         periodicOvertime = Math.max(orderDistribution.volumePerPeriod[p] - Parameters.overtimeLimit[p], 0);
         return periodicOvertime*Parameters.overtimeCost[p];
     }
 
-    private static double getIndividualOvertimeFitness (OrderDistribution orderDistribution) {
-        double overtimeFitness = 0;
-        for (int p = 0; p < Parameters.numberOfPeriods; p++) {
-            overtimeFitness += getPeriodicOvertimeFitness(orderDistribution, p);
-        }
-        return overtimeFitness;
-    }
+//    public static double getIndividualOvertimeFitness (OrderDistribution orderDistribution) {
+//        double overtimeFitness = 0;
+//        for (int p = 0; p < Parameters.numberOfPeriods; p++) {
+//            overtimeFitness += getPeriodicOvertimeFitness(orderDistribution, p);
+//        }
+//        return overtimeFitness;
+//    }
+//
 
-
-    private static double overloadScore(List<Integer> customerOrder, int vt, int p, double[][] orderDistribution,  Data data){
+    private static double overloadScore(List<Integer> customerOrder, int vt, int p, double[][] orderDistribution,  Data data, double penaltyMultiplier){
         double load = 0;
         for (int customerID : customerOrder){
             load += orderDistribution[p][customerID];
         }
-        return Math.max(0, load - data.vehicleTypes[vt].capacity*Parameters.initialCapacityPenalty);
+        return Math.max(0, load - data.vehicleTypes[vt].capacity*penaltyMultiplier*Parameters.initialCapacityPenalty);
     }
 
 
-    private static double timeWarpScore(List<Integer> customerOrder, int vt, int p, double[][] orderDistribution,  Data data){
+    private static double timeWarpScore(List<Integer> customerOrder, int vt, int p,  Data data, double penaltyMultiplier){
         boolean fromDepot = true;
         int lastCustomerID = -1;
         double currentVehicleTime = 0;
@@ -124,12 +138,11 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
                 data.distanceMatrix[lastCustomerID][data.numberOfCustomers];
         if (currentVehicleTime > Parameters.maxJourneyDuration){
             timeWarpInfeasibility += currentVehicleTime - Parameters.maxJourneyDuration;
-            currentVehicleTime = Parameters.maxJourneyDuration;
         }
-        return timeWarpInfeasibility * Parameters.initialTimeWarpPenalty;
+        return timeWarpInfeasibility * penaltyMultiplier * Parameters.initialTimeWarpPenalty;
     }
 
-    private static double travelingDistanceScoreAndOvertimeScore(List<Integer> customerOrder, int vt, int p, double[][] orderDistribution,  Data data){
+    private static double travelingDistanceScoreAndOvertimeScore(List<Integer> customerOrder, int vt, int p, double[][] orderDistribution,  Data data, double penaltyMultiplier){
         //initialize
         int customerCounter = 0;
         int lastCustomerID = -1;
@@ -155,8 +168,8 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
         }
         vehicleTotalTravelTime += data.distanceMatrix[lastCustomerID][data.numberOfCustomers];
         vehicleDrivingDistance += data.distanceMatrix[lastCustomerID][data.numberOfCustomers];
-        vehicleTotalTravelTime *= Parameters.initialOvertimePenalty;
-        vehicleDrivingDistance *= Parameters.initialDrivingCostPenalty;
+        vehicleTotalTravelTime *= penaltyMultiplier*Parameters.initialOvertimePenalty;
+        vehicleDrivingDistance *= penaltyMultiplier*Parameters.initialDrivingCostPenalty;
         return vehicleDrivingDistance + vehicleTotalTravelTime;
     }
 
