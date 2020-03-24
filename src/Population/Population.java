@@ -27,6 +27,13 @@ public class Population {
         this.infeasiblePopulation = new HashSet<Individual>();
     }
 
+    public void setIterationsWithoutImprovement(int iterations){
+        this.iterationsWithoutImprovement = iterations;
+    }
+    public int getIterationsWithoutImprovement(){
+        return this.iterationsWithoutImprovement;
+    }
+
     public int getPopulationSize(){
         return feasiblePopulation.size() + infeasiblePopulation.size();
     }
@@ -102,11 +109,7 @@ public class Population {
     }
 
     public void setSurvivorsForNextGeneration(){
-        ArrayList<Individual> listToBeSorted = new ArrayList<Individual>(this.infeasiblePopulation);
-        listToBeSorted.addAll(this.feasiblePopulation);
-        //System.out.println(listToBeSorted.size());
-        //System.out.println(this.feasiblePopulation.size());
-        //System.out.println(this.infeasiblePopulation.size());
+        ArrayList<Individual> listToBeSorted = new ArrayList<Individual>(this.getTotalPopulation());
         Collections.sort(listToBeSorted);
         int counter = 0;
         for (Individual individual : listToBeSorted){
@@ -228,9 +231,6 @@ public class Population {
         return null;
     }
 
-    public int getIterationsWithoutImprovement(){
-        return iterationsWithoutImprovement;
-    }
 
     public static void main( String[] args){
         Data data = DataReader.loadData();

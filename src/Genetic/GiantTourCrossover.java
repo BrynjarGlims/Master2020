@@ -117,11 +117,12 @@ public class GiantTourCrossover {
         double journeyFitness;
         double tempJourneyFitness;
         int currentBestVehicleType = -1;
-        Trip currentBestTrip = null;
+        Trip currentBestTrip;
         int currentBestIndex = -1;
         AdSplit.adSplitPlural(child);
         for (int p : missingCustomers.keySet()){
             for (int c : missingCustomers.get(p)){
+                currentBestTrip = null;
                 currentBestFitness = Double.MAX_VALUE;
                 for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
                     for (Journey journey : child.journeyList[p][vt]){

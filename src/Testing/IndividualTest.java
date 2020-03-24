@@ -43,7 +43,7 @@ public class IndividualTest {
         return true;
     }
 
-    public static void isMissingCustomersAdded( HashMap<Integer, HashSet<Integer>> missingCustomers, Individual individual){
+    public static void isMissingCustomersAdded( HashMap<Integer, HashSet<Integer>> missingCustomers, Individual individual) {
         for ( int p : missingCustomers.keySet()){
             for (int i : missingCustomers.get(p)){
                 boolean foundCustomer = false;
@@ -55,6 +55,11 @@ public class IndividualTest {
                 }
                 if (!foundCustomer){
                     System.out.println("Cannot find trip for period "+p+ " customer " +i );
+                    try {
+                        throw new Exception();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
 
             }

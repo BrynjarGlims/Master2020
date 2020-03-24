@@ -15,27 +15,52 @@ public class BiasedFitness {
 
     public static void setBiasedFitnessScore(Population population){
         calculateSimplePopulationDiversity(population);
+        calculateFitnessAndDiversityRank(population);
+    }
+
+    private static void calculateFitnessAndDiversityRank(Population population){
+        if (population.feasiblePopulation.size() > Parameters.minimumSubIndividualPopulationSize ){
+            calculateFitnessAndDiversityRankForSubPopulation(population.feasiblePopulation);
+        }
+        if (population.infeasiblePopulation.size() > Parameters.minimumSubIndividualPopulationSize){
+            calculateFitnessAndDiversityRankForSubPopulation(population.infeasiblePopulation);
+        }
+    }
+
+    private static void calculateFitnessAndDiversityRankForSubPopulation(Set<Individual> subPopulation){
         Comparator<Individual> sortByFitness = new SortByFitness();
         Comparator<Individual> sortByDiversity = new SortByDiversity();
-        ArrayList<Individual> diversityRank = new ArrayList<Individual>(population.getTotalPopulation());
-        ArrayList<Individual> fitnessRank = new ArrayList<Individual>(population.getTotalPopulation());
+        ArrayList<Individual> diversityRank = new ArrayList<Individual>(subPopulation);
+        ArrayList<Individual> fitnessRank = new ArrayList<Individual>(subPopulation);
         Collections.sort(diversityRank,sortByDiversity);
         Collections.sort(fitnessRank, sortByFitness);
         for (int i = 0; i < diversityRank.size(); i++){
             diversityRank.get(i).setDiversityRank(i+1);
             fitnessRank.get(i).setFitnessRank(i+1);
         }
-        for (Individual individual: population.getTotalPopulation()){
+        for (Individual individual: subPopulation){
             individual.calculateBiasedFitness();
+        }
+    }
+
+
+    private static void calculateSimplePopulationDiversity(Population population){
+        if (population.feasiblePopulation.size() > Parameters.minimumSubIndividualPopulationSize){
+            calculateDiversityForPopulation(population.feasiblePopulation);
+        }
+        if (population.infeasiblePopulation.size() > Parameters.minimumSubIndividualPopulationSize){
+            calculateDiversityForPopulation(population.infeasiblePopulation);
         }
 
     }
 
-    private static void calculateSimplePopulationDiversity(Population population){
-
-        for (Individual ind1 : population.getTotalPopulation()){
+    private static void calculateDiversityForPopulation(Set<Individual> subPopulation){
+        for (Individual ind1 : subPopulation){
             ArrayList<Double> diversityList = new ArrayList<>();
-            for (Individual ind2 : population.getTotalPopulation()){
+            for (Individual ind2 : subPopulation){
+                if (ind1.equals(ind2)){
+                    continue;
+                }
                 diversityList.add(calculateSimpleDiversityBetweenIndividuals(ind1, ind2)); //todo: implement
             }
             Collections.sort(diversityList);
@@ -44,6 +69,7 @@ public class BiasedFitness {
             diversity /= nearestDiversity.size();
             ind1.setDiversity(diversity);
         }
+
     }
 
 

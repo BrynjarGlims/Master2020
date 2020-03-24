@@ -146,15 +146,16 @@ public class Individual implements Comparable<Individual> {
     }
 
     public void testNewOrderDistribution(OrderDistribution orderDistribution){
-        if (orderDistribution.equals(this.orderDistribution)){ // TODO: 06.03.2020 Remove print
+        if (orderDistribution.equals(this.orderDistribution)){
             return;
         }
+        boolean isFeasible = this.isFeasible();
         double currentFitness = this.getFitness(false);
         OrderDistribution currentOrderDistribution = this.orderDistribution;
         this.setOptimalOrderDistribution(orderDistribution);
-
-        if (this.getFitness(false) > currentFitness){  // // TODO: 05.03.2020 Make more efficient
-            this.setOptimalOrderDistribution(currentOrderDistribution);  //NOT WORKING
+        boolean madeInfeasible = (isFeasible == true && this.isFeasible() == false);
+        if ((this.getFitness(false) > currentFitness) || madeInfeasible){  // // TODO: 05.03.2020 Make more efficient
+            this.setOptimalOrderDistribution(currentOrderDistribution);
         }
 
     }
@@ -180,6 +181,8 @@ public class Individual implements Comparable<Individual> {
 
     public void printDetailedFitness(){
         System.out.println("-------------------------------------");
+        System.out.println("Fitness: " + fitness);
+        System.out.println("Is feasbile: " + isFeasible());
         System.out.println("Biased fitness: " + biasedFitness);
         System.out.println("Diversity Rank: "  +diversityRank);
         System.out.println("Diversity: " + diversity);
@@ -321,8 +324,14 @@ public class Individual implements Comparable<Individual> {
     }
 
     public void calculateBiasedFitness(){
-        double diversityScaling = 1.0 - (double) Parameters.numberOfElitismSurvivorsPerGeneration/ (double) this.population.getTotalPopulation().size();
-        biasedFitness = (double) fitnessRank + (diversityScaling* (double) diversityRank);
+        double diversityScaling;
+        if (this.isFeasible()){
+            diversityScaling = 1.0 - ((double) Parameters.minimumSubIndividualPopulationSize/ (double) this.population.feasiblePopulation.size());
+        }
+        else{
+            diversityScaling = 1.0 - ((double) Parameters.minimumSubIndividualPopulationSize/ (double) this.population.infeasiblePopulation.size());
+        }
+        biasedFitness = (double) fitnessRank + (diversityScaling * (double) diversityRank);
         //System.out.println("FitnessRank: " + fitnessRank);
         //System.out.println("DiversityRank: " + diversityRank);
         //System.out.println("PopulationSize: " + this.population.getTotalPopulation().size());
@@ -374,7 +383,6 @@ public class Individual implements Comparable<Individual> {
             individual.updateFitness();
             individual.printDetailedFitness();
         }
-
         return individual;
     }
 

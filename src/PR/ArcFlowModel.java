@@ -47,7 +47,7 @@ public class ArcFlowModel {
     public GRBVar[][][][][] x;
     public GRBVar[][][][]y;
     public GRBVar[][][]z;
-    public GRBVar[] k;
+    //public GRBVar[] k;
     public GRBVar[][][] u;
     public GRBVar[][][][][] q;
     public GRBVar[][][][] t;
@@ -75,7 +75,6 @@ public class ArcFlowModel {
         this.x = new GRBVar[dataMIP.numPeriods][dataMIP.numVehicles][dataMIP.numTrips][dataMIP.numNodes][dataMIP.numNodes];
         this.y = new GRBVar[dataMIP.numPeriods][dataMIP.numVehicles][dataMIP.numTrips][dataMIP.numCustomers];
         this.z = new GRBVar[dataMIP.numPeriods][dataMIP.numVehicles][dataMIP.numTrips];
-        this.k = new GRBVar[dataMIP.numVehicles];
         this.u = new GRBVar[dataMIP.numPeriods][dataMIP.numCustomers][];
         for (int p = 0; p < dataMIP.numPeriods; p++){
             for (int c = 0; c < dataMIP.numCustomers; c++){
@@ -127,16 +126,16 @@ public class ArcFlowModel {
         for (int d = 0; d < dataMIP.numPeriods; d++) {
             for (int v = 0; v < dataMIP.numVehicles; v++) {
                 for (int r = 0; r < dataMIP.numTrips; r++) {
-                    String variable_name = String.format("z[%d][%d][%d]", d, v, r);
-                    z[d][v][r] = model.addVar(0.0, 1.0, 0, GRB.BINARY, variable_name);
+                    if (r == 0){
+                        String variable_name = String.format("z[%d][%d][%d]", d, v, r);
+                        z[d][v][r] = model.addVar(0.0, 1.0, dataMIP.vehicles[v].vehicleType.unitCost, GRB.BINARY, variable_name);
+                    }
+                    else{
+                        String variable_name = String.format("z[%d][%d][%d]", d, v, r);
+                        z[d][v][r] = model.addVar(0.0, 1.0, 0, GRB.BINARY, variable_name);
+                    }
                 }
             }
-        }
-
-        // Create k variables:
-        for (int v = 0; v < dataMIP.numVehicles; v++) {
-            String variable_name = String.format("v[%d]", v);
-            k[v] = model.addVar(0.0, 1.0, dataMIP.costVehicle[v], GRB.BINARY, variable_name);
         }
 
 
@@ -351,7 +350,7 @@ public class ArcFlowModel {
         }
     }
 
-
+    /*
     public void constraint59() throws GRBException {
         // Constraint 5.17
         // If vehicle visits a customer in the planing period, its considered used
@@ -367,6 +366,8 @@ public class ArcFlowModel {
             }
         }
     }
+
+     */
 
 
     public void constraint510() throws GRBException {
@@ -725,6 +726,7 @@ public class ArcFlowModel {
         }
     }
 
+    /*
     public void symmetryCar() throws GRBException {
         // Constraint 5.65
         for (int v = 0; v < dataMIP.numVehicles - 1; v++) {
@@ -737,6 +739,8 @@ public class ArcFlowModel {
             model.addConstr(lhs, GRB.GREATER_EQUAL, 0, constraint_name);
         }
     }
+
+     */
 
     public void symmetryTrip() throws GRBException {
         // Vehicle trip number decreasing
@@ -811,7 +815,7 @@ public class ArcFlowModel {
         // 5.6 is implemented in variable declaration
         constraint57();
         constraint58();
-        constraint59();
+        //constraint59();
         constraint510();
         constraint511();
         constraint512();
@@ -841,7 +845,7 @@ public class ArcFlowModel {
         }
         else {
             //default symmetry
-            symmetryCar();
+            //symmetryCar();
             if (symmetry.equals("trips")) {
                 symmetryTrip();
             } else if (symmetry.equals("cost")) {
@@ -961,12 +965,15 @@ public class ArcFlowModel {
         System.out.println("   ");
 
         // Create k variables: vehicle v is used in the planning period
+        /*
         System.out.println("Print of k-variables: If a vehicle is used in the planing period");
         for (int v = 0; v < dataMIP.numVehicles; v++) {
             if (k[v].get(GRB.DoubleAttr.X) == 1) {
                 System.out.println("Vehicle " + v + " is used in the planning period with capacity: "  + dataMIP.vehicleCapacity[v]);
             }
         }
+
+         */
 
         System.out.println("   ");
         System.out.println("   ");
@@ -1096,11 +1103,14 @@ public class ArcFlowModel {
 
     public void calculateResultValues() throws GRBException {
         if (optimstatus == 2){
+            /*
             for (int v = 0; v < dataMIP.numVehicles; v++) {
                 if (k[v].get(GRB.DoubleAttr.X) == 1){
                     numVehiclesUsed++;
                 }
             }
+
+             */
             for (int d = 0; d < dataMIP.numPeriods; d++) {
                 for (int v = 0; v < dataMIP.numVehicles; v++) {
                     for (int r = 0; r < dataMIP.numTrips; r++) {

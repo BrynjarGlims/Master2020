@@ -10,14 +10,14 @@ public class Parameters {
 
     //Population parameters
 
-    public static final int maximumSubIndividualPopulationSize = 100; //TODO: find reasonable value
-    public static final int minimumSubIndividualPopulationSize = 40;
+    public static final int maximumSubIndividualPopulationSize = 500; //TODO: find reasonable value
+    public static final int minimumSubIndividualPopulationSize = 100;
     public static final int numberOfElitismSurvivorsPerGeneration = 5;
 
     public static final int initialPopulationSize = 50;
     public static final int initialOrderDistributionPopulationSize = 10;
     public static final int maxNumberIterationsWithoutImprovement = 10;
-    public static final int maxNumberOfGenerations = 50;
+    public static final int maxNumberOfGenerations = 100;
 
     public static final double minimumFitnessDifferenceForClones = 10; //minimum fitness difference to encounter two individuals as clones
 
@@ -26,8 +26,8 @@ public class Parameters {
     public static final int numberOfTrips = 5;
 
     //Loading data parameters
-    public static final int numberOfCustomers = 20;
-    public static final int numberOfVehicles = 15;
+    public static final int numberOfCustomers = 7;
+    public static final int numberOfVehicles = 5;
 
 
 
@@ -54,9 +54,9 @@ public class Parameters {
     public static final double penaltyFactorForUnderFilling = 1.5;
 
     //Tournament selection parameters
-    public static final int nearestNeighborsDiversity = 7;  // Neighbours from calculating diversity
-    public static final double besIndividualProbability = 0.2;
-    public static final int tournamentSize = 2;  // 2 or larger, size = 2 --> binary tournament selection
+    public static final int nearestNeighborsDiversity = 5;  // Neighbours from calculating diversity
+    public static final double besIndividualProbability = 0.3;
+    public static final int tournamentSize = 10;  // 2 or larger, size = 2 --> binary tournament selection
     public static final boolean binarySelection = false;
 
 
