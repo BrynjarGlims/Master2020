@@ -119,15 +119,13 @@ public class Journey {
         AdSplit.adSplitPlural(individual);
         Individual parent1 = population.getRandomIndividual();
         Individual parent2 = population.getRandomIndividual();
+        System.out.println(parent1.getFitness(true));
         Individual child = Genetic.GiantTourCrossover.crossOver(parent1, parent2, parent1.orderDistribution);
+        System.out.println(child.getFitness(true));
         Genetic.Education.improveRoutes(child, child.orderDistribution);
+        System.out.println(child.getFitness(true));
 //
 
 
     }
-
-
-
-
-
 }

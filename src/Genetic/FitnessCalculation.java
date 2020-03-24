@@ -31,8 +31,7 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
     }
 
     public static double getJourneyFitness(Journey journey, OrderDistribution orderDistribution, double penaltyMultiplier){
-        double fitness = 0;
-        journey.updateFitness(orderDistribution);
+        double fitness = journey.updateFitness(orderDistribution);
 
 
         return fitness;
