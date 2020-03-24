@@ -156,7 +156,6 @@ public class Education {
         //Tries to remove a single customer from its trip, and insert it after one of its nearest neighbors
         Trip trip1;
         Trip trip2;
-        System.out.println("herwrwer");
         trip1 = individual.tripMap.get(period).get(customer);
         for (Customer neighbor : data.customers[customer].nearestNeighbors) {
             if (neighbor.requiredVisitPeriod[period] == 0) {

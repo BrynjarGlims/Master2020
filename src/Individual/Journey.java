@@ -120,12 +120,13 @@ public class Journey {
         AdSplit.adSplitPlural(individual);
         Individual parent1 = population.getRandomIndividual();
         Individual parent2 = population.getRandomIndividual();
+        System.out.println(parent1.getFitness(true));
         Individual child = Genetic.GiantTourCrossover.crossOver(parent1, parent2, parent1.orderDistribution);
+        System.out.println(child.getFitness(true));
         Genetic.Education.improveRoutes(child, child.orderDistribution);
-//
-
-
+        System.out.println(child.getFitness(true));
     }
+
 
     public HashSet<String> getArcsUsed(){
         HashSet<String> arcs = new HashSet<>();
@@ -141,9 +142,4 @@ public class Journey {
         }
         return arcs;  //// TODO: 23/03/2020 Make object store the arcs it uses for every adsplit
     }
-
-
-
-
-
 }
