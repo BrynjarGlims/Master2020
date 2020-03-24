@@ -9,7 +9,7 @@ public class IndividualTest {
                 if (individual.tripMap.get(p).containsKey(i)){
                     boolean customerFound = false;
                     for (int vt = 0; vt < individual.data.numberOfVehicleTypes; vt++){
-                        if (individual.giantTour.chromosome[p][vt].contains(vt)){
+                        if (individual.giantTour.chromosome[p][vt].contains(i)){
                             customerFound = true;
                         }
                     }

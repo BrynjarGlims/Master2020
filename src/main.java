@@ -17,7 +17,7 @@ import java.util.HashSet;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         Data data = DataReader.loadData();
         Population population = new Population(data);
         OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
@@ -50,10 +50,11 @@ public class main {
                     odp.addOrderDistribution(od);
                 }
                 Individual newIndividual = GiantTourCrossover.crossOver(parent1, parent2, crossoverOD[0]);
+                IndividualTest.checkIfIndividualIsComplete(newIndividual);
 
 
                 Education.improveRoutes(newIndividual, newIndividual.orderDistribution);
-
+                IndividualTest.checkIfIndividualIsComplete(newIndividual);
 
                 // TODO: 04.03.2020 Add repair:
 
