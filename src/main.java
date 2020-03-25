@@ -28,6 +28,8 @@ public class main {
         population.setOrderDistributionPopulation(odp);
         population.initializePopulation(firstOD);
         double bestIndividualScore = Double.MAX_VALUE;
+        BiasedFitness.setBiasedFitnessScore(population);
+
 
 
         HashSet<Individual> repaired = new HashSet<>();
@@ -44,7 +46,6 @@ public class main {
 
             //Generate new population
             while (population.getPopulationSize() < Parameters.maximumSubIndividualPopulationSize){
-<<<<<<< HEAD
 
                 // Select parents
                 Individual parent1 = TournamentSelection.performSelection(population);

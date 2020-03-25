@@ -56,9 +56,9 @@ public class Parameters {
 
     //Tournament selection parameters
     public static final int nearestNeighborsDiversity = 5;  // Neighbours from calculating diversity
-    public static final double besIndividualProbability = 0.3;
+    public static final double besIndividualProbability = 0.6;
     public static final int tournamentSize = 10;  // 2 or larger, size = 2 --> binary tournament selection
-    public static final boolean binarySelection = false;
+    public static final boolean binarySelection = false;  // if true, bestIndProp must be much larger than 0.5
 
 
     //Period parameters
