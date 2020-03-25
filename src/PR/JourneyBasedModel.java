@@ -628,7 +628,7 @@ public class JourneyBasedModel {
         for (int d = 0; d < dataMIP.numPeriods; d++) {
             for (int v = 0; v < dataMIP.numVehicles; v++) {
                 for (Journey r:  dataMIP.journeyMap.get(d).get(dataMIP.vehicles[v].vehicleType.type)) {
-                    if (gamma[d][v][r.journeyId].get(GRB.DoubleAttr.X) == 1) {
+                    if (Math.round(gamma[d][v][r.journeyId].get(GRB.DoubleAttr.X)) == 1) {
                         System.out.println("Vehicle " + v + " on period " + d + " uses journey " + r.journeyId);
                         System.out.println("And visits customers: ");
                         for (Customer c : r.customers){
@@ -645,7 +645,7 @@ public class JourneyBasedModel {
         System.out.println("Print of k-variables: If a vehicle is used in the planing period");
         for (int p = 0; p < dataMIP.numPeriods; p++){
             for (int v = 0; v < dataMIP.numVehicles; v++) {
-                if (k[p][v].get(GRB.DoubleAttr.X) == 1) {
+                if (Math.round(k[p][v].get(GRB.DoubleAttr.X)) == 1) {
 
                     System.out.println("Vehicle " + v + " is used in the planning period with capacity: "  + dataMIP.vehicleCapacity[v]);
                 }
@@ -662,7 +662,7 @@ public class JourneyBasedModel {
                 for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                     if (dataMIP.productQuantity[i][m] == 0 )
                         continue;
-                    if (u[d][i][m].get(GRB.DoubleAttr.X) == 1) {
+                    if (Math.round(u[d][i][m].get(GRB.DoubleAttr.X)) == 1) {
                         System.out.println("Product " + m + " in customer " + i + " is delivered on day " + d);
                     }
                 }
@@ -714,7 +714,7 @@ public class JourneyBasedModel {
             for (int v = 0; v < dataMIP.numVehicles; v++) {
                 ArrayList<ArrayList<Integer>> arrayVehicles = new ArrayList<>();
                 for (Journey r: dataMIP.journeyMap.get(d).get(dataMIP.vehicles[v].vehicleType.type)) {
-                    if (gamma[d][v][r.journeyId].get(GRB.DoubleAttr.X) == 1) {
+                    if (Math.round(gamma[d][v][r.journeyId].get(GRB.DoubleAttr.X)) == 1) {
                         for (Path p : r.paths){
                             ArrayList<Integer> arrayPaths= new ArrayList<>();
                             for (Customer c : r.customers) {
@@ -734,7 +734,7 @@ public class JourneyBasedModel {
         if (optimstatus == 2){
             for (int p = 0; p < dataMIP.numPeriods; p++){
                 for (int v = 0; v < dataMIP.numVehicles; v++) {
-                    if (k[p][v].get(GRB.DoubleAttr.X) == 1){
+                    if (Math.round(k[p][v].get(GRB.DoubleAttr.X)) == 1){
                         numVehiclesUsed++;
                     }
                 }
@@ -743,7 +743,7 @@ public class JourneyBasedModel {
             for (int d = 0; d < dataMIP.numPeriods; d++) {
                 for (int v = 0; v < dataMIP.numVehicles; v++) {
                     for (Journey r: dataMIP.journeyMap.get(d).get(dataMIP.vehicles[v].vehicleType.type)) {
-                        if (gamma[d][v][r.journeyId].get(GRB.DoubleAttr.X) == 1) {
+                        if (Math.round(gamma[d][v][r.journeyId].get(GRB.DoubleAttr.X)) == 1) {
                                 this.numJourneysUsed++;
                         }
                     }

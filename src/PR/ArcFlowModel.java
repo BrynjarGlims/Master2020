@@ -102,7 +102,7 @@ public class ArcFlowModel {
                         for (int j = 0; j < dataMIP.numNodes; j++) {
                             numArcVariables++;  //Todo: maybe remove the zero values
                             String variable_name = String.format("x[%d][%d][%d][%d][%d]", d, v, r, i, j);
-                            x[d][v][r][i][j] = model.addVar(0.0, 1.0, dataMIP.travelTime[i][j] * dataMIP.travelCost[v], GRB.BINARY, variable_name);
+                            x[d][v][r][i][j] = model.addVar(0, 1, dataMIP.travelTime[i][j] * dataMIP.travelCost[v], GRB.BINARY, variable_name);
                         }
                     }
                 }
@@ -116,7 +116,7 @@ public class ArcFlowModel {
                 for (int r = 0; r < dataMIP.numTrips; r++) {
                     for (int i = 0; i < dataMIP.numCustomers; i++) {
                         String variable_name = String.format("y[%d][%d][%d][%d]", d, v, r, i);
-                        y[d][v][r][i] = model.addVar(0.0, 1.0, 0, GRB.BINARY, variable_name);
+                        y[d][v][r][i] = model.addVar(0, 1, 0, GRB.BINARY, variable_name);
                     }
                 }
             }
@@ -128,11 +128,11 @@ public class ArcFlowModel {
                 for (int r = 0; r < dataMIP.numTrips; r++) {
                     if (r == 0){
                         String variable_name = String.format("z[%d][%d][%d]", d, v, r);
-                        z[d][v][r] = model.addVar(0.0, 1.0, dataMIP.vehicles[v].vehicleType.unitCost, GRB.BINARY, variable_name);
+                        z[d][v][r] = model.addVar(0, 1, dataMIP.vehicles[v].vehicleType.unitCost, GRB.BINARY, variable_name);
                     }
                     else{
                         String variable_name = String.format("z[%d][%d][%d]", d, v, r);
-                        z[d][v][r] = model.addVar(0.0, 1.0, 0, GRB.BINARY, variable_name);
+                        z[d][v][r] = model.addVar(0, 1, 0, GRB.BINARY, variable_name);
                     }
                 }
             }
@@ -144,7 +144,7 @@ public class ArcFlowModel {
             for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                 for (int d = 0; d < dataMIP.numPeriods; d++) {
                     String variable_name = String.format("u[%d][%d][%d]", d, i, m);
-                    u[d][i][m] = model.addVar(0.0, 1.0, 0, GRB.BINARY, variable_name);
+                    u[d][i][m] = model.addVar(0, 1, 0, GRB.BINARY, variable_name);
                 }
             }
         }
@@ -379,10 +379,14 @@ public class ArcFlowModel {
                     GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
                     for (int j = 0; j < dataMIP.numCustomers; j++) {  // need to include the depot,  //TODO: LOOK AT THE SUM
                         lhs.addTerm(1, x[d][v][r][dataMIP.numCustomers][j]);
+                        System.out.println("x["+d+"]["+v+"]["+r+"]["+dataMIP.numCustomers+"]["+j+"] + ");
                     }
                     lhs.addTerm(-1, z[d][v][r]);
+                    System.out.println(" = z["+d+"]["+v+"]["+r+"]");
                     String constraint_name = String.format("5.13 -Vehicle needs to start at the depot for vehicle %d, on trip %d, day %d", v, r, d);
                     model.addConstr(lhs, GRB.EQUAL, 0 , constraint_name);
+                    System.out.println("-------------------------------");
+
                 }
             }
         }
@@ -397,6 +401,7 @@ public class ArcFlowModel {
                     GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
                     for (int i = 0; i < dataMIP.numCustomers; i++) {  // need to include the depot,   //TODO: LOOK AT THE SUM
                         lhs.addTerm(1, x[d][v][r][i][dataMIP.numCustomers + 1]);
+
                     }
                     lhs.addTerm(-1, z[d][v][r]);
                     String constraint_name = String.format("5.14 -Vehicle needs to end at depot for vehicle %d, trip %d, day %d", v, r, d);
@@ -914,7 +919,7 @@ public class ArcFlowModel {
                 for (int r = 0; r < dataMIP.numTrips; r++) {
                     for (int i = 0; i < dataMIP.numNodes; i++) {
                         for (int j = 0; j < dataMIP.numNodes; j++) {  // litt usikker på om dette er rett siden Aij er litt spess
-                            if (x[d][v][r][i][j].get(GRB.DoubleAttr.X) == 1) {
+                            if (Math.round(x[d][v][r][i][j].get(GRB.DoubleAttr.X)) == 1) {
                                 if (i == dataMIP.numCustomers)
                                     System.out.println("Vehicle " + v + " on period " + d + " trip " + r + " drives from start-depot to customer " + j);
                                 else if(j == dataMIP.numCustomers + 1)
@@ -937,7 +942,7 @@ public class ArcFlowModel {
             for (int v = 0; v < dataMIP.numVehicles; v++) {
                 for (int r = 0; r < dataMIP.numTrips; r++) {
                     for (int i = 0; i < dataMIP.numCustomers; i++) {
-                        if (y[d][v][r][i].get(GRB.DoubleAttr.X) == 1) {
+                        if (Math.round(y[d][v][r][i].get(GRB.DoubleAttr.X)) == 1) {
                             System.out.println("Vehicle " + v + " on period " + d + " trip " + r +
                                     " visits customer " + i);
                         }
@@ -954,7 +959,7 @@ public class ArcFlowModel {
         for (int d = 0; d < dataMIP.numPeriods; d++) {
             for (int v = 0; v < dataMIP.numVehicles; v++) {
                 for (int r = 0; r < dataMIP.numTrips; r++) {
-                    if (z[d][v][r].get(GRB.DoubleAttr.X) == 1) {
+                    if (Math.round(z[d][v][r].get(GRB.DoubleAttr.X)) == 1) {
                         System.out.println("Vehicle " + v + " on day " + d + " uses trip " + r);
                     }
                 }
@@ -985,7 +990,7 @@ public class ArcFlowModel {
                 for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                     if (dataMIP.productQuantity[i][m] == 0 )
                         continue;
-                    if (u[d][i][m].get(GRB.DoubleAttr.X) == 1) {
+                    if (Math.round(u[d][i][m].get(GRB.DoubleAttr.X)) == 1) {
                         System.out.println("Product " + m + " in customer " + i + " is delivered on day " + d);
                     }
                 }
@@ -1039,7 +1044,7 @@ public class ArcFlowModel {
                 for (int r = 0; r < dataMIP.numTrips; r++) {
                     for (int i = 0; i < dataMIP.numNodes; i++) {
                         for (int j = 0; j < dataMIP.numNodes; j++) {
-                            if (x[d][v][r][i][j].get(GRB.DoubleAttr.X) == 1) {
+                            if (Math.round(x[d][v][r][i][j].get(GRB.DoubleAttr.X)) == 1) {
                                 if (i == dataMIP.numCustomers)
                                     System.out.println("Departure from start-depot on time " +
                                             t[d][v][r][i].get(GRB.DoubleAttr.X)  + " by vehicle "
@@ -1083,11 +1088,11 @@ public class ArcFlowModel {
             for (int v = 0; v < dataMIP.numVehicles; v++) {
                 ArrayList<ArrayList<Integer>> arrayVehicles = new ArrayList<>();
                 for (int r = 0; r < dataMIP.numTrips; r++) {
-                    if (z[d][v][r].get(GRB.DoubleAttr.X) == 1) {
+                    if (Math.round(z[d][v][r].get(GRB.DoubleAttr.X)) == 1) {
                         ArrayList<Integer> arrayPaths = new ArrayList<>();
                         for (int i = 0; i < dataMIP.numCustomers; i++) {
 
-                            if (y[d][v][r][i].get(GRB.DoubleAttr.X) == 1){// TODO: 23.11.2019 Få dette i rekkefølge
+                            if (Math.round(y[d][v][r][i].get(GRB.DoubleAttr.X)) == 1){// TODO: 23.11.2019 Få dette i rekkefølge
                                 arrayPaths.add(i);
                             }
                         }
@@ -1116,7 +1121,7 @@ public class ArcFlowModel {
                     for (int r = 0; r < dataMIP.numTrips; r++) {
                         for (int i = 0; i < dataMIP.numNodes; i++) {
                             for (int j = 0; j < dataMIP.numNodes; j++) {  // litt usikker på om dette er rett siden Aij er litt spess
-                                if (x[d][v][r][i][j].get(GRB.DoubleAttr.X) == 1) {
+                                if (Math.round(x[d][v][r][i][j].get(GRB.DoubleAttr.X)) == 1) {
                                     this.numArcsUsed++;
                                 }
                             }
@@ -1145,6 +1150,7 @@ public class ArcFlowModel {
         }
     }
 
+
     public void runModel(String symmetry) {
         try {
             this.symmetry = symmetry;
@@ -1160,6 +1166,13 @@ public class ArcFlowModel {
             optimizeModel();
             System.out.println("Print results:");
             displayResults(true);
+
+            // Testing session
+            //Testing.MIPTest.printZSolutions(this);
+            //Testing.MIPTest.checkSpesificCase(this);
+            Testing.MIPTest.getDetailedResult(this);
+
+
             if (optimstatus == 3) {
                 System.out.println("no solution found");
                 System.out.println("Terminate model");

@@ -102,26 +102,17 @@ public class OldArcFlowConverter {
         for ( int p = 0; p < data.numberOfPeriods; p ++ ){
             for (int v = 0; v < data.numberOfVehicles; v ++){
                 for (int r = 0; r < data.numberOfTrips; r++){
-                    if (arcFlowModel.z[p][v][r].get(GRB.DoubleAttr.X) == 1){
+                    if (Math.round(arcFlowModel.z[p][v][r].get(GRB.DoubleAttr.X)) == 1){
                         for( int i = 0; i < data.numberOfCustomers; i++){
-                            if( p == 4 ){
-                                System.out.println("Heiho");
-                            }
-                            if (arcFlowModel.x[p][v][r][data.numberOfCustomers][i].get(GRB.DoubleAttr.X) == 1){
-                                if( p == 4 ){
-                                    System.out.println("SING HALLELUJA");
-                                }
-                                if( p == 5 ){
-                                    System.out.println("Neiiii");
-                                }
+                            if (Math.round(arcFlowModel.x[p][v][r][data.numberOfCustomers][i].get(GRB.DoubleAttr.X)) == 1){
                                 currentTrip = new Trip();
                                 customers = new ArrayList<>();
                                 customers.add(i);
                                 currentTrip.initialize(p, data.vehicles[v].vehicleType.vehicleTypeID, v);
                                 fromCustomer = i;
-                                while (arcFlowModel.x[p][v][r][fromCustomer][data.numberOfCustomers+1].get(GRB.DoubleAttr.X) == 0){
+                                while (Math.round(arcFlowModel.x[p][v][r][fromCustomer][data.numberOfCustomers+1].get(GRB.DoubleAttr.X)) == 0){
                                     for (int j = 0; j < data.numberOfCustomers; j++){
-                                        if( arcFlowModel.x[p][v][r][fromCustomer][j].get(GRB.DoubleAttr.X) == 1){
+                                        if( Math.round(arcFlowModel.x[p][v][r][fromCustomer][j].get(GRB.DoubleAttr.X)) == 1){
                                             customers.add(j);
                                             fromCustomer = j;
                                             break;

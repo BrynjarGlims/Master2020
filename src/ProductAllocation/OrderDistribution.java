@@ -78,15 +78,15 @@ public class OrderDistribution {
         for (int d = 0; d < data.numberOfPeriods; d++) {
             for (int i = 0; i < data.numberOfCustomers; i++) {
                 for (int m = 0; m < data.customers[i].orders.length; m++) {
-                    //System.out.println("day: "+ d + " i: " + i + " product: " + m);
-                    if (u[d][i][m].get(GRB.DoubleAttr.X) == 1) {
+                    if (Math.round(u[d][i][m].get(GRB.DoubleAttr.X)) == 1) {
                         for (int v = 0; v < data.numberOfVehicles; v++) {
                             for (int r = 0; r < data.numberOfTrips; r++) {
-                                orderID = data.customers[i].orders[m].orderID;
-                                this.orderIdDistribution[d][i].add(orderID);
-                                this.orderDeliveries[orderID].addDelivery(d, q[d][v][r][i][m].get(GRB.DoubleAttr.X));
-                                this.orderVolumeDistribution[d][i] += q[d][v][r][i][m].get(GRB.DoubleAttr.X);
-
+                                if (q[d][v][r][i][m].get(GRB.DoubleAttr.X) > Parameters.indifferenceValue){
+                                    orderID = data.customers[i].orders[m].orderID;
+                                    this.orderIdDistribution[d][i].add(orderID);
+                                    this.orderDeliveries[orderID].addDelivery(d, q[d][v][r][i][m].get(GRB.DoubleAttr.X));
+                                    this.orderVolumeDistribution[d][i] += q[d][v][r][i][m].get(GRB.DoubleAttr.X);
+                                }
                             }
                         }
                     }
@@ -101,26 +101,30 @@ public class OrderDistribution {
         for (int d = 0; d < data.numberOfPeriods; d++){
             for (int i = 0; i < data.numberOfCustomers; i++) {
                 for (int m = 0; m < data.customers[i].numberOfDividableOrders; m++){
-                    if (uD[d][i][m].get(GRB.DoubleAttr.X) == 1) {
+                    if (Math.round(uD[d][i][m].get(GRB.DoubleAttr.X)) == 1) {
                         for (int v = 0; v < data.numberOfVehicles; v++){
                             for (int r = 0; r < data.numberOfTrips; r++) {
-                                orderID = data.customers[i].dividableOrders[m].orderID;
-                                this.orderIdDistribution[d][i].add(orderID);
-                                this.orderDeliveries[orderID].addDelivery(d, qD[d][v][r][i][m].get(GRB.DoubleAttr.X));
-                                this.orderVolumeDistribution[d][i] += qD[d][v][r][i][m].get(GRB.DoubleAttr.X);
+                                if (qD[d][v][r][i][m].get(GRB.DoubleAttr.X) > Parameters.indifferenceValue) {
+                                    orderID = data.customers[i].dividableOrders[m].orderID;
+                                    this.orderIdDistribution[d][i].add(orderID);
+                                    this.orderDeliveries[orderID].addDelivery(d, qD[d][v][r][i][m].get(GRB.DoubleAttr.X));
+                                    this.orderVolumeDistribution[d][i] += qD[d][v][r][i][m].get(GRB.DoubleAttr.X);
+                                }
                             }
                         }
 
                     }
                 }
                 for (int m = 0; m < data.customers[i].numberOfNonDividableOrders; m++){
-                    if (uND[d][i][m].get(GRB.DoubleAttr.X) == 1) {
+                    if (Math.round(uND[d][i][m].get(GRB.DoubleAttr.X)) == 1) {
                         for (int v = 0; v < data.numberOfVehicles; v++) {
                             for (int r = 0; r < data.numberOfTrips; r++) {
-                                orderID = data.customers[i].nonDividableOrders[m].orderID;
-                                this.orderIdDistribution[d][i].add(orderID);
-                                this.orderDeliveries[orderID].addDelivery(d, qND[d][v][r][i][m].get(GRB.DoubleAttr.X));
-                                this.orderVolumeDistribution[d][i] += qND[d][v][r][i][m].get(GRB.DoubleAttr.X);
+                                if (qND[d][v][r][i][m].get(GRB.DoubleAttr.X) > Parameters.indifferenceValue) {
+                                    orderID = data.customers[i].nonDividableOrders[m].orderID;
+                                    this.orderIdDistribution[d][i].add(orderID);
+                                    this.orderDeliveries[orderID].addDelivery(d, qND[d][v][r][i][m].get(GRB.DoubleAttr.X));
+                                    this.orderVolumeDistribution[d][i] += qND[d][v][r][i][m].get(GRB.DoubleAttr.X);
+                                }
                             }
                         }
                     }
@@ -134,14 +138,14 @@ public class OrderDistribution {
         for (int d = 0; d < data.numberOfPeriods; d++){
             for (int i = 0; i < data.numberOfCustomers; i++) {
                 for (int m = 0; m < data.customers[i].numberOfDividableOrders; m++){
-                    if (uD[d][i][m].get(GRB.DoubleAttr.X) == 1) {
+                    if (Math.round(uD[d][i][m].get(GRB.DoubleAttr.X)) == 1) {
                         this.orderIdDistribution[d][i].add(data.customers[i].dividableOrders[m].orderID);
                         this.orderDeliveries[data.customers[i].dividableOrders[m].orderID].addDelivery(d, qD[d][i][m].get(GRB.DoubleAttr.X));
                         this.orderVolumeDistribution[d][i] += qD[d][i][m].get(GRB.DoubleAttr.X);
                     }
                 }
                 for (int m = 0; m < data.customers[i].numberOfNonDividableOrders; m++){
-                    if (uND[d][i][m].get(GRB.DoubleAttr.X) == 1) {
+                    if (Math.round(uND[d][i][m].get(GRB.DoubleAttr.X)) == 1) {
                         this.orderIdDistribution[d][i].add(data.customers[i].nonDividableOrders[m].orderID);
                         this.orderDeliveries[data.customers[i].nonDividableOrders[m].orderID].addDelivery(d, qND[d][i][m].get(GRB.DoubleAttr.X));
                         this.orderVolumeDistribution[d][i] += qND[d][i][m].get(GRB.DoubleAttr.X);

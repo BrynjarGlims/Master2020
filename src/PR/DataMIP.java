@@ -13,59 +13,59 @@ public class DataMIP {
 
     public Data newData;
 
-    String instanceName;
-    Customer[] customers;
-    Vehicle[] vehicles;
-    VehicleType[] vehicleTypes;
-    double xCoordinateDepot;
-    double yCoordinateDepot;
-    double latestInTime = Parameters.maxJourneyDuration;
-    GRBVar[][][][][] arcs;
-    GRBVar[][][][] paths;
+    public String instanceName;
+    public Customer[] customers;
+    public Vehicle[] vehicles;
+    public VehicleType[] vehicleTypes;
+    public double xCoordinateDepot;
+    public double yCoordinateDepot;
+    public double latestInTime = Parameters.maxJourneyDuration;
+    public GRBVar[][][][][] arcs;
+    public GRBVar[][][][] paths;
 
-    Map<Integer, Map<Integer, HashSet<Path>>> pathMap;
-    Map<Integer, Map<Integer, HashSet<Journey>>> journeyMap;
+    public Map<Integer, Map<Integer, HashSet<Path>>> pathMap;
+    public Map<Integer, Map<Integer, HashSet<Journey>>> journeyMap;
 
-    int numPeriods;
-    int numTrips;
-    int numCustomers;
-    int[] numProductsPrCustomer;
-    int numNodes;  //this should be 2 larger than customers, since we have a N+1 depot
-    int numVehicles;
-    int numVehicleTypes;
-    double earliestDepartureTime = 0;
+    public int numPeriods;
+    public int numTrips;
+    public int numCustomers;
+    public int[] numProductsPrCustomer;
+    public int numNodes;  //this should be 2 larger than customers, since we have a N+1 depot
+    public int numVehicles;
+    public int numVehicleTypes;
+    public double earliestDepartureTime = 0;
 
 
-    double[] products;  // [i] total quantum of products for customer i
-    int[][] productTypes; //  (i,m) // 1 is dividable and 0 is non dividable. first index is customer i, second is product m
-    double[][] productQuantity; // (i,m) quantity of every product
+    public double[] products;  // [i] total quantum of products for customer i
+    public int[][] productTypes; //  (i,m) // 1 is dividable and 0 is non dividable. first index is customer i, second is product m
+    public double[][] productQuantity; // (i,m) quantity of every product
     public static int upperBoundQuantity = 100;  // upper bound q variable
     public static int upperBoundOvertime = 1000;  // upper bound qO variable
 
 
-    double[][] timeWindowStart; //(d, i)
-    double[][] timeWindowEnd; //(d, i)
-    double[] costOvertime; // constant
-    double[] costVehicle; // [v] constant per vehicle
+    public double[][] timeWindowStart; //(d, i)
+    public double[][] timeWindowEnd; //(d, i)
+    public double[] costOvertime; // constant
+    public double[] costVehicle; // [v] constant per vehicle
 
-    double[] travelCost; //[v] unit cost per unit travelled by vehicle v
-    double[] vehicleCapacity; // [v] capacity per vehicle
-    double[] overtimeLimit = Parameters.overtimeLimit;; // [d] limit of products delivered day d before overtime is inferred
-    double[][] maxAmountDivProduct; // (i,m) upper limit of dividable product m for customer i
-    double[][] minAmountDivProduct; // (i,m) lower limit of dividable product m for customer i
-    int[][] minFrequencyProduct; //(i,m) min amount of days to deliver a product
-    int[][] maxFrequencyProduct; //(i,m) max amount of days to deliver a product
+    public double[] travelCost; //[v] unit cost per unit travelled by vehicle v
+    public double[] vehicleCapacity; // [v] capacity per vehicle
+    public double[] overtimeLimit = Parameters.overtimeLimit;; // [d] limit of products delivered day d before overtime is inferred
+    public double[][] maxAmountDivProduct; // (i,m) upper limit of dividable product m for customer i
+    public double[][] minAmountDivProduct; // (i,m) lower limit of dividable product m for customer i
+    public int[][] minFrequencyProduct; //(i,m) min amount of days to deliver a product
+    public int[][] maxFrequencyProduct; //(i,m) max amount of days to deliver a product
 
     // Time variables
-    double[][] travelTime; // (i,j) travel time in matrix A
-    double[] fixedUnloadingTime; //[i] fixed time per customer
-    double[] loadingTime; //[vehicletypes] loading time at depot for vehicletypes
+    public double[][] travelTime; // (i,j) travel time in matrix A
+    public double[] fixedUnloadingTime; //[i] fixed time per customer
+    public double[] loadingTime; //[vehicletypes] loading time at depot for vehicletypes
 
-    int[][] possibleDeliveryDays; //(d,i) visit allowed on day d to customer i
+    public int[][] possibleDeliveryDays; //(d,i) visit allowed on day d to customer i
 
     // Derived variables
-    double maxVehicleCapacity = 0;
-    double overtimeLimitAveraged;
+    public double maxVehicleCapacity = 0;
+    public double overtimeLimitAveraged;
 
 
     public void addCustomer(Customer customer){

@@ -715,7 +715,7 @@ public class PathFlowModel {
             for (int v = 0; v < dataMIP.numVehicles; v++) {
                 for (int r = 0; r < dataMIP.numTrips; r++) {
                     for (Path p : dataMIP.pathMap.get(d).get(dataMIP.vehicles[v].vehicleType.type)) {
-                        if (lambda[d][v][r][p.pathId].get(GRB.DoubleAttr.X) == 1) {
+                        if (Math.round(lambda[d][v][r][p.pathId].get(GRB.DoubleAttr.X)) == 1) {
                             System.out.println("Vehicle " + v + " on period " + d + " trip " + r + " uses path " + p.pathId);
                             System.out.println("Start time for trip is " + tS[d][v][r].get(GRB.DoubleAttr.X) + "and end time " + (tS[d][v][r].get(GRB.DoubleAttr.X) + p.duration));
                         }
@@ -730,7 +730,7 @@ public class PathFlowModel {
         System.out.println("Print of k-variables: If a vehicle is used in the planing period");
         for( int p = 0 ; p < dataMIP.numPeriods; p++){
             for (int v = 0; v < dataMIP.numVehicles; v++) {
-                if (k[p][v].get(GRB.DoubleAttr.X) == 1) {
+                if (Math.round(k[p][v].get(GRB.DoubleAttr.X)) == 1) {
                     System.out.println("Vehicle " + v + " is used in the planning period with capacity: "  + dataMIP.vehicleCapacity[v]);
                 }
             }
@@ -746,7 +746,7 @@ public class PathFlowModel {
                 for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                     if (dataMIP.productQuantity[i][m] == 0 )
                         continue;
-                    if (u[d][i][m].get(GRB.DoubleAttr.X) == 1) {
+                    if (Math.round(u[d][i][m].get(GRB.DoubleAttr.X)) == 1) {
                         System.out.println("Product " + m + " in customer " + i + " is delivered on day " + d);
                     }
                 }
@@ -801,7 +801,7 @@ public class PathFlowModel {
                 for (int r = 0; r < dataMIP.numTrips; r++) {
                     double time = 0;
                     for (Path p : dataMIP.pathMap.get(d).get(dataMIP.vehicles[v].vehicleType.type)){
-                        if (lambda[d][v][r][p.pathId].get(GRB.DoubleAttr.X) == 1)
+                        if (Math.round(lambda[d][v][r][p.pathId].get(GRB.DoubleAttr.X)) == 1)
                             System.out.println("Departure time veh:" + v+ ", per: " + d + ", tri: " + r+  " path: " + p.pathId +  " at time: " + tS[d][v][r].get(GRB.DoubleAttr.X) + " with duration " + p.duration);
                     }
                 }
@@ -831,7 +831,7 @@ public class PathFlowModel {
                 ArrayList<ArrayList<Integer>> arrayVehicles = new ArrayList<>();
                 for (int r = 0; r < dataMIP.numTrips; r++) {
                     for (Path p : dataMIP.pathMap.get(d).get(dataMIP.vehicles[v].vehicleType.type)) {  // TODO: 23.11.2019 Problem when less than 4 types
-                        if (lambda[d][v][r][p.pathId].get(GRB.DoubleAttr.X) == 1) {
+                        if (Math.round(lambda[d][v][r][p.pathId].get(GRB.DoubleAttr.X)) == 1) {
                             ArrayList<Integer> arrayPaths= new ArrayList<>();
                             for (Customer c : p.customers) {
                                 arrayPaths.add(c.customerID);
@@ -851,7 +851,7 @@ public class PathFlowModel {
         if (optimstatus == 2){
             for (int p = 0; p < dataMIP.numPeriods; p++){
                 for (int v = 0; v < dataMIP.numVehicles; v++) {
-                    if (k[p][v].get(GRB.DoubleAttr.X) == 1){
+                    if (Math.round(k[p][v].get(GRB.DoubleAttr.X)) == 1){
                         numVehiclesUsed++;
                     }
                 }
@@ -861,7 +861,7 @@ public class PathFlowModel {
                 for (int v = 0; v < dataMIP.numVehicles; v++) {
                     for (int r = 0; r < dataMIP.numTrips; r++) {
                         for (Path p : dataMIP.pathMap.get(d).get(dataMIP.vehicles[v].vehicleType.type)) {
-                            if (lambda[d][v][r][p.pathId].get(GRB.DoubleAttr.X) == 1) {
+                            if (Math.round(lambda[d][v][r][p.pathId].get(GRB.DoubleAttr.X)) == 1) {
                                 this.numTripsUsed++;
                             }
                         }
