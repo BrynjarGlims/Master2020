@@ -138,7 +138,7 @@ public class Result {
                     String[] results = {String.valueOf(tripNumber), Converter.getTripNumber(t, bestIndividual) , Converter.periodConverter(t.period),String.valueOf(t.vehicleID)
                             ,data.vehicles[t.vehicleID].vehicleName, String.valueOf(data.vehicleTypes[t.vehicleType].capacity),
                             Converter.getStartingTimeForTrip(t, data)
-                            ,Converter.calculateTotalTripTime(t, data), Converter.calculateDrivingTime(t, data), t.customers.toString()
+                            ,Converter.calculateTotalTripTime(t, data), Converter.calculateDrivingTime(t, data), Converter.formatList(t.customers)
                             ,Converter.findCustomersFromID((ArrayList) t.customers, data), Converter.findTimeWindowToCustomers((ArrayList) t.customers, data, t.period)};
                     csvWriter.writeNext(results, false);
                     tripNumber++;
@@ -229,8 +229,8 @@ public class Result {
                     else{
                         if (!bestIndividual.tripMap.get(period).containsKey(orderDelivery.order.customerID)){
                             System.out.println("-------Wrong delivery-------- Find this message in result.java, storing results");
+                            System.out.println("OrderID: " + orderDelivery.order.orderID+  " Period: " + period + " customer: " + orderDelivery.order.customerID + " required visit: " + orderDelivery.orderPeriods[period]);
                             continue;
-
                         }
                         vehicleID = bestIndividual.tripMap.get(period).get(orderDelivery.order.customerID).vehicleID;
                         String[] results = {String.valueOf(orderDelivery.order.orderID), Converter.dividableConverter(orderDelivery.dividable),

@@ -75,6 +75,7 @@ public class Parameters {
     public static final double scalingUnloadingTimeAtCustomerConstant = 0.03;
     public static final double scalingUnloadingTimeAtCustomerVariable = 0.001;
     public static final double scalingVehicleCapacity = 0.01;
+    public static final double indifferenceValue = 0.0001;
 
 
     //GUROBI PARAMETERS
@@ -87,7 +88,7 @@ public class Parameters {
     public static final int upperBoundQuantity = 100;  // upper bound q variable
     public static final int upperBoundOvertime = 1000;  // upper bound qO variable
 
-    public static final boolean verboseArcFlow = false;
+    public static final boolean verboseArcFlow = true;
     public static final boolean verbosePathFlow = false;
     public static final boolean verboseJourneyBased = false;
 

@@ -38,7 +38,7 @@ public class JourneyBasedModel {
 
     //variables
     public GRBVar[][][] gamma;
-    public GRBVar[] k;
+    public GRBVar[][] k;
     public GRBVar[][][] u;
     public GRBVar[][][][][] q;
     public GRBVar[] qO;
@@ -69,7 +69,7 @@ public class JourneyBasedModel {
 
     public void initializeParameters() throws GRBException {
         this.gamma = new GRBVar[dataMIP.numPeriods][dataMIP.numVehicles][];
-        this.k = new GRBVar[dataMIP.numVehicles];
+        this.k = new GRBVar[dataMIP.numPeriods][dataMIP.numVehicles];
         this.u = new GRBVar[dataMIP.numPeriods][dataMIP.numCustomers][];
         for (int p = 0; p < dataMIP.numPeriods; p++){
             for (int c = 0; c < dataMIP.numCustomers; c++){
@@ -99,10 +99,13 @@ public class JourneyBasedModel {
                 }
             }
         }
-        for (int v = 0; v < dataMIP.numVehicles; v++) {
-            String variable_name = String.format("v[%d]", v);
-            k[v] = model.addVar(0.0, 1.0, dataMIP.costVehicle[v], GRB.BINARY, variable_name);
+        for (int p = 0; p < dataMIP.numPeriods; p++){
+            for (int v = 0; v < dataMIP.numVehicles; v++) {
+                String variable_name = String.format("v[%d]", v);
+                k[p][v] = model.addVar(0.0, 1.0, dataMIP.costVehicle[v], GRB.BINARY, variable_name);
+            }
         }
+
 
 
 
@@ -198,7 +201,7 @@ public class JourneyBasedModel {
                 for (Journey r :  dataMIP.journeyMap.get(d).get(dataMIP.vehicles[v].vehicleType.type)) {
                     lhs.addTerm(1, gamma[d][v][r.journeyId]);
                 }
-                lhs.addTerm(-1, k[v]);
+                lhs.addTerm(-1, k[d][v]);
                 String constraint_name = String.format("5.70 -Use of vehicle %d, period %d", v, d);
                 model.addConstr(lhs, GRB.LESS_EQUAL, 0, constraint_name);
             }
@@ -457,6 +460,7 @@ public class JourneyBasedModel {
         }
     }
 
+    /*
     public void symmetryCar() throws GRBException {
         for (int v = 0; v < dataMIP.numVehicles - 1; v++) {
             GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
@@ -468,6 +472,8 @@ public class JourneyBasedModel {
             model.addConstr(lhs, GRB.GREATER_EQUAL, 0, constraint_name);
         }
     }
+
+     */
 
     public void symmetryCost() throws GRBException {
         System.out.println("------------------- Symmetri: Cost--------------------");
@@ -551,7 +557,7 @@ public class JourneyBasedModel {
 
         // Four choices: none, car, cost, customers, trips
         if (!symmetry.equals("none")){
-            symmetryCar();
+            //symmetryCar();
             if (symmetry.equals("cost")) {
                 symmetryCost();
             }
@@ -637,12 +643,15 @@ public class JourneyBasedModel {
 
         // Create k variables: vehicle v is used in the planning period
         System.out.println("Print of k-variables: If a vehicle is used in the planing period");
-        for (int v = 0; v < dataMIP.numVehicles; v++) {
-            if (k[v].get(GRB.DoubleAttr.X) == 1) {
+        for (int p = 0; p < dataMIP.numPeriods; p++){
+            for (int v = 0; v < dataMIP.numVehicles; v++) {
+                if (k[p][v].get(GRB.DoubleAttr.X) == 1) {
 
-                System.out.println("Vehicle " + v + " is used in the planning period with capacity: "  + dataMIP.vehicleCapacity[v]);
+                    System.out.println("Vehicle " + v + " is used in the planning period with capacity: "  + dataMIP.vehicleCapacity[v]);
+                }
             }
         }
+
         System.out.println("   ");
         System.out.println("   ");
 
@@ -723,11 +732,14 @@ public class JourneyBasedModel {
 
     public void calculateResultValues() throws GRBException {
         if (optimstatus == 2){
-            for (int v = 0; v < dataMIP.numVehicles; v++) {
-                if (k[v].get(GRB.DoubleAttr.X) == 1){
-                    numVehiclesUsed++;
+            for (int p = 0; p < dataMIP.numPeriods; p++){
+                for (int v = 0; v < dataMIP.numVehicles; v++) {
+                    if (k[p][v].get(GRB.DoubleAttr.X) == 1){
+                        numVehiclesUsed++;
+                    }
                 }
             }
+
             for (int d = 0; d < dataMIP.numPeriods; d++) {
                 for (int v = 0; v < dataMIP.numVehicles; v++) {
                     for (Journey r: dataMIP.journeyMap.get(d).get(dataMIP.vehicles[v].vehicleType.type)) {

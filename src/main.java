@@ -34,8 +34,8 @@ public class main {
 
         HashSet<Individual> repaired = new HashSet<>();
         int numberOfIterations = 0;
-        while ( population.getIterationsWithoutImprovement() < Parameters.maxNumberIterationsWithoutImprovement &&
-                numberOfIterations < Parameters.maxNumberOfGenerations){
+        while ( (population.getIterationsWithoutImprovement() < Parameters.maxNumberIterationsWithoutImprovement &&
+                numberOfIterations < Parameters.maxNumberOfGenerations) || bestIndividualScore < 3500 ){
             System.out.println("Start generation: " + numberOfIterations);
 
             //Find best OD for the distribution

@@ -40,7 +40,7 @@ public class PathFlowModel {
 
     //variables
     public GRBVar[][][][] lambda;
-    public GRBVar[] k;
+    public GRBVar[][] k;
     public GRBVar[][][] u;
     public GRBVar[][][][][] q;
     public GRBVar[][][] tS;
@@ -65,7 +65,7 @@ public class PathFlowModel {
 
     public void initializeParameters() throws FileNotFoundException, GRBException {
         this.lambda = new GRBVar[dataMIP.numPeriods][dataMIP.numVehicles][dataMIP.numTrips][];
-        this.k = new GRBVar[dataMIP.numVehicles];
+        this.k = new GRBVar[dataMIP.numPeriods][dataMIP.numVehicles];
         this.u = new GRBVar[dataMIP.numPeriods][dataMIP.numCustomers][];
         for (int p = 0; p < dataMIP.numPeriods; p++){
             for (int c = 0; c < dataMIP.numCustomers; c++){
@@ -98,11 +98,13 @@ public class PathFlowModel {
             }
         }
         dataMIP.paths = this.lambda;
-
-        for (int v = 0; v < dataMIP.numVehicles; v++) {
-            String variable_name = String.format("v[%d]", v);
-            k[v] = model.addVar(0.0, 1.0, dataMIP.costVehicle[v], GRB.BINARY, variable_name);
+        for (int p = 0; p < dataMIP.numPeriods; p++){
+            for (int v = 0; v < dataMIP.numVehicles; v++) {
+                String variable_name = String.format("p[%d]v[%d]",p, v);
+                k[p][v] = model.addVar(0.0, 1.0, dataMIP.costVehicle[v], GRB.BINARY, variable_name);
+            }
         }
+
 
         for (int i = 0; i < dataMIP.numCustomers; i++) {
             for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
@@ -244,7 +246,7 @@ public class PathFlowModel {
                     for (Path p : dataMIP.pathMap.get(d).get(dataMIP.vehicles[v].vehicleType.type)) {
                         lhs.addTerm(1, lambda[d][v][r][p.pathId]);
                     }
-                    lhs.addTerm(-1, k[v]);
+                    lhs.addTerm(-1, k[d][v]);
                     String constraint_name = String.format("5.42 -Use of vehicle %d, trip %d, period %d", v, r, d);
                     model.addConstr(lhs, GRB.LESS_EQUAL, 0, constraint_name);
                 }
@@ -523,7 +525,7 @@ public class PathFlowModel {
             }
         }
     }
-
+    /*
     public void symmetryCar() throws GRBException {
         // Constraint 5.65
         for (int v = 0; v < dataMIP.numVehicles - 1; v++) {
@@ -536,6 +538,8 @@ public class PathFlowModel {
             model.addConstr(lhs, GRB.GREATER_EQUAL, 0, constraint_name);
         }
     }
+
+     */
 
     public void symmetryTrip() throws GRBException {
         // Constraint 5.63  //CANNOT BE USED WITH 5.66 and 5.67
@@ -645,7 +649,7 @@ public class PathFlowModel {
         }
         else {
             //default symmetry
-            symmetryCar();
+            //symmetryCar();
             if (symmetry.equals("trips")) {
                 symmetryTrip();
             } else if (symmetry.equals("cost")) {
@@ -724,11 +728,14 @@ public class PathFlowModel {
 
         // Create k variables: vehicle v is used in the planning period
         System.out.println("Print of k-variables: If a vehicle is used in the planing period");
-        for (int v = 0; v < dataMIP.numVehicles; v++) {
-            if (k[v].get(GRB.DoubleAttr.X) == 1) {
-                System.out.println("Vehicle " + v + " is used in the planning period with capacity: "  + dataMIP.vehicleCapacity[v]);
+        for( int p = 0 ; p < dataMIP.numPeriods; p++){
+            for (int v = 0; v < dataMIP.numVehicles; v++) {
+                if (k[p][v].get(GRB.DoubleAttr.X) == 1) {
+                    System.out.println("Vehicle " + v + " is used in the planning period with capacity: "  + dataMIP.vehicleCapacity[v]);
+                }
             }
         }
+
         System.out.println("   ");
         System.out.println("   ");
 
@@ -842,11 +849,14 @@ public class PathFlowModel {
 
     public void calculateResultValues() throws GRBException {
         if (optimstatus == 2){
-            for (int v = 0; v < dataMIP.numVehicles; v++) {
-                if (k[v].get(GRB.DoubleAttr.X) == 1){
-                    numVehiclesUsed++;
+            for (int p = 0; p < dataMIP.numPeriods; p++){
+                for (int v = 0; v < dataMIP.numVehicles; v++) {
+                    if (k[p][v].get(GRB.DoubleAttr.X) == 1){
+                        numVehiclesUsed++;
+                    }
                 }
             }
+
             for (int d = 0; d < dataMIP.numPeriods; d++) {
                 for (int v = 0; v < dataMIP.numVehicles; v++) {
                     for (int r = 0; r < dataMIP.numTrips; r++) {

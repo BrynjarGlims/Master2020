@@ -7,7 +7,6 @@ import gurobi.GRB;
 import gurobi.GRBException;
 import Individual.Trip;
 import Individual.GiantTour;
-import PR.DataMIP;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,29 +16,28 @@ public class OldArcFlowConverter {
 
     private static OrderDistribution orderDistribution;
     private static Individual individual;
-    private static PR.ArcFlowModel arcFlowModel;
+    private static ArcFlowModel arcFlowModel;
     private static Data data;
 
 
 
 
     //function working on old ArcFlowModel
-    public static void initializeIndividualFromArcFlowModel(PR.ArcFlowModel afm) throws GRBException {
+    public static void initializeIndividualFromArcFlowModel(ArcFlowModel afm) throws GRBException {
         arcFlowModel = afm;
         data = arcFlowModel.dataMIP.newData;
         orderDistribution = afm.getOrderDistribution();
         orderDistribution.makeDistributionFromArcFlowModel(arcFlowModel);
         individual = afm.getIndividual();
         //set giant tour chromosome and support strucutres in new individual
-        initializeGiantTourInIndividual(arcFlowModel);
+        initializeGiantTourInIndividual();
         individual.setOrderDistribution(orderDistribution);
     }
 
 
 
-    private static void initializeGiantTourInIndividual(PR.ArcFlowModel afm) throws GRBException {
-        //todo: implement
-        ArrayList<Trip>[][] tripList = setTripList();
+    private static void initializeGiantTourInIndividual() throws GRBException {
+        ArrayList<Trip>[][] tripList = initializeTripList();
         updateTripList(tripList);
         ArrayList<Integer>[][] giantTour = initializeGiantTourChromosome();
         updateGiantTourChromosome(giantTour,tripList);
@@ -106,7 +104,16 @@ public class OldArcFlowConverter {
                 for (int r = 0; r < data.numberOfTrips; r++){
                     if (arcFlowModel.z[p][v][r].get(GRB.DoubleAttr.X) == 1){
                         for( int i = 0; i < data.numberOfCustomers; i++){
+                            if( p == 4 ){
+                                System.out.println("Heiho");
+                            }
                             if (arcFlowModel.x[p][v][r][data.numberOfCustomers][i].get(GRB.DoubleAttr.X) == 1){
+                                if( p == 4 ){
+                                    System.out.println("SING HALLELUJA");
+                                }
+                                if( p == 5 ){
+                                    System.out.println("Neiiii");
+                                }
                                 currentTrip = new Trip();
                                 customers = new ArrayList<>();
                                 customers.add(i);
@@ -148,7 +155,7 @@ public class OldArcFlowConverter {
 
     }
 
-    private static ArrayList<Trip>[][] setTripList(){
+    private static ArrayList<Trip>[][] initializeTripList(){
         ArrayList<Trip>[][] tripList = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes] ;
         for (int p = 0; p < data.numberOfPeriods; p ++){
             for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){

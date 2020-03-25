@@ -82,17 +82,11 @@ public class OrderDistribution {
                     if (u[d][i][m].get(GRB.DoubleAttr.X) == 1) {
                         for (int v = 0; v < data.numberOfVehicles; v++) {
                             for (int r = 0; r < data.numberOfTrips; r++) {
-                                if (dataMIP.getProductTypes()[i][m] == 1) {
-                                    orderID = data.customers[i].orders[m].orderID;
-                                    this.orderIdDistribution[d][i].add(orderID);
-                                    this.orderDeliveries[orderID].addDelivery(d, q[d][v][r][i][m].get(GRB.DoubleAttr.X));
-                                    this.orderVolumeDistribution[d][i] += q[d][v][r][i][m].get(GRB.DoubleAttr.X);
-                                } else {
-                                    orderID = data.customers[i].orders[m].orderID;
-                                    this.orderIdDistribution[d][i].add(orderID);
-                                    this.orderDeliveries[orderID].addDelivery(d, q[d][v][r][i][m].get(GRB.DoubleAttr.X));
-                                    this.orderVolumeDistribution[d][i] += q[d][v][r][i][m].get(GRB.DoubleAttr.X);
-                                }
+                                orderID = data.customers[i].orders[m].orderID;
+                                this.orderIdDistribution[d][i].add(orderID);
+                                this.orderDeliveries[orderID].addDelivery(d, q[d][v][r][i][m].get(GRB.DoubleAttr.X));
+                                this.orderVolumeDistribution[d][i] += q[d][v][r][i][m].get(GRB.DoubleAttr.X);
+
                             }
                         }
                     }

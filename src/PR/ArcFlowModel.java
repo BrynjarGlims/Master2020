@@ -1222,8 +1222,8 @@ public class ArcFlowModel {
         Individual individual = afm.getIndividual();
         StoringResults.Result res = new StoringResults.Result(individual);
         res.store();
-        PlotIndividual visualizer = new PlotIndividual(data);
-        visualizer.visualize(individual);
+        //PlotIndividual visualizer = new PlotIndividual(data);
+        //visualizer.visualize(individual);
         System.out.println();
     }
 }

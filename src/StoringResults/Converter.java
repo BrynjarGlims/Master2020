@@ -5,6 +5,7 @@ import Individual.Individual;
 import Individual.Trip;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Converter {
 
@@ -26,6 +27,15 @@ public class Converter {
         }
         return "No day found";
 
+    }
+
+    public static String formatList(List<Integer> customerSequence){
+        String returnString = "[ ";
+        for (int customerID: customerSequence){
+            returnString += customerID + " ";
+        }
+        returnString += "]";
+        return returnString;
     }
 
     public static String dividableConverter(boolean isDividable) {
