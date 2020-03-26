@@ -28,7 +28,6 @@ public class main {
         population.setOrderDistributionPopulation(odp);
         population.initializePopulation(firstOD);
         double bestIndividualScore = Double.MAX_VALUE;
-        BiasedFitness.setBiasedFitnessScore(population);
 
 
 
@@ -45,7 +44,7 @@ public class main {
             }
 
             //Generate new population
-            while (population.getPopulationSize() < Parameters.maximumSubIndividualPopulationSize){
+            while (population.feasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize && population.infeasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize){
 
                 // Select parents
                 Individual parent1 = TournamentSelection.performSelection(population);
@@ -96,14 +95,6 @@ public class main {
                     if (Repair.repair(infeasibleIndividual, infeasibleIndividual.orderDistribution)){
                         IndividualTest.checkIfIndividualIsComplete(infeasibleIndividual);
                         repaired.add(infeasibleIndividual);
-                        //infeasibleIndividual.printDetailedFitness();
-                        //System.out.println("-------");
-                        //System.out.println("Fitness: " +IndividualTest.getTrueIndividualFitness(infeasibleIndividual));
-                        //System.out.println("Fitness: " + infeasibleIndividual.getFitness(false));
-                        //System.out.println("-------");
-
-
-
                     }
                 }
             }
@@ -115,12 +106,14 @@ public class main {
             // TODO: 19.03.2020 the values have been scaled down manually
             //reduce size of both populations
 
-            // Calculate diversity
-            BiasedFitness.setBiasedFitnessScore(population);
 
             // Reduce population size
-            population.survivorSelection();
+            System.out.println(population.feasiblePopulation.size());
+            System.out.println(population.infeasiblePopulation.size());
+            population.improvedSurvivorSelection();
             odp.removeNoneUsedOrderDistributions();
+            System.out.println(population.feasiblePopulation.size());
+            System.out.println(population.infeasiblePopulation.size());
 
             // TODO: 04.03.2020 Implement adjust penalty parameters for overtimeInfeasibility, loadInfeasibility and timeWarpInfeasibility
             numberOfIterations++;

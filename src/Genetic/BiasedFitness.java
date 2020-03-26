@@ -40,16 +40,16 @@ public class BiasedFitness {
 
     public static void setBiasedFitnessScoreForInfeasibleIndividuals(Population population){
         if (population.infeasiblePopulation.size() > Parameters.minimumSubIndividualPopulationSize ){
-            calculateFitnessAndDiversityRankForSubPopulation(population.infeasiblePopulation);
             calculateDiversityForPopulation(population.infeasiblePopulation);
+            calculateFitnessAndDiversityRankForSubPopulation(population.infeasiblePopulation);
         }
 
     }
 
     public static void setBiasedFitnessScoreForFeasibleIndividuals(Population population){
         if (population.feasiblePopulation.size() > Parameters.minimumSubIndividualPopulationSize ) {
-            calculateFitnessAndDiversityRankForSubPopulation(population.feasiblePopulation);
             calculateDiversityForPopulation(population.feasiblePopulation);
+            calculateFitnessAndDiversityRankForSubPopulation(population.feasiblePopulation);
         }
     }
 

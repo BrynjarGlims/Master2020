@@ -46,22 +46,36 @@ public class Population {
 
     public void improvedSurvivorSelection(){
         int feasibleIndividualsToRemove = this.feasiblePopulation.size() - Parameters.minimumSubIndividualPopulationSize;
-        int infeasbileIndividualsToRemove = this.infeasiblePopulation.size() - Parameters.minimumSubIndividualPopulationSize;
+        int infeasibleIndividualsToRemove = this.infeasiblePopulation.size() - Parameters.minimumSubIndividualPopulationSize;
         for (int i = 0; i < feasibleIndividualsToRemove; i++){
             BiasedFitness.setBiasedFitnessScoreForFeasibleIndividuals(this);
-            // TODO: 26/03/2020 Change/implement
+            reduceFeasiblePopulationByOne();
         }
-        
-                
-        this.reduceFeasiblePopulation();
-        this.reduceInfeasiblePopulation();
+
+        for (int i = 0; i < infeasibleIndividualsToRemove; i++){
+            BiasedFitness.setBiasedFitnessScoreForInfeasibleIndividuals(this);
+            reduceInfeasiblePopulationByOne();
+        }
+    }
+
+    private void reduceFeasiblePopulationByOne(){
+        ArrayList<Individual> worstIndividuals = new ArrayList<Individual>(feasiblePopulation);
+        Collections.sort(worstIndividuals);
+        Individual worstIndividual = worstIndividuals.get(worstIndividuals.size()-1) ;
+        feasiblePopulation.remove(worstIndividual);
+
+    }
+
+    private void reduceInfeasiblePopulationByOne(){
+        ArrayList<Individual> worstIndividuals = new ArrayList<Individual>(infeasiblePopulation);
+        Collections.sort(worstIndividuals);
+        Individual worstIndividual = worstIndividuals.get(worstIndividuals.size()-1) ;
+        infeasiblePopulation.remove(worstIndividual);
     }
 
 
     private void reduceFeasiblePopulation(){
         int numberOfIndividualsToRemove = feasiblePopulation.size() - Parameters.minimumSubIndividualPopulationSize;
-        if (numberOfIndividualsToRemove < 0)
-            return;
         ArrayList<Individual> worstIndividuals = new ArrayList<Individual>();
         for (Individual individual : feasiblePopulation){
             if ( individual.isSurvivor){
