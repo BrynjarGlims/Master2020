@@ -1,5 +1,6 @@
 package Population;
 import DataFiles.*;
+import Genetic.BiasedFitness;
 import Genetic.TournamentSelection;
 import Individual.Individual;
 import Individual.AdSplit;
@@ -39,6 +40,19 @@ public class Population {
     }
 
     public void survivorSelection(){
+        this.reduceFeasiblePopulation();
+        this.reduceInfeasiblePopulation();
+    }
+
+    public void improvedSurvivorSelection(){
+        int feasibleIndividualsToRemove = this.feasiblePopulation.size() - Parameters.minimumSubIndividualPopulationSize;
+        int infeasbileIndividualsToRemove = this.infeasiblePopulation.size() - Parameters.minimumSubIndividualPopulationSize;
+        for (int i = 0; i < feasibleIndividualsToRemove; i++){
+            BiasedFitness.setBiasedFitnessScoreForFeasibleIndividuals(this);
+            // TODO: 26/03/2020 Change/implement
+        }
+        
+                
         this.reduceFeasiblePopulation();
         this.reduceInfeasiblePopulation();
     }

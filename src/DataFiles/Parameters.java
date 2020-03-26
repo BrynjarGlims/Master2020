@@ -10,14 +10,14 @@ public class Parameters {
 
     //Population parameters
 
-    public static final int maximumSubIndividualPopulationSize = 500; //TODO: find reasonable value
-    public static final int minimumSubIndividualPopulationSize = 100;
+    public static final int maximumSubIndividualPopulationSize = 100; //TODO: find reasonable value
+    public static final int minimumSubIndividualPopulationSize = 50;
     public static final int numberOfElitismSurvivorsPerGeneration = 5;
 
     public static final int initialPopulationSize = 50;
     public static final int initialOrderDistributionPopulationSize = 10;
     public static final int maxNumberIterationsWithoutImprovement = 10;
-    public static final int maxNumberOfGenerations = 200;
+    public static final int maxNumberOfGenerations = 100;
 
     public static final double minimumFitnessDifferenceForClones = 10; //minimum fitness difference to encounter two individuals as clones
 
@@ -26,8 +26,8 @@ public class Parameters {
     public static final int numberOfTrips = 5;
 
     //Loading data parameters
-    public static final int numberOfCustomers = 7;
-    public static final int numberOfVehicles = 5;
+    public static final int numberOfCustomers = 100;
+    public static final int numberOfVehicles = 50;
 
 
     public static final int nearestNeighbors = 5; //Neighborhood size for each customer
@@ -44,7 +44,6 @@ public class Parameters {
     public static final double timeShift = 2;
 
     //Penalty parameters for genetic algorithm
-
     public static final double initialCapacityPenalty = 1;  // lambda
     public static final double initialOvertimePenalty = 1;  // theta
     public static final double initialTimeWarpPenalty = 1000;  // zeta
