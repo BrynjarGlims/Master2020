@@ -96,6 +96,13 @@ public class main {
                     if (Repair.repair(infeasibleIndividual, infeasibleIndividual.orderDistribution)){
                         IndividualTest.checkIfIndividualIsComplete(infeasibleIndividual);
                         repaired.add(infeasibleIndividual);
+                        //infeasibleIndividual.printDetailedFitness();
+                        //System.out.println("-------");
+                        //System.out.println("Fitness: " +IndividualTest.getTrueIndividualFitness(infeasibleIndividual));
+                        //System.out.println("Fitness: " + infeasibleIndividual.getFitness(false));
+                        //System.out.println("-------");
+
+
 
                     }
                 }

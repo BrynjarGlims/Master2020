@@ -118,7 +118,7 @@ public class Converter {
         for(int customerID : customers){
             returnString += Converter.convertTimeWindow(data.customers[customerID].timeWindow[period][0], data.customers[customerID].timeWindow[period][1]);
             if (! (customerID == customers.get(customers.size()-1)))
-                returnString += " ---- ";
+                returnString += " ---> ";
         }
         return returnString;
     }

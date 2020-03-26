@@ -3,7 +3,6 @@ package Individual;
 import DataFiles.Data;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import DataFiles.*;
 
@@ -97,7 +96,7 @@ public class LabelEntry implements Comparable<LabelEntry> {
     public void updateLabelEntryValues(ArrayList<Integer> customers, int tripIndex){
         this.inUse = true;
         this.tripAssigment.add(tripIndex);
-        this.updateTravelTime(customers);
+        this.updateTravelTimeAndDrivingDistance(customers);
         this.updateLoadInfeasibility(customers);
         this.updateTimeWarp(customers);
     }
@@ -157,7 +156,7 @@ public class LabelEntry implements Comparable<LabelEntry> {
 
 
 
-    private void updateTravelTime(ArrayList<Integer> customers){
+    private void updateTravelTimeAndDrivingDistance(ArrayList<Integer> customers){
 
         //if second trip, add loading time at depot
         if (this.vehicleTotalTravelTime > 0){
@@ -165,31 +164,17 @@ public class LabelEntry implements Comparable<LabelEntry> {
         }
 
         //initialize
-        boolean fromDepot = true;
-        int lastCustomerID = -1;
+        int previousCustomer = data.numberOfCustomers;
 
         //three cases, from depot to cust, cust to cust, cust to depot
 
         for ( int customerID : customers){
-            if (fromDepot){
-                vehicleTotalTravelTime +=
-                        data.distanceMatrix[data.numberOfCustomers][customerID] + data.customers[customerID].totalUnloadingTime;
-                vehicleDrivingDistance = data.distanceMatrix[data.numberOfCustomers][customerID];
-                lastCustomerID = customerID;
-                fromDepot = false;
-            }
-            else {
-                vehicleTotalTravelTime +=
-                        data.distanceMatrix[lastCustomerID][customerID] + data.customers[customerID].totalUnloadingTime;
-                vehicleDrivingDistance += data.distanceMatrix[lastCustomerID][customerID];
-                lastCustomerID = customerID;
-
-            }
+            vehicleTotalTravelTime += data.distanceMatrix[previousCustomer][customerID] + data.customers[customerID].totalUnloadingTime;
+            vehicleDrivingDistance += data.distanceMatrix[previousCustomer][customerID];
+            previousCustomer = customerID;
         }
-        vehicleTotalTravelTime +=
-                data.distanceMatrix[lastCustomerID][data.numberOfCustomers];
-        vehicleDrivingDistance += data.distanceMatrix[lastCustomerID][data.numberOfCustomers];
-
+        vehicleTotalTravelTime += data.distanceMatrix[previousCustomer][data.numberOfCustomers];
+        vehicleDrivingDistance += data.distanceMatrix[previousCustomer][data.numberOfCustomers];
     }
 
 

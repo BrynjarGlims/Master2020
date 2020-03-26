@@ -127,7 +127,7 @@ public class Result {
         SimpleDateFormat date_formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         System.out.println("Changing detailed file...");
         if (newFile.length() == 0){
-            String[] CSV_COLUMNS = {"TripID", "Trip Number", "Day", "VehicleID", "Vehicle Name", "Vehicle Type", "Departure time" ,
+            String[] CSV_COLUMNS = {"TripID", "Trip Number", "Day", "VehicleID", "Vehicle Name", "Capacity", "Departure time" ,
                     "Total Trip Time[min]","Traveling Time[min]","CustomerIDs", "Customers visted", "Time Windows"};
             csvWriter.writeNext(CSV_COLUMNS, false);
         }
@@ -138,7 +138,7 @@ public class Result {
                     String[] results = {String.valueOf(tripNumber), Converter.getTripNumber(t, bestIndividual) , Converter.periodConverter(t.period),String.valueOf(t.vehicleID)
                             ,data.vehicles[t.vehicleID].vehicleName, String.valueOf(data.vehicleTypes[t.vehicleType].capacity),
                             Converter.getStartingTimeForTrip(t, data)
-                            ,Converter.calculateTotalTripTime(t, data), Converter.calculateDrivingTime(t, data), Converter.formatList(t.customers)
+                            ,Converter.calculateTotalTripTime(t, data), Converter.calculateDrivingTime(t, data) ,Converter.formatList(t.customers)
                             ,Converter.findCustomersFromID((ArrayList) t.customers, data), Converter.findTimeWindowToCustomers((ArrayList) t.customers, data, t.period)};
                     csvWriter.writeNext(results, false);
                     tripNumber++;
