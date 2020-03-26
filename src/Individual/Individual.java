@@ -182,6 +182,7 @@ public class Individual implements Comparable<Individual> {
     public void printDetailedFitness(){
         System.out.println("-------------------------------------");
         System.out.println("Fitness: " + fitness);
+        System.out.println("True fitness: " + Testing.IndividualTest.getTrueIndividualFitness(this));
         System.out.println("Is feasbile: " + isFeasible());
         System.out.println("Biased fitness: " + biasedFitness);
         System.out.println("Diversity Rank: "  +diversityRank);

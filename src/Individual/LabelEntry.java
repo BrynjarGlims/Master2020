@@ -212,7 +212,8 @@ public class LabelEntry implements Comparable<LabelEntry> {
     }
 
     public double getOvertimeValue() {
-        return Math.max(0, vehicleTotalTravelTime - Parameters.maxJourneyDuration);
+        return 0; // TODO: 25/03/2020 Remove in a propper way 
+        //return Math.max(0, vehicleTotalTravelTime - Parameters.maxJourneyDuration);
     }
 
     public String toString(){

@@ -2,7 +2,10 @@ package Testing;
 
 import DataFiles.Customer;
 import DataFiles.Data;
+import DataFiles.Parameters;
 import Individual.Individual;
+import Individual.Journey;
+import Individual.Trip;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -41,6 +44,41 @@ public class IndividualTest {
             }
         }
         return true;
+    }
+
+    public static double getTrueIndividualFitness(Individual individual){
+        Data data = individual.data;
+        double objective = 0;
+        double vehicleUseCost = 0;
+        double travelCost = 0;
+        double overtimeDepotCost = 0;
+        for (int p = 0; p < data.numberOfPeriods; p++){
+            for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
+                if (individual.journeyList[p][vt] == null){
+                    continue;
+                }
+                for (Journey journey : individual.journeyList[p][vt]){
+                    vehicleUseCost += data.vehicleTypes[journey.vehicleType].usageCost;
+                    for (Trip trip : journey.trips){
+                        int previousCustomer = data.numberOfCustomers;
+                        for (int customerID : trip.customers){
+                            travelCost += data.vehicleTypes[vt].travelCost*data.distanceMatrix[previousCustomer][customerID];
+                            previousCustomer = customerID;
+                        }
+                        travelCost += data.vehicleTypes[vt].travelCost*data.distanceMatrix[previousCustomer][data.numberOfCustomers];
+                    }
+
+                }
+            }
+            overtimeDepotCost += Parameters.overtimeCost[p]* Math.max(0, individual.orderDistribution.volumePerPeriod[p]-Parameters.overtimeLimit[p]);
+        }
+        objective = vehicleUseCost + travelCost + overtimeDepotCost;
+        System.out.println("Travelcost: " +travelCost);
+        System.out.println("Vehicle cost: " + vehicleUseCost);
+        System.out.println("Overtime Depot: " + overtimeDepotCost);
+
+        return objective;
+
     }
 
     public static void isMissingCustomersAdded( HashMap<Integer, HashSet<Integer>> missingCustomers, Individual individual) {
