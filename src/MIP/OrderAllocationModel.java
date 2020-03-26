@@ -9,6 +9,7 @@ import Population.Population;
 import ProductAllocation.OrderDistribution;
 import gurobi.*;
 import Population.*;
+import Individual.Trip;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -161,31 +162,24 @@ public class OrderAllocationModel {
         // Constraint 5.4: Overtime constraint at the warehouse if the goods delivered is higher
         // than the overtime limit
         GRBLinExpr lhsQ = new GRBLinExpr();
-        int customerID;
 
         for (int d = 0; d < data.numberOfPeriods; d++) {
             for (int vt = 0; vt < data.numberOfVehicleTypes; vt++) {
-                if (individual.tripList[d][vt].isEmpty()){
+                if (individual.tripList[d][vt].isEmpty()) {
                     break;
                 }
-                Iterator iterator = individual.tripList[d][vt].iterator();
-                int split = (Integer) iterator.next();
-                for (int i = 0; i < individual.giantTour.chromosome[d][vt].size(); i++) {
-                    customerID = individual.giantTour.chromosome[d][vt].get(i);
-                    for (int m = 0; m < data.customers[customerID].dividableOrders.length; m++) {
-                        lhsQ.addTerm(1.0, qD[d][customerID][m]);
+                for (Trip trip :individual.tripList[d][vt]) {
+                    lhsQ = new GRBLinExpr();
+                    for (int i : trip.customers) {
+                        for (int m = 0; m < data.customers[i].dividableOrders.length; m++) {
+                            lhsQ.addTerm(1.0, qD[d][i][m]);
+                        }
+                        for (int m = 0; m < data.customers[i].nonDividableOrders.length; m++) {
+                            lhsQ.addTerm(1.0, qND[d][i][m]);
+                        }
                     }
-                    for (int m = 0; m < data.customers[customerID].nonDividableOrders.length; m++) {
-                        lhsQ.addTerm(1.0, qND[d][customerID][m]);
-                    }
-
-                    if (split - 1 == i) {
-                        String constraint_name = String.format("1. - Capacity of a trip with vehicle type %d at period %d. Trip cut %d, Capacity %f ", vt, d, split, data.vehicleTypes[vt].capacity);
-                        model.addConstr(lhsQ, GRB.LESS_EQUAL, data.vehicleTypes[vt].capacity, constraint_name);
-                        if (i != individual.giantTour.chromosome[d][vt].size() - 1)
-                            split = (Integer) iterator.next();
-                        lhsQ = new GRBLinExpr();
-                    }
+                    String constraint_name = String.format("1. - Capacity of a trip with vehicle type %d at period %d. Capacity %f ", vt, d, data.vehicleTypes[vt].capacity);
+                    model.addConstr(lhsQ, GRB.LESS_EQUAL, data.vehicleTypes[vt].capacity, constraint_name);
                 }
             }
         }

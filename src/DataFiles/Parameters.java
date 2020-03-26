@@ -26,8 +26,8 @@ public class Parameters {
     public static final int numberOfTrips = 5;
 
     //Loading data parameters
-    public static final int numberOfCustomers = 100;
-    public static final int numberOfVehicles = 50;
+    public static final int numberOfCustomers = 7;
+    public static final int numberOfVehicles = 5;
 
 
     public static final int nearestNeighbors = 5; //Neighborhood size for each customer
@@ -36,7 +36,7 @@ public class Parameters {
     //Runtime parameters
     public static final double educationProbability = 0.7;
     public static final double repairProbability = 1;
-    public static final double greedyMIPValue = 0;
+    public static final double greedyMIPValue = 1;
 
 
     //Traveling parameters
