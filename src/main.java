@@ -34,7 +34,7 @@ public class main {
         HashSet<Individual> repaired = new HashSet<>();
         int numberOfIterations = 0;
         while ( (population.getIterationsWithoutImprovement() < Parameters.maxNumberIterationsWithoutImprovement &&
-                numberOfIterations < Parameters.maxNumberOfGenerations) || bestIndividualScore < 3500 ){
+                numberOfIterations < Parameters.maxNumberOfGenerations) ){
             System.out.println("Start generation: " + numberOfIterations);
 
             //Find best OD for the distribution
@@ -70,9 +70,6 @@ public class main {
                 // TODO: 04.03.2020 Add repair:
 
                 if (ThreadLocalRandom.current().nextDouble() < Parameters.greedyMIPValue){
-                    System.out.println("------------------Optimal orderdis is gathered---------------------");
-                    //System.out.println("--------------------");
-                    //System.out.println("Current fintness: " + newIndividual.getBiasedFitness());
                     OrderDistribution optimalOD = OrderAllocationModel.createOptimalOrderDistribution(newIndividual, data);
                     if (newIndividual.infeasibilityCost == 0){
                         newIndividual.setOptimalOrderDistribution(optimalOD, true);
@@ -87,6 +84,7 @@ public class main {
                 }
                 population.addChildToPopulation(newIndividual);
             }
+
 
 
             repaired.clear();
@@ -108,22 +106,21 @@ public class main {
 
 
             // Reduce population size
-            System.out.println(population.feasiblePopulation.size());
-            System.out.println(population.infeasiblePopulation.size());
+
             population.improvedSurvivorSelection();
             odp.removeNoneUsedOrderDistributions();
-            System.out.println(population.feasiblePopulation.size());
-            System.out.println(population.infeasiblePopulation.size());
 
             // TODO: 04.03.2020 Implement adjust penalty parameters for overtimeInfeasibility, loadInfeasibility and timeWarpInfeasibility
             numberOfIterations++;
             Individual bestIndividual = population.returnBestIndividual();
-
+            double bestKnownSolution = 3587.78;
+            System.out.println(String.format("Gap: %.2f" ,100*(bestIndividualScore-bestKnownSolution)/bestKnownSolution));
             // Check if it has improved for early termination
             if (bestIndividualScore == bestIndividual.getFitness(false)){
                 population.setIterationsWithoutImprovement(population.getIterationsWithoutImprovement()+1);
             }
             else{
+                bestIndividualScore = bestIndividual.getFitness(false);
                 population.setIterationsWithoutImprovement(0);
             }
 

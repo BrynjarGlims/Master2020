@@ -129,8 +129,8 @@ public class LabelPool {
 
 
     public double deltaFunction(double firstVehicleTravelTime, double secondVehicleTravelTime) {
-        return Math.max(0, Math.min(Parameters.maxJourneyDuration, firstVehicleTravelTime)
-                - Math.min(Parameters.maxJourneyDuration, secondVehicleTravelTime));
+        return Math.max(0,  firstVehicleTravelTime
+                -  secondVehicleTravelTime);
     }
 
 }

@@ -2,11 +2,21 @@ package Testing;
 
 import DataFiles.Customer;
 import DataFiles.Data;
+import DataFiles.DataReader;
 import DataFiles.Parameters;
 import Individual.Individual;
 import Individual.Journey;
 import Individual.Trip;
+import MIP.OrderAllocationModel;
+import Population.Population;
+import ProductAllocation.OrderDistribution;
+import Population.OrderDistributionPopulation;
+import Individual.AdSplit;
+import StoringResults.Result;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -102,6 +112,64 @@ public class IndividualTest {
 
             }
         }
+    }
+
+    public static void checkDiversityIndividual(Individual individual){
+        if (individual.getDiversity() == 0){
+            System.out.println("------------------------------------------------------------");
+            System.out.println("Diversity not calculated properly");
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        Data data = DataReader.loadData();
+        Individual individual = new Individual(data);
+        ArrayList<Integer>[][] chromosome = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
+        for (int p = 0; p < data.numberOfPeriods; p++){
+            for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
+                if (vt == 2){
+                    if (p == 0){
+                        chromosome[p][vt] = new ArrayList<>(Arrays.asList(1,2,6,5,3,4));
+                    }
+                    if (p == 1){
+                        chromosome[p][vt] = new ArrayList<>(Arrays.asList(1,0,3,6,2,5,4));
+                    }
+                    if (p == 2){
+                        chromosome[p][vt] = new ArrayList<>(Arrays.asList(3,5,2));
+                    }
+                    if (p == 3){
+                        chromosome[p][vt] = new ArrayList<>(Arrays.asList(1,3,0,2,5,4,6));
+                    }
+                    if (p == 4){
+                        chromosome[p][vt] = new ArrayList<>(Arrays.asList(1,5,6,2,0,3));
+                    }
+                    if (p == 5){
+                        chromosome[p][vt] = new ArrayList<>(Arrays.asList(3,2));
+                    }
+                }
+                else{
+                    chromosome[p][vt] = new ArrayList<Integer>();
+                }
+            }
+        }
+
+        individual.giantTour.setChromosome(chromosome);
+        OrderDistribution od = new OrderDistribution(data);
+        Population population = new Population(data);
+        OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
+        odp.initializeOrderDistributionPopulation(population);
+        OrderDistribution firstOD = odp.getRandomOrderDistribution();
+        individual.orderDistribution = firstOD;
+        AdSplit.adSplitPlural(individual);
+
+        OrderDistribution optimalOD = OrderAllocationModel.createOptimalOrderDistribution(individual, data);
+        AdSplit.adSplitPlural(individual);
+        System.out.println(individual.getFitness(true));
+        System.out.println("Done");
+        Result res = new Result(individual);
+        res.store();
+
+
     }
 
 }

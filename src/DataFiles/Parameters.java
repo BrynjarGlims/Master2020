@@ -10,11 +10,11 @@ public class Parameters {
 
     //Population parameters
 
-    public static final int maximumSubIndividualPopulationSize = 100; //TODO: find reasonable value
-    public static final int minimumSubIndividualPopulationSize = 50;
+    public static final int maximumSubIndividualPopulationSize = 200; //TODO: find reasonable value
+    public static final int minimumSubIndividualPopulationSize = 100;
     public static final int numberOfElitismSurvivorsPerGeneration = 5;
 
-    public static final int initialPopulationSize = 50;
+    public static final int initialPopulationSize = 10;
     public static final int initialOrderDistributionPopulationSize = 10;
     public static final int maxNumberIterationsWithoutImprovement = 10;
     public static final int maxNumberOfGenerations = 100;
@@ -35,8 +35,8 @@ public class Parameters {
 
     //Runtime parameters
     public static final double educationProbability = 0.7;
-    public static final double repairProbability = 0;
-    public static final double greedyMIPValue = 1;
+    public static final double repairProbability = 1;
+    public static final double greedyMIPValue = 0.5;
 
 
     //Traveling parameters
@@ -62,7 +62,7 @@ public class Parameters {
 
     //Period parameters
     //TODO: change to percentage values
-    public static final double[] overtimeLimit = {10, 20, 30, 40, 50, 60};
+    public static final double[] overtimeLimit = {30, 30, 30, 30, 30, 10};
     public static final double[] overtimeCost = {100, 100, 100, 100, 100, 100};
 
     //Time parameters

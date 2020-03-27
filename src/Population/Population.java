@@ -5,6 +5,7 @@ import Genetic.TournamentSelection;
 import Individual.Individual;
 import Individual.AdSplit;
 import ProductAllocation.OrderDistribution;
+import jdk.swing.interop.SwingInterOpUtils;
 
 
 import java.util.ArrayList;
@@ -63,7 +64,6 @@ public class Population {
         Collections.sort(worstIndividuals);
         Individual worstIndividual = worstIndividuals.get(worstIndividuals.size()-1) ;
         feasiblePopulation.remove(worstIndividual);
-
     }
 
     private void reduceInfeasiblePopulationByOne(){

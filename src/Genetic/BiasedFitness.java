@@ -39,18 +39,13 @@ public class BiasedFitness {
     }
 
     public static void setBiasedFitnessScoreForInfeasibleIndividuals(Population population){
-        if (population.infeasiblePopulation.size() > Parameters.minimumSubIndividualPopulationSize ){
-            calculateDiversityForPopulation(population.infeasiblePopulation);
-            calculateFitnessAndDiversityRankForSubPopulation(population.infeasiblePopulation);
-        }
-
+        calculateDiversityForPopulation(population.infeasiblePopulation);
+        calculateFitnessAndDiversityRankForSubPopulation(population.infeasiblePopulation);
     }
 
     public static void setBiasedFitnessScoreForFeasibleIndividuals(Population population){
-        if (population.feasiblePopulation.size() > Parameters.minimumSubIndividualPopulationSize ) {
-            calculateDiversityForPopulation(population.feasiblePopulation);
-            calculateFitnessAndDiversityRankForSubPopulation(population.feasiblePopulation);
-        }
+        calculateDiversityForPopulation(population.feasiblePopulation);
+        calculateFitnessAndDiversityRankForSubPopulation(population.feasiblePopulation);
     }
 
 
@@ -83,29 +78,12 @@ public class BiasedFitness {
                 diversityList.add(calculateSimpleDiversityBetweenIndividuals(ind1, ind2)); //todo: implement
             }
             Collections.sort(diversityList);
-            ArrayList<Double> nearestDiversity = new ArrayList<>(diversityList.subList(0,Parameters.nearestNeighborsDiversity));
+            ArrayList<Double> nearestDiversity = new ArrayList<>(diversityList.subList(0,Math.min(Parameters.nearestNeighborsDiversity,diversityList.size())));
             double diversity = nearestDiversity.stream().collect(Collectors.summingDouble(Double::doubleValue));
             diversity /= nearestDiversity.size();
             ind1.setDiversity(diversity);
         }
 
-    }
-
-
-
-    private static HashSet<SimpleArc> getSimpleArc(ArrayList<Integer> giantTour){
-        HashSet<SimpleArc> arcs = new HashSet<>();
-        int previousCustomer = -1;  //depot
-        for (int customerID : giantTour){
-            arcs.add(new SimpleArc(previousCustomer, customerID));
-            previousCustomer = customerID;
-        }
-        arcs.add(new SimpleArc(previousCustomer, -1));
-        return arcs;
-    }
-
-    private static ArrayList<Individual> getNearestIndividuals(Individual individual, Population population){
-        return new ArrayList<Individual>();
     }
 
     private static double calculateSimpleDiversityBetweenIndividuals(Individual ind1, Individual ind2){
