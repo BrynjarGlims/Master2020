@@ -127,11 +127,11 @@ public class TestResults {
 
     public static void main(String[] args){
         System.out.println("Results from GA:");
-        String path = "results/results_detailed/garesults";
+        String path = "results/results_detailed/bestGA";
         evaluateSolution(path);
         System.out.println(" ----- ");
         System.out.println("Results from MIP");
-        path = "results/results_detailed/test_sample";
+        path = "results/results_detailed/bestMIP";
         evaluateSolution(path);
     }
 

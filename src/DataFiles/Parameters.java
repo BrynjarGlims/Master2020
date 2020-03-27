@@ -35,8 +35,8 @@ public class Parameters {
 
     //Runtime parameters
     public static final double educationProbability = 0.7;
-    public static final double repairProbability = 1;
-    public static final double greedyMIPValue = 0.5;
+    public static final double repairProbability = 0.7;
+    public static final double greedyMIPValue = 0.2;
 
 
     //Traveling parameters

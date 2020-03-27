@@ -166,6 +166,90 @@ public class AdSplit {
         double[] costLabel = getInitialCostLabel(customerSequence.size());
         int[] predecessorLabel = new int[customerSequence.size()];
         double[] timeWarp = new double[customerSequence.size()];
+        double loadSum;
+        double currentTime;
+        double currentCost;
+        double tempDistanceCost;
+        double routeTimeWarp;
+
+        for (int i = 0; i < customerSequence.size(); i++) {
+            for (int j = i+1; j < customerSequence.size(); j++ ) {   //todo: make this a for element in list function.
+                loadSum = 0.0;
+                currentTime = 0.0;
+                currentCost = 0.0;
+                tempDistanceCost = 0.0;
+                routeTimeWarp = 0.0;
+                if (j == (i + 1)) {
+                    currentTime += Math.max(individual.data.distanceMatrix[customerSequence.get(0)][customerSequence.get(j)],
+                            individual.data.customers[customerSequence.get(j)].timeWindow[p][0]);
+                    if (currentTime > individual.data.customers[customerSequence.get(j)].timeWindow[p][1]) {
+                        routeTimeWarp += currentTime - individual.data.customers[customerSequence.get(j)].timeWindow[p][1];
+                        currentTime = individual.data.customers[customerSequence.get(j)].timeWindow[p][1];
+                    }
+
+                    routeTimeWarp += Math.max(0, (currentTime + individual.data.distanceMatrix[customerSequence.get(j)][customerSequence.get(0)]
+                            + individual.data.customers[customerSequence.get(j)].totalUnloadingTime) - Parameters.maxJourneyDuration);
+                    tempDistanceCost += 2*individual.data.distanceMatrix[customerSequence.get(0)][customerSequence.get(j)];
+                    loadSum = individual.orderDistribution.orderVolumeDistribution[p][customerSequence.get(j)];
+                    currentCost = routeTimeWarp*Parameters.initialTimeWarpPenalty
+                            + Parameters.initialCapacityPenalty*(Math.max(0, loadSum-individual.data.vehicleTypes[vt].capacity));
+                    currentCost = currentCost * penaltyMultiplier + Parameters.initialDrivingCostPenalty * tempDistanceCost;
+                }
+
+                else {
+                    for (int counter = i+1; counter <= j; counter++) {
+                        if (counter == i+1){
+                            currentTime = Math.max(individual.data.distanceMatrix[customerSequence.get(0)][customerSequence.get(counter)],
+                                    individual.data.customers[customerSequence.get(counter)].timeWindow[p][0]);
+                            tempDistanceCost += individual.data.distanceMatrix[customerSequence.get(0)][customerSequence.get(counter)];
+                        }
+                        else {
+                            currentTime = Math.max(currentTime + individual.data.distanceMatrix[customerSequence.get(counter-1)][customerSequence.get(counter)],
+                                    individual.data.customers[customerSequence.get(counter)].timeWindow[p][0]);
+                            tempDistanceCost += individual.data.distanceMatrix[customerSequence.get(counter-1)][customerSequence.get(counter)];
+                        }
+
+
+                        if (currentTime > individual.data.customers[customerSequence.get(counter)].timeWindow[p][1]){
+                            routeTimeWarp += currentTime - individual.data.customers[customerSequence.get(counter)].timeWindow[p][1];
+                            currentTime = individual.data.customers[customerSequence.get(counter)].timeWindow[p][1];
+                        }
+
+
+                        loadSum += individual.orderDistribution.orderVolumeDistribution[p][customerSequence.get(counter)];
+
+                        //add time warp costs if depot is reached too late
+                        if (counter == j) {
+                            tempDistanceCost += individual.data.distanceMatrix[customerSequence.get(counter)][customerSequence.get(0)];
+                            routeTimeWarp += Math.max(0, (currentTime + individual.data.distanceMatrix[customerSequence.get(counter)][customerSequence.get(0)]
+                                    + individual.data.customers[customerSequence.get(counter)].totalUnloadingTime) - Parameters.maxJourneyDuration);
+                        }
+                    }
+
+                    currentCost = Parameters.initialCapacityPenalty*(Math.max(0, loadSum-individual.data.vehicleTypes[vt].capacity))
+                            + routeTimeWarp*Parameters.initialTimeWarpPenalty;
+                    currentCost =  currentCost*penaltyMultiplier + Parameters.initialDrivingCostPenalty*(tempDistanceCost);
+                }
+
+                //Update predecessor label whenever improvements are detected
+                if (costLabel[i] + currentCost < costLabel[j]) {
+                    costLabel[j] = costLabel[i] + currentCost;
+                    timeWarp[j] = routeTimeWarp;
+                    predecessorLabel[j] = i;
+                }
+            }
+        }
+        getListOfTrips(customerSequence, predecessorLabel, p, vt);
+    }
+
+    private static void createTripsAlternative(int p, int vt, double penaltyMultiplier) {
+        ArrayList<Integer> customerSequence = (ArrayList<Integer>) individual.giantTour.chromosome[p][vt].clone();  //// TODO: 18.02.2020 Brynjar: is this superfast or only fast?
+        //insert depot to be in the 0th position
+        customerSequence.add(0, individual.data.customers.length);
+
+        double[] costLabel = getInitialCostLabel(customerSequence.size());
+        int[] predecessorLabel = new int[customerSequence.size()];
+        double[] timeWarp = new double[customerSequence.size()];
 
         for (int i = 0; i < customerSequence.size(); i++) {
             for (int j = i+1; j < customerSequence.size(); j++ ) {   //todo: make this a for element in list function.
@@ -234,20 +318,8 @@ public class AdSplit {
                 }
             }
         }
-        /*
-        for (int i = 0; i < timeWarp.length; i++) {
-            if (timeWarp[i] > 0) {
-                System.out.println("---------------------------------");
-                System.out.println("Time warp: "+ timeWarp[i]);
-                System.out.println("Customer: "+ customerSequence.get(i));
-                System.out.println("End time window: "+ individual.data.customers[customerSequence.get(i)].timeWindow[p][1]);
-                System.out.println("Depot distance: "+ individual.data.distanceMatrix[customerSequence.get(0)][customerSequence.get(i)]);
-            }
-        }
-
-         */
+        System.out.println("Stop");
         getListOfTrips(customerSequence, predecessorLabel, p, vt);
-        //extractVrpSolution(customerSequence, predecessorLabel, p, vt);
     }
 
 
@@ -258,7 +330,7 @@ public class AdSplit {
 
         while (currentNode > 0) {
             ArrayList<Integer> tempListOfTrips = new ArrayList<Integer>();
-            if (predecessorLabel[currentNode] == 0 || predecessorLabel[currentNode] == currentNode - 1) {
+            if (predecessorLabel[currentNode] == currentNode - 1) {
                 tempListOfTrips.add(customerSequence.get(currentNode));
                 listOfTrips.add(0,tempListOfTrips);
                 currentNode--;
@@ -282,9 +354,6 @@ public class AdSplit {
         int tripNumber = 0;
         LabelPool currentLabelPool = new LabelPool(individual.data, listOfTrips, tripNumber, individual.orderDistribution.orderVolumeDistribution);
         LabelPool nextLabelPool;
-        //System.out.println("    ");
-        //System.out.println("----------Number of trips to be combined: " + listOfTrips.size() + "  -------");
-        //System.out.println("Number of vehicles: " + individual.data.vehicleTypes[vt].vehicleSet.size());
 
         while(tripNumber < listOfTrips.size()) {
             if (tripNumber == 0) {
@@ -293,7 +362,6 @@ public class AdSplit {
             } else {
                 nextLabelPool = new LabelPool(individual.data, listOfTrips, tripNumber, individual.orderDistribution.orderVolumeDistribution);
                 nextLabelPool.generateAndRemoveDominatedLabels(currentLabelPool, penaltyMultiplier);
-                //System.out.println("Number of labels after removal: " + nextLabelPool.labels.size());
                 currentLabelPool = nextLabelPool;
                 tripNumber++;
             }

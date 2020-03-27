@@ -114,7 +114,7 @@ public class main {
             numberOfIterations++;
             Individual bestIndividual = population.returnBestIndividual();
             double bestKnownSolution = 3587.78;
-            System.out.println(String.format("Gap: %.2f" ,100*(bestIndividualScore-bestKnownSolution)/bestKnownSolution));
+            System.out.println(String.format("Gap: %.2f prosent" ,100*(bestIndividualScore-bestKnownSolution)/bestKnownSolution));
             // Check if it has improved for early termination
             if (bestIndividualScore == bestIndividual.getFitness(false)){
                 population.setIterationsWithoutImprovement(population.getIterationsWithoutImprovement()+1);

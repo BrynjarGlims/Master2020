@@ -379,13 +379,10 @@ public class ArcFlowModel {
                     GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
                     for (int j = 0; j < dataMIP.numCustomers; j++) {  // need to include the depot,  //TODO: LOOK AT THE SUM
                         lhs.addTerm(1, x[d][v][r][dataMIP.numCustomers][j]);
-                        System.out.println("x["+d+"]["+v+"]["+r+"]["+dataMIP.numCustomers+"]["+j+"] + ");
                     }
                     lhs.addTerm(-1, z[d][v][r]);
-                    System.out.println(" = z["+d+"]["+v+"]["+r+"]");
                     String constraint_name = String.format("5.13 -Vehicle needs to start at the depot for vehicle %d, on trip %d, day %d", v, r, d);
                     model.addConstr(lhs, GRB.EQUAL, 0 , constraint_name);
-                    System.out.println("-------------------------------");
 
                 }
             }
