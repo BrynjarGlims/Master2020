@@ -518,7 +518,7 @@ public class Education {
     }
 
     private static double combinedFitnessOf2Sequences(Journey journey1, Journey journey2) {
-        return FitnessCalculation.getJourneyFitness(journey1, orderDistribution) + FitnessCalculation.getJourneyFitness(journey2, orderDistribution);
+        return FitnessCalculation.getTotalJourneyFitness(journey1, orderDistribution) + FitnessCalculation.getTotalJourneyFitness(journey2, orderDistribution);
     }
 
     private static void doRemovalInsertion(Individual individual, Trip trip1, Trip trip2, int removeCustomer, int targetCustomer) {

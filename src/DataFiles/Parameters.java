@@ -26,17 +26,19 @@ public class Parameters {
     public static final int numberOfTrips = 5;
 
     //Loading data parameters
-    public static final int numberOfCustomers = 7;
-    public static final int numberOfVehicles = 5;
+    public static final int numberOfCustomers = 20;
+    public static final int numberOfVehicles = 20;
 
 
     public static final int nearestNeighbors = 5; //Neighborhood size for each customer
     public static final int EducationTabooSize = 2;
+    public static final int tripOptimizerSizeLimit = 7;
 
     //Runtime parameters
     public static final double educationProbability = 0.7;
-    public static final double repairProbability = 1;
-    public static final double greedyMIPValue = 1;
+    public static final double tripOptimizerProbability = 0.5;
+    public static final double repairProbability = 0.4;
+    public static final double greedyMIPValue = 0.5;
 
 
     //Traveling parameters
