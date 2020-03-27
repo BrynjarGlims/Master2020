@@ -5,6 +5,7 @@ import DataFiles.Data;
 import java.util.ArrayList;
 
 import DataFiles.*;
+import scala.xml.PrettyPrinter;
 
 
 public class LabelEntry implements Comparable<LabelEntry> {
@@ -96,53 +97,8 @@ public class LabelEntry implements Comparable<LabelEntry> {
     public void updateLabelEntryValues(ArrayList<Integer> customers, int tripIndex){
         this.inUse = true;
         this.tripAssigment.add(tripIndex);
-        this.updateTravelTimeAndDrivingDistance(customers);
+        this.updateTravelTimeDrivingDistanceAndTimeWarp(customers);
         this.updateLoadInfeasibility(customers);
-        this.updateTimeWarp(customers);
-    }
-
-
-    private void updateTimeWarp(ArrayList<Integer> customers){ //todo: may be combined with the other traveling calculation
-
-        //if second trip, add loading time at depot
-        if (this.vehicleTotalTravelTime > 0){
-            this.vehicleTotalTravelTime += data.vehicleTypes[vehicleTypeID].loadingTimeAtDepot;
-        }
-
-        boolean fromDepot = true;
-        int lastCustomerID = -1;
-
-        //todo: make more readable
-
-        for (int customerID : customers){
-            if (fromDepot){  //depot to customer
-                currentVehicleTime = Math.max(currentVehicleTime + data.distanceMatrix[data.numberOfCustomers][customerID],
-                data.customers[customerID].timeWindow[periodID][0]);
-                if (currentVehicleTime > data.customers[customerID].timeWindow[periodID][1]){
-                    timeWarpInfeasibility +=  currentVehicleTime - data.customers[customerID].timeWindow[periodID][1];
-                    currentVehicleTime = data.customers[customerID].timeWindow[periodID][1];
-                }
-                lastCustomerID = customerID;
-                fromDepot = false;
-            }
-            else{  //Case where one goes from customer to customer
-                currentVehicleTime = Math.max(currentVehicleTime + data.customers[customerID].totalUnloadingTime +data.distanceMatrix[lastCustomerID][customerID],
-                        data.customers[customerID].timeWindow[periodID][0]);
-                if (currentVehicleTime > data.customers[customerID].timeWindow[periodID][1]){
-                    timeWarpInfeasibility +=  currentVehicleTime - data.customers[customerID].timeWindow[periodID][1];
-                    currentVehicleTime = data.customers[customerID].timeWindow[periodID][1];
-                }
-                lastCustomerID = customerID;
-            }
-        }
-        currentVehicleTime = currentVehicleTime + data.customers[lastCustomerID].totalUnloadingTime+
-                data.distanceMatrix[lastCustomerID][data.numberOfCustomers];
-        if (currentVehicleTime > Parameters.maxJourneyDuration){
-            timeWarpInfeasibility += currentVehicleTime - Parameters.maxJourneyDuration;
-            currentVehicleTime = Parameters.maxJourneyDuration;
-        }
-
-
     }
 
 
@@ -156,7 +112,7 @@ public class LabelEntry implements Comparable<LabelEntry> {
 
 
 
-    private void updateTravelTimeAndDrivingDistance(ArrayList<Integer> customers){
+    private void updateTravelTimeDrivingDistanceAndTimeWarp(ArrayList<Integer> customers){
 
         //if second trip, add loading time at depot
         if (this.vehicleTotalTravelTime > 0){
@@ -169,19 +125,24 @@ public class LabelEntry implements Comparable<LabelEntry> {
         //three cases, from depot to cust, cust to cust, cust to depot
 
         for ( int customerID : customers){
-            vehicleTotalTravelTime += data.distanceMatrix[previousCustomer][customerID] + data.customers[customerID].totalUnloadingTime;
+            vehicleTotalTravelTime += data.distanceMatrix[previousCustomer][customerID];
+            this.vehicleTotalTravelTime = Math.max(this.vehicleTotalTravelTime, data.customers[customerID].timeWindow[periodID][0]);
+            if (this.vehicleTotalTravelTime > data.customers[customerID].timeWindow[periodID][1]){
+                timeWarpInfeasibility +=  vehicleTotalTravelTime - data.customers[customerID].timeWindow[periodID][1];
+                vehicleTotalTravelTime = data.customers[customerID].timeWindow[periodID][1];
+            }
+            vehicleTotalTravelTime +=  data.customers[customerID].totalUnloadingTime;
             vehicleDrivingDistance += data.distanceMatrix[previousCustomer][customerID];
             previousCustomer = customerID;
         }
         vehicleTotalTravelTime += data.distanceMatrix[previousCustomer][data.numberOfCustomers];
         vehicleDrivingDistance += data.distanceMatrix[previousCustomer][data.numberOfCustomers];
+        if (vehicleTotalTravelTime > Parameters.maxJourneyDuration){
+            timeWarpInfeasibility += vehicleTotalTravelTime - Parameters.maxJourneyDuration;
+            vehicleTotalTravelTime = Parameters.maxJourneyDuration;
+        }
     }
 
-
-
-    public double getTravelTimeValue(){
-        return vehicleTotalTravelTime;
-    }
 
     public double getDrivingDistance(){
         return vehicleDrivingDistance;
@@ -199,23 +160,6 @@ public class LabelEntry implements Comparable<LabelEntry> {
     public double getOvertimeValue() {
         return 0; // TODO: 25/03/2020 Remove in a propper way 
         //return Math.max(0, vehicleTotalTravelTime - Parameters.maxJourneyDuration);
-    }
-
-    public String toString(){
-        String string = "LabelEntry vehicle ID: " + vehicleID + " with cost " + vehicleCost + " \n ";
-
-        /*/todo:fix
-
-        for (ArrayList<Integer> trips :tripAssigment){
-            string += "trip: ";
-            for (int customer : trips){
-                string += customer + " ";
-            }
-            string += "\n ";
-        }
-
-         */
-        return string;
     }
 
     @Override

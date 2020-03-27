@@ -189,23 +189,6 @@ public class Label {
     }
 
 
-    public HashMap<Integer, Integer> getVehicleAssignmentChromosome(){
-        //number of trips could be calculated here if needed
-        /*
-        HashMap<Integer, Integer> vehicleAssignment = new HashMap<Integer, Integer>();
-        for (LabelEntry labelEntry : labelEntries) {
-            for (ArrayList<Integer> customerList : labelEntry.tripAssigment){
-                for (int customerID : customerList) {
-                    vehicleAssignment.put(customerID, labelEntry.vehicleID);  // TODO: 24.02.2020 Change to correct vehicle id
-                }
-           }
-        }
-        return vehicleAssignment;
-
-         */
-        return new  HashMap<Integer, Integer>();
-    }
-
     public double getLabelDrivingDistance(){
         double drivingDistance = 0;
         for (LabelEntry labelEntry : labelEntries){

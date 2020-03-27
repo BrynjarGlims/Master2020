@@ -67,11 +67,13 @@ public class main {
         return GiantTourCrossover.crossOver(parent1, parent2, crossoverOD[0]);
     }
 
+
     public static void educate(Individual individual){
         if (ThreadLocalRandom.current().nextDouble() < Parameters.educationProbability){
             Education.improveRoutes(individual, individual.orderDistribution);
         }
     }
+
 
     public static void setOptimalOrderDistribution(Individual individual){
         if (ThreadLocalRandom.current().nextDouble() < Parameters.greedyMIPValue){
@@ -142,6 +144,7 @@ public class main {
         bestFeasibleIndividual.printDetailedFitness();
     }
 
+
     public static void main(String[] args) throws Exception {
         initialize();
         while ( (population.getIterationsWithoutImprovement() < Parameters.maxNumberIterationsWithoutImprovement &&
@@ -162,20 +165,16 @@ public class main {
                 tripOptimizer(newIndividual);
 
                 population.addChildToPopulation(newIndividual);
+
             }
 
             repair();
 
             selection();
 
-
-
             // TODO: 19.03.2020 all individuals must have updated fitness before selection is done, because penalties for infeasible individuals
             // TODO: 19.03.2020  which did not complete repair have values in label which is scaled with penalties, but in getFitness calculation
             // TODO: 19.03.2020 the values have been scaled down manually
-            //reduce size of both populations
-
-
         }
 
         Individual bestIndividual = population.returnBestIndividual();
