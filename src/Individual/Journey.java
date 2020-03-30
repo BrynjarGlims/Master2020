@@ -20,6 +20,7 @@ public class Journey {
     public int vehicleType;
     public int vehicleId;
     public List<Trip> trips;
+    public double vehicleCost;
 
     public double journeyCost;
 
@@ -28,6 +29,7 @@ public class Journey {
         this.period = period;
         this.vehicleType = vehicleType;
         this.vehicleId = vehicleId;
+        vehicleCost = data.vehicleTypes[vehicleType].usageCost;
         trips = new ArrayList<>();
     }
 
@@ -62,7 +64,7 @@ public class Journey {
         }
         double travelCost = travelDistance*data.vehicleTypes[vehicleType].travelCost;
         double infeasibilityCost = timeWarp* Parameters.initialTimeWarpPenalty*penaltyMultiplier + overLoad*Parameters.penaltyFactorForOverFilling*penaltyMultiplier;
-        return new double[]{travelCost, infeasibilityCost};
+        return new double[]{travelCost, infeasibilityCost, vehicleCost};
     }
 
     public double getTotalFitness(OrderDistribution orderDistribution){

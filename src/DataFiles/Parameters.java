@@ -26,10 +26,11 @@ public class Parameters {
     public static final int numberOfTrips = 5;
 
     //Loading data parameters
-    public static final int numberOfCustomers = 7;
-    public static final int numberOfVehicles = 5;
 
+    public static final int numberOfCustomers = 20;
+    public static final int numberOfVehicles = 10;
 
+    
     public static final int nearestNeighbors = 5; //Neighborhood size for each customer
     public static final int EducationTabooSize = 2;
     public static final int tripOptimizerSizeLimit = 7;
