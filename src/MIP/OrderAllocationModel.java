@@ -51,7 +51,10 @@ public class OrderAllocationModel {
             this.model.set(GRB.IntParam.LogToConsole, 0); //removes print of gurobi
         }
         else{
-            this.model.reset();
+            this.model.dispose();
+            this.model = new GRBModel(env);
+            model.set(GRB.StringAttr.ModelName, "OrderAllocationModel");
+            this.model.set(GRB.IntParam.LogToConsole, 0); //removes print of gurobi
         }
     }
 
