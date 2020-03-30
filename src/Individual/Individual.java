@@ -127,8 +127,6 @@ public class Individual implements Comparable<Individual> {
         this.giantTour = gt;
     }
 
-
-
     public void setOptimalOrderDistribution(OrderDistribution orderDistribution){
         setOptimalOrderDistribution(orderDistribution, true);
     }
@@ -184,6 +182,8 @@ public class Individual implements Comparable<Individual> {
         System.out.println("Fitness: " + fitness);
         System.out.println("True fitness: " + Testing.IndividualTest.getTrueIndividualFitness(this));
         System.out.println("Is feasbile: " + isFeasible());
+        System.out.println("Infeasibility cost1: " + getInfeasibilityCost());
+        System.out.println("Infeasibility cost2: " + infeasibilityCost);
         System.out.println("Biased fitness: " + biasedFitness);
         System.out.println("Diversity Rank: "  +diversityRank);
         System.out.println("Diversity: " + diversity);
@@ -197,10 +197,6 @@ public class Individual implements Comparable<Individual> {
         System.out.println("Vehicle cost: " + vehicleUsageCost);
         System.out.println("OvertimeAtDepot: " + feasibleOvertimeDepotCost);
         System.out.println("-------------------------------------");
-
-
-
-
     }
 
     public HashSet<String> getArcs(){

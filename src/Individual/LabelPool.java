@@ -112,7 +112,7 @@ public class LabelPool {
     private boolean checkDominance(Label firstLabel, Label secondLabel){
         double firstLabelValue = 0;
         firstLabelValue += calculateDeltaSumValue(firstLabel.labelEntries, secondLabel.labelEntries);
-        firstLabelValue *= Parameters.initialOvertimePenalty;
+        firstLabelValue *= Parameters.initialTimeWarpPenalty;
         firstLabelValue += firstLabel.costOfLabel;
         double secondLabelValue = secondLabel.costOfLabel;
         return firstLabelValue <= secondLabelValue;

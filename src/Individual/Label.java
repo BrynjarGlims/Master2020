@@ -126,7 +126,6 @@ public class Label {
 
     private void deriveLabelCost(double penaltyMulitplier) {  //todo: implement for new structure
         calculateDrivingCost();  //must be used before calculateOvertimeValue
-        calculateOvertimeValue(penaltyMulitplier);
         calculateLoadValue(penaltyMulitplier);
         calculateTimeWarp(penaltyMulitplier);
         calculateVehicleUseValue();
@@ -167,14 +166,6 @@ public class Label {
     }
 
 
-    private void calculateOvertimeValue(double penaltyMultiplier){
-
-        fleetOvertime = 0;
-        for (LabelEntry labelEntry : this.labelEntries){
-            fleetOvertime += labelEntry.getOvertimeValue();
-        }
-        fleetOvertime *= penaltyMultiplier*Parameters.initialOvertimePenalty;
-    }
 
     private void calculateLoadValue(double penaltyMultiplier){
 

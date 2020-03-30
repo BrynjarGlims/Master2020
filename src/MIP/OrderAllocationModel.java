@@ -542,8 +542,10 @@ public class OrderAllocationModel {
             activateConstraints();
             optimizeModel();
             if (optimstatus == 3) {
-                System.out.println("No solution found");
-                System.out.println("Terminate model");
+                if (Parameters.verbose){
+                    System.out.println("No optimal od found");
+                }
+                System.out.println("No optimal od found");
             }
             else if (optimstatus == 2){
                 initializeODObject();

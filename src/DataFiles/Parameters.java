@@ -10,11 +10,11 @@ public class Parameters {
 
     //Population parameters
 
-    public static final int maximumSubIndividualPopulationSize = 200; //TODO: find reasonable value
+    public static final int maximumSubIndividualPopulationSize = 300; //TODO: find reasonable value
     public static final int minimumSubIndividualPopulationSize = 100;
     public static final int numberOfElitismSurvivorsPerGeneration = 5;
 
-    public static final int initialPopulationSize = 50;
+    public static final int initialPopulationSize =100;
     public static final int initialOrderDistributionPopulationSize = 50;
     public static final int maxNumberIterationsWithoutImprovement = 10;
     public static final int maxNumberOfGenerations = 100;
@@ -27,8 +27,8 @@ public class Parameters {
 
     //Loading data parameters
 
-    public static final int numberOfCustomers = 20;
-    public static final int numberOfVehicles = 10;
+    public static final int numberOfCustomers = 40;
+    public static final int numberOfVehicles = 40;
 
     
     public static final int nearestNeighbors = 5; //Neighborhood size for each customer
@@ -38,9 +38,9 @@ public class Parameters {
 
     //Runtime parameters
     public static final double educationProbability = 0.7;
-    public static final double tripOptimizerProbability = 0.5;
+    public static final double tripOptimizerProbability = 0.3;
     public static final double repairProbability = 0.4;
-    public static final double greedyMIPValue = 0.5;
+    public static final double greedyMIPValue = 0.1;
 
 
     //Traveling parameters
@@ -48,9 +48,8 @@ public class Parameters {
     public static final double timeShift = 2;
 
     //Penalty parameters for genetic algorithm
-    public static final double initialCapacityPenalty = 1;  // lambda
-    public static final double initialOvertimePenalty = 1;  // theta
-    public static final double initialTimeWarpPenalty = 1000;  // zeta
+    public static final double initialCapacityPenalty = 1000;  // lambda
+    public static final double initialTimeWarpPenalty = 1000;  // theta
     public static final double initialDrivingCostPenalty = 1; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
 
 

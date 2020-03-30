@@ -279,15 +279,6 @@ public class OrderDistribution {
         return orderDeliveries;
     }
 
-//        int[] deliveryPeriods = new int[data.numPeriods];
-//        int[] visitDaysCopy = new int[customer.requiredVisitPeriod.length];
-//        System.arraycopy(customer.requiredVisitPeriod, 0, visitDaysCopy, 0, customer.requiredVisitPeriod.length);
-//        if (volumes.length == 1){
-//            deliveryPeriods[getMinimumPeriod(visitDaysCopy)] = 1;
-//        }
-//        else if (volumes.length == 2){
-//
-//        }
 
     private void addOrderDelivery(int period, double volume, Order order){
         orderVolumeDistribution[period][order.customerID] += volume;

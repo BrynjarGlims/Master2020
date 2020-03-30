@@ -202,11 +202,10 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
                 customerCounter++;
             }
         }
-        vehicleTotalTravelTime += data.distanceMatrix[lastCustomerID][data.numberOfCustomers];
+        vehicleTotalTravelTime += data.distanceMatrix[lastCustomerID][data.numberOfCustomers]; // not in use
         vehicleDrivingDistance += data.distanceMatrix[lastCustomerID][data.numberOfCustomers];
-        vehicleTotalTravelTime *= penaltyMultiplier*Parameters.initialOvertimePenalty;
-        vehicleDrivingDistance *= penaltyMultiplier*Parameters.initialDrivingCostPenalty;
-        return vehicleDrivingDistance + vehicleTotalTravelTime;
+        vehicleDrivingDistance *= Parameters.initialDrivingCostPenalty;
+        return vehicleDrivingDistance;
     }
 
 
