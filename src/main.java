@@ -77,9 +77,6 @@ public class main {
 
     public static void setOptimalOrderDistribution(Individual individual){
         if (ThreadLocalRandom.current().nextDouble() < Parameters.greedyMIPValue){
-            System.out.println("------------------Optimal orderdis is gathered---------------------");
-            //System.out.println("--------------------");
-            //System.out.println("Current fintness: " + newIndividual.getBiasedFitness());
             OrderDistribution optimalOD = OrderAllocationModel.createOptimalOrderDistribution(individual, data);
             if (individual.infeasibilityCost == 0){
                 individual.setOptimalOrderDistribution(optimalOD, true);
@@ -87,7 +84,6 @@ public class main {
             else{
                 individual.setOptimalOrderDistribution(optimalOD, false);
             }
-
             odp.addOrderDistribution(optimalOD);  // todo: do not remove adsplit
             //System.out.println("New fitness: " + newIndividual.getBiasedFitness());
             // TODO: 04.03.2020 Implement safe trap in case no solution is found in gurobi
@@ -121,11 +117,9 @@ public class main {
 
 
     public static void selection(){
-        // Calculate diversity
-        BiasedFitness.setBiasedFitnessScore(population);
 
         // Reduce population size
-        population.survivorSelection();
+        population.improvedSurvivorSelection();
         odp.removeNoneUsedOrderDistributions();
 
         // TODO: 04.03.2020 Implement adjust penalty parameters for overtimeInfeasibility, loadInfeasibility and timeWarpInfeasibility
@@ -141,6 +135,9 @@ public class main {
         }
 
         Individual bestFeasibleIndividual = population.returnBestIndividual();
+        double bestKnownSolution = 3587.78;
+        System.out.println(String.format("Gap: %.2f prosent" ,100*(bestIndividualScore-bestKnownSolution)/bestKnownSolution));
+
         bestFeasibleIndividual.printDetailedFitness();
     }
 
@@ -148,14 +145,14 @@ public class main {
     public static void main(String[] args) throws Exception {
         initialize();
         while ( (population.getIterationsWithoutImprovement() < Parameters.maxNumberIterationsWithoutImprovement &&
-                numberOfIterations < Parameters.maxNumberOfGenerations) || bestIndividualScore < 3500 ){
+                numberOfIterations < Parameters.maxNumberOfGenerations)){
             System.out.println("Start generation: " + numberOfIterations);
 
             //Find best OD for the distribution
             findBestOrderDistribution();
 
             //Generate new population
-            while (population.getPopulationSize() < Parameters.maximumSubIndividualPopulationSize){
+            while (population.infeasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize && population.feasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize ) {
                 Individual newIndividual = PIX();
 
                 educate(newIndividual);
@@ -185,6 +182,5 @@ public class main {
         Result res = new Result(population);
         res.store();
     }
-
 
 }
