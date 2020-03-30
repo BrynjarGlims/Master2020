@@ -172,13 +172,14 @@ public class AdSplit {
         double tempDistanceCost;
         double routeTimeWarp;
 
+
         for (int i = 0; i < customerSequence.size(); i++) {
             for (int j = i+1; j < customerSequence.size(); j++ ) {   //todo: make this a for element in list function.
                 loadSum = 0.0;
                 currentTime = 0.0;
-                currentCost = 0.0;
                 tempDistanceCost = 0.0;
                 routeTimeWarp = 0.0;
+
                 if (j == (i + 1)) {
                     currentTime += Math.max(individual.data.distanceMatrix[customerSequence.get(0)][customerSequence.get(j)],
                             individual.data.customers[customerSequence.get(j)].timeWindow[p][0]);
@@ -228,7 +229,7 @@ public class AdSplit {
 
                     currentCost = Parameters.initialCapacityPenalty*(Math.max(0, loadSum-individual.data.vehicleTypes[vt].capacity))
                             + routeTimeWarp*Parameters.initialTimeWarpPenalty;
-                    currentCost =  currentCost*penaltyMultiplier + Parameters.initialDrivingCostPenalty*(tempDistanceCost);
+                    currentCost =  currentCost*penaltyMultiplier + Parameters.initialDrivingCostPenalty*tempDistanceCost;
                 }
 
                 //Update predecessor label whenever improvements are detected
