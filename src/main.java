@@ -82,14 +82,13 @@ public class main {
         if (ThreadLocalRandom.current().nextDouble() < Parameters.greedyMIPValue){
             OrderDistribution optimalOD = orderAllocationModel.createOptimalOrderDistribution(individual);
             if (optimalOD.fitness != Double.MAX_VALUE) {  // Distribution found
-                if (individual.infeasibilityCost == 0) {  //is this still working?
+                if (individual.infeasibilityCost == 0) {
                     individual.setOptimalOrderDistribution(optimalOD, true);
                 } else {
                     individual.setOptimalOrderDistribution(optimalOD, false);
                 }
                 odp.addOrderDistribution(optimalOD);
             }
-            // todo: do not remove adsplit
         }
     }
 
@@ -124,8 +123,6 @@ public class main {
         // Reduce population size
         population.improvedSurvivorSelection();
         odp.removeNoneUsedOrderDistributions();
-
-        // TODO: 04.03.2020 Implement adjust penalty parameters for overtimeInfeasibility, loadInfeasibility and timeWarpInfeasibility
         numberOfIterations++;
         bestIndividual = population.returnBestIndividual();
         bestIndividualScore = bestIndividual.getFitness(false);
@@ -139,10 +136,6 @@ public class main {
         }
 
         Individual bestFeasibleIndividual = population.returnBestIndividual();
-
-        double bestKnownSolution = 3587.78;
-        System.out.println(String.format("Gap: %.2f prosent" ,100*(bestIndividualScore-bestKnownSolution)/bestKnownSolution));
-
         bestFeasibleIndividual.printDetailedFitness();
     }
 
@@ -163,7 +156,8 @@ public class main {
             //Generate new population
 
             System.out.println("Populate..");
-            while (population.infeasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize && population.feasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize ) {
+            while (population.infeasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize &&
+                    population.feasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize ) {
                 Individual newIndividual = PIX();
 
                 educate(newIndividual);
@@ -182,10 +176,6 @@ public class main {
             System.out.println("Selection..");
             selection();
 
-            // TODO: 19.03.2020 all individuals must have updated fitness before selection is done, because penalties for infeasible individuals
-            // TODO: 19.03.2020  which did not complete repair have values in label which is scaled with penalties, but in getFitness calculation
-            // TODO: 19.03.2020 the values have been scaled down manually
-        }
 
         Individual bestIndividual = population.returnBestIndividual();
         System.out.println("Individual feasible: " + bestIndividual.isFeasible());
