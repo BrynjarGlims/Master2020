@@ -131,7 +131,7 @@ public class TestResults {
         evaluateSolution(path);
         System.out.println(" ----- ");
         System.out.println("Results from MIP");
-        path = "results/results_detailed/bestMIP";
+        path = "results/results_detailed/Test_MIP";
         evaluateSolution(path);
     }
 

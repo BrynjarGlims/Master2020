@@ -39,8 +39,12 @@ public class PlotIndividual {
             "#AED6F1", "#85C1E9", "#5DADE2", "#3498DB", "#2E86C1", "#2874A6", "#21618C", "#1B4F72"
     }; //BLUE COLORS
 
+    private String[] COLORS_ORANGE = {
+            "#935116", "#AF601A", "#CA6F1E", "#E67E22", "#EB984E", "#F0B27A", "#FAD7A0", "#784212"
+    }; //ORANGE COLORS
+
     //colors for each vehicle type
-    private String[][] COLORS = new String[][]{COLORS_RED, COLORS_PURPLE, COLORS_GREEN, COLORS_YELLOW, COLORS_BLUE};
+    private String[][] COLORS = new String[][]{COLORS_RED, COLORS_PURPLE, COLORS_GREEN, COLORS_YELLOW, COLORS_BLUE, COLORS_ORANGE};
 
     public PlotIndividual(Data data) {
         this.data = data;

@@ -126,11 +126,11 @@ public class GiantTourCrossover {
                 currentBestFitness = Double.MAX_VALUE;
                 for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
                     for (Journey journey : child.journeyList[p][vt]){
-                        journeyFitness = FitnessCalculation.getJourneyFitness(journey, orderDistribution);
+                        journeyFitness = FitnessCalculation.getTotalJourneyFitness(journey, orderDistribution);
                         for (Trip trip : journey.trips){
                             for (int i = 0 ; i < trip.customers.size() ; i++){
                                 trip.addCustomer(c, i);
-                                tempJourneyFitness = FitnessCalculation.getJourneyFitness(journey, orderDistribution) - journeyFitness;
+                                tempJourneyFitness = FitnessCalculation.getTotalJourneyFitness(journey, orderDistribution) - journeyFitness;
                                 if(tempJourneyFitness < currentBestFitness){
                                     currentBestTrip = trip;
                                     currentBestIndex = i;

@@ -11,6 +11,25 @@ import Individual.Journey;
 
 public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove parts of code in LabelEntryClass
 
+    public static double[] getIndividualFitness(Individual individual, double penaltyMultiplier){
+        Data data = individual.data;
+        double objectiveFitness = 0;
+        double infeasibilityFitness = 0;
+        double[] fitnesses;
+        for (int p = 0 ; p < data.numberOfPeriods ; p++){
+            for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
+                for (Journey journey : individual.journeyList[p][vt]){
+                    fitnesses = getJourneyFitness(journey, individual.orderDistribution, penaltyMultiplier);
+                    objectiveFitness += fitnesses[0];
+                    infeasibilityFitness += fitnesses[1];
+                }
+            }
+        }
+        objectiveFitness += overTimeDepot(individual.orderDistribution);
+        return new double[]{objectiveFitness, infeasibilityFitness};
+    }
+
+
     public static double getTripFitness(List<Integer> customerOrder, int vt, int p, double[][] orderDistribution, Data data){
         return getTripFitness(customerOrder, vt, p, orderDistribution, data, 1);
     }
@@ -26,15 +45,22 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
         return fitness;
     }
 
-    public static double getJourneyFitness(Journey journey, OrderDistribution orderDistribution){
+    public static double getTotalJourneyFitness(Journey journey, OrderDistribution orderDistribution){
+        return getTotalJourneyFitness(journey, orderDistribution, 1);
+    }
+
+    public static double getTotalJourneyFitness(Journey journey, OrderDistribution orderDistribution, double penaltyMultiplier){
+        double[] fitnesses = getJourneyFitness(journey, orderDistribution, penaltyMultiplier);
+        return fitnesses[0] + fitnesses[1];
+    }
+
+
+    public static double[] getJourneyFitness(Journey journey, OrderDistribution orderDistribution){
         return getJourneyFitness(journey, orderDistribution, 1);
     }
 
-    public static double getJourneyFitness(Journey journey, OrderDistribution orderDistribution, double penaltyMultiplier){
-        double fitness = journey.updateFitness(orderDistribution);
-
-
-        return fitness;
+    public static double[] getJourneyFitness(Journey journey, OrderDistribution orderDistribution, double penaltyMultiplier){
+        return journey.updateFitness(orderDistribution, penaltyMultiplier);
     }
 
 
@@ -95,6 +121,14 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
 //        return overtimeFitness;
 //    }
 //
+
+    private static double overTimeDepot(OrderDistribution orderDistribution){
+        double overTime = 0;
+        for (int p = 0 ; p < orderDistribution.volumePerPeriod.length ; p++){
+            overTime += Math.max(0, orderDistribution.volumePerPeriod[p] - Parameters.overtimeLimit[p])*Parameters.overtimeCost[p];
+        }
+        return overTime;
+    }
 
     private static double overloadScore(List<Integer> customerOrder, int vt, int p, double[][] orderDistribution,  Data data, double penaltyMultiplier){
         double load = 0;

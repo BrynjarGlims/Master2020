@@ -1,5 +1,6 @@
 package Individual;
 import DataFiles.*;
+import Genetic.FitnessCalculation;
 import MIP.ArcFlowModel;
 import Population.Population;
 import ProductAllocation.OrderDistribution;
@@ -265,13 +266,13 @@ public class Individual implements Comparable<Individual> {
 
     public void updateFitness(double penaltyMultiplier) {
         //Calculate objective costs
-        this.objectiveCost = getObjectiveCost(penaltyMultiplier);
-
-        //Add infeasibility costs
-        this.infeasibilityCost = getInfeasibilityCost();
-
+        double[] fitnesses = FitnessCalculation.getIndividualFitness(this, penaltyMultiplier);
+        this.objectiveCost = fitnesses[0];
+        this.infeasibilityCost = fitnesses[1];
         this.fitness = this.objectiveCost + this.infeasibilityCost;
     }
+
+
 
     private double getObjectiveCost(){
         return getObjectiveCost(1);

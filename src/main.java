@@ -10,7 +10,7 @@ import Population.OrderDistributionPopulation;
 import StoringResults.Result;
 import Testing.IndividualTest;
 import Visualization.PlotIndividual;
-import Genetic.BiasedFitness;
+import Individual.Trip;
 import Testing.*;
 
 import java.io.IOException;
@@ -18,114 +18,160 @@ import java.util.HashSet;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class main {
-    public static void main(String[] args) throws Exception {
-        Data data = DataReader.loadData();
-        Population population = new Population(data);
-        OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
-        OrderDistributionCrossover ODC = new OrderDistributionCrossover(data);
+
+
+    public static Data data;
+    public static Population population;
+    public static OrderDistributionPopulation odp;
+    public static OrderDistributionCrossover ODC;
+    public static OrderDistribution firstOD;
+    public static double bestIndividualScore;
+    public static HashSet<Individual> repaired;
+    public static Individual bestIndividual;
+    public static int numberOfIterations;
+
+    public static void initialize(){
+        data = DataReader.loadData();
+        population = new Population(data);
+        odp = new OrderDistributionPopulation(data);
+        ODC = new OrderDistributionCrossover(data);
         odp.initializeOrderDistributionPopulation(population);
-        OrderDistribution firstOD = odp.getRandomOrderDistribution();
+        firstOD = odp.getRandomOrderDistribution();
         population.setOrderDistributionPopulation(odp);
         population.initializePopulation(firstOD);
-        double bestIndividualScore = Double.MAX_VALUE;
+        bestIndividualScore = Double.MAX_VALUE;
+        BiasedFitness.setBiasedFitnessScore(population);
+        repaired = new HashSet<>();
+        numberOfIterations = 0;
+    }
+
+    private static void findBestOrderDistribution(){
+        //Find best OD for the distribution
+        odp.calculateFillingLevelFitnessScoresPlural();
+        for (Individual individual : population.getTotalPopulation()){
+            individual.testNewOrderDistribution(odp.getBestOrderDistribution(individual)); // // TODO: 24/03/2020 Rejects converting from feasible to infeasible
+        }
+    }
+
+    public static Individual PIX(){
+        // Select parents
+        Individual parent1 = TournamentSelection.performSelection(population);
+        Individual parent2 = TournamentSelection.performSelection(population);
+        while (parent1.equals(parent2)){
+            parent2 = TournamentSelection.performSelection(population);
+        }
+        OrderDistribution[] crossoverOD = ODC.crossover(parent1.orderDistribution, parent2.orderDistribution); //these will be the same
+        for (OrderDistribution od : crossoverOD) { //todo: EVALUEATE IF THIS IS DECENT
+            odp.addOrderDistribution(od);
+        }
+        return GiantTourCrossover.crossOver(parent1, parent2, crossoverOD[0]);
+    }
 
 
+    public static void educate(Individual individual){
+        if (ThreadLocalRandom.current().nextDouble() < Parameters.educationProbability){
+            Education.improveRoutes(individual, individual.orderDistribution);
+        }
+    }
 
-        HashSet<Individual> repaired = new HashSet<>();
-        int numberOfIterations = 0;
+
+    public static void setOptimalOrderDistribution(Individual individual){
+        if (ThreadLocalRandom.current().nextDouble() < Parameters.greedyMIPValue){
+            OrderDistribution optimalOD = OrderAllocationModel.createOptimalOrderDistribution(individual, data);
+            if (individual.infeasibilityCost == 0){
+                individual.setOptimalOrderDistribution(optimalOD, true);
+            }
+            else{
+                individual.setOptimalOrderDistribution(optimalOD, false);
+            }
+            odp.addOrderDistribution(optimalOD);  // todo: do not remove adsplit
+            //System.out.println("New fitness: " + newIndividual.getBiasedFitness());
+            // TODO: 04.03.2020 Implement safe trap in case no solution is found in gurobi
+        }
+    }
+
+    public static void tripOptimizer(Individual individual){
+        for (int p = 0 ; p < data.numberOfPeriods ; p++){
+            for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
+                for (Trip trip : individual.tripList[p][vt]) {
+                    if (ThreadLocalRandom.current().nextDouble() < Parameters.tripOptimizerProbability) {
+                        TripOptimizer.optimizeTrip(trip, individual.orderDistribution);
+                    }
+                }
+            }
+        }
+    }
+
+    public static void repair(){
+        repaired.clear();
+        for (Individual infeasibleIndividual : population.infeasiblePopulation){
+            if (ThreadLocalRandom.current().nextDouble() < Parameters.repairProbability){
+                if (Repair.repair(infeasibleIndividual, infeasibleIndividual.orderDistribution)){
+                    repaired.add(infeasibleIndividual);
+                }
+            }
+        }
+        population.infeasiblePopulation.removeAll(repaired);
+        population.feasiblePopulation.addAll(repaired);
+    }
+
+
+    public static void selection(){
+
+        // Reduce population size
+        population.improvedSurvivorSelection();
+        odp.removeNoneUsedOrderDistributions();
+
+        // TODO: 04.03.2020 Implement adjust penalty parameters for overtimeInfeasibility, loadInfeasibility and timeWarpInfeasibility
+        numberOfIterations++;
+        bestIndividual = population.returnBestIndividual();
+
+        // Check if it has improved for early termination
+        if (bestIndividualScore == bestIndividual.getFitness(false)){
+            population.setIterationsWithoutImprovement(population.getIterationsWithoutImprovement()+1);
+        }
+        else{
+            population.setIterationsWithoutImprovement(0);
+        }
+
+        Individual bestFeasibleIndividual = population.returnBestIndividual();
+        double bestKnownSolution = 3587.78;
+        System.out.println(String.format("Gap: %.2f prosent" ,100*(bestIndividualScore-bestKnownSolution)/bestKnownSolution));
+
+        bestFeasibleIndividual.printDetailedFitness();
+    }
+
+
+    public static void main(String[] args) throws Exception {
+        initialize();
         while ( (population.getIterationsWithoutImprovement() < Parameters.maxNumberIterationsWithoutImprovement &&
-                numberOfIterations < Parameters.maxNumberOfGenerations) ){
+                numberOfIterations < Parameters.maxNumberOfGenerations)){
             System.out.println("Start generation: " + numberOfIterations);
 
             //Find best OD for the distribution
-            odp.calculateFillingLevelFitnessScoresPlural();
-            for (Individual individual : population.getTotalPopulation()){
-                individual.testNewOrderDistribution(odp.getBestOrderDistribution(individual)); // // TODO: 24/03/2020 Rejects converting from feasible to infeasible
-            }
+            findBestOrderDistribution();
 
             //Generate new population
-            while (population.feasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize && population.infeasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize){
+            while (population.infeasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize && population.feasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize ) {
+                Individual newIndividual = PIX();
 
-                // Select parents
-                Individual parent1 = TournamentSelection.performSelection(population);
-                Individual parent2 = TournamentSelection.performSelection(population);
-                while (parent1.equals(parent2)){
-                    parent2 = TournamentSelection.performSelection(population);
-                }
+                educate(newIndividual);
 
-                OrderDistribution[] crossoverOD = ODC.crossover(parent1.orderDistribution, parent2.orderDistribution); //these will be the same
+                setOptimalOrderDistribution(newIndividual);
 
-                for (OrderDistribution od : crossoverOD) { //todo: EVALUEATE IF THIS IS DECENT
-                    odp.addOrderDistribution(od);
-                }
+                tripOptimizer(newIndividual);
 
-
-
-
-                Individual newIndividual = GiantTourCrossover.crossOver(parent1, parent2, crossoverOD[0]);
-                if (ThreadLocalRandom.current().nextDouble() < Parameters.educationProbability){
-                    Education.improveRoutes(newIndividual, newIndividual.orderDistribution);
-                }
-
-                // TODO: 04.03.2020 Add repair:
-
-                if (ThreadLocalRandom.current().nextDouble() < Parameters.greedyMIPValue){
-                    OrderDistribution optimalOD = OrderAllocationModel.createOptimalOrderDistribution(newIndividual, data);
-                    if (newIndividual.infeasibilityCost == 0){
-                        newIndividual.setOptimalOrderDistribution(optimalOD, true);
-                    }
-                    else{
-                        newIndividual.setOptimalOrderDistribution(optimalOD, false);
-                    }
-
-                    odp.addOrderDistribution(optimalOD);  // todo: do not remove adsplit
-                    //System.out.println("New fitness: " + newIndividual.getBiasedFitness());
-                    // TODO: 04.03.2020 Implement safe trap in case no solution is found in gurobi
-                }
                 population.addChildToPopulation(newIndividual);
+
             }
 
+            repair();
 
-
-            repaired.clear();
-            for (Individual infeasibleIndividual : population.infeasiblePopulation){
-                if (ThreadLocalRandom.current().nextDouble() < Parameters.repairProbability){
-                    if (Repair.repair(infeasibleIndividual, infeasibleIndividual.orderDistribution)){
-                        IndividualTest.checkIfIndividualIsComplete(infeasibleIndividual);
-                        repaired.add(infeasibleIndividual);
-                    }
-                }
-            }
-            population.infeasiblePopulation.removeAll(repaired);
-            population.feasiblePopulation.addAll(repaired);
+            selection();
 
             // TODO: 19.03.2020 all individuals must have updated fitness before selection is done, because penalties for infeasible individuals
             // TODO: 19.03.2020  which did not complete repair have values in label which is scaled with penalties, but in getFitness calculation
             // TODO: 19.03.2020 the values have been scaled down manually
-            //reduce size of both populations
-
-
-            // Reduce population size
-
-            population.improvedSurvivorSelection();
-            odp.removeNoneUsedOrderDistributions();
-
-            // TODO: 04.03.2020 Implement adjust penalty parameters for overtimeInfeasibility, loadInfeasibility and timeWarpInfeasibility
-            numberOfIterations++;
-            Individual bestIndividual = population.returnBestIndividual();
-            double bestKnownSolution = 3587.78;
-            System.out.println(String.format("Gap: %.2f prosent" ,100*(bestIndividualScore-bestKnownSolution)/bestKnownSolution));
-            // Check if it has improved for early termination
-            if (bestIndividualScore == bestIndividual.getFitness(false)){
-                population.setIterationsWithoutImprovement(population.getIterationsWithoutImprovement()+1);
-            }
-            else{
-                bestIndividualScore = bestIndividual.getFitness(false);
-                population.setIterationsWithoutImprovement(0);
-            }
-
-            Individual bestFeasibleIndividual = population.returnBestIndividual();
-            bestFeasibleIndividual.printDetailedFitness();
         }
 
         Individual bestIndividual = population.returnBestIndividual();
@@ -136,4 +182,5 @@ public class main {
         Result res = new Result(population);
         res.store();
     }
+
 }

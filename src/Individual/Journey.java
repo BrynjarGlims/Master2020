@@ -5,13 +5,12 @@ import java.util.HashSet;
 import java.util.List;
 import DataFiles.Data;
 import DataFiles.DataReader;
+import DataFiles.Order;
 import DataFiles.Parameters;
-import Genetic.Education;
 import Genetic.OrderDistributionCrossover;
 import Population.Population;
 import ProductAllocation.OrderDistribution;
 import Population.OrderDistributionPopulation;
-import scala.xml.PrettyPrinter;
 
 public class Journey {
 
@@ -43,7 +42,11 @@ public class Journey {
     private double timeWarp;
     private double overLoad;
 
-    public double updateFitness(OrderDistribution orderDistribution){ //include cost of using vehicle?
+    public double[] updateFitness(OrderDistribution orderDistribution){
+        return updateFitness(orderDistribution, 1);
+    }
+
+    public double[] updateFitness(OrderDistribution orderDistribution, double penaltyMultiplier){ //include cost of using vehicle?
         currentTime = 0;
         timeWarp = 0;
         overLoad = 0;
@@ -57,8 +60,18 @@ public class Journey {
             updateOverload(trip, orderDistribution);
             firstTrip = false;
         }
-        journeyCost = timeWarp* Parameters.initialTimeWarpPenalty + overLoad*Parameters.penaltyFactorForOverFilling + travelDistance*data.vehicleTypes[vehicleType].travelCost;
-        return journeyCost;
+        double travelCost = travelDistance*data.vehicleTypes[vehicleType].travelCost;
+        double infeasibilityCost = timeWarp* Parameters.initialTimeWarpPenalty*penaltyMultiplier + overLoad*Parameters.penaltyFactorForOverFilling*penaltyMultiplier;
+        return new double[]{travelCost, infeasibilityCost};
+    }
+
+    public double getTotalFitness(OrderDistribution orderDistribution){
+        return getTotalFitness(orderDistribution, 1);
+    }
+
+    public double getTotalFitness(OrderDistribution orderDistribution, double penaltyMultiplier){
+        double[] fitnesses = updateFitness(orderDistribution, penaltyMultiplier);
+        return fitnesses[0] + fitnesses[1];
     }
 
     private void updateTimes(Trip trip){
