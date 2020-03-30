@@ -20,7 +20,7 @@ public class Parameters {
     public static final int minimumSubIndividualPopulationSize = 100;
     public static final int numberOfElitismSurvivorsPerGeneration = 5;
 
-    public static final int initialPopulationSize =100;
+    public static final int initialPopulationSize = 100;
     public static final int initialOrderDistributionPopulationSize = 50;
     public static final int maxNumberIterationsWithoutImprovement = 10;
     public static final int maxNumberOfGenerations = 1;
@@ -33,8 +33,8 @@ public class Parameters {
 
     //Loading data parameters
 
-    public static final int numberOfCustomers = 98;  // A maximum of 98
-    public static final int numberOfVehicles = 20;
+    public static final int numberOfCustomers = 10;  // A maximum of 98
+    public static final int numberOfVehicles = 10;
 
     
     public static final int nearestNeighbors = 5; //Neighborhood size for each customer
