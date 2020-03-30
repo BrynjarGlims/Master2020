@@ -35,6 +35,7 @@ public class Individual implements Comparable<Individual> {
     //fitness values:
     public double objectiveCost;
     public double infeasibilityCost;
+    public double vehicleUsageCost;
 
     private double fitness = Double.MAX_VALUE;
     private double diversity = -1;
@@ -195,7 +196,7 @@ public class Individual implements Comparable<Individual> {
         System.out.println("InfOverCapacityValue: " + infeasibilityOverCapacityValue);
         System.out.println("Objective cost: " + objectiveCost);
         System.out.println("Traveling cost: " + feasibleTravelingCost);
-        System.out.println("Vehicle cost: " + feasibleVehicleUseCost);
+        System.out.println("Vehicle cost: " + vehicleUsageCost);
         System.out.println("OvertimeAtDepot: " + feasibleOvertimeDepotCost);
         System.out.println("-------------------------------------");
 
@@ -269,7 +270,8 @@ public class Individual implements Comparable<Individual> {
         double[] fitnesses = FitnessCalculation.getIndividualFitness(this, penaltyMultiplier);
         this.objectiveCost = fitnesses[0];
         this.infeasibilityCost = fitnesses[1];
-        this.fitness = this.objectiveCost + this.infeasibilityCost;
+        this.vehicleUsageCost = fitnesses[2];
+        this.fitness = this.objectiveCost + this.vehicleUsageCost + this.infeasibilityCost;
     }
 
 

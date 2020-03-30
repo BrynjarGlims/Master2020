@@ -15,6 +15,7 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
         Data data = individual.data;
         double objectiveFitness = 0;
         double infeasibilityFitness = 0;
+        double vehicleUsageCost = 0;
         double[] fitnesses;
         for (int p = 0 ; p < data.numberOfPeriods ; p++){
             for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
@@ -22,11 +23,12 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
                     fitnesses = getJourneyFitness(journey, individual.orderDistribution, penaltyMultiplier);
                     objectiveFitness += fitnesses[0];
                     infeasibilityFitness += fitnesses[1];
+                    vehicleUsageCost += fitnesses[2];
                 }
             }
         }
         objectiveFitness += overTimeDepot(individual.orderDistribution);
-        return new double[]{objectiveFitness, infeasibilityFitness};
+        return new double[]{objectiveFitness, infeasibilityFitness, vehicleUsageCost};
     }
 
 
@@ -51,7 +53,7 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
 
     public static double getTotalJourneyFitness(Journey journey, OrderDistribution orderDistribution, double penaltyMultiplier){
         double[] fitnesses = getJourneyFitness(journey, orderDistribution, penaltyMultiplier);
-        return fitnesses[0] + fitnesses[1];
+        return fitnesses[0] + fitnesses[1] + fitnesses[2];
     }
 
 
