@@ -47,7 +47,7 @@ public class Parameters {
     public static final double tripOptimizerProbability = 0.3;
     public static final double repairProbability = 0.4;
     public static final double greedyMIPValue = 1;
-    public static final double heuristicDominanceValue = 1;
+    public static final double heuristicDominanceValue = 5;
 
 
     //Traveling parameters
