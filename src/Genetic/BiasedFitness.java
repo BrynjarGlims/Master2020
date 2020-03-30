@@ -3,14 +3,10 @@ package Genetic;
 import DataFiles.Parameters;
 import Individual.Individual;
 import Population.Population;
-import Individual.Journey;
-import Individual.Arc;
-import Individual.SimpleArc;
 import DataFiles.Data;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
 
 public class BiasedFitness {
 

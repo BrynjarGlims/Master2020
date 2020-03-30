@@ -126,7 +126,7 @@ public class Individual implements Comparable<Individual> {
         setOptimalOrderDistribution(orderDistribution, true);
     }
 
-    public void setOptimalOrderDistribution(OrderDistribution orderDistribution, boolean doAdSplit) {
+    public void     setOptimalOrderDistribution(OrderDistribution orderDistribution, boolean doAdSplit) {
         this.orderDistribution = orderDistribution;
         if (doAdSplit){
             AdSplit.adSplitPlural(this);
