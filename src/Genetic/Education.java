@@ -142,9 +142,6 @@ public class Education {
                                 }
                                 break;
                         }
-                        if (!testTripMap(individual)){
-                            System.out.println("Total improvements: " + totalImprovements + " move: " + move);
-                        }
                     }
                 }
             }
