@@ -139,7 +139,7 @@ public class JourneyBasedModel {
         }
         for (int d = 0; d < dataMIP.numPeriods; d++) {
             String variable_name = String.format("qO[%d]", d);
-            qO[d] = model.addVar(0.0, DataFiles.Parameters.overtimeLimit[d], dataMIP.costOvertime[d], GRB.CONTINUOUS, variable_name);
+            qO[d] = model.addVar(0.0, DataFiles.Data.overtimeLimit[d], dataMIP.costOvertime[d], GRB.CONTINUOUS, variable_name);
         }
     }
 

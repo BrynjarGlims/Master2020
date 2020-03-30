@@ -24,7 +24,7 @@ public class Data {
     public int numberOfNodes = Parameters.numberOfCustomers + 2;
     public int[] numberOfCustomerVisitsInPeriod;
     public int numberOfCustomerVisitsInPlanningHorizon;
-
+    public static double[] overtimeLimit;
 
     //Gurobi spesific variables
     public GRBVar[][][][][] arcs;
@@ -169,6 +169,11 @@ public class Data {
             }
         }
         targetVolume = totalVolume/ numberOfPeriods;
+        overtimeLimit = new double[numberOfPeriods];
+        for (int p = 0; p < numberOfPeriods; p++){
+            overtimeLimit[p] = totalVolume*Parameters.overtimeLimitPercentage[p];
+        }
+
 
 
     }

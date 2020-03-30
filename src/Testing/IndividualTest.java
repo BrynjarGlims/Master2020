@@ -81,7 +81,7 @@ public class IndividualTest {
 
                 }
             }
-            overtimeDepotCost += Parameters.overtimeCost[p]* Math.max(0, individual.orderDistribution.volumePerPeriod[p]-Parameters.overtimeLimit[p]);
+            overtimeDepotCost += Parameters.overtimeCost[p]* Math.max(0, individual.orderDistribution.volumePerPeriod[p]-Data.overtimeLimit[p]);
         }
         objective = vehicleUseCost + travelCost + overtimeDepotCost;
         System.out.println("Travelcost: " +travelCost);

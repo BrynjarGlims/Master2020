@@ -111,7 +111,7 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
 
     public static double getPeriodicOvertimeFitness (OrderDistribution orderDistribution, int p) {
         double periodicOvertime = 0;
-        periodicOvertime = Math.max(orderDistribution.volumePerPeriod[p] - Parameters.overtimeLimit[p], 0);
+        periodicOvertime = Math.max(orderDistribution.volumePerPeriod[p] - Data.overtimeLimit[p], 0);
         return periodicOvertime*Parameters.overtimeCost[p];
     }
 
@@ -127,7 +127,7 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
     private static double overTimeDepot(OrderDistribution orderDistribution){
         double overTime = 0;
         for (int p = 0 ; p < orderDistribution.volumePerPeriod.length ; p++){
-            overTime += Math.max(0, orderDistribution.volumePerPeriod[p] - Parameters.overtimeLimit[p])*Parameters.overtimeCost[p];
+            overTime += Math.max(0, orderDistribution.volumePerPeriod[p] - Data.overtimeLimit[p])*Parameters.overtimeCost[p];
         }
         return overTime;
     }

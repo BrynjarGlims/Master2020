@@ -158,7 +158,7 @@ public class OrderDistribution {
     private void setFitness(){
         fitness = 0;
         for (int p = 0; p < data.numberOfPeriods; p++){
-            fitness += Parameters.overtimeCost[p]*Math.max(0, this.volumePerPeriod[p] - Parameters.overtimeLimit[p]);
+            fitness += Parameters.overtimeCost[p]*Math.max(0, this.volumePerPeriod[p] - Data.overtimeLimit[p]);
         }
         //System.out.println("#####");
         //System.out.println( "Fitness of objective: " + objectiveValue);
@@ -323,7 +323,7 @@ public class OrderDistribution {
     public double getOvertimeValue(){
         fitness = 0;
         for (int d = 0; d < data.numberOfPeriods; d++ ){
-            fitness += Parameters.overtimeCost[d]*Math.max(0 , this.volumePerPeriod[d]-Parameters.overtimeLimit[d]);
+            fitness += Parameters.overtimeCost[d]*Math.max(0 , this.volumePerPeriod[d]-Data.overtimeLimit[d]);
         }
         return fitness;
     }

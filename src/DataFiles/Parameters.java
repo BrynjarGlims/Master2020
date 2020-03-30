@@ -38,7 +38,7 @@ public class Parameters {
 
     
     public static final int nearestNeighbors = 5; //Neighborhood size for each customer
-    public static final int diversityCalculationInterval = 20;
+    public static final int diversityCalculationInterval = 100;
     public static final int EducationTabooSize = 2;
     public static final int tripOptimizerSizeLimit = 7;
 
@@ -55,8 +55,8 @@ public class Parameters {
     public static final double timeShift = 4;
 
     //Penalty parameters for genetic algorithm
-    public static final double initialCapacityPenalty = 1000;  // lambda
-    public static final double initialTimeWarpPenalty = 1000;  // theta
+    public static final double initialCapacityPenalty = 10;  // lambda
+    public static final double initialTimeWarpPenalty = 10;  // theta
     public static final double initialDrivingCostPenalty = 1; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
 
 
@@ -71,9 +71,8 @@ public class Parameters {
 
 
     //Period parameters
-    //TODO: change to percentage values
-    public static final double[] overtimeLimit = {100, 100, 100, 100, 100, 50};
     public static final double[] overtimeCost = {100, 100, 100, 100, 100, 100};
+    public static final double[] overtimeLimitPercentage = {0.19, 0.19, 0.19, 0.19, 0.19, 0.05};
 
     //Time parameters
     public static final double maxJourneyDuration = 20; //changed to journey duration
