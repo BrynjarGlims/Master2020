@@ -144,8 +144,7 @@ public class main {
         System.out.println("Initialize population..");
         initialize();
 
-
-        while ( (population.getIterationsWithoutImprovement() < Parameters.maxNumberIterationsWithoutImprovement &&
+        while ((population.getIterationsWithoutImprovement() < Parameters.maxNumberIterationsWithoutImprovement &&
                 numberOfIterations < Parameters.maxNumberOfGenerations)) {
             System.out.println("Start generation: " + numberOfIterations);
 
@@ -186,5 +185,6 @@ public class main {
         Result res = new Result(population);
         res.store();
         orderAllocationModel.terminateEnvironment();
+
     }
 }

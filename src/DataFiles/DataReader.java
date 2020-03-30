@@ -1,5 +1,7 @@
 package DataFiles;
 
+import scala.xml.PrettyPrinter;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -241,21 +243,26 @@ public class DataReader {
 
 
 
-    private static Customer[] removeInvalidCustomers(Customer[] customers){
+    private static Customer[] removeInvalidCustomers(Customer[] customers, Depot depot){
         //Function to remove invalid data
-        customers = removeInvalidNonDivOrderCombination(customers);
-        return customers;
-    }
-
-    private static Customer[] removeInvalidNonDivOrderCombination(Customer[] customers){
         List<Integer> indexes = new ArrayList<Integer>() ;
         for (int i = 0; i < customers.length; i++){
-            if (customers[i].numberOfNonDividableOrders > customers[i].numberOfVisitPeriods){
+            if (customers[i].numberOfNonDividableOrders > customers[i].numberOfVisitPeriods ){
                 indexes.add(i);
             }
+            else if (distanceFromDepot(customers[i], depot) > Parameters.distanceCutOffFromDepot){
+                indexes.add(i);
+            }
+
+
         }
         Customer[] newCustomers = removeElementsInArray(customers, indexes);
         return newCustomers;
+    }
+
+    private static double distanceFromDepot(Customer customer, Depot depot){
+        return Math.sqrt(Math.pow(customer.xCoordinate - depot.xCoordinate, 2)
+                + Math.pow(customer.yCoordinate - depot.yCoordinate, 2)) * Parameters.scalingDistanceParameter;
     }
 
     private static Customer[] removeElementsInArray(Customer[] customers, List<Integer> indexes ){
@@ -315,11 +322,12 @@ public class DataReader {
         List<String[]> timeWindowData = DataReader.readCSVFile(Parameters.timeWindowsFilePath);
         List<String[]> vehiclesData = DataReader.readCSVFile(Parameters.vehicleFilePath);
 
+        Depot depot = parseVehicleFileDataToDepot(vehiclesData);
         Customer[] customers = parseOrdersFileData(orderData);
         customers = parseTimeWindowFileData(customers, timeWindowData);
-        customers = removeInvalidCustomers(customers);
+        customers = removeInvalidCustomers(customers, depot);
         Vehicle[] vehicles = parseVehicleFileDataToVehicle(vehiclesData);
-        Depot depot = parseVehicleFileDataToDepot(vehiclesData);
+
         Customer[] customersSubset = Arrays.copyOfRange(customers, 0, Parameters.numberOfCustomers);
         Vehicle[] vehiclesSubset = Arrays.copyOfRange(vehicles, 0, Parameters.numberOfVehicles);
         VehicleType[] vehicleTypes = getAndOrderVehicleTypes(vehiclesSubset);

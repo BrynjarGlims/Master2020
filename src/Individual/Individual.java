@@ -41,7 +41,6 @@ public class Individual implements Comparable<Individual> {
 
     private double diversityRank;
     private double fitnessRank;
-
     public boolean isSurvivor;
 
 
@@ -101,14 +100,10 @@ public class Individual implements Comparable<Individual> {
         return diversity;
     }
 
-
-
-
     public void initializeIndividual(OrderDistribution od) {
         //set chromosome
         this.orderDistribution = od;
         giantTour.initializeGiantTour();
-
         this.infeasibilityOverCapacityValue = 0;
         this.infeasibilityOvertimeDrivngValue = 0;
         this.infeasibilityTimeWarpValue = 0;
@@ -155,7 +150,6 @@ public class Individual implements Comparable<Individual> {
         if ((this.getFitness(false) > currentFitness) || madeInfeasible){  // // TODO: 05.03.2020 Make more efficient
             this.setOptimalOrderDistribution(currentOrderDistribution);
         }
-
     }
 
     public void setGiantTourFromTrips(){
@@ -177,59 +171,8 @@ public class Individual implements Comparable<Individual> {
         }
     }
 
-    public void printDetailedFitness(){
-        System.out.println("-------------------------------------");
-        System.out.println("Fitness: " + fitness);
-        System.out.println("True fitness: " + Testing.IndividualTest.getTrueIndividualFitness(this));
-        System.out.println("Is feasbile: " + isFeasible());
-        System.out.println("Infeasibility cost1: " + getInfeasibilityCost());
-        System.out.println("Infeasibility cost2: " + infeasibilityCost);
-        System.out.println("Biased fitness: " + biasedFitness);
-        System.out.println("Diversity Rank: "  +diversityRank);
-        System.out.println("Diversity: " + diversity);
-        System.out.println("Fitness: " + fitness);
-        System.out.println("Fitness Rank:" + fitnessRank);
-        System.out.println("InfOvertimeValue: " + infeasibilityOvertimeDrivngValue);
-        System.out.println("InfTimeWarp: " + infeasibilityTimeWarpValue);
-        System.out.println("InfOverCapacityValue: " + infeasibilityOverCapacityValue);
-        System.out.println("Objective cost: " + objectiveCost);
-        System.out.println("Traveling cost: " + feasibleTravelingCost);
-        System.out.println("Vehicle cost: " + vehicleUsageCost);
-        System.out.println("OvertimeAtDepot: " + feasibleOvertimeDepotCost);
-        System.out.println("-------------------------------------");
-    }
-
-    public HashSet<String> getArcs(){
-        HashSet<String> arcs = new HashSet<>();
-        for (ArrayList<Journey>[] journeysPeriod : journeyList){
-            for (ArrayList<Journey> journeys : journeysPeriod){
-                for( Journey journey : journeys){
-                    arcs.addAll(journey.getArcsUsed());
-                }
-            }
-        }
-        return arcs;
-    }
-
-
     public boolean isFeasible() {
         return (infeasibilityCost == 0);
-
-    }
-
-    public boolean hasValidTimeWindows() {
-        //Todo: needs to be implemented
-        return true;
-    }
-
-    public boolean hasValidVehicleCapacity() {
-        //Todo: needs to be implemented
-        return true;
-    }
-
-    public double evaluateIndividual() {
-        //TODO: needs to be implemented
-        return 0.0;
     }
 
     public OrderDistribution getOrderDistribution() {
@@ -269,54 +212,6 @@ public class Individual implements Comparable<Individual> {
     }
 
 
-
-    private double getObjectiveCost(){
-        return getObjectiveCost(1);
-    }
-
-    private double getObjectiveCost(double penaltyMultiplier) {
-        feasibleOvertimeDepotCost = 0;
-        feasibleTravelingCost = 0;
-        feasibleVehicleUseCost = 0;
-
-        for (Label[] labels : bestLabels) {
-            for (Label label : labels) {
-                if (label.isEmptyLabel) {
-                    continue;
-                }
-                //Adds driving cost
-                feasibleTravelingCost += label.getLabelDrivingDistance() * data.vehicleTypes[label.vehicleTypeID].travelCost;
-                //Adds vehicle use cost
-                feasibleVehicleUseCost += label.getNumberOfVehicles() * data.vehicleTypes[label.vehicleTypeID].usageCost;
-                // todo: Cost allready calculated
-            }
-        }
-        feasibleOvertimeDepotCost += orderDistribution.getOvertimeValue();
-        return feasibleTravelingCost + feasibleVehicleUseCost + feasibleOvertimeDepotCost;
-    }
-
-    private double getInfeasibilityCost(){
-        return getInfeasibilityCost(1);
-    }
-
-    private double getInfeasibilityCost(double penaltyMultiplier) {
-        infeasibilityTimeWarpValue = 0;
-        infeasibilityOverCapacityValue = 0;
-        infeasibilityOvertimeDrivngValue = 0;
-        for (Label[] labels : bestLabels) {
-            for (Label label : labels) {
-                if (label.isEmptyLabel) {
-                    continue;
-                }
-                //Already added scaling parameters in label
-                infeasibilityTimeWarpValue += penaltyMultiplier*label.getTimeWarpInfeasibility();
-                infeasibilityOverCapacityValue += penaltyMultiplier*label.getLoadInfeasibility();
-                infeasibilityOvertimeDrivngValue += penaltyMultiplier*label.getOvertimeInfeasibility();
-            }
-        }
-        return infeasibilityOvertimeDrivngValue + infeasibilityOverCapacityValue + infeasibilityTimeWarpValue;
-    }
-
     public double getBiasedFitness() {
         return biasedFitness;
     }
@@ -331,7 +226,6 @@ public class Individual implements Comparable<Individual> {
         }
         biasedFitness = (double) fitnessRank + (diversityScaling * (double) diversityRank);
     }
-
 
 
     public void setDiversity(double diversity){
@@ -353,14 +247,30 @@ public class Individual implements Comparable<Individual> {
         return out;
     }
 
-    public static void main(String[] args) {
-        Individual individual = Individual.makeIndividual();
-        //System.out.println("Value of fitness: " + individual.getFitness(true));
-
-    }
-
     public void setFitness(double fitness){ //USE WITH CARE. ONLY WHEN SETTING FITNESS FROM MIP
         this.fitness = fitness;
+    }
+
+
+    public void printDetailedFitness(){
+        System.out.println("-------------------------------------");
+        System.out.println("Fitness: " + fitness);
+        System.out.println("True fitness: " + Testing.IndividualTest.getTrueIndividualFitness(this));
+        System.out.println("Is feasbile: " + isFeasible());
+        System.out.println("Infeasibility cost2: " + infeasibilityCost);
+        System.out.println("Biased fitness: " + biasedFitness);
+        System.out.println("Diversity Rank: "  +diversityRank);
+        System.out.println("Diversity: " + diversity);
+        System.out.println("Fitness: " + fitness);
+        System.out.println("Fitness Rank:" + fitnessRank);
+        System.out.println("InfOvertimeValue: " + infeasibilityOvertimeDrivngValue);
+        System.out.println("InfTimeWarp: " + infeasibilityTimeWarpValue);
+        System.out.println("InfOverCapacityValue: " + infeasibilityOverCapacityValue);
+        System.out.println("Objective cost: " + objectiveCost);
+        System.out.println("Traveling cost: " + feasibleTravelingCost);
+        System.out.println("Vehicle cost: " + vehicleUsageCost);
+        System.out.println("OvertimeAtDepot: " + feasibleOvertimeDepotCost);
+        System.out.println("-------------------------------------");
     }
 
     public static Individual makeIndividual() {
@@ -382,8 +292,6 @@ public class Individual implements Comparable<Individual> {
 
 
     }
-
-
 }
 
 

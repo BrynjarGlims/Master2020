@@ -122,9 +122,15 @@ public class IndividualTest {
         }
     }
 
-    public static void whyInfeasbile(){
-        System.out.println("To be implemented");
+    /*public static void whyInfeasbile(Individual individual){
+        for (Journey journey : individual.journeyList){
+            for (Trip )
+
+        }
+
     }
+
+     */
 
     public static void main(String[] args) throws IOException, GRBException {
         Data data = DataReader.loadData();

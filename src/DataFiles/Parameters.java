@@ -1,5 +1,9 @@
 package DataFiles;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 public class Parameters {
 
     //File paths
@@ -7,6 +11,8 @@ public class Parameters {
     public static final String ordersFilePath = "data/Orders.csv";
     public static final String timeWindowsFilePath = "data/Time_windows.csv";
     public static final String vehicleFilePath = "data/Vehicles.csv";
+    public static final Set<Integer> infeasibleCustomer = new HashSet<Integer>(Arrays.asList());
+    public static final double distanceCutOffFromDepot = 10;
 
     //Population parameters
 
@@ -17,7 +23,7 @@ public class Parameters {
     public static final int initialPopulationSize =100;
     public static final int initialOrderDistributionPopulationSize = 50;
     public static final int maxNumberIterationsWithoutImprovement = 10;
-    public static final int maxNumberOfGenerations = 100;
+    public static final int maxNumberOfGenerations = 1;
 
     public static final double minimumFitnessDifferenceForClones = 10; //minimum fitness difference to encounter two individuals as clones
 
@@ -27,8 +33,8 @@ public class Parameters {
 
     //Loading data parameters
 
-    public static final int numberOfCustomers = 10;
-    public static final int numberOfVehicles = 10;
+    public static final int numberOfCustomers = 98;  // A maximum of 98
+    public static final int numberOfVehicles = 20;
 
     
     public static final int nearestNeighbors = 5; //Neighborhood size for each customer
