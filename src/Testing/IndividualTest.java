@@ -122,6 +122,10 @@ public class IndividualTest {
         }
     }
 
+    public static void whyInfeasbile(){
+        System.out.println("To be implemented");
+    }
+
     public static void main(String[] args) throws IOException, GRBException {
         Data data = DataReader.loadData();
         Individual individual = new Individual(data);

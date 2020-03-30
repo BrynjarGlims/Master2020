@@ -146,7 +146,7 @@ public class main {
 
 
         while ( (population.getIterationsWithoutImprovement() < Parameters.maxNumberIterationsWithoutImprovement &&
-                numberOfIterations < Parameters.maxNumberOfGenerations)){
+                numberOfIterations < Parameters.maxNumberOfGenerations)) {
             System.out.println("Start generation: " + numberOfIterations);
 
             //Find best OD for the distribution
@@ -157,7 +157,7 @@ public class main {
 
             System.out.println("Populate..");
             while (population.infeasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize &&
-                    population.feasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize ) {
+                    population.feasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize) {
                 Individual newIndividual = PIX();
 
                 educate(newIndividual);
@@ -175,6 +175,7 @@ public class main {
 
             System.out.println("Selection..");
             selection();
+        }
 
 
         Individual bestIndividual = population.returnBestIndividual();
