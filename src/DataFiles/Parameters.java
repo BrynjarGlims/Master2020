@@ -14,8 +14,8 @@ public class Parameters {
     public static final int minimumSubIndividualPopulationSize = 100;
     public static final int numberOfElitismSurvivorsPerGeneration = 5;
 
-    public static final int initialPopulationSize = 10;
-    public static final int initialOrderDistributionPopulationSize = 10;
+    public static final int initialPopulationSize = 50;
+    public static final int initialOrderDistributionPopulationSize = 50;
     public static final int maxNumberIterationsWithoutImprovement = 10;
     public static final int maxNumberOfGenerations = 100;
 
@@ -32,6 +32,7 @@ public class Parameters {
 
     
     public static final int nearestNeighbors = 5; //Neighborhood size for each customer
+    public static final int diversityCalculationInterval = 20;
     public static final int EducationTabooSize = 2;
     public static final int tripOptimizerSizeLimit = 7;
 
@@ -65,7 +66,7 @@ public class Parameters {
 
     //Period parameters
     //TODO: change to percentage values
-    public static final double[] overtimeLimit = {30, 30, 30, 30, 30, 10};
+    public static final double[] overtimeLimit = {100, 100, 100, 100, 100, 50};
     public static final double[] overtimeCost = {100, 100, 100, 100, 100, 100};
 
     //Time parameters

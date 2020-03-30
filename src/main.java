@@ -128,6 +128,7 @@ public class main {
         // TODO: 04.03.2020 Implement adjust penalty parameters for overtimeInfeasibility, loadInfeasibility and timeWarpInfeasibility
         numberOfIterations++;
         bestIndividual = population.returnBestIndividual();
+        bestIndividualScore = bestIndividual.getFitness(false);
 
         // Check if it has improved for early termination
         if (bestIndividualScore == bestIndividual.getFitness(false)){
@@ -138,6 +139,7 @@ public class main {
         }
 
         Individual bestFeasibleIndividual = population.returnBestIndividual();
+
         double bestKnownSolution = 3587.78;
         System.out.println(String.format("Gap: %.2f prosent" ,100*(bestIndividualScore-bestKnownSolution)/bestKnownSolution));
 

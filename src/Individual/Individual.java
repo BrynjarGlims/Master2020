@@ -30,8 +30,6 @@ public class Individual implements Comparable<Individual> {
     public double feasibleOvertimeDepotCost;
     public Label[][] bestLabels;
 
-    public Population Population;
-
     //fitness values:
     public double objectiveCost;
     public double infeasibilityCost;
@@ -336,13 +334,6 @@ public class Individual implements Comparable<Individual> {
             diversityScaling = 1.0 - ((double) Parameters.minimumSubIndividualPopulationSize/ (double) this.population.infeasiblePopulation.size());
         }
         biasedFitness = (double) fitnessRank + (diversityScaling * (double) diversityRank);
-        //System.out.println("FitnessRank: " + fitnessRank);
-        //System.out.println("DiversityRank: " + diversityRank);
-        //System.out.println("PopulationSize: " + this.population.getTotalPopulation().size());
-        //System.out.println("Elite individuals: " + Parameters.numberOfElitismSurvivorsPerGeneration);
-        //System.out.println("Diversity Scaling: " + diversityScaling);
-        //System.out.println("Biased fitness: " + biasedFitness);
-        //System.out.println("-------------------------");
     }
 
 

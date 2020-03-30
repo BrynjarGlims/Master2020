@@ -49,12 +49,16 @@ public class Population {
         int feasibleIndividualsToRemove = this.feasiblePopulation.size() - Parameters.minimumSubIndividualPopulationSize;
         int infeasibleIndividualsToRemove = this.infeasiblePopulation.size() - Parameters.minimumSubIndividualPopulationSize;
         for (int i = 0; i < feasibleIndividualsToRemove; i++){
-            BiasedFitness.setBiasedFitnessScoreForFeasibleIndividuals(this);
+            if ( i % Parameters.diversityCalculationInterval == 0) {
+                BiasedFitness.setBiasedFitnessScoreForFeasibleIndividuals(this);
+            }
             reduceFeasiblePopulationByOne();
         }
 
         for (int i = 0; i < infeasibleIndividualsToRemove; i++){
-            BiasedFitness.setBiasedFitnessScoreForInfeasibleIndividuals(this);
+            if ( i % Parameters.diversityCalculationInterval == 0) {
+                BiasedFitness.setBiasedFitnessScoreForInfeasibleIndividuals(this);
+            }
             reduceInfeasiblePopulationByOne();
         }
     }

@@ -6,6 +6,7 @@ import Population.Population;
 import Individual.Journey;
 import Individual.Arc;
 import Individual.SimpleArc;
+import DataFiles.Data;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -89,37 +90,47 @@ public class BiasedFitness {
     private static double calculateSimpleDiversityBetweenIndividuals(Individual ind1, Individual ind2){
         double diversity = 0;
         for (int p = 0; p < ind1.data.numberOfPeriods; p++){
-            ArrayList<Integer> gt1 = new ArrayList<>();
-            ArrayList<Integer> gt2 = new ArrayList<>();
-            for (int vt = 0; vt < ind1.data.numberOfVehicleTypes; vt++){
-                gt1.addAll(ind1.giantTour.chromosome[p][vt]);
-                gt2.addAll(ind2.giantTour.chromosome[p][vt]);
-            }
-            diversity += calculateSimpleSimilarityBetweenGiantTours(gt1, gt2);
+            diversity += calculateSimpleSimilarityBetweenGiantTours(ind1.giantTour.chromosome[p], ind2.giantTour.chromosome[p], ind1.data);
         }
         return diversity;
     }
 
-    private static double calculateSimpleSimilarityBetweenGiantTours(ArrayList<Integer> gt1, ArrayList<Integer> gt2){
+    private static double calculateSimpleSimilarityBetweenGiantTours(ArrayList<Integer>[] gt1, ArrayList<Integer>[] gt2, Data data){
         double diversity = 0;
         HashMap<Integer, Integer> gt1Map = new HashMap<>();
         HashMap<Integer, Integer> gt2Map = new HashMap<>();
+        int prevCustomer;
 
-        for (int i = 0; i < gt1.size(); i++){
-            if (i != gt1.size()-1){
-                gt1Map.put(gt1.get(i), gt1.get(i+1));
-                gt2Map.put(gt2.get(i), gt2.get(i+1));
+        for (int vt = 0; vt < data.numberOfVehicleTypes; vt ++){
+            //gt1
+            prevCustomer = -1;
+            for (int i : gt1[vt]){
+                if (prevCustomer == -1){
+                    prevCustomer = i;
+                    continue;
+                }
+                gt1Map.put(prevCustomer, i);
+                prevCustomer = i;
             }
-            else {
-                gt1Map.put(gt1.get(i), -1);
-                gt2Map.put(gt2.get(i), -1);
+            gt1Map.put(prevCustomer, -1);
+
+            //gt2
+            prevCustomer = -1;
+            for (int i : gt2[vt]){
+                if (prevCustomer == -1){
+                    prevCustomer = i;
+                    continue;
+                }
+                gt2Map.put(prevCustomer, i);
+                prevCustomer = i;
             }
+            gt2Map.put(prevCustomer, -1);
         }
-        for (int customerID: gt1){
-            if (gt1Map.get(customerID) != gt2Map.get(customerID)){
+
+        for (int key : gt1Map.keySet())
+            if (gt1Map.get(key) != gt2Map.get(key)) {
                 diversity += 1;
             }
-        }
         return diversity;
     }
 }
