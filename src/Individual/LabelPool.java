@@ -114,7 +114,7 @@ public class LabelPool {
         firstLabelValue += calculateDeltaSumValue(firstLabel.labelEntries, secondLabel.labelEntries);
         firstLabelValue *= Parameters.initialTimeWarpPenalty;
         firstLabelValue += firstLabel.costOfLabel;
-        double secondLabelValue = secondLabel.costOfLabel;
+        double secondLabelValue = secondLabel.costOfLabel*Parameters.heuristicDominanceValue;
         return firstLabelValue <= secondLabelValue;
     }
 

@@ -11,19 +11,18 @@ public class Parameters {
     public static final String ordersFilePath = "data/Orders.csv";
     public static final String timeWindowsFilePath = "data/Time_windows.csv";
     public static final String vehicleFilePath = "data/Vehicles.csv";
-    public static final Set<Integer> infeasibleCustomer = new HashSet<Integer>(Arrays.asList());
-    public static final double distanceCutOffFromDepot = 10;
+
 
     //Population parameters
 
-    public static final int maximumSubIndividualPopulationSize = 300; //TODO: find reasonable value
-    public static final int minimumSubIndividualPopulationSize = 100;
+    public static final int maximumSubIndividualPopulationSize = 200; //TODO: find reasonable value
+    public static final int minimumSubIndividualPopulationSize = 50;
     public static final int numberOfElitismSurvivorsPerGeneration = 5;
 
-    public static final int initialPopulationSize = 100;
+    public static final int initialPopulationSize = 50;
     public static final int initialOrderDistributionPopulationSize = 50;
     public static final int maxNumberIterationsWithoutImprovement = 10;
-    public static final int maxNumberOfGenerations = 1;
+    public static final int maxNumberOfGenerations = 10;
 
     public static final double minimumFitnessDifferenceForClones = 10; //minimum fitness difference to encounter two individuals as clones
 
@@ -33,8 +32,9 @@ public class Parameters {
 
     //Loading data parameters
 
-    public static final int numberOfCustomers = 10;  // A maximum of 98
-    public static final int numberOfVehicles = 10;
+    public static final double distanceCutOffFromDepot = 3.5;
+    public static final int numberOfCustomers = 76; // A maximum of 76
+    public static final int numberOfVehicles = 50;
 
     
     public static final int nearestNeighbors = 5; //Neighborhood size for each customer
@@ -47,11 +47,12 @@ public class Parameters {
     public static final double tripOptimizerProbability = 0.3;
     public static final double repairProbability = 0.4;
     public static final double greedyMIPValue = 1;
+    public static final double heuristicDominanceValue = 1;
 
 
     //Traveling parameters
     public static final double scalingDistanceParameter = 2.2;
-    public static final double timeShift = 2;
+    public static final double timeShift = 4;
 
     //Penalty parameters for genetic algorithm
     public static final double initialCapacityPenalty = 1000;  // lambda

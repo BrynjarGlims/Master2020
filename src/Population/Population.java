@@ -226,17 +226,9 @@ public class Population {
             }
         }
         return bestIndividual;
-
     }
 
 
-    public Set<Individual> getFeasiblePopulation() {
-        return feasiblePopulation;
-    }
-
-    public Set<Individual> getInfeasiblePopulation() {
-        return infeasiblePopulation;
-    }
 
     public HashSet<Individual> getTotalPopulation(){
         HashSet<Individual> populationSet = new HashSet<Individual>(feasiblePopulation);
