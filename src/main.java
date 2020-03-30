@@ -145,8 +145,8 @@ public class main {
         initialize();
 
 
-        while ( (population.getIterationsWithoutImprovement() < Parameters.maxNumberIterationsWithoutImprovement &&
-                numberOfIterations < Parameters.maxNumberOfGenerations)){
+        while ((population.getIterationsWithoutImprovement() < Parameters.maxNumberIterationsWithoutImprovement &&
+                numberOfIterations < Parameters.maxNumberOfGenerations)) {
             System.out.println("Start generation: " + numberOfIterations);
 
             //Find best OD for the distribution
@@ -157,7 +157,7 @@ public class main {
 
             System.out.println("Populate..");
             while (population.infeasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize &&
-                    population.feasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize ) {
+                    population.feasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize) {
                 Individual newIndividual = PIX();
 
                 educate(newIndividual);
@@ -177,13 +177,14 @@ public class main {
             selection();
 
 
-        Individual bestIndividual = population.returnBestIndividual();
-        System.out.println("Individual feasible: " + bestIndividual.isFeasible());
-        System.out.println("Fitness: " + bestIndividual.getFitness(false));
-        PlotIndividual visualizer = new PlotIndividual(data);
-        visualizer.visualize(bestIndividual);
-        Result res = new Result(population);
-        res.store();
-        orderAllocationModel.terminateEnvironment();
+            Individual bestIndividual = population.returnBestIndividual();
+            System.out.println("Individual feasible: " + bestIndividual.isFeasible());
+            System.out.println("Fitness: " + bestIndividual.getFitness(false));
+            PlotIndividual visualizer = new PlotIndividual(data);
+            visualizer.visualize(bestIndividual);
+            Result res = new Result(population);
+            res.store();
+            orderAllocationModel.terminateEnvironment();
+        }
     }
 }
