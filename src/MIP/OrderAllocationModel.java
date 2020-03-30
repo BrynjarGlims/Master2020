@@ -38,14 +38,21 @@ public class OrderAllocationModel {
     public GRBVar[][][] qD;
     public GRBVar[] qO;
 
-
-    private void initializeModel(Data data) throws GRBException, FileNotFoundException {
+    public OrderAllocationModel(Data data) throws GRBException {
         env = new GRBEnv(true);
         this.env.start();
-        this.model = new GRBModel(env);
-        model.set(GRB.StringAttr.ModelName, "OrderAllocationModel");
-        this.model.set(GRB.IntParam.LogToConsole, 0); //removes print of gurobi
         this.data = data;
+    }
+
+    private void initializeModel() throws GRBException, FileNotFoundException {
+        if (this.model == null){
+            this.model = new GRBModel(env);
+            model.set(GRB.StringAttr.ModelName, "OrderAllocationModel");
+            this.model.set(GRB.IntParam.LogToConsole, 0); //removes print of gurobi
+        }
+        else{
+            this.model.reset();
+        }
     }
 
 
@@ -54,7 +61,6 @@ public class OrderAllocationModel {
         initializeUVariables();
         initializeQVariables();
         initializeQOVariables();
-
     }
 
 
@@ -81,8 +87,6 @@ public class OrderAllocationModel {
             }
         }
     }
-
-
 
     private void initializeUVariables() throws GRBException {
 
@@ -151,8 +155,7 @@ public class OrderAllocationModel {
 
 
     private void terminateModel() throws GRBException {
-        model.dispose();
-        env.dispose();
+
     }
 
 
@@ -447,11 +450,6 @@ public class OrderAllocationModel {
     }
 
     private void printSolution() throws GRBException {
-
-
-
-
-
         // Create uND variables: if a product is delivered to customer m
         System.out.println("Print of uND-variables: If a product m is delivered to customer i");
         for (int d = 0; d < data.numberOfPeriods; d++) {
@@ -527,67 +525,15 @@ public class OrderAllocationModel {
         }
     }
 
-
-
-
-
-    private void runModel(Individual individual, Data data) {
-        try {
-            this.symmetry = Parameters.symmetry;
-            this.individual = individual;
-            System.out.println("Initalize model");
-            initializeModel(data);
-            System.out.println("Initalize parameters");
-            initializeParameters();
-            System.out.println("Set objective");
-            setObjective();
-            System.out.println("Activate constraints");
-            activateConstraints();
-            System.out.println("Optimize model");
-            optimizeModel();
-            System.out.println("Print results:");
-            displayResults(true);
-            if (optimstatus == 3) {
-                System.out.println("no solution found");
-                System.out.println("Terminate model");
-                terminateModel();
-            }
-            else if (optimstatus == 2){
-                if (Parameters.plotArcFlow){
-                    GraphPlot plotter = new GraphPlot(data);
-                    plotter.visualize(true);
-                }
-
-                System.out.println("Create and store results");
-                printSolution();
-                System.out.println("Terminate model");
-                terminateModel();
-            }
-            else{
-                System.out.println("Create and store results");
-                //printSolution();
-                System.out.println("Terminate model");
-                terminateModel();
-            }
-
-        } catch (GRBException | FileNotFoundException e) {
-            System.out.println("ERROR: " + e);
-        } catch (Error e) {
-            System.out.println(e);
-        } catch (IOException e) {
-            System.out.println("File directory wrong" + e);
-        }
-    }
-
     private void initializeODObject() throws GRBException {
         this.orderDistribution.makeDistributionFromOrderAllocationModel(this);
     }
 
-    private OrderDistribution createODFromMIP(Individual individual, Data data) {
+    private OrderDistribution createODFromMIP(Individual individual) {
         try {
             this.orderDistribution = new OrderDistribution(individual.data);
             this.individual = individual;
-            initializeModel(data);
+            initializeModel();
             initializeParameters();
             setObjective();
             activateConstraints();
@@ -595,15 +541,12 @@ public class OrderAllocationModel {
             if (optimstatus == 3) {
                 System.out.println("No solution found");
                 System.out.println("Terminate model");
-                terminateModel();
             }
             else if (optimstatus == 2){
                 initializeODObject();
-                terminateModel();
             }
             else{
                 System.out.println("Unkonwn optimization status");
-                terminateModel();
             }
             return this.orderDistribution;
 
@@ -619,44 +562,22 @@ public class OrderAllocationModel {
         }
     }
 
+    public void terminateEnvironment(){
+        try {
+            this.model.dispose();
+            this.env.dispose();
+        } catch (GRBException e) {
+            e.printStackTrace();
+        }
+    }
 
 
 
     //MASTER FUNCTION
-    public static OrderDistribution createOptimalOrderDistribution( Individual individual, Data data){
-        OrderAllocationModel orderAllocationModel = new OrderAllocationModel();
-        return orderAllocationModel.createODFromMIP(individual, data);
+    public OrderDistribution createOptimalOrderDistribution( Individual individual){
+        return this.createODFromMIP(individual);
     }
 
-    public static void main(String[] args){
-        Data data = DataReader.loadData();
-        Population population = new Population(data);
-        OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
-        OrderDistributionCrossover ODC = new OrderDistributionCrossover(data);
-        odp.initializeOrderDistributionPopulation(population);
-        OrderDistribution firstOD = odp.getRandomOrderDistribution();
-        population.setOrderDistributionPopulation(odp);
-        population.initializePopulation(firstOD);
-        for (int i = 0; i < 3; i++) {
-            Individual individual = population.getRandomIndividual();
-            System.out.println("########################################################");
-            System.out.println("Old fitness: " + individual.getBiasedFitness());
-            individual.printDetailedFitness();
-
-            OrderDistribution optimalDistribution = OrderAllocationModel.createOptimalOrderDistribution(individual, data);
-            individual.setOptimalOrderDistribution(optimalDistribution, false);
-            System.out.println("Temporary fitness: " + individual.getBiasedFitness());
-            individual.printDetailedFitness();
-
-            individual.setOptimalOrderDistribution(optimalDistribution, true);
-
-            odp.addOrderDistribution(optimalDistribution);  // todo: do not remove adsplit
-            System.out.println("New fitness: " + individual.getBiasedFitness());
-            individual.printDetailedFitness();
-            System.out.println("########################################################");
-        }
-
-    }
 
 }
 

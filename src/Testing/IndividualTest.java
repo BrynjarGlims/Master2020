@@ -13,6 +13,7 @@ import ProductAllocation.OrderDistribution;
 import Population.OrderDistributionPopulation;
 import Individual.AdSplit;
 import StoringResults.Result;
+import gurobi.GRBException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -121,7 +122,7 @@ public class IndividualTest {
         }
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, GRBException {
         Data data = DataReader.loadData();
         Individual individual = new Individual(data);
         ArrayList<Integer>[][] chromosome = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
@@ -166,8 +167,9 @@ public class IndividualTest {
         OrderDistribution firstOD = odp.getRandomOrderDistribution();
         individual.orderDistribution = firstOD;
         AdSplit.adSplitPlural(individual);
+        OrderAllocationModel orderAllocationModel = new OrderAllocationModel(data);
 
-        OrderDistribution optimalOD = OrderAllocationModel.createOptimalOrderDistribution(individual, data);
+        OrderDistribution optimalOD = orderAllocationModel.createOptimalOrderDistribution(individual);
         AdSplit.adSplitPlural(individual);
         System.out.println(individual.getFitness(true));
         individual.printDetailedFitness();

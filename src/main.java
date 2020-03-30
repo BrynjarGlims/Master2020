@@ -12,6 +12,7 @@ import Testing.IndividualTest;
 import Visualization.PlotIndividual;
 import Individual.Trip;
 import Testing.*;
+import gurobi.GRBException;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -29,8 +30,9 @@ public class main {
     public static HashSet<Individual> repaired;
     public static Individual bestIndividual;
     public static int numberOfIterations;
+    public static OrderAllocationModel orderAllocationModel;
 
-    public static void initialize(){
+    public static void initialize() throws GRBException {
         data = DataReader.loadData();
         population = new Population(data);
         odp = new OrderDistributionPopulation(data);
@@ -41,6 +43,7 @@ public class main {
         population.initializePopulation(firstOD);
         bestIndividualScore = Double.MAX_VALUE;
         BiasedFitness.setBiasedFitnessScore(population);
+        orderAllocationModel = new OrderAllocationModel(data);
         repaired = new HashSet<>();
         numberOfIterations = 0;
     }
@@ -77,7 +80,7 @@ public class main {
 
     public static void setOptimalOrderDistribution(Individual individual){
         if (ThreadLocalRandom.current().nextDouble() < Parameters.greedyMIPValue){
-            OrderDistribution optimalOD = OrderAllocationModel.createOptimalOrderDistribution(individual, data);
+            OrderDistribution optimalOD = orderAllocationModel.createOptimalOrderDistribution(individual);
             if (individual.infeasibilityCost == 0){
                 individual.setOptimalOrderDistribution(optimalOD, true);
             }
@@ -181,6 +184,6 @@ public class main {
         visualizer.visualize(bestIndividual);
         Result res = new Result(population);
         res.store();
+        orderAllocationModel.terminateEnvironment();
     }
-
 }
