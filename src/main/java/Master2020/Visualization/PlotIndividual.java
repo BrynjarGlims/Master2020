@@ -1,8 +1,8 @@
-package Visualization;
+package Master2020.Visualization;
 
-import DataFiles.*;
-import Individual.*;
-import ProductAllocation.OrderDistribution;
+import Master2020.DataFiles.*;
+import Master2020.Individual.*;
+import Master2020.ProductAllocation.OrderDistribution;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;

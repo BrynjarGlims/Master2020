@@ -1,8 +1,8 @@
-package Genetic;
+package Master2020.Genetic;
 
-import DataFiles.Parameters;
-import Individual.Individual;
-import Population.Population;
+import Master2020.DataFiles.Parameters;
+import Master2020.Individual.Individual;
+import Master2020.Population.Population;
 
 import java.util.*;
 

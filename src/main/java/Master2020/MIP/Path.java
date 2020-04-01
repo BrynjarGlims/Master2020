@@ -1,6 +1,6 @@
-package MIP;
+package Master2020.MIP;
 
-import DataFiles.*;
+import Master2020.DataFiles.*;
 
 public class Path implements Comparable<Path>{
 

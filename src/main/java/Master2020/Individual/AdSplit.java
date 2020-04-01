@@ -1,8 +1,8 @@
-package Individual;
+package Master2020.Individual;
 
-import DataFiles.Data;
-import ProductAllocation.OrderDelivery;
-import DataFiles.Parameters;
+import Master2020.DataFiles.Data;
+import Master2020.ProductAllocation.OrderDelivery;
+import Master2020.DataFiles.Parameters;
 
 import java.util.*;
 

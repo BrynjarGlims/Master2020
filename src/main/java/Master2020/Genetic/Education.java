@@ -1,14 +1,12 @@
-package Genetic;
+package Master2020.Genetic;
 
-import DataFiles.*;
-import Individual.*;
-import Population.Population;
-import ProductAllocation.OrderDistribution;
-import Population.OrderDistributionPopulation;
+import Master2020.DataFiles.*;
+import Master2020.Individual.*;
+import Master2020.Population.Population;
+import Master2020.ProductAllocation.OrderDistribution;
+import Master2020.Population.OrderDistributionPopulation;
 
 import java.util.*;
-
-import static Testing.IndividualTest.testTripMap;
 
 public class Education {
 

@@ -1,5 +1,5 @@
-package MIP;
-import DataFiles.*;
+package Master2020.MIP;
+import Master2020.DataFiles.*;
 
 import gurobi.GRB;
 import gurobi.GRBException;

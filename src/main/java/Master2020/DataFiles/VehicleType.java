@@ -1,6 +1,6 @@
-package DataFiles;
+package Master2020.DataFiles;
 
-import DataFiles.Data;
+import Master2020.DataFiles.Data;
 import scala.collection.immutable.HashMap;
 import java.util.HashSet;
 

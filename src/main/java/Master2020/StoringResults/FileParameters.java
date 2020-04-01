@@ -1,6 +1,4 @@
-package StoringResults;
-
-import java.util.Date;
+package Master2020.StoringResults;
 
 public class FileParameters {
 

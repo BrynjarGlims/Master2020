@@ -1,4 +1,4 @@
-package DataFiles;
+package Master2020.DataFiles;
 
 public class Depot {
 

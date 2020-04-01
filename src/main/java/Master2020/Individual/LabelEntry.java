@@ -1,11 +1,11 @@
-package Individual;
+package Master2020.Individual;
 
-import DataFiles.Data;
+import Master2020.DataFiles.Data;
 
 import java.util.ArrayList;
 
-import DataFiles.*;
-import scala.xml.PrettyPrinter;
+import Master2020.DataFiles.*;
+
 
 
 public class LabelEntry implements Comparable<LabelEntry> {

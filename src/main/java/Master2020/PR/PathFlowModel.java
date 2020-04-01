@@ -1,7 +1,7 @@
-package PR;
-import DataFiles.Data;
-import DataFiles.Parameters;
-import MIP.DataConverter;
+package Master2020.PR;
+import Master2020.DataFiles.Data;
+import Master2020.DataFiles.Parameters;
+import Master2020.MIP.DataConverter;
 import gurobi.*;
 
 import java.io.FileNotFoundException;
@@ -958,10 +958,10 @@ public class PathFlowModel {
     }
     public static void main(String[] args) {
 
-        Data data = DataFiles.DataReader.loadData();
+        Data data = Master2020.DataFiles.DataReader.loadData();
         DataMIP dataMip = DataConverter.convert(data);
         PathFlowModel pfm = new PathFlowModel(dataMip);
-        pfm.runModel(DataFiles.Parameters.symmetry);
+        pfm.runModel(Master2020.DataFiles.Parameters.symmetry);
 
     }
 

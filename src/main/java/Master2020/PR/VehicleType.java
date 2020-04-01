@@ -1,4 +1,4 @@
-package PR;
+package Master2020.PR;
 public class VehicleType {
 
     public int type;

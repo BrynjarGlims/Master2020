@@ -1,5 +1,5 @@
-package Individual;
-import DataFiles.*;
+package Master2020.Individual;
+import Master2020.DataFiles.*;
 
 
 import java.util.ArrayList;

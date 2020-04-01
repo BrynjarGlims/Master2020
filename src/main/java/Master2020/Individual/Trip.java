@@ -1,6 +1,6 @@
-package Individual;
+package Master2020.Individual;
 
-import DataFiles.Data;
+import Master2020.DataFiles.Data;
 
 import java.util.ArrayList;
 import java.util.HashMap;

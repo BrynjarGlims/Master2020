@@ -1,8 +1,8 @@
-package Individual;
+package Master2020.Individual;
 
-import DataFiles.Customer;
-import DataFiles.Data;
-import DataFiles.DataReader;
+import Master2020.DataFiles.Customer;
+import Master2020.DataFiles.Data;
+import Master2020.DataFiles.DataReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;

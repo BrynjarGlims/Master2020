@@ -1,4 +1,4 @@
-package PR;
+package Master2020.PR;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;

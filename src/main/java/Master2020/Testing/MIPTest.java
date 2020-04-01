@@ -1,8 +1,8 @@
-package Testing;
+package Master2020.Testing;
 
-import DataFiles.Parameters;
-import PR.ArcFlowModel;
-import PR.DataMIP;
+import Master2020.DataFiles.Parameters;
+import Master2020.PR.ArcFlowModel;
+import Master2020.PR.DataMIP;
 import gurobi.GRB;
 import gurobi.GRBException;
 

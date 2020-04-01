@@ -1,8 +1,8 @@
-package StoringResults;
+package Master2020.StoringResults;
 
-import DataFiles.*;
-import Individual.Individual;
-import Individual.Trip;
+import Master2020.DataFiles.*;
+import Master2020.Individual.Individual;
+import Master2020.Individual.Trip;
 
 import java.util.ArrayList;
 import java.util.List;

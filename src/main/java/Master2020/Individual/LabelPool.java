@@ -1,8 +1,6 @@
-package Individual;
+package Master2020.Individual;
 
-import DataFiles.*;
-
-import javax.swing.text.LabelView;
+import Master2020.DataFiles.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 

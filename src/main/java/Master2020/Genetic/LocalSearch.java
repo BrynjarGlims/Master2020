@@ -1,5 +1,5 @@
-package Genetic;
-import Individual.Individual;
+package Master2020.Genetic;
+import Master2020.Individual.Individual;
 
 public class LocalSearch {
 

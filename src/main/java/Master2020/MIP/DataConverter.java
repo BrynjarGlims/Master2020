@@ -1,7 +1,7 @@
-package MIP;
+package Master2020.MIP;
 
-import DataFiles.*;
-import PR.DataMIP;
+import Master2020.DataFiles.*;
+import Master2020.PR.DataMIP;
 import org.nustaq.offheap.bytez.bytesource.CutAsciiStringByteSource;
 
 import java.util.HashMap;
@@ -11,7 +11,7 @@ public class DataConverter {
 
     static Data data;
     static DataMIP dm;
-    static HashMap<VehicleType, PR.VehicleType> vehicleTypeMap = new HashMap<VehicleType, PR.VehicleType>();
+    static HashMap<VehicleType, Master2020.PR.VehicleType> vehicleTypeMap = new HashMap<VehicleType, Master2020.PR.VehicleType>();
 
 
     public static DataMIP convert( Data newData ){
@@ -19,17 +19,17 @@ public class DataConverter {
         dm = new DataMIP();
         dm.setNewData(data);
 
-        PR.Customer[] customers = new PR.Customer[data.numberOfCustomers];
+        Master2020.PR.Customer[] customers = new Master2020.PR.Customer[data.numberOfCustomers];
         for (int i = 0; i < data.numberOfCustomers; i++){
             customers[i] = convertCustomer(data.customers[i], data.depot);
         }
 
-        PR.VehicleType[] vehicleTypes = new PR.VehicleType[data.numberOfVehicleTypes];
+        Master2020.PR.VehicleType[] vehicleTypes = new Master2020.PR.VehicleType[data.numberOfVehicleTypes];
         for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
             vehicleTypes[vt] = convertVehicleType(data.vehicleTypes[vt]);
         }
 
-        PR.Vehicle[] vehicles = new PR.Vehicle[data.numberOfVehicles];
+        Master2020.PR.Vehicle[] vehicles = new Master2020.PR.Vehicle[data.numberOfVehicles];
         for (int v = 0; v < data.numberOfVehicles; v++){
             vehicles[v] = convertVehicle(data.vehicles[v]);
         }
@@ -41,10 +41,10 @@ public class DataConverter {
         return dm;
     }
 
-    private static void setVehiclesInVehicleTypes(PR.Vehicle[] vehicles, PR.VehicleType[] vehicleTypes){
-        for (PR.VehicleType vt : vehicleTypes){
+    private static void setVehiclesInVehicleTypes(Master2020.PR.Vehicle[] vehicles, Master2020.PR.VehicleType[] vehicleTypes){
+        for (Master2020.PR.VehicleType vt : vehicleTypes){
             int counter = 0;
-            for (PR.Vehicle v : vehicles){
+            for (Master2020.PR.Vehicle v : vehicles){
                 if (v.vehicleType.type == vt.type){
                     vt.addVehicle(v, counter);
                     counter++;
@@ -53,20 +53,20 @@ public class DataConverter {
         }
     }
 
-    private static PR.Vehicle convertVehicle (Vehicle vehicle){
-        return new PR.Vehicle(vehicle.vehicleID, vehicleTypeMap.get(vehicle.vehicleType));
+    private static Master2020.PR.Vehicle convertVehicle (Vehicle vehicle){
+        return new Master2020.PR.Vehicle(vehicle.vehicleID, vehicleTypeMap.get(vehicle.vehicleType));
     }
 
 
 
-    private static PR.VehicleType convertVehicleType(VehicleType vehicleType){
-        PR.VehicleType newVT = new PR.VehicleType(vehicleType.vehicleTypeID, vehicleType.travelCost, vehicleType.usageCost, vehicleType.capacity, vehicleType.loadingTimeAtDepot, data.numberOfVehiclesInVehicleType[vehicleType.vehicleTypeID]);
+    private static Master2020.PR.VehicleType convertVehicleType(VehicleType vehicleType){
+        Master2020.PR.VehicleType newVT = new Master2020.PR.VehicleType(vehicleType.vehicleTypeID, vehicleType.travelCost, vehicleType.usageCost, vehicleType.capacity, vehicleType.loadingTimeAtDepot, data.numberOfVehiclesInVehicleType[vehicleType.vehicleTypeID]);
         vehicleTypeMap.put(vehicleType,newVT);
         return newVT;
     }
 
-    private static PR.Customer convertCustomer(Customer customer, Depot depot){
-        return new PR.Customer(customer.customerID, getProductQuantities(customer.orders), getProductTypes(customer.orders),
+    private static Master2020.PR.Customer convertCustomer(Customer customer, Depot depot){
+        return new Master2020.PR.Customer(customer.customerID, getProductQuantities(customer.orders), getProductTypes(customer.orders),
                 customer.timeWindow, customer.requiredVisitPeriod, getMinFreq(customer.orders), getMaxFreq(customer.orders),
                 getMinQuantity(customer.orders), getMaxQuantity(customer.orders), customer.totalUnloadingTime,
                 customer.xCoordinate, customer.yCoordinate, distanceToDepot(customer,depot));

@@ -1,4 +1,4 @@
-package PR;
+package Master2020.PR;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -170,7 +170,7 @@ public class DataReader {
         return dataMIP;
     }
 
-    public static DataMIP initialieNewData(DataFiles.Data data ) {
+    public static DataMIP initialieNewData(Master2020.DataFiles.Data data ) {
 
         return new DataMIP();
 

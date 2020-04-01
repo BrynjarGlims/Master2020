@@ -1,4 +1,4 @@
-package PR;
+package Master2020.PR;
 public class Vehicle {
 
     public int vehicleID;

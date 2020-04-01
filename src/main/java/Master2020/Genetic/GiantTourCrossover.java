@@ -1,15 +1,15 @@
-package Genetic;
+package Master2020.Genetic;
 
 
-import DataFiles.Customer;
-import DataFiles.Data;
-import DataFiles.DataReader;
-import Individual.Individual;
-import Individual.AdSplit;
-import Individual.Trip;
-import Individual.Journey;
-import ProductAllocation.OrderDistribution;
-import Testing.IndividualTest;
+import Master2020.DataFiles.Customer;
+import Master2020.DataFiles.Data;
+import Master2020.DataFiles.DataReader;
+import Master2020.Individual.Individual;
+import Master2020.Individual.AdSplit;
+import Master2020.Individual.Trip;
+import Master2020.Individual.Journey;
+import Master2020.ProductAllocation.OrderDistribution;
+import Master2020.Testing.IndividualTest;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;

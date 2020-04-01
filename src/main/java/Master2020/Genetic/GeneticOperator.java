@@ -1,11 +1,9 @@
-package Genetic;
+package Master2020.Genetic;
 
-import DataFiles.Data;
-import Individual.Individual;
-import Individual.GiantTour;
-import ProductAllocation.OrderDistribution;
+import Master2020.DataFiles.Data;
+import Master2020.Individual.Individual;
+import Master2020.Individual.GiantTour;
 
-import javax.xml.transform.sax.SAXSource;
 import java.util.Random;
 
 public class GeneticOperator {

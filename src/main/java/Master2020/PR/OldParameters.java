@@ -1,4 +1,4 @@
-package PR;
+package Master2020.PR;
 public class OldParameters {
 
     //Chose which models to run. Results are written to csv in folder results/result-files

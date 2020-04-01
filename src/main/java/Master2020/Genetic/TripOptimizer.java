@@ -1,13 +1,13 @@
-package Genetic;
+package Master2020.Genetic;
 
-import DataFiles.DataReader;
-import DataFiles.Parameters;
-import Individual.Individual;
-import Individual.Trip;
-import Individual.AdSplit;
-import DataFiles.Data;
-import Population.*;
-import ProductAllocation.OrderDistribution;
+import Master2020.DataFiles.DataReader;
+import Master2020.DataFiles.Parameters;
+import Master2020.Individual.Individual;
+import Master2020.Individual.Trip;
+import Master2020.Individual.AdSplit;
+import Master2020.DataFiles.Data;
+import Master2020.Population.*;
+import Master2020.ProductAllocation.OrderDistribution;
 
 import java.util.ArrayList;
 import java.util.List;

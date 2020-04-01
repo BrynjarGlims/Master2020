@@ -1,12 +1,12 @@
-package Population;
+package Master2020.Population;
 
 
-import DataFiles.Data;
-import DataFiles.DataReader;
-import DataFiles.Parameters;
-import Individual.Individual;
-import ProductAllocation.OrderDistribution;
-import Genetic.FitnessCalculation;
+import Master2020.DataFiles.Data;
+import Master2020.DataFiles.DataReader;
+import Master2020.DataFiles.Parameters;
+import Master2020.Individual.Individual;
+import Master2020.ProductAllocation.OrderDistribution;
+import Master2020.Genetic.FitnessCalculation;
 
 
 import java.util.HashMap;

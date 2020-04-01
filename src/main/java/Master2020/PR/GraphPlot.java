@@ -1,4 +1,4 @@
-package PR;
+package Master2020.PR;
 import gurobi.GRB;
 import gurobi.GRBException;
 import org.graphstream.graph.*;

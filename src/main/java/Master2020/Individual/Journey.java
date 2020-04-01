@@ -1,16 +1,16 @@
-package Individual;
+package Master2020.Individual;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import DataFiles.Data;
-import DataFiles.DataReader;
-import DataFiles.Order;
-import DataFiles.Parameters;
-import Genetic.OrderDistributionCrossover;
-import Population.Population;
-import ProductAllocation.OrderDistribution;
-import Population.OrderDistributionPopulation;
+import Master2020.DataFiles.Data;
+import Master2020.DataFiles.DataReader;
+import Master2020.DataFiles.Order;
+import Master2020.DataFiles.Parameters;
+import Master2020.Genetic.OrderDistributionCrossover;
+import Master2020.Population.Population;
+import Master2020.ProductAllocation.OrderDistribution;
+import Master2020.Population.OrderDistributionPopulation;
 
 public class Journey {
 
@@ -136,9 +136,9 @@ public class Journey {
         Individual parent1 = population.getRandomIndividual();
         Individual parent2 = population.getRandomIndividual();
         System.out.println(parent1.getFitness(true));
-        Individual child = Genetic.GiantTourCrossover.crossOver(parent1, parent2, parent1.orderDistribution);
+        Individual child = Master2020.Genetic.GiantTourCrossover.crossOver(parent1, parent2, parent1.orderDistribution);
         System.out.println(child.getFitness(true));
-        Genetic.Education.improveRoutes(child, child.orderDistribution);
+        Master2020.Genetic.Education.improveRoutes(child, child.orderDistribution);
         System.out.println(child.getFitness(true));
     }
 

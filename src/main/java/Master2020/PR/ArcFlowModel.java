@@ -1,10 +1,9 @@
-package PR;
-import DataFiles.Data;
-import DataFiles.Parameters;
-import Individual.Individual;
-import MIP.DataConverter;
-import ProductAllocation.OrderDistribution;
-import Visualization.PlotIndividual;
+package Master2020.PR;
+import Master2020.DataFiles.Data;
+import Master2020.DataFiles.Parameters;
+import Master2020.Individual.Individual;
+import Master2020.MIP.DataConverter;
+import Master2020.ProductAllocation.OrderDistribution;
 import gurobi.*;
 
 import java.io.FileNotFoundException;
@@ -160,7 +159,7 @@ public class ArcFlowModel {
                     for (int v = 0; v < dataMIP.numVehicles; v++) {
                         for (int r = 0; r < dataMIP.numTrips; r++) {
                             String variable_name = String.format("q[%d][%d][%d][%d][%d]", d, v, r, i, m);
-                            q[d][v][r][i][m] = model.addVar(0.0, DataFiles.Parameters.upperBoundQuantity, 0, GRB.CONTINUOUS, variable_name);
+                            q[d][v][r][i][m] = model.addVar(0.0, Master2020.DataFiles.Parameters.upperBoundQuantity, 0, GRB.CONTINUOUS, variable_name);
                         }
                     }
                 }
@@ -1164,10 +1163,10 @@ public class ArcFlowModel {
             System.out.println("Print results:");
             displayResults(true);
 
-            // Testing session
-            //Testing.MIPTest.printZSolutions(this);
-            //Testing.MIPTest.checkSpesificCase(this);
-            Testing.MIPTest.getDetailedResult(this);
+            // Master2020.Testing session
+            //Master2020.Testing.MIPTest.printZSolutions(this);
+            //Master2020.Testing.MIPTest.checkSpesificCase(this);
+            Master2020.Testing.MIPTest.getDetailedResult(this);
 
 
             if (optimstatus == 3) {
@@ -1225,12 +1224,12 @@ public class ArcFlowModel {
     }
 
     public static void main(String[] args) throws IOException {
-        Data data = DataFiles.DataReader.loadData();
+        Data data = Master2020.DataFiles.DataReader.loadData();
         DataMIP dataMip = DataConverter.convert(data);
         ArcFlowModel afm = new ArcFlowModel(dataMip);
-        afm.runModel(DataFiles.Parameters.symmetry);
+        afm.runModel(Master2020.DataFiles.Parameters.symmetry);
         Individual individual = afm.getIndividual();
-        StoringResults.Result res = new StoringResults.Result(individual);
+        Master2020.StoringResults.Result res = new Master2020.StoringResults.Result(individual);
         res.store();
         //PlotIndividual visualizer = new PlotIndividual(data);
         //visualizer.visualize(individual);

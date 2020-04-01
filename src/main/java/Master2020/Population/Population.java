@@ -1,10 +1,10 @@
-package Population;
-import DataFiles.*;
-import Genetic.BiasedFitness;
-import Genetic.TournamentSelection;
-import Individual.Individual;
-import Individual.AdSplit;
-import ProductAllocation.OrderDistribution;
+package Master2020.Population;
+import Master2020.DataFiles.*;
+import Master2020.Genetic.BiasedFitness;
+import Master2020.Genetic.TournamentSelection;
+import Master2020.Individual.Individual;
+import Master2020.Individual.AdSplit;
+import Master2020.ProductAllocation.OrderDistribution;
 
 
 

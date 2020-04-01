@@ -1,12 +1,12 @@
-package PR;
+package Master2020.PR;
 
-import DataFiles.Data;
-import Individual.Individual;
-import ProductAllocation.OrderDistribution;
+import Master2020.DataFiles.Data;
+import Master2020.Individual.Individual;
+import Master2020.ProductAllocation.OrderDistribution;
 import gurobi.GRB;
 import gurobi.GRBException;
-import Individual.Trip;
-import Individual.GiantTour;
+import Master2020.Individual.Trip;
+import Master2020.Individual.GiantTour;
 
 import java.util.ArrayList;
 import java.util.HashMap;

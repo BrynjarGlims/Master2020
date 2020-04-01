@@ -1,14 +1,14 @@
-package StoringResults;
+package Master2020.StoringResults;
 
-import DataFiles.*;
-import Genetic.OrderDistributionCrossover;
-import Individual.Individual;
-import Population.Population;
-import ProductAllocation.OrderDelivery;
-import ProductAllocation.OrderDistribution;
+import Master2020.DataFiles.*;
+import Master2020.Genetic.OrderDistributionCrossover;
+import Master2020.Individual.Individual;
+import Master2020.Population.Population;
+import Master2020.ProductAllocation.OrderDelivery;
+import Master2020.ProductAllocation.OrderDistribution;
 import com.opencsv.CSVWriter;
-import Population.OrderDistributionPopulation;
-import Individual.Trip;
+import Master2020.Population.OrderDistributionPopulation;
+import Master2020.Individual.Trip;
 
 import java.io.File;
 import java.io.IOException;
@@ -260,7 +260,7 @@ public class Result {
         SimpleDateFormat date_formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         System.out.println("Changing summary file...");
         if (newFile.length() == 0){
-            String[] CSV_COLUMNS = {"File name" , "Objective Value", "Runtime", "Date", "Population Size ", "Generations",
+            String[] CSV_COLUMNS = {"File name" , "Objective Value", "Runtime", "Date", "Master2020.Population Size ", "Generations",
                     "Customers", "Vehicles" };
             csvWriter.writeNext(CSV_COLUMNS, false);
         }

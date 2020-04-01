@@ -1,10 +1,10 @@
-package Genetic;
+package Master2020.Genetic;
 
-import DataFiles.Data;
-import DataFiles.DataReader;
-import DataFiles.Order;
-import ProductAllocation.OrderDelivery;
-import ProductAllocation.OrderDistribution;
+import Master2020.DataFiles.Data;
+import Master2020.DataFiles.DataReader;
+import Master2020.DataFiles.Order;
+import Master2020.ProductAllocation.OrderDelivery;
+import Master2020.ProductAllocation.OrderDistribution;
 
 import java.util.*;
 
