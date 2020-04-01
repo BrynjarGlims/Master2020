@@ -1,19 +1,16 @@
-package MIP;
+package Master2020.MIP;
 
-import DataFiles.Data;
-import DataFiles.DataReader;
-import DataFiles.Parameters;
-import Genetic.OrderDistributionCrossover;
-import Individual.Individual;
-import Population.Population;
-import ProductAllocation.OrderDistribution;
+import Master2020.DataFiles.Data;
+import Master2020.DataFiles.DataReader;
+import Master2020.DataFiles.Parameters;
+import Master2020.Genetic.OrderDistributionCrossover;
+import Master2020.Individual.Individual;
+import Master2020.ProductAllocation.OrderDistribution;
 import gurobi.*;
-import Population.*;
-import Individual.Trip;
+import Master2020.Individual.Trip;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Iterator;
 
 public class OrderAllocationModel {
 

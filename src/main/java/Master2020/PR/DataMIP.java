@@ -1,8 +1,8 @@
-package PR;
-import DataFiles.Data;
-import MIP.DataConverter;
+package Master2020.PR;
+import Master2020.DataFiles.Data;
+import Master2020.MIP.DataConverter;
 import gurobi.GRBVar;
-import DataFiles.Parameters;
+import Master2020.DataFiles.Parameters;
 
 import java.util.Arrays;
 import java.util.HashSet;

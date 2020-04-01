@@ -1,12 +1,12 @@
-package Genetic;
+package Master2020.Genetic;
 
 import java.util.*;
 
-import DataFiles.*;
-import Individual.Individual;
-import ProductAllocation.OrderDistribution;
-import Individual.Trip;
-import Individual.Journey;
+import Master2020.DataFiles.*;
+import Master2020.Individual.Individual;
+import Master2020.ProductAllocation.OrderDistribution;
+import Master2020.Individual.Trip;
+import Master2020.Individual.Journey;
 
 
 public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove parts of code in LabelEntryClass

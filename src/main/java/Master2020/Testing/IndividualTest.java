@@ -1,18 +1,18 @@
-package Testing;
+package Master2020.Testing;
 
-import DataFiles.Customer;
-import DataFiles.Data;
-import DataFiles.DataReader;
-import DataFiles.Parameters;
-import Individual.Individual;
-import Individual.Journey;
-import Individual.Trip;
-import MIP.OrderAllocationModel;
-import Population.Population;
-import ProductAllocation.OrderDistribution;
-import Population.OrderDistributionPopulation;
-import Individual.AdSplit;
-import StoringResults.Result;
+import Master2020.DataFiles.Customer;
+import Master2020.DataFiles.Data;
+import Master2020.DataFiles.DataReader;
+import Master2020.DataFiles.Parameters;
+import Master2020.Individual.Individual;
+import Master2020.Individual.Journey;
+import Master2020.Individual.Trip;
+import Master2020.MIP.OrderAllocationModel;
+import Master2020.Population.Population;
+import Master2020.ProductAllocation.OrderDistribution;
+import Master2020.Population.OrderDistributionPopulation;
+import Master2020.Individual.AdSplit;
+import Master2020.StoringResults.Result;
 import gurobi.GRBException;
 
 import java.io.IOException;

@@ -1,9 +1,8 @@
-package DataFiles;
+package Master2020.DataFiles;
 
 
 import gurobi.GRBVar;
 import org.numenta.nupic.util.ArrayUtils;
-import scala.xml.PrettyPrinter;
 
 import java.lang.*;
 import java.util.Arrays;

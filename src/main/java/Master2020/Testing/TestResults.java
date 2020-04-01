@@ -1,6 +1,6 @@
-package Testing;
+package Master2020.Testing;
 
-import DataFiles.*;
+import Master2020.DataFiles.*;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -130,7 +130,7 @@ public class TestResults {
         String path = "results/results_detailed/bestGA";
         evaluateSolution(path);
         System.out.println(" ----- ");
-        System.out.println("Results from MIP");
+        System.out.println("Results from Master2020.MIP");
         path = "results/results_detailed/Test_MIP";
         evaluateSolution(path);
     }

@@ -1,7 +1,7 @@
-package PR;
-import DataFiles.Data;
-import MIP.DataConverter;
-import DataFiles.Parameters;
+package Master2020.PR;
+import Master2020.DataFiles.Data;
+import Master2020.MIP.DataConverter;
+import Master2020.DataFiles.Parameters;
 import gurobi.*;
 
 import java.io.FileNotFoundException;
@@ -139,7 +139,7 @@ public class JourneyBasedModel {
         }
         for (int d = 0; d < dataMIP.numPeriods; d++) {
             String variable_name = String.format("qO[%d]", d);
-            qO[d] = model.addVar(0.0, DataFiles.Parameters.overtimeLimit[d], dataMIP.costOvertime[d], GRB.CONTINUOUS, variable_name);
+            qO[d] = model.addVar(0.0, Master2020.DataFiles.Parameters.overtimeLimit[d], dataMIP.costOvertime[d], GRB.CONTINUOUS, variable_name);
         }
     }
 
@@ -835,10 +835,10 @@ public class JourneyBasedModel {
     }
 
     public static void main (String[] args){
-        Data data = DataFiles.DataReader.loadData();
+        Data data = Master2020.DataFiles.DataReader.loadData();
         DataMIP dataMip = DataConverter.convert(data);
         JourneyBasedModel jbm = new JourneyBasedModel(dataMip);
-        jbm.runModel(DataFiles.Parameters.symmetry);
+        jbm.runModel(Master2020.DataFiles.Parameters.symmetry);
 
     }
 }

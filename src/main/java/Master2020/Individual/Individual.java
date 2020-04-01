@@ -1,15 +1,12 @@
-package Individual;
-import DataFiles.*;
-import Genetic.FitnessCalculation;
-import MIP.ArcFlowModel;
-import Population.Population;
-import ProductAllocation.OrderDistribution;
+package Master2020.Individual;
+import Master2020.DataFiles.*;
+import Master2020.Genetic.FitnessCalculation;
+import Master2020.Population.Population;
+import Master2020.ProductAllocation.OrderDistribution;
 import scala.xml.PrettyPrinter;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 
 
 public class Individual implements Comparable<Individual> {
@@ -247,7 +244,7 @@ public class Individual implements Comparable<Individual> {
         return out;
     }
 
-    public void setFitness(double fitness){ //USE WITH CARE. ONLY WHEN SETTING FITNESS FROM MIP
+    public void setFitness(double fitness){ //USE WITH CARE. ONLY WHEN SETTING FITNESS FROM Master2020.MIP
         this.fitness = fitness;
     }
 
@@ -255,7 +252,7 @@ public class Individual implements Comparable<Individual> {
     public void printDetailedFitness(){
         System.out.println("-------------------------------------");
         System.out.println("Fitness: " + fitness);
-        System.out.println("True fitness: " + Testing.IndividualTest.getTrueIndividualFitness(this));
+        System.out.println("True fitness: " + Master2020.Testing.IndividualTest.getTrueIndividualFitness(this));
         System.out.println("Is feasbile: " + isFeasible());
         System.out.println("Infeasibility cost2: " + infeasibilityCost);
         System.out.println("Biased fitness: " + biasedFitness);

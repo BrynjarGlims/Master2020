@@ -1,3 +1,5 @@
+package Master2020.Run;
+
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Parameters;
@@ -14,11 +16,13 @@ import Master2020.Individual.Trip;
 import Master2020.Testing.*;
 import gurobi.GRBException;
 
+
+import gurobi.GRBException;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class main {
+public class App {
 
 
     public static Data data;
@@ -181,6 +185,10 @@ public class main {
                 }
                 population.addChildToPopulation(newIndividual);
 
+
+            }
+            for (Individual individual : population.getTotalPopulation()){
+                IndividualTest.checkIfIndividualIsComplete(individual);
             }
 
             System.out.println("Repair..");

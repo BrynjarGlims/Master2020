@@ -1,17 +1,16 @@
-package ProductAllocation;
+package Master2020.ProductAllocation;
 
-import DataFiles.Customer;
-import DataFiles.Data;
-import DataFiles.DataReader;
-import DataFiles.Order;
-import DataFiles.*;
-import MIP.ArcFlowModel;
-import MIP.OrderAllocationModel;
-import PR.DataMIP;
+import Master2020.DataFiles.Customer;
+import Master2020.DataFiles.Data;
+import Master2020.DataFiles.DataReader;
+import Master2020.DataFiles.Order;
+import Master2020.DataFiles.*;
+import Master2020.MIP.ArcFlowModel;
+import Master2020.MIP.OrderAllocationModel;
+import Master2020.PR.DataMIP;
 import gurobi.GRB;
 import gurobi.GRBException;
 import gurobi.GRBVar;
-import org.nustaq.kson.KsonCharOutput;
 
 
 import java.util.*;
@@ -67,7 +66,7 @@ public class OrderDistribution {
         setFitness();
     }
 
-    public void makeDistributionFromArcFlowModel(PR.ArcFlowModel afm) throws GRBException {
+    public void makeDistributionFromArcFlowModel(Master2020.PR.ArcFlowModel afm) throws GRBException {
         setVolumeAndOrdersFromMIP( afm.u, afm.q, afm.dataMIP);
         setVolumePerPeriod();
         setFitness();

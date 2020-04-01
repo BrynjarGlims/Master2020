@@ -1,9 +1,8 @@
-package MIP;
-import DataFiles.*;
-import Individual.Individual;
-import Population.Population;
-import ProductAllocation.OrderDistribution;
-import StoringResults.Result;
+package Master2020.MIP;
+import Master2020.DataFiles.*;
+import Master2020.Individual.Individual;
+import Master2020.ProductAllocation.OrderDistribution;
+import Master2020.StoringResults.Result;
 import gurobi.*;
 
 import java.io.FileNotFoundException;

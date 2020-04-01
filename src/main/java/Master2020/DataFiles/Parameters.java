@@ -1,4 +1,4 @@
-package DataFiles;
+package Master2020.DataFiles;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -13,7 +13,7 @@ public class Parameters {
     public static final String vehicleFilePath = "data/Vehicles.csv";
 
 
-    //Population parameters
+    //Master2020.Population parameters
 
     public static final int maximumSubIndividualPopulationSize = 75; //TODO: find reasonable value
     public static final int minimumSubIndividualPopulationSize = 25;
