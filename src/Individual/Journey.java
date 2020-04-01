@@ -88,6 +88,10 @@ public class Journey {
         if (trip.customers.isEmpty()){
             return;
         }
+        if (trip.customers.size() == 0){
+            System.out.println("This should not bve prunted");
+            return;
+        }
 
         //initialize
         int previousCustomer = data.numberOfCustomers;
