@@ -19,7 +19,6 @@
 *.zip
 *.tar.gz
 *.rar
-*.xml
 *.iml
 *.ilp
 *.DS_Store

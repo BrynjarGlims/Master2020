@@ -15,8 +15,8 @@ public class Parameters {
 
     //Population parameters
 
-    public static final int maximumSubIndividualPopulationSize = 200; //TODO: find reasonable value
-    public static final int minimumSubIndividualPopulationSize = 50;
+    public static final int maximumSubIndividualPopulationSize = 75; //TODO: find reasonable value
+    public static final int minimumSubIndividualPopulationSize = 25;
     public static final int numberOfElitismSurvivorsPerGeneration = 5;
 
     public static final int initialPopulationSize = 50;
@@ -33,26 +33,29 @@ public class Parameters {
     //Loading data parameters
 
     public static final double distanceCutOffFromDepot = 3.5;
-    public static final int numberOfCustomers = 76; // A maximum of 76
-    public static final int numberOfVehicles = 50;
+    public static final int numberOfCustomers = 70; // A maximum of 76
+    public static final int numberOfVehicles = 20;
 
     
     public static final int nearestNeighbors = 5; //Neighborhood size for each customer
-    public static final int diversityCalculationInterval = 20;
+    public static final int diversityCalculationInterval = 100;
     public static final int EducationTabooSize = 2;
     public static final int tripOptimizerSizeLimit = 7;
 
     //Runtime parameters
-    public static final double educationProbability = 0.7;
+    public static final double educationProbability = 0.5;
     public static final double tripOptimizerProbability = 0.3;
     public static final double repairProbability = 0.4;
-    public static final double greedyMIPValue = 1;
+    public static final double greedyMIPValue = 0.5;
     public static final double heuristicDominanceValue = 5;
 
 
     //Traveling parameters
-    public static final double scalingDistanceParameter = 2.2;
+    public static final double scalingDistanceParameter = 2.2; //set to 2.2
     public static final double timeShift = 4;
+
+    //scaling parameters
+    public static final double scalingDrivingCost = 25;
 
     //Penalty parameters for genetic algorithm
     public static final double initialCapacityPenalty = 1000;  // lambda
@@ -102,7 +105,7 @@ public class Parameters {
     public static final boolean verboseJourneyBased = false;
 
     //PLOT PARAMETERS
-    public static final boolean savePlots = false;
+    public static final boolean savePlots = true;
     public static final boolean verbose = false;
-    public static final char separator = ',';
+    public static final char separator = ';';
 }

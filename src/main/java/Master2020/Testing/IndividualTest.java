@@ -22,7 +22,25 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 public class IndividualTest {
-    public static void checkIfIndividualIsComplete( Individual individual) throws Exception {
+
+
+    public static boolean testIndividual(Individual individual){
+        if (!testTripMap(individual)){
+            System.out.println("trip map is not complete for customer");
+            return false;
+        }
+
+        if (!checkIfIndividualIsComplete(individual)){
+            System.out.println("check if individual is complete failed");
+            return false;
+        }
+        if (!checkJourneyVehicle(individual)){
+            System.out.println("check vehicles in journeys failed");
+            return false;
+        }
+        return true;
+    }
+    public static boolean checkIfIndividualIsComplete( Individual individual) {
         for (int p = 0; p < individual.data.numberOfPeriods; p++){
             for (int i = 0; i < individual.data.numberOfCustomers; i++){
                 if (individual.tripMap.get(p).containsKey(i)){
@@ -34,11 +52,33 @@ public class IndividualTest {
                     }
                     if (!customerFound){
                         System.out.println("Cannot find trip for period "+p+ " customer " +i );
-                        throw new Exception();
+                        return false;
                     }
                 }
             }
         }
+        return true;
+    }
+
+
+    public static boolean checkJourneyVehicle(Individual individual){
+        int vehicleId;
+        int vehicleType;
+        for (int p = 0 ; p < individual.data.numberOfPeriods ; p++){
+            for (int vt = 0 ; vt < individual.data.numberOfVehicleTypes ; vt++){
+                for (Journey journey : individual.journeyList[p][vt]){
+                    vehicleId = journey.vehicleId;
+                    vehicleType = journey.vehicleType;
+                    for (Trip trip : journey.trips){
+                        if (trip.vehicleType != vehicleType || trip.vehicleID != vehicleId){
+                            System.out.println("invalid journey");
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
     }
 
 

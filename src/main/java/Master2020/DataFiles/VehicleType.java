@@ -14,7 +14,7 @@ public class VehicleType {
     public int costPerHour;
     public int costPerHourOvertime;
     public int costPerDay;
-    public int costPerKm;
+    public double costPerKm;
     public double travelCost;
     public double usageCost;
     public HashSet<Integer> vehicleSet;
@@ -22,14 +22,14 @@ public class VehicleType {
     public double loadingTimeAtDepot;
 
     public VehicleType( String capacity,  int costPerHour, int costPerHourOvertime,
-                       int costPerDay, int costPerKm){
+                       int costPerDay, double costPerKm){
 
         this.capacity = Double.parseDouble(capacity) * Parameters.scalingVehicleCapacity ;
         this.capacityString = capacity;
         this.costPerHour = costPerHour;
         this.costPerHourOvertime = costPerHourOvertime;
         this.costPerDay = costPerDay;
-        this.costPerKm = costPerKm;
+        this.costPerKm = costPerKm * Parameters.scalingDrivingCost;
 
         this.loadingTimeAtDepot = Parameters.loadingTimeAtDepotConstant +
                 Parameters.loadaingTimeAtDepotVariable*this.capacity;
