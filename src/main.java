@@ -12,8 +12,9 @@ import Testing.IndividualTest;
 import Visualization.PlotIndividual;
 import Individual.Trip;
 import Testing.*;
-import gurobi.GRBException;
 
+
+import gurobi.GRBException;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.concurrent.ThreadLocalRandom;

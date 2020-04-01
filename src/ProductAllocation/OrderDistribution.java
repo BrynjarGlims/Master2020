@@ -52,6 +52,7 @@ public class OrderDistribution {
     public void makeInitialDistribution() {
         distributeDividables();
         distributeNonDividables();
+        setFitness();
     }
 
 
@@ -160,11 +161,14 @@ public class OrderDistribution {
         for (int p = 0; p < data.numberOfPeriods; p++){
             fitness += Parameters.overtimeCost[p]*Math.max(0, this.volumePerPeriod[p] - Data.overtimeLimit[p]);
         }
-        //System.out.println("#####");
-        //System.out.println( "Fitness of objective: " + objectiveValue);
-        //System.out.println("Fitness of brute force calculation: " + fitness);
-        //System.out.println("#####");
-        //this.fitness = objectiveValue;
+    }
+
+    public double getFitness(){
+        fitness = 0;
+        for (int p = 0; p < data.numberOfPeriods; p++){
+            fitness += Parameters.overtimeCost[p]*Math.max(0, this.volumePerPeriod[p] - Data.overtimeLimit[p]);
+        }
+        return fitness;
     }
 
     private void setVolumePerPeriod(){

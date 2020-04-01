@@ -1,15 +1,11 @@
 package Individual;
 import DataFiles.*;
 import Genetic.FitnessCalculation;
-import MIP.ArcFlowModel;
 import Population.Population;
 import ProductAllocation.OrderDistribution;
-import scala.xml.PrettyPrinter;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 
 
 public class Individual implements Comparable<Individual> {
@@ -22,17 +18,14 @@ public class Individual implements Comparable<Individual> {
     public ArrayList<Journey>[][] journeyList; //period, vehicleType
     public Data data;
 
-    public double infeasibilityOvertimeDrivngValue;
-    public double infeasibilityTimeWarpValue;
-    public double infeasibilityOverCapacityValue;
-    public double feasibleTravelingCost;
-    public double feasibleVehicleUseCost;
-    public double feasibleOvertimeDepotCost;
+    public double adSplitInfeasibilityOvertimeDrivngValue;
+    public double adSplitInfeasibilityTimeWarpValue;
+    public double adSplitInfeasibilityOverCapacityValue;
     public Label[][] bestLabels;
 
     //fitness values:
-    public double objectiveCost;
-    public double infeasibilityCost;
+    public double travelCost;
+    public double infeasibilityCost; //both time warp and overload
     public double vehicleUsageCost;
 
     private double fitness = Double.MAX_VALUE;
@@ -59,7 +52,7 @@ public class Individual implements Comparable<Individual> {
         this.population = population;
     }
 
-    public  void initializeTripList(){
+    public void initializeTripList(){
         this.tripList = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
         for (int p = 0 ; p < data.numberOfPeriods; p++){
             for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
@@ -104,9 +97,9 @@ public class Individual implements Comparable<Individual> {
         //set chromosome
         this.orderDistribution = od;
         giantTour.initializeGiantTour();
-        this.infeasibilityOverCapacityValue = 0;
-        this.infeasibilityOvertimeDrivngValue = 0;
-        this.infeasibilityTimeWarpValue = 0;
+        this.adSplitInfeasibilityOverCapacityValue = 0;
+        this.adSplitInfeasibilityOvertimeDrivngValue = 0;
+        this.adSplitInfeasibilityTimeWarpValue = 0;
     }
 
     public void setTripMap( HashMap< Integer, HashMap<Integer, Trip>> tripMap ){
@@ -205,10 +198,10 @@ public class Individual implements Comparable<Individual> {
     public void updateFitness(double penaltyMultiplier) {
         //Calculate objective costs
         double[] fitnesses = FitnessCalculation.getIndividualFitness(this, penaltyMultiplier);
-        this.objectiveCost = fitnesses[0];
+        this.travelCost = fitnesses[0];
         this.infeasibilityCost = fitnesses[1];
         this.vehicleUsageCost = fitnesses[2];
-        this.fitness = this.objectiveCost + this.vehicleUsageCost + this.infeasibilityCost;
+        this.fitness = this.travelCost + this.vehicleUsageCost + this.infeasibilityCost + this.orderDistribution.getFitness();
     }
 
 
@@ -255,21 +248,19 @@ public class Individual implements Comparable<Individual> {
     public void printDetailedFitness(){
         System.out.println("-------------------------------------");
         System.out.println("Fitness: " + fitness);
-        System.out.println("True fitness: " + Testing.IndividualTest.getTrueIndividualFitness(this));
-        System.out.println("Is feasbile: " + isFeasible());
-        System.out.println("Infeasibility cost2: " + infeasibilityCost);
         System.out.println("Biased fitness: " + biasedFitness);
+        System.out.println("Is feasbile: " + isFeasible());
+        System.out.println("Fitness Rank:" + fitnessRank);
         System.out.println("Diversity Rank: "  +diversityRank);
         System.out.println("Diversity: " + diversity);
-        System.out.println("Fitness: " + fitness);
-        System.out.println("Fitness Rank:" + fitnessRank);
-        System.out.println("InfOvertimeValue: " + infeasibilityOvertimeDrivngValue);
-        System.out.println("InfTimeWarp: " + infeasibilityTimeWarpValue);
-        System.out.println("InfOverCapacityValue: " + infeasibilityOverCapacityValue);
-        System.out.println("Objective cost: " + objectiveCost);
-        System.out.println("Traveling cost: " + feasibleTravelingCost);
-        System.out.println("Vehicle cost: " + vehicleUsageCost);
-        System.out.println("OvertimeAtDepot: " + feasibleOvertimeDepotCost);
+
+        System.out.println(" #Detailed cost#: ");
+        System.out.println("Travel cost: " + travelCost);
+        System.out.println("Vehicle usage cost: " + vehicleUsageCost);
+        System.out.println("Order allocation cost: " + orderDistribution.fitness);
+        System.out.println("Infeasibility cost: " + infeasibilityCost);
+
+        System.out.println("True fitness (if feasible): " + Testing.IndividualTest.getTrueIndividualFitness(this));
         System.out.println("-------------------------------------");
     }
 
