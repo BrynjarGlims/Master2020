@@ -167,6 +167,10 @@ public class main {
 
                 population.addChildToPopulation(newIndividual);
 
+
+            }
+            for (Individual individual : population.getTotalPopulation()){
+                IndividualTest.checkIfIndividualIsComplete(individual);
             }
 
             System.out.println("Repair..");
