@@ -5,7 +5,7 @@ import java.util.Date;
 public class FileParameters {
 
     //Running parameters
-    public static final boolean useDefaultFileName = true;
+    public static final boolean useDefaultFileName = false;
 
     //Storing data parameters
     public static final String filePathSummary = "results";

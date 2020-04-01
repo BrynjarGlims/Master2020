@@ -13,22 +13,30 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
 
     public static double[] getIndividualFitness(Individual individual, double penaltyMultiplier){
         Data data = individual.data;
-        double objectiveFitness = 0;
-        double infeasibilityFitness = 0;
+        double travelCost = 0;
+        double timeWarpCost = 0;
+        double overloadCost = 0;
         double vehicleUsageCost = 0;
         double[] fitnesses;
         for (int p = 0 ; p < data.numberOfPeriods ; p++){
             for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
                 for (Journey journey : individual.journeyList[p][vt]){
+                    if (journey == null){
+                        System.out.println("journey is null");
+                        continue;
+                    }
+                    if (journey.trips.size() == 0){
+                        System.out.println("No trips in joureny");
+                    }
                     fitnesses = getJourneyFitness(journey, individual.orderDistribution, penaltyMultiplier);
-                    objectiveFitness += fitnesses[0];
-                    infeasibilityFitness += fitnesses[1];
-                    vehicleUsageCost += fitnesses[2];
+                    travelCost += fitnesses[0];
+                    timeWarpCost += fitnesses[1];
+                    overloadCost += fitnesses[2];
+                    vehicleUsageCost += fitnesses[3];
                 }
             }
         }
-        objectiveFitness += overTimeDepot(individual.orderDistribution);
-        return new double[]{objectiveFitness, infeasibilityFitness, vehicleUsageCost};
+        return new double[]{travelCost,timeWarpCost,overloadCost,vehicleUsageCost};
     }
 
 

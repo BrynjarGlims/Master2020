@@ -55,16 +55,24 @@ public class Journey {
         travelDistance = 0;
         boolean firstTrip = true;
         for (Trip trip : trips){
+            if (trip.customers.size() == 0){
+                System.out.println("Empty trip");
+                continue;
+            }
+
             if (!firstTrip){
                 currentTime += data.vehicleTypes[vehicleType].loadingTimeAtDepot;
             }
+            else{
+                firstTrip = false;
+            }
             updateTimes(trip);
             updateOverload(trip, orderDistribution);
-            firstTrip = false;
         }
         double travelCost = travelDistance*data.vehicleTypes[vehicleType].travelCost;
-        double infeasibilityCost = timeWarp* Parameters.initialTimeWarpPenalty*penaltyMultiplier + overLoad*Parameters.penaltyFactorForOverFilling*penaltyMultiplier;
-        return new double[]{travelCost, infeasibilityCost, vehicleCost};
+        double timeWarpCost = timeWarp* Parameters.initialTimeWarpPenalty;
+        double overLoadCost = overLoad*Parameters.penaltyFactorForOverFilling*penaltyMultiplier;
+        return new double[]{travelCost, timeWarpCost, overLoadCost, vehicleCost};
     }
 
     public double getTotalFitness(OrderDistribution orderDistribution){
@@ -73,31 +81,29 @@ public class Journey {
 
     public double getTotalFitness(OrderDistribution orderDistribution, double penaltyMultiplier){
         double[] fitnesses = updateFitness(orderDistribution, penaltyMultiplier);
-        return fitnesses[0] + fitnesses[1];
+        return fitnesses[0] + fitnesses[1] + fitnesses[2] + fitnesses[3]; //travel + timewarp + overload + vehicle use
     }
 
     private void updateTimes(Trip trip){
         if (trip.customers.isEmpty()){
             return;
         }
-        currentTime = Math.max(currentTime + data.distanceMatrix[data.numberOfCustomers][trip.customers.get(0)], data.customers[trip.customers.get(0)].timeWindow[period][0]);
-        travelDistance += data.distanceMatrix[data.numberOfCustomers][trip.customers.get(0)];
-        if (currentTime > data.customers[trip.customers.get(0)].timeWindow[period][1]){
-            timeWarp += currentTime -  data.customers[trip.customers.get(0)].timeWindow[period][1];
-            currentTime = data.customers[trip.customers.get(0)].timeWindow[period][1];
-        }
-        currentTime += data.customers[trip.customers.get(0)].totalUnloadingTime;
-        for (int i = 0 ; i < trip.customers.size() - 1 ; i++){
-            currentTime = Math.max(currentTime + data.distanceMatrix[trip.customers.get(i)][trip.customers.get(i + 1)], data.customers[trip.customers.get(i + 1)].timeWindow[period][0]);
-            travelDistance += data.distanceMatrix[trip.customers.get(i)][trip.customers.get(i + 1)];
-            if (currentTime > data.customers[trip.customers.get(i + 1)].timeWindow[period][1]){
-                timeWarp += currentTime -  data.customers[trip.customers.get(i + 1)].timeWindow[period][1];
-                currentTime = data.customers[trip.customers.get(i + 1)].timeWindow[period][1];
+
+        //initialize
+        int previousCustomer = data.numberOfCustomers;
+        for ( int customerID : trip.customers){
+            currentTime += data.distanceMatrix[previousCustomer][customerID];
+            currentTime = Math.max(currentTime, data.customers[customerID].timeWindow[period][0]);
+            if (currentTime > data.customers[customerID].timeWindow[period][1]){
+                timeWarp +=  currentTime - data.customers[customerID].timeWindow[period][1];
+                currentTime = data.customers[customerID].timeWindow[period][1];
             }
-            currentTime += data.customers[trip.customers.get(i + 1)].totalUnloadingTime;
+            currentTime +=  data.customers[customerID].totalUnloadingTime;
+            travelDistance += data.distanceMatrix[previousCustomer][customerID];
+            previousCustomer = customerID;
         }
-        currentTime += data.distanceMatrix[trip.customers.get(trip.customers.size() - 1)][data.numberOfCustomers];
-        travelDistance += data.distanceMatrix[trip.customers.get(trip.customers.size() - 1)][data.numberOfCustomers];
+        currentTime += data.distanceMatrix[previousCustomer][data.numberOfCustomers];
+        travelDistance += data.distanceMatrix[previousCustomer][data.numberOfCustomers];
         if (currentTime > Parameters.maxJourneyDuration){
             timeWarp += currentTime - Parameters.maxJourneyDuration;
             currentTime = Parameters.maxJourneyDuration;

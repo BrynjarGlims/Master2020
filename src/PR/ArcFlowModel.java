@@ -832,10 +832,12 @@ public class ArcFlowModel {
         constraint521();
         constraint522();
 
-        /* Frequency constraints
-        constraint523();
-        constraint524();
-        */
+        if (Parameters.frequencyActivated){
+            constraint523();
+            constraint524();
+        }
+
+
         //Fixation of variables
         fixation1();
         fixation2();

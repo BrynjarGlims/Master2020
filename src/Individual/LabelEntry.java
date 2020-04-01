@@ -115,7 +115,7 @@ public class LabelEntry implements Comparable<LabelEntry> {
     private void updateTravelTimeDrivingDistanceAndTimeWarp(ArrayList<Integer> customers){
 
         //if second trip, add loading time at depot
-        if (this.vehicleTotalTravelTime > 0){
+        if (this.vehicleTotalTravelTime > Parameters.indifferenceValue){
             this.vehicleTotalTravelTime += data.vehicleTypes[vehicleTypeID].loadingTimeAtDepot;
         }
 

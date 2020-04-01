@@ -15,15 +15,15 @@ public class Parameters {
 
     //Population parameters
 
-    public static final int maximumSubIndividualPopulationSize = 200; //TODO: find reasonable value
-    public static final int minimumSubIndividualPopulationSize = 50;
+    public static final int maximumSubIndividualPopulationSize = 20; //TODO: find reasonable value
+    public static final int minimumSubIndividualPopulationSize = 10;
     public static final int numberOfElitismSurvivorsPerGeneration = 5;
 
-    public static final int initialPopulationSize = 50;
+    public static final int initialPopulationSize = 5;
     public static final int initialOrderDistributionPopulationSize = 50;
     public static final int maxNumberIterationsWithoutImprovement = 10;
     public static final int maxNumberOfGenerations = 10;
-    public static final boolean frequencyActivated = true;
+    public static final boolean frequencyActivated = false;
     public static final double minimumFitnessDifferenceForClones = 10; //minimum fitness difference to encounter two individuals as clones
 
     //Decision parameters
@@ -37,7 +37,7 @@ public class Parameters {
     public static final int numberOfVehicles = 50;
 
     
-    public static final int nearestNeighbors = 5; //Neighborhood size for each customer
+    public static final int nearestNeighbors = 3; //Neighborhood size for each customer
     public static final int diversityCalculationInterval = 100;
     public static final int EducationTabooSize = 2;
     public static final int tripOptimizerSizeLimit = 7;
@@ -66,8 +66,8 @@ public class Parameters {
     //Tournament selection parameters
     public static final int nearestNeighborsDiversity = 5;  // Neighbours from calculating diversity
     public static final double besIndividualProbability = 0.6;
-    public static final int tournamentSize = 10;  // 2 or larger, size = 2 --> binary tournament selection
-    public static final boolean binarySelection = false;  // if true, bestIndProp must be much larger than 0.5
+    public static final int tournamentSize = 5;  // 2 or larger, size = 2 --> binary tournament selection
+    public static final boolean binarySelection = true;  // if true, bestIndProp must be much larger than 0.5
 
 
     //Period parameters
