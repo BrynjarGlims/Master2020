@@ -830,11 +830,9 @@ public class ArcFlowModel {
         constraint520();
         constraint521();
         constraint522();
-
-        /* Frequency constraints
         constraint523();
         constraint524();
-        */
+
         //Fixation of variables
         fixation1();
         fixation2();
@@ -1211,7 +1209,7 @@ public class ArcFlowModel {
     public void createIndividualAndOrderDistributionObject() throws GRBException {
         this.individual = new Individual(dataMIP.newData);
         this.orderDistribution = new OrderDistribution(dataMIP.newData);
-        OldArcFlowConverter.initializeIndividualFromArcFlowModel(this);
+        ModelConverter.initializeIndividualFromArcFlowModel(this);
         this.individual.setFitness(this.model.get(GRB.DoubleAttr.ObjVal));
     }
 

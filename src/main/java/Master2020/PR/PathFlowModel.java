@@ -638,11 +638,9 @@ public class PathFlowModel {
         constraint49();
         constraint50();
         constraint51();
-        
-        /*// TODO: 17/03/2020 Implement 
         constraint52();
         constraint53();
-         */
+
         // ----------------- Symmetry breaking constraints ------------
         if (symmetry.equals("none")){
             System.out.println("----------------------------No symmetry chosen----------------------------------------");

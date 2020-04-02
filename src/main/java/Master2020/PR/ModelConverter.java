@@ -7,17 +7,31 @@ import gurobi.GRB;
 import gurobi.GRBException;
 import Master2020.Individual.Trip;
 import Master2020.Individual.GiantTour;
+import gurobi.GRBVar;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 
-public class OldArcFlowConverter {
+public class ModelConverter {
 
     private static OrderDistribution orderDistribution;
     private static Individual individual;
     private static ArcFlowModel arcFlowModel;
+    private static JourneyBasedModel journeyBasedModel;
     private static Data data;
+
+
+    public static void initializeIndividualFromJourneyBasedModel(JourneyBasedModel jbm) throws GRBException {
+        journeyBasedModel = jbm;
+        data = journeyBasedModel.dataMIP.newData;
+        orderDistribution = jbm.getOrderDistribution();
+        orderDistribution.makeDistributionFromJourneyBasedModel(journeyBasedModel);
+        individual = jbm.getIndividual();
+        //set giant tour chromosome and support strucutres in new individual
+        initializeGiantTourInIndividualForJBM();
+        individual.setOrderDistribution(orderDistribution);
+    }
 
 
 
@@ -30,15 +44,27 @@ public class OldArcFlowConverter {
         orderDistribution.makeDistributionFromArcFlowModel(arcFlowModel);
         individual = afm.getIndividual();
         //set giant tour chromosome and support strucutres in new individual
-        initializeGiantTourInIndividual();
+        initializeGiantTourInIndividualForAFM();
         individual.setOrderDistribution(orderDistribution);
     }
 
 
 
-    private static void initializeGiantTourInIndividual() throws GRBException {
+    private static void initializeGiantTourInIndividualForAFM() throws GRBException {
         ArrayList<Trip>[][] tripList = initializeTripList();
-        updateTripList(tripList);
+        updateTripListAFM(tripList);
+        ArrayList<Integer>[][] giantTour = initializeGiantTourChromosome();
+        updateGiantTourChromosome(giantTour,tripList);
+        HashMap<Integer, HashMap<Integer, Trip>> tripMap = getTripMap(tripList);
+        individual.setTripMap(tripMap);
+        individual.setTripList(tripList);
+        individual.setGiantTour(createGiantTour(giantTour));
+
+    }
+
+    private static void initializeGiantTourInIndividualForJBM() throws GRBException {
+        ArrayList<Trip>[][] tripList = initializeTripList();
+        updateTripListJBM(tripList);
         ArrayList<Integer>[][] giantTour = initializeGiantTourChromosome();
         updateGiantTourChromosome(giantTour,tripList);
         HashMap<Integer, HashMap<Integer, Trip>> tripMap = getTripMap(tripList);
@@ -92,9 +118,44 @@ public class OldArcFlowConverter {
         }
     }
 
+    private static void updateTripListJBM(ArrayList<Trip>[][] tripList) throws GRBException {
+        Trip currentTrip;
+        ArrayList<Integer> customers;
+
+        for (int d = 0; d < journeyBasedModel.dataMIP.numPeriods; d++) {
+            for (int v = 0; v < journeyBasedModel.dataMIP.numVehicles; v++) {
+                for (Journey r : journeyBasedModel.dataMIP.journeyMap.get(d).get(journeyBasedModel.dataMIP.vehicles[v].vehicleType.type)) {
+                    if ( Math.round(journeyBasedModel.gamma[d][v][r.journeyId].get(GRB.DoubleAttr.X)) == 1){
+                        for(Path path : r.paths){
+                            currentTrip = new Trip();
+                            customers = new ArrayList<Integer>();
+                            currentTrip.initialize(d, data.vehicles[v].vehicleType.vehicleTypeID, v);
+                            for (Customer customer : path.customers){
+                                customers.add(customer.customerID);
+                            }
+                            currentTrip.setCustomers(customers);
+                            currentTrip.setTripIndex(tripList[r.period][journeyBasedModel.dataMIP.vehicles[v].vehicleType.type].size());
+                            tripList[r.period][journeyBasedModel.dataMIP.vehicles[v].vehicleType.type].add(currentTrip);
+                        }
+                    }
+                }
+            }
+        }
 
 
-    private static void updateTripList(ArrayList<Trip>[][] tripList) throws GRBException {
+        /*
+        for(int p = 0; p < data.numberOfPeriods; p++){
+            for (int vt = 0; vt < data.numberOfVehicleTypes; vt ++){
+                checkIfEmpty(tripList[p][vt]);
+            }
+        }
+
+         */
+    }
+
+
+
+    private static void updateTripListAFM(ArrayList<Trip>[][] tripList) throws GRBException {
         Trip currentTrip;
         int fromCustomer;
         ArrayList<Integer> customers;
@@ -128,11 +189,15 @@ public class OldArcFlowConverter {
                 }
             }
         }
+        /*
         for(int p = 0; p < data.numberOfPeriods; p++){
             for (int vt = 0; vt < data.numberOfVehicleTypes; vt ++){
                 checkIfEmpty(tripList[p][vt]);
             }
         }
+
+         */
+
     }
 
     private static void checkIfEmpty( ArrayList<Trip> tripList){

@@ -11,7 +11,7 @@ public class Parameters {
     public static final String ordersFilePath = "data/Orders.csv";
     public static final String timeWindowsFilePath = "data/Time_windows.csv";
     public static final String vehicleFilePath = "data/Vehicles.csv";
-    public static final boolean doRandomSeed = true;
+    public static final boolean doRandomSeed = false;
     public static final long randomSeedValue = 7;
 
 
@@ -35,7 +35,7 @@ public class Parameters {
     //Loading data parameters
 
     public static final double distanceCutOffFromDepot = 3.5;
-    public static final int numberOfCustomers = 8; // A maximum of 76
+    public static final int numberOfCustomers = 7; // A maximum of 76
     public static final int numberOfVehicles = 5;
 
     
@@ -104,7 +104,7 @@ public class Parameters {
 
     public static final boolean verboseArcFlow = true;
     public static final boolean verbosePathFlow = false;
-    public static final boolean verboseJourneyBased = false;
+    public static final boolean verboseJourneyBased = true;
 
     //PLOT PARAMETERS
     public static final boolean savePlots = true;

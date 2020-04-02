@@ -1,7 +1,9 @@
 package Master2020.PR;
 import Master2020.DataFiles.Data;
+import Master2020.Individual.Individual;
 import Master2020.MIP.DataConverter;
 import Master2020.DataFiles.Parameters;
+import Master2020.ProductAllocation.OrderDistribution;
 import gurobi.*;
 
 import java.io.FileNotFoundException;
@@ -20,6 +22,10 @@ public class JourneyBasedModel {
     public int optimstatus;
     public double objval;
     public String symmetry;
+
+    // Master 2020 parameters
+    private Individual individual;
+    private OrderDistribution orderDistribution;
 
     // derived variables
     public int numVehiclesUsed = 0;
@@ -111,9 +117,6 @@ public class JourneyBasedModel {
 
         for (int i = 0; i < dataMIP.numCustomers; i++) {
             for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
-                if (dataMIP.productQuantity[i][m] == 0){
-                    continue;
-                }
                 for (int d = 0; d < dataMIP.numPeriods; d++){
                     String variable_name = String.format("u[%d][%d][%d]", d, i, m);
                     u[d][i][m] = model.addVar(0.0, 1.0, 0, GRB.BINARY, variable_name);
@@ -123,9 +126,6 @@ public class JourneyBasedModel {
 
         for (int i = 0; i < dataMIP.numCustomers; i++) {
             for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
-                if (dataMIP.productQuantity[i][m] == 0){
-                    continue;
-                }
                 for (int d = 0; d < dataMIP.numPeriods; d++) {
                     for (int v = 0; v < dataMIP.numVehicles; v++) {
                         for (int r = 0; r < dataMIP.numTrips; r++){
@@ -547,11 +547,8 @@ public class JourneyBasedModel {
         constraint76();
         constraint77();
 
-        /*// TODO: 17/03/2020 Implement
         constraint78();
         constraint79();
-
-         */
 
         // ----------------- Symmetry breaking constraints ------------
 
@@ -779,7 +776,7 @@ public class JourneyBasedModel {
         }
     }
 
-    public Result runModel(String symmetry) {
+    public void runModel(String symmetry) {
         try {
             this.symmetry = symmetry;
             System.out.println("Initalize model");
@@ -796,20 +793,14 @@ public class JourneyBasedModel {
             displayResults(true);
             if (optimstatus == 3) {
                 System.out.println("no solution found");
-                Result res = createAndStoreModelResults( false,  0);
-                System.out.println("Terminate model");
                 terminateModel();
-                return res;
             }
             else if (optimstatus == 2){
-                System.out.println("Create and store results");
                 storePath();
-                Result res = createAndStoreModelResults(true,  1);
+                createIndividualAndOrderDistributionObject();
                 if (Parameters.verboseJourneyBased)
                     printSolution();
-                System.out.println("Terminate model");
                 terminateModel();
-                return res;
             }
             else{
                 System.out.println("Create and store results");
@@ -819,26 +810,43 @@ public class JourneyBasedModel {
                     printSolution();
                 System.out.println("Terminate model");
                 terminateModel();
-                return res;
             }
 
         } catch (GRBException | FileNotFoundException e) {
             System.out.println("ERROR: " + e);
-            return null;
         } catch (Error e) {
             System.out.println(e);
-            return null;
         } catch (IOException e) {
             System.out.println("File directory wrong" + e);
-            return null;
         }
     }
 
-    public static void main (String[] args){
+    public OrderDistribution getOrderDistribution(){
+        return orderDistribution;
+    }
+
+    public Individual getIndividual(){
+        return individual;
+    }
+
+    public void createIndividualAndOrderDistributionObject() throws GRBException {
+        this.individual = new Individual(dataMIP.newData);
+        this.orderDistribution = new OrderDistribution(dataMIP.newData);
+        ModelConverter.initializeIndividualFromJourneyBasedModel(this);
+        this.individual.setFitness(this.model.get(GRB.DoubleAttr.ObjVal));
+    }
+
+
+    public static void main (String[] args) throws IOException {
         Data data = Master2020.DataFiles.DataReader.loadData();
         DataMIP dataMip = DataConverter.convert(data);
         JourneyBasedModel jbm = new JourneyBasedModel(dataMip);
         jbm.runModel(Master2020.DataFiles.Parameters.symmetry);
-
+        Individual individual = jbm.getIndividual();
+        Master2020.StoringResults.Result res = new Master2020.StoringResults.Result(individual);
+        res.store();
+        //PlotIndividual visualizer = new PlotIndividual(data);
+        //visualizer.visualize(individual);
+        System.out.println(" ");
     }
 }

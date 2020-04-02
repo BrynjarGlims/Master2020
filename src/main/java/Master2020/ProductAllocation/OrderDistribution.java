@@ -8,6 +8,7 @@ import Master2020.DataFiles.*;
 import Master2020.MIP.ArcFlowModel;
 import Master2020.MIP.OrderAllocationModel;
 import Master2020.PR.DataMIP;
+import Master2020.PR.JourneyBasedModel;
 import gurobi.GRB;
 import gurobi.GRBException;
 import gurobi.GRBVar;
@@ -72,6 +73,12 @@ public class OrderDistribution {
         setFitness();
     }
 
+    public void makeDistributionFromJourneyBasedModel(JourneyBasedModel jbm) throws GRBException {
+        setVolumeAndOrdersFromMIP( jbm.u, jbm.q, jbm.dataMIP);
+        setVolumePerPeriod();
+        setFitness();
+    }
+
     private void setVolumeAndOrdersFromMIP(GRBVar[][][] u, GRBVar[][][][][] q, DataMIP dataMIP) throws GRBException {
         int orderID;
         for (int d = 0; d < data.numberOfPeriods; d++) {
@@ -93,6 +100,7 @@ public class OrderDistribution {
             }
         }
     }
+
 
 
     private void setVolumeAndOrdersFromMIP(GRBVar[][][] uND, GRBVar[][][] uD, GRBVar[][][][][] qND, GRBVar[][][][][] qD ) throws GRBException {
