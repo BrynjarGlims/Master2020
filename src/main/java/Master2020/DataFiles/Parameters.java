@@ -11,6 +11,8 @@ public class Parameters {
     public static final String ordersFilePath = "data/Orders.csv";
     public static final String timeWindowsFilePath = "data/Time_windows.csv";
     public static final String vehicleFilePath = "data/Vehicles.csv";
+    public static final boolean doRandomSeed = true;
+    public static final long randomSeedValue = 7;
 
 
     //Master2020.Population parameters
@@ -33,8 +35,8 @@ public class Parameters {
     //Loading data parameters
 
     public static final double distanceCutOffFromDepot = 3.5;
-    public static final int numberOfCustomers = 70; // A maximum of 76
-    public static final int numberOfVehicles = 20;
+    public static final int numberOfCustomers = 8; // A maximum of 76
+    public static final int numberOfVehicles = 5;
 
     
     public static final int nearestNeighbors = 5; //Neighborhood size for each customer

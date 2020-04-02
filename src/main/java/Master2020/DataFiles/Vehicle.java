@@ -17,6 +17,10 @@ public class Vehicle {
         this.trailerNumberPlate = trailerNumberPlate;
     }
 
+    public void setVehicleID(int vehicleID){
+        this.vehicleID = vehicleID;
+    }
+
 
     public void setVehicleType(VehicleType vehicleType) {
         this.vehicleType = vehicleType;

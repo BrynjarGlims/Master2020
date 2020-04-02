@@ -328,9 +328,18 @@ public class DataReader {
         customers = removeInvalidCustomers(customers, depot);
         Vehicle[] vehicles = parseVehicleFileDataToVehicle(vehiclesData);
 
-        Customer[] customersSubset = Arrays.copyOfRange(customers, 0, Parameters.numberOfCustomers);
-        Vehicle[] vehiclesSubset = Arrays.copyOfRange(vehicles, 0, Parameters.numberOfVehicles);
-        VehicleType[] vehicleTypes = getAndOrderVehicleTypes(vehiclesSubset);
+        Customer[] customersSubset;
+        Vehicle[] vehiclesSubset;
+        VehicleType[] vehicleTypes;
+        if (!Parameters.doRandomSeed){
+            customersSubset = Arrays.copyOfRange(customers, 0, Parameters.numberOfCustomers);;
+            vehiclesSubset = Arrays.copyOfRange(vehicles, 0, Parameters.numberOfVehicles);
+            vehicleTypes = getAndOrderVehicleTypes(vehiclesSubset);
+        } else{
+            customersSubset = getRandomSeedFromCustomers(customers);
+            vehiclesSubset = getRandomSeedFromVehicles(vehicles);
+            vehicleTypes = getAndOrderVehicleTypes(vehiclesSubset);
+        }
 
 
         Data data = new Data(customersSubset, vehiclesSubset, depot, vehicleTypes);
@@ -340,6 +349,49 @@ public class DataReader {
 
         return data;
 
+    }
+
+    private static Customer[] getRandomSeedFromCustomers(Customer[] customers){
+        Random generator = new Random(Parameters.randomSeedValue);
+        Customer[] newCustomers = new Customer[Parameters.numberOfCustomers];
+        HashSet<Integer> usedNumbers = new HashSet<>();
+        int customerCounter = 0;
+        int orderCounter = 0;
+        for (int i = 0; i < Parameters.numberOfCustomers; i++){
+            int number = generator.nextInt(customers.length);
+            number = number % customers.length;
+            while (usedNumbers.contains(number)){
+                number = generator.nextInt(Parameters.numberOfCustomers);
+                number = number % customers.length;
+            }
+            newCustomers[customerCounter] = customers[number];
+            newCustomers[customerCounter].setCustomerID(customerCounter);
+            newCustomers[customerCounter].setOrderId(orderCounter);
+            orderCounter += newCustomers[customerCounter].orders.length;
+            usedNumbers.add(number);
+            customerCounter++;
+        }
+        return newCustomers;
+    }
+
+    private static Vehicle[] getRandomSeedFromVehicles(Vehicle[] vehicles){
+        Random generator = new Random(Parameters.randomSeedValue);
+        Vehicle[] newVehicles = new Vehicle[Parameters.numberOfVehicles];
+        HashSet<Integer> usedNumbers = new HashSet<>();
+        int counter = 0;
+        for (int i = 0; i < Parameters.numberOfVehicles; i++){
+            int number = generator.nextInt(vehicles.length);
+            number = number % vehicles.length;
+            while (usedNumbers.contains(number)){
+                number = generator.nextInt(Parameters.numberOfVehicles);
+                number = number % vehicles.length;
+            }
+            newVehicles[counter] = vehicles[number];
+            newVehicles[counter].setVehicleID(counter);
+            usedNumbers.add(number);
+            counter++;
+        }
+        return newVehicles;
     }
 
     public static void displayData(Data data){
