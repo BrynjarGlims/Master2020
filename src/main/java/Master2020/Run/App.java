@@ -5,7 +5,10 @@ import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.*;
 import Master2020.Individual.Individual;
+import Master2020.MIP.DataConverter;
 import Master2020.MIP.OrderAllocationModel;
+import Master2020.PR.DataMIP;
+import Master2020.PR.JourneyBasedModel;
 import Master2020.Population.Population;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Population.OrderDistributionPopulation;
@@ -18,6 +21,8 @@ import gurobi.GRBException;
 
 
 import gurobi.GRBException;
+import scala.xml.PrettyPrinter;
+
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.concurrent.ThreadLocalRandom;
@@ -71,7 +76,7 @@ public class App {
         for (OrderDistribution od : crossoverOD) { //todo: EVALUEATE IF THIS IS DECENT
             odp.addOrderDistribution(od);
         }
-        return GiantTourCrossover.crossOver(parent1, parent2, crossoverOD[0]);
+        return GiantTourCrossover.crossOver(parent1, parent2, crossoverOD[0]); // TODO: 02.04.2020 add to a pool?
     }
 
 
@@ -145,7 +150,19 @@ public class App {
     }
 
 
-    public static void main(String[] args) throws Exception {
+    public static void runMIP(int samples){
+        for (int i = 0 ; i < samples ; i++){
+            Parameters.randomSeedValue += 1;
+            Data data = Master2020.DataFiles.DataReader.loadData();
+            DataMIP dataMip = DataConverter.convert(data);
+            JourneyBasedModel jbm = new JourneyBasedModel(dataMip);
+            jbm.runModel(Master2020.DataFiles.Parameters.symmetry);
+        }
+        }
+
+
+
+    public static void runGA() throws IOException, GRBException {
         System.out.println("Initialize population..");
         initialize();
 
@@ -205,11 +222,25 @@ public class App {
         }
         System.out.println("Individual feasible: " + bestIndividual.isFeasible());
         System.out.println("Fitness: " + bestIndividual.getFitness(false));
-        PlotIndividual visualizer = new PlotIndividual(data);
-        visualizer.visualize(bestIndividual);
+        if (Parameters.savePlots){
+            PlotIndividual visualizer = new PlotIndividual(data);
+            visualizer.visualize(bestIndividual);
+        }
         Result res = new Result(population);
         res.store();
         orderAllocationModel.terminateEnvironment();
 
     }
+
+
+
+    public static void main(String[] args) throws Exception {
+        if (args[0].equals("MIP")){
+            runMIP(Parameters.samples);
+        }
+        else {
+            runGA();
+        }
+    }
+
 }

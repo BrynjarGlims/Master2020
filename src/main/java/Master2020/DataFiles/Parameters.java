@@ -11,8 +11,11 @@ public class Parameters {
     public static final String ordersFilePath = "data/Orders.csv";
     public static final String timeWindowsFilePath = "data/Time_windows.csv";
     public static final String vehicleFilePath = "data/Vehicles.csv";
-    public static final boolean doRandomSeed = false;
-    public static final long randomSeedValue = 7;
+
+    public static final boolean doRandomSeed = true;
+    public static final int samples = 5;
+    public static long randomSeedValue = 1;
+
 
 
     //Master2020.Population parameters
@@ -24,7 +27,7 @@ public class Parameters {
     public static final int initialPopulationSize = 50;
     public static final int initialOrderDistributionPopulationSize = 50;
     public static final int maxNumberIterationsWithoutImprovement = 10;
-    public static final int maxNumberOfGenerations = 10;
+    public static final int maxNumberOfGenerations = 2;
 
     public static final double minimumFitnessDifferenceForClones = 10; //minimum fitness difference to encounter two individuals as clones
 
@@ -102,12 +105,12 @@ public class Parameters {
     public static final int upperBoundQuantity = 100;  // upper bound q variable
     public static final int upperBoundOvertime = 1000;  // upper bound qO variable
 
-    public static final boolean verboseArcFlow = true;
+    public static final boolean verboseArcFlow = false;
     public static final boolean verbosePathFlow = false;
     public static final boolean verboseJourneyBased = true;
 
     //PLOT PARAMETERS
-    public static final boolean savePlots = true;
+    public static final boolean savePlots = false;
     public static final boolean verbose = false;
     public static final char separator = ';';
 }
