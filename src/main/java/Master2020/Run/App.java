@@ -7,8 +7,10 @@ import Master2020.Genetic.*;
 import Master2020.Individual.Individual;
 import Master2020.MIP.DataConverter;
 import Master2020.MIP.OrderAllocationModel;
+import Master2020.PR.ArcFlowModel;
 import Master2020.PR.DataMIP;
 import Master2020.PR.JourneyBasedModel;
+import Master2020.PR.PathFlowModel;
 import Master2020.Population.Population;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Population.OrderDistributionPopulation;
@@ -154,9 +156,9 @@ public class App {
             Parameters.randomSeedValue += 1;
             Data data = Master2020.DataFiles.DataReader.loadData();
             DataMIP dataMip = DataConverter.convert(data);
-            JourneyBasedModel jbm = new JourneyBasedModel(dataMip);
-            jbm.runModel(Master2020.DataFiles.Parameters.symmetry);
-            Individual bestIndividual = jbm.getIndividual();
+            ArcFlowModel afm = new ArcFlowModel(dataMip);
+            afm.runModel(Master2020.DataFiles.Parameters.symmetry);
+            Individual bestIndividual = afm.getIndividual();
             Result result = new Result(bestIndividual, "AFM");
             try{
                 result.store();
@@ -172,9 +174,9 @@ public class App {
             Parameters.randomSeedValue += 1;
             Data data = Master2020.DataFiles.DataReader.loadData();
             DataMIP dataMip = DataConverter.convert(data);
-            JourneyBasedModel jbm = new JourneyBasedModel(dataMip);
-            jbm.runModel(Master2020.DataFiles.Parameters.symmetry);
-            Individual bestIndividual = jbm.getIndividual();
+            PathFlowModel pfm = new PathFlowModel(dataMip);
+            pfm.runModel(Master2020.DataFiles.Parameters.symmetry);
+            Individual bestIndividual = pfm.getIndividual();
             Result result = new Result(bestIndividual, "PFM");
             try{
                 result.store();
@@ -279,7 +281,17 @@ public class App {
 
 
     public static void main(String[] args) throws Exception {
-        if (args[0].equals("AFM"))
+        runGA(Parameters.samples);
+        Parameters.randomSeedValue = 11;
+        runMIPJBM(Parameters.samples);
+        Parameters.randomSeedValue = 11;
+        runMIPPFM(Parameters.samples);
+        Parameters.randomSeedValue = 11;
+        runMIPAFM(Parameters.samples);
+        //runMIPJBM(Parameters.samples);
+
+        //runMIPPFM(Parameters.samples);
+        /*if (args[0].equals("AFM"))
             runMIPAFM(Parameters.samples);
         else if (args[0].equals("PFM"))
             runMIPPFM(Parameters.samples);
@@ -288,6 +300,8 @@ public class App {
         else {
             runGA(Parameters.samples);
         }
+
+         */
     }
 
 }

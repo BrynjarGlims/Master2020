@@ -13,8 +13,8 @@ public class Parameters {
     public static final String vehicleFilePath = "data/Vehicles.csv";
     public static final String dataSet = "Trøndelag";
     public static final boolean doRandomSeed = true;
-    public static final int samples = 5;
-    public static long randomSeedValue = 1;
+    public static final int samples = 1;
+    public static long randomSeedValue = 11;
 
     // Population parameters
     public static final int maximumSubIndividualPopulationSize = 75; //TODO: find reasonable value
@@ -22,13 +22,13 @@ public class Parameters {
     public static final int initialPopulationSize = 50;
     public static final int initialOrderDistributionPopulationSize = 50;
     public static final int maxNumberIterationsWithoutImprovement = 10;
-    public static final int maxNumberOfGenerations = 2;
+    public static final int maxNumberOfGenerations = 20;
 
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static final int numberOfCustomers = 7; // A maximum of 76
-    public static final int numberOfVehicles = 5;
+    public static final int numberOfCustomers = 3; // A maximum of 76
+    public static final int numberOfVehicles = 3;
     public static final double distanceCutOffFromDepot = 3.5;
 
     // GA specific parameters

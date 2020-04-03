@@ -57,16 +57,53 @@ public class Result {
     }
 
 
+    public void store() throws IOException{
+        store(true);
+    }
 
-    public void store() throws IOException {
-
+    public void store(boolean isFeasible) throws IOException {
         String fileName = getFileName();
-        storeSummary(fileName);
-        createDetailedDirectory(fileName);
-        storeDetailed(fileName);
-        System.out.println("Storing complete");
+        if (isFeasible) {
+            storeSummary(fileName);
+            createDetailedDirectory(fileName);
+            storeDetailed(fileName);
+            System.out.println("Storing complete");
+        }
+        else{
+            createEmptyResult(fileName);
+            System.out.println("Storing complete");
+        }
+    }
+
+    private void createEmptyResult(String fileName) throws IOException {
+        String filePath  = FileParameters.filePathSummary + "/main_results.csv";
+        File newFile = new File(filePath);
+        Writer writer = Files.newBufferedWriter(Paths.get(filePath), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+        CSVWriter csvWriter = new CSVWriter(writer, Parameters.separator, CSVWriter.NO_QUOTE_CHARACTER,
+                CSVWriter.DEFAULT_ESCAPE_CHARACTER,
+                CSVWriter.DEFAULT_LINE_END);
+        NumberFormat formatter = new DecimalFormat("#0.00000000");
+        SimpleDateFormat date_formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        System.out.println("Changing summary file...");
+        if (newFile.length() == 0){
+            String[] CSV_COLUMNS = {"File name" ,"Objective Value", "Model", "Runtime", "Date", "Population Size ", "Generations",
+                    "Customers", "Vehicles", "isFeasible" };
+            csvWriter.writeNext(CSV_COLUMNS, false);
+        }
+
+        String[] results = {fileName, "-", modelName, "-", date_formatter.format(new Date()),
+                String.valueOf(Parameters.maximumSubIndividualPopulationSize),String.valueOf(Parameters.maxNumberOfGenerations), String.valueOf(Parameters.numberOfCustomers)
+                , String.valueOf(Parameters.numberOfVehicles), "false", "false"};
+        csvWriter.writeNext(results, false);
+        csvWriter.close();
+        writer.close();
+
+
+
+
 
     }
+
 
     private String getFileName(){
         if (FileParameters.useDefaultFileName){
@@ -420,13 +457,32 @@ public class Result {
         System.out.println("Changing summary file...");
         if (newFile.length() == 0){
             String[] CSV_COLUMNS = {"File name" ,"Objective Value", "Model", "Runtime", "Date", "Population Size ", "Generations",
-                    "Customers", "Vehicles" };
+                    "Customers", "Vehicles", "isOptimal", "isFeasible" };
             csvWriter.writeNext(CSV_COLUMNS, false);
         }
 
+
+        boolean isFeasible;
+        boolean isOptimal;
+        if (modelName == "GA") {
+            isFeasible = bestIndividual.isFeasible();
+        }
+        else{
+            isFeasible = true;
+        }
+
+        if (modelName == "GA"){
+            isOptimal = false;
+        }
+        else{
+            isOptimal = true;
+        }
+
+
+
         String[] results = {fileName, String.format("%.4f",bestIndividual.getFitness(false)), modelName, "0", date_formatter.format(new Date()),
                 String.valueOf(Parameters.maximumSubIndividualPopulationSize),String.valueOf(Parameters.maxNumberOfGenerations), String.valueOf(Parameters.numberOfCustomers)
-        , String.valueOf(Parameters.numberOfVehicles)};
+        , String.valueOf(Parameters.numberOfVehicles), String.valueOf(isFeasible), String.valueOf(isOptimal)};
         csvWriter.writeNext(results, false);
         csvWriter.close();
         writer.close();

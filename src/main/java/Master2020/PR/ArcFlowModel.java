@@ -22,6 +22,7 @@ public class ArcFlowModel {
     public int optimstatus;
     public double objval;
     public String symmetry;
+    public boolean infeasible;
 
     //NEW RESULT VARIABLES:
     public Individual individual;
@@ -1168,11 +1169,15 @@ public class ArcFlowModel {
 
 
             if (optimstatus == 3) {
-                System.out.println("no solution found");
+                this.infeasible = true;
+                System.out.println("No solution found");
+                createEmptyIndividualAndOrderDistribution();
                 System.out.println("Terminate model");
                 terminateModel();
             }
             else if (optimstatus == 2){
+                this.infeasible = false;
+
                 if (Parameters.plotArcFlow){
                     GraphPlot plotter = new GraphPlot(dataMIP);
                     plotter.visualize(true);
@@ -1191,11 +1196,10 @@ public class ArcFlowModel {
                 storePath();
                 if (Parameters.verboseArcFlow)
                     printSolution();
+                createEmptyIndividualAndOrderDistribution();
                 System.out.println("Terminate model");
                 terminateModel();
             }
-
-
         } catch (GRBException | FileNotFoundException e) {
             System.out.println("ERROR: " + e);
         } catch (Error e) {
@@ -1212,6 +1216,14 @@ public class ArcFlowModel {
         ModelConverter.initializeIndividualFromArcFlowModel(this);
         this.individual.setFitness(this.model.get(GRB.DoubleAttr.ObjVal));
     }
+
+    public void createEmptyIndividualAndOrderDistribution() throws GRBException {
+        this.individual = new Individual(dataMIP.newData);
+        this.orderDistribution = new OrderDistribution(dataMIP.newData);
+        this.individual.setOrderDistribution(orderDistribution);
+    }
+
+
 
     public OrderDistribution getOrderDistribution(){
         return orderDistribution;

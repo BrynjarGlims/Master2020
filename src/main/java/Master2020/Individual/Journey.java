@@ -56,10 +56,8 @@ public class Journey {
         boolean firstTrip = true;
         for (Trip trip : trips){
             if (trip.customers.size() == 0){
-                System.out.println("Empty trip");
                 continue;
             }
-
             if (!firstTrip){
                 currentTime += data.vehicleTypes[vehicleType].loadingTimeAtDepot;
             }

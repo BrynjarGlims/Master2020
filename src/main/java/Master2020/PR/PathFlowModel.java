@@ -27,6 +27,8 @@ public class PathFlowModel {
     public String symmetry;
     private Individual individual;
     private OrderDistribution orderDistribution;
+    public boolean infeasible;
+
 
     // derived variables
     public int numVehiclesUsed = 0;
@@ -876,7 +878,7 @@ public class PathFlowModel {
         }
     }
 
-    public Result runModel(String symmetry) {
+    public void runModel(String symmetry) {
         try {
             this.symmetry = symmetry;
             System.out.println("Initalize model");
@@ -893,10 +895,9 @@ public class PathFlowModel {
             displayResults(true);
             if (optimstatus == 3) {
                 System.out.println("no solution found");
-                Result res = createAndStoreModelResults( false,  0);
+                infeasible = true;
                 System.out.println("Terminate model");
                 terminateModel();
-                return res;
             }
             else if (optimstatus == 2){
                 if (Parameters.plotArcFlow){
@@ -906,34 +907,28 @@ public class PathFlowModel {
                 System.out.println("Create and store results");
                 storePath();
                 createIndividualAndOrderDistributionObject();
-                Result res = createAndStoreModelResults(true,  1);
+                infeasible = false;
                 if (Parameters.verbosePathFlow)
                     printSolution();
                 System.out.println("Terminate model");
                 terminateModel();
-                return res;
             }
             else{
                 System.out.println("Create and store results");
                 storePath();
-                Result res = createAndStoreModelResults(true, 0);
+                infeasible = true;
+                createIndividualAndOrderDistributionObject();
                 if (Parameters.verbosePathFlow)
                     printSolution();
                 System.out.println("Terminate model");
                 terminateModel();
-                return res;
             }
-
-
         } catch (GRBException | FileNotFoundException e) {
             System.out.println("ERROR: " + e);
-            return null;
         } catch (Error e) {
             System.out.println(e);
-            return null;
         } catch (IOException e) {
             System.out.println("File directory wrong" + e);
-            return null;
         }
 
 
@@ -953,6 +948,12 @@ public class PathFlowModel {
         this.orderDistribution = new OrderDistribution(dataMIP.newData);
         ModelConverter.initializeIndividualFromPathFlowModel(this);
         this.individual.setFitness(this.model.get(GRB.DoubleAttr.ObjVal));
+    }
+
+    public void createEmptyIndividualAndOrderDistribution() throws GRBException {
+        this.individual = new Individual(dataMIP.newData);
+        this.orderDistribution = new OrderDistribution(dataMIP.newData);
+        this.individual.setOrderDistribution(orderDistribution);
     }
 
 

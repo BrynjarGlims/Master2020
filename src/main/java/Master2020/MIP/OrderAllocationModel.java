@@ -542,7 +542,6 @@ public class OrderAllocationModel {
                 if (Parameters.verbose){
                     System.out.println("No optimal od found");
                 }
-                System.out.println("No optimal od found");
             }
             else if (optimstatus == 2){
                 initializeODObject();

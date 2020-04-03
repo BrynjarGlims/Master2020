@@ -22,6 +22,7 @@ public class JourneyBasedModel {
     public int optimstatus;
     public double objval;
     public String symmetry;
+    public boolean infeasible;
 
     // Master 2020 parameters
     private Individual individual;
@@ -834,6 +835,12 @@ public class JourneyBasedModel {
         this.orderDistribution = new OrderDistribution(dataMIP.newData);
         ModelConverter.initializeIndividualFromJourneyBasedModel(this);
         this.individual.setFitness(this.model.get(GRB.DoubleAttr.ObjVal));
+    }
+
+    public void createEmptyIndividualAndOrderDistribution() throws GRBException {
+        this.individual = new Individual(dataMIP.newData);
+        this.orderDistribution = new OrderDistribution(dataMIP.newData);
+        this.individual.setOrderDistribution(orderDistribution);
     }
 
 
