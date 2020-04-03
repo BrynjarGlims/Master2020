@@ -1,10 +1,6 @@
 package Master2020.DataFiles;
 
-import Master2020.DataFiles.Data;
-import scala.collection.immutable.HashMap;
 import java.util.HashSet;
-
-import javax.swing.text.StyleConstants;
 
 public class VehicleType {
 
@@ -32,7 +28,7 @@ public class VehicleType {
         this.costPerKm = costPerKm * Parameters.scalingDrivingCost;
 
         this.loadingTimeAtDepot = Parameters.loadingTimeAtDepotConstant +
-                Parameters.loadaingTimeAtDepotVariable*this.capacity;
+                Parameters.loadingTimeAtDepotVariable *this.capacity;
 
         this.travelCost =  costPerKm; //todo: implement a better way to determine this
         this.usageCost = costPerDay *this.capacity/25; //todo: implement a better way to determine this

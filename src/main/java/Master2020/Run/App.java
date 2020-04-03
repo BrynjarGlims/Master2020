@@ -16,12 +16,8 @@ import Master2020.StoringResults.Result;
 import Master2020.Testing.IndividualTest;
 import Master2020.Visualization.PlotIndividual;
 import Master2020.Individual.Trip;
-import Master2020.Testing.*;
 import gurobi.GRBException;
 
-
-import gurobi.GRBException;
-import scala.xml.PrettyPrinter;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -88,7 +84,7 @@ public class App {
 
 
     public static void setOptimalOrderDistribution(Individual individual){
-        if (ThreadLocalRandom.current().nextDouble() < Parameters.greedyMIPValue){
+        if (ThreadLocalRandom.current().nextDouble() < Parameters.ODMIPProbability){
             OrderDistribution optimalOD = orderAllocationModel.createOptimalOrderDistribution(individual);
             if (optimalOD.fitness != Double.MAX_VALUE) {  // Distribution found
                 if (individual.infeasibilityCost == 0) {

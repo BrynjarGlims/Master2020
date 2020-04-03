@@ -276,6 +276,11 @@ public class Result {
         //Add parameters
         String[] results = {"Seed value", String.valueOf(Parameters.randomSeedValue)};
         csvWriter.writeNext(results, false);
+        results = new String[]{"Dataset:", Parameters.dataSet};
+        csvWriter.writeNext(results, false);
+
+        results = new String[]{"Population Parameters:", "------"};
+        csvWriter.writeNext(results, false);
         results = new String[]{"Maximum sub population size", String.valueOf(Parameters.maximumSubIndividualPopulationSize)};
         csvWriter.writeNext(results, false);
         results = new String[]{"Minimum sub population size", String.valueOf(Parameters.minimumSubIndividualPopulationSize)};
@@ -288,6 +293,9 @@ public class Result {
         csvWriter.writeNext(results, false);
         results = new String[]{"Maximum number of generations without improvement", String.valueOf(Parameters.maxNumberIterationsWithoutImprovement)};
         csvWriter.writeNext(results, false);
+
+        results = new String[]{"Loading Parameters:", "------"};
+        csvWriter.writeNext(results, false);
         results = new String[]{"Number of periods", String.valueOf(Parameters.numberOfPeriods)};
         csvWriter.writeNext(results, false);
         results = new String[]{"Number of trips", String.valueOf(Parameters.numberOfTrips)};
@@ -299,9 +307,71 @@ public class Result {
         results = new String[]{"Distance cutoff from depot", String.valueOf(Parameters.distanceCutOffFromDepot)};
         csvWriter.writeNext(results, false);
 
-        results = new String[]{"Maximum number of generations without improvement", String.valueOf(Parameters.maxNumberIterationsWithoutImprovement)};
+        results = new String[]{"GA specific Parameters:", "------"};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Nearest neighbours education", String.valueOf(Parameters.nearestNeighbors)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Education taboo size", String.valueOf(Parameters.educationTabooSize)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Trip optimizer size limit ", String.valueOf(Parameters.tripOptimizerSizeLimit)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Education probability", String.valueOf(Parameters.educationProbability)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Repair probability", String.valueOf(Parameters.repairProbability)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Repair probability", String.valueOf(Parameters.repairProbability)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"ODMip probability ", String.valueOf(Parameters.ODMIPProbability)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Heuristic domimance value", String.valueOf(Parameters.heuristicDominanceValue)};
         csvWriter.writeNext(results, false);
 
+        results = new String[]{"Penalty parameters:", "------"};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Initial capacity penalty", String.valueOf(Parameters.initialCapacityPenalty)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Initial time warp penalty", String.valueOf(Parameters.initialTimeWarpPenalty)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Initial driving cost penalty", String.valueOf(Parameters.initialDrivingCostPenalty)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Penalty factor for overfilling", String.valueOf(Parameters.penaltyFactorForOverFilling)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Penalty factor fro underfilling", String.valueOf(Parameters.penaltyFactorForUnderFilling)};
+        csvWriter.writeNext(results, false);
+
+        results = new String[]{"Scaling Parameters:", "------"};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Scaling distance", String.valueOf(Parameters.scalingDistanceParameter)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Timeshift", String.valueOf(Parameters.timeShift)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Max journey duration", String.valueOf(Parameters.maxJourneyDuration)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Loading time at depot constant", String.valueOf(Parameters.loadingTimeAtDepotConstant)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Loading time at depot variable", String.valueOf(Parameters.loadingTimeAtDepotVariable)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Scaling unloading time at customer constant ", String.valueOf(Parameters.scalingUnloadingTimeAtCustomerConstant)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Scaling unloading time at customer variable", String.valueOf(Parameters.scalingUnloadingTimeAtCustomerVariable)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Scaling vehicle capacity", String.valueOf(Parameters.scalingVehicleCapacity)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Indifference value", String.valueOf(Parameters.indifferenceValue)};
+        csvWriter.writeNext(results, false);
+
+        results = new String[]{"Cost parameters:", "------"};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Overtime limit ", String.valueOf(Parameters.initialCapacityPenalty)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Initial time warp penalty", String.valueOf(Parameters.initialTimeWarpPenalty)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Initial driving cost penalty", String.valueOf(Parameters.initialDrivingCostPenalty)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Penalty factor for overfilling", String.valueOf(Parameters.penaltyFactorForOverFilling)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Penalty factor fro underfilling", String.valueOf(Parameters.penaltyFactorForUnderFilling)};
+        csvWriter.writeNext(results, false);
 
         csvWriter.close();
         writer.close();
