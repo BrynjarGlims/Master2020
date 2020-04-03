@@ -50,7 +50,7 @@ public class DataMIP {
 
     public double[] travelCost; //[v] unit cost per unit travelled by vehicle v
     public double[] vehicleCapacity; // [v] capacity per vehicle
-    public double[] overtimeLimit = Parameters.overtimeLimit;; // [d] limit of products delivered day d before overtime is inferred
+    public double[] overtimeLimit = Data.overtimeLimit;; // [d] limit of products delivered day d before overtime is inferred
     public double[][] maxAmountDivProduct; // (i,m) upper limit of dividable product m for customer i
     public double[][] minAmountDivProduct; // (i,m) lower limit of dividable product m for customer i
     public int[][] minFrequencyProduct; //(i,m) min amount of days to deliver a product
@@ -189,7 +189,7 @@ public class DataMIP {
         }
         overtimeLimitAveraged = sumProducts/numPeriods;
         calculateTravelTime();
-        overtimeLimit = Parameters.overtimeLimit;
+        overtimeLimit = Data.overtimeLimit;
         costOvertime = Parameters.overtimeCost;
 
 

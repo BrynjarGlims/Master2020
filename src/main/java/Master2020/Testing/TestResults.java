@@ -141,7 +141,7 @@ public class TestResults {
         }
 
         for (int p = 0; p < data.numberOfPeriods; p++){
-            overtimeAtDepot += Math.max(0, volume[p] - Parameters.overtimeLimit[p])*Parameters.overtimeCost[p];
+            overtimeAtDepot += Math.max(0, volume[p] - Data.overtimeLimit[p])*Parameters.overtimeCost[p];
         }
         return overtimeAtDepot;
     }

@@ -1,7 +1,9 @@
 package Master2020.PR;
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.Parameters;
+import Master2020.Individual.Individual;
 import Master2020.MIP.DataConverter;
+import Master2020.ProductAllocation.OrderDistribution;
 import gurobi.*;
 
 import java.io.FileNotFoundException;
@@ -23,6 +25,8 @@ public class PathFlowModel {
     public double objval;
     public double preProcessTime;
     public String symmetry;
+    private Individual individual;
+    private OrderDistribution orderDistribution;
 
     // derived variables
     public int numVehiclesUsed = 0;
@@ -108,9 +112,6 @@ public class PathFlowModel {
 
         for (int i = 0; i < dataMIP.numCustomers; i++) {
             for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
-                if (dataMIP.productQuantity[i][m] == 0){
-                    continue;
-                }
                 for (int d = 0; d < dataMIP.numPeriods; d++){
                     String variable_name = String.format("u[%d][%d][%d]", d, i, m);
                     u[d][i][m] = model.addVar(0.0, 1.0, 0, GRB.BINARY, variable_name);
@@ -120,9 +121,6 @@ public class PathFlowModel {
 
         for (int i = 0; i < dataMIP.numCustomers; i++) {
             for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
-                if (dataMIP.productQuantity[i][m] == 0){
-                    continue;
-                }
                 for (int d = 0; d < dataMIP.numPeriods; d++) {
                     for (int v = 0; v < dataMIP.numVehicles; v++) {
                         for (int r = 0; r < dataMIP.numTrips; r++) {
@@ -525,21 +523,6 @@ public class PathFlowModel {
             }
         }
     }
-    /*
-    public void symmetryCar() throws GRBException {
-        // Constraint 5.65
-        for (int v = 0; v < dataMIP.numVehicles - 1; v++) {
-            GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
-            if (dataMIP.vehicles[v].vehicleType.type != dataMIP.vehicles[v + 1].vehicleType.type)
-                continue;
-            lhs.addTerm(1, k[v]);
-            lhs.addTerm(-1, k[v + 1]);
-            String constraint_name = String.format("5.65 Sym3- Vehicle %d must be used before vehicle %d over vehicle type %d", v, v + 1, dataMIP.vehicles[v + 1].vehicleType.type);
-            model.addConstr(lhs, GRB.GREATER_EQUAL, 0, constraint_name);
-        }
-    }
-
-     */
 
     public void symmetryTrip() throws GRBException {
         // Constraint 5.63  //CANNOT BE USED WITH 5.66 and 5.67
@@ -922,6 +905,7 @@ public class PathFlowModel {
                 }
                 System.out.println("Create and store results");
                 storePath();
+                createIndividualAndOrderDistributionObject();
                 Result res = createAndStoreModelResults(true,  1);
                 if (Parameters.verbosePathFlow)
                     printSolution();
@@ -954,12 +938,34 @@ public class PathFlowModel {
 
 
     }
-    public static void main(String[] args) {
+
+
+    public OrderDistribution getOrderDistribution(){
+        return orderDistribution;
+    }
+
+    public Individual getIndividual(){
+        return individual;
+    }
+
+    public void createIndividualAndOrderDistributionObject() throws GRBException {
+        this.individual = new Individual(dataMIP.newData);
+        this.orderDistribution = new OrderDistribution(dataMIP.newData);
+        ModelConverter.initializeIndividualFromPathFlowModel(this);
+        this.individual.setFitness(this.model.get(GRB.DoubleAttr.ObjVal));
+    }
+
+
+    public static void main(String[] args) throws IOException {
 
         Data data = Master2020.DataFiles.DataReader.loadData();
         DataMIP dataMip = DataConverter.convert(data);
         PathFlowModel pfm = new PathFlowModel(dataMip);
         pfm.runModel(Master2020.DataFiles.Parameters.symmetry);
+        Individual individual = pfm.getIndividual();
+        Master2020.StoringResults.Result res = new Master2020.StoringResults.Result(individual, "PFM");
+        res.store();
+        System.out.println(" ");
 
     }
 

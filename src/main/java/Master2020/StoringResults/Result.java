@@ -20,6 +20,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -69,15 +70,17 @@ public class Result {
 
     private String getFileName(){
         if (FileParameters.useDefaultFileName){
-            SimpleDateFormat date_formatter = new SimpleDateFormat("dd_MM_yyyy_HH_mm_ss");
-            return date_formatter.format(new Date());
+            SimpleDateFormat date_formatter = new SimpleDateFormat("dd_MM_yyyy");
+            String dateString = date_formatter.format(new Date());
+            return modelName + "_S" + Parameters.randomSeedValue + "_C" + Parameters.numberOfCustomers +
+                    "_V" + Parameters.numberOfVehicles + "_" + dateString;
         }
-        else{
+        else if (FileParameters.specifyFileNameWhenRunning){
             Scanner myObj = new Scanner(System.in);  // Create a Scanner object
             System.out.println("Specify detailed filename: ");
             return myObj.nextLine();  // Read user input
         }
-
+        return this.modelName;
     }
 
     private void createDetailedDirectory(String fileName){
@@ -94,10 +97,11 @@ public class Result {
         storeDetailedCustomer(fileName);
         storeDetailedTrip(fileName);
         storeDetailedOrders(fileName);
+        storeParameters(fileName);
     }
 
     private void storeDetailedVehicle(String fileName) throws IOException {
-        String filePath  = FileParameters.filePathDetailed + "/" + fileName + "/vehicle.csv";
+        String filePath  = FileParameters.filePathDetailed + "/" + fileName + "/" + fileName + "_vehicle.csv";
         File newFile = new File(filePath);
         System.out.println("Path : " + newFile.getAbsolutePath());
         Writer writer = Files.newBufferedWriter( Paths.get(filePath), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
@@ -126,7 +130,7 @@ public class Result {
     }
 
     private void storeDetailedTrip(String fileName) throws IOException {
-        String filePath  = FileParameters.filePathDetailed + "/" + fileName + "/trip.csv";
+        String filePath  = FileParameters.filePathDetailed + "/" + fileName + "/" + fileName + "_trip.csv";
         File newFile = new File(filePath);
         System.out.println("Path : " + newFile.getAbsolutePath());
         Writer writer = Files.newBufferedWriter( Paths.get(filePath), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
@@ -160,7 +164,7 @@ public class Result {
     }
 
     private void storeDetailedCustomer(String fileName) throws IOException {
-        String filePath  = FileParameters.filePathDetailed + "/" + fileName + "/customer.csv";
+        String filePath  = FileParameters.filePathDetailed + "/" + fileName + "/" + fileName + "_customer.csv";
         File newFile = new File(filePath);
         System.out.println("Path : " + newFile.getAbsolutePath());
         Writer writer = Files.newBufferedWriter( Paths.get(filePath), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
@@ -193,7 +197,7 @@ public class Result {
     }
 
     private void storeDetailedOrders(String fileName) throws IOException {
-        String filePath  = FileParameters.filePathDetailed + "/" + fileName + "/orders.csv";
+        String filePath  = FileParameters.filePathDetailed + "/" + fileName + "/" + fileName + "_orders.csv";
         File newFile = new File(filePath);
         System.out.println("Path : " + newFile.getAbsolutePath());
         Writer writer = Files.newBufferedWriter( Paths.get(filePath), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
@@ -259,7 +263,7 @@ public class Result {
     }
 
     private void storeParameters(String fileName) throws IOException {
-        String filePath  = FileParameters.filePathDetailed + "/" + fileName + "/parameters.csv";
+        String filePath  = FileParameters.filePathDetailed + "/" + fileName + "/" + fileName + "_parameters.csv";
         File newFile = new File(filePath);
         System.out.println("Path : " + newFile.getAbsolutePath());
         Writer writer = Files.newBufferedWriter( Paths.get(filePath), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
@@ -279,7 +283,7 @@ public class Result {
         results = new String[]{"Dataset:", Parameters.dataSet};
         csvWriter.writeNext(results, false);
 
-        results = new String[]{"Population Parameters:", "------"};
+        results = new String[]{"Population Parameters:", "---------"};
         csvWriter.writeNext(results, false);
         results = new String[]{"Maximum sub population size", String.valueOf(Parameters.maximumSubIndividualPopulationSize)};
         csvWriter.writeNext(results, false);
@@ -287,14 +291,14 @@ public class Result {
         csvWriter.writeNext(results, false);
         results = new String[]{"Initial population size", String.valueOf(Parameters.initialPopulationSize)};
         csvWriter.writeNext(results, false);
-        results = new String[]{"Initial order distribution population size", String.valueOf(Parameters.initialOrderDistributionPopulationSize)};
+        results = new String[]{"Initial OD population size", String.valueOf(Parameters.initialOrderDistributionPopulationSize)};
         csvWriter.writeNext(results, false);
         results = new String[]{"Maximum number of generations", String.valueOf(Parameters.maxNumberOfGenerations)};
         csvWriter.writeNext(results, false);
-        results = new String[]{"Maximum number of generations without improvement", String.valueOf(Parameters.maxNumberIterationsWithoutImprovement)};
+        results = new String[]{"Generations without improvement", String.valueOf(Parameters.maxNumberIterationsWithoutImprovement)};
         csvWriter.writeNext(results, false);
 
-        results = new String[]{"Loading Parameters:", "------"};
+        results = new String[]{"Loading Parameters:", "---------"};
         csvWriter.writeNext(results, false);
         results = new String[]{"Number of periods", String.valueOf(Parameters.numberOfPeriods)};
         csvWriter.writeNext(results, false);
@@ -307,7 +311,7 @@ public class Result {
         results = new String[]{"Distance cutoff from depot", String.valueOf(Parameters.distanceCutOffFromDepot)};
         csvWriter.writeNext(results, false);
 
-        results = new String[]{"GA specific Parameters:", "------"};
+        results = new String[]{"GA specific Parameters:", "---------"};
         csvWriter.writeNext(results, false);
         results = new String[]{"Nearest neighbours education", String.valueOf(Parameters.nearestNeighbors)};
         csvWriter.writeNext(results, false);
@@ -326,7 +330,7 @@ public class Result {
         results = new String[]{"Heuristic domimance value", String.valueOf(Parameters.heuristicDominanceValue)};
         csvWriter.writeNext(results, false);
 
-        results = new String[]{"Penalty parameters:", "------"};
+        results = new String[]{"Penalty parameters:", "---------"};
         csvWriter.writeNext(results, false);
         results = new String[]{"Initial capacity penalty", String.valueOf(Parameters.initialCapacityPenalty)};
         csvWriter.writeNext(results, false);
@@ -339,7 +343,7 @@ public class Result {
         results = new String[]{"Penalty factor fro underfilling", String.valueOf(Parameters.penaltyFactorForUnderFilling)};
         csvWriter.writeNext(results, false);
 
-        results = new String[]{"Scaling Parameters:", "------"};
+        results = new String[]{"Scaling Parameters:", "---------"};
         csvWriter.writeNext(results, false);
         results = new String[]{"Scaling distance", String.valueOf(Parameters.scalingDistanceParameter)};
         csvWriter.writeNext(results, false);
@@ -351,9 +355,9 @@ public class Result {
         csvWriter.writeNext(results, false);
         results = new String[]{"Loading time at depot variable", String.valueOf(Parameters.loadingTimeAtDepotVariable)};
         csvWriter.writeNext(results, false);
-        results = new String[]{"Scaling unloading time at customer constant ", String.valueOf(Parameters.scalingUnloadingTimeAtCustomerConstant)};
+        results = new String[]{"Scaling unloading time constant ", String.valueOf(Parameters.scalingUnloadingTimeAtCustomerConstant)};
         csvWriter.writeNext(results, false);
-        results = new String[]{"Scaling unloading time at customer variable", String.valueOf(Parameters.scalingUnloadingTimeAtCustomerVariable)};
+        results = new String[]{"Scaling unloading time variable", String.valueOf(Parameters.scalingUnloadingTimeAtCustomerVariable)};
         csvWriter.writeNext(results, false);
         results = new String[]{"Scaling vehicle capacity", String.valueOf(Parameters.scalingVehicleCapacity)};
         csvWriter.writeNext(results, false);
@@ -362,15 +366,41 @@ public class Result {
 
         results = new String[]{"Cost parameters:", "------"};
         csvWriter.writeNext(results, false);
-        results = new String[]{"Overtime limit ", String.valueOf(Parameters.initialCapacityPenalty)};
+        results = new String[]{"Overtime of:", " "};
         csvWriter.writeNext(results, false);
-        results = new String[]{"Initial time warp penalty", String.valueOf(Parameters.initialTimeWarpPenalty)};
+        double[] overtimeLimit = Converter.roundArray(Data.overtimeLimit, 2);
+        for (int p = 0; p < data.numberOfPeriods; p++){
+            results = new String[]{Converter.periodConverter(p) + " [percentage limit cost]",
+                    String.valueOf(Parameters.overtimeLimitPercentage[p])+ " " + String.valueOf(overtimeLimit[p]) + " " + String.valueOf(Parameters.overtimeCost[p]) };
+            csvWriter.writeNext(results, false);
+        }
+        results = new String[]{"Scaling driving cost parameter", String.valueOf(Parameters.scalingDrivingCost)};
         csvWriter.writeNext(results, false);
-        results = new String[]{"Initial driving cost penalty", String.valueOf(Parameters.initialDrivingCostPenalty)};
+
+        results = new String[]{"Tournament Selection Parameters:", "---------"};
         csvWriter.writeNext(results, false);
-        results = new String[]{"Penalty factor for overfilling", String.valueOf(Parameters.penaltyFactorForOverFilling)};
+        results = new String[]{"Nearest neighbour diversity", String.valueOf(Parameters.nearestNeighborsDiversity)};
         csvWriter.writeNext(results, false);
-        results = new String[]{"Penalty factor fro underfilling", String.valueOf(Parameters.penaltyFactorForUnderFilling)};
+        results = new String[]{"Diversity calculation intervall", String.valueOf(Parameters.diversityCalculationInterval)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Best individual probability", String.valueOf(Parameters.bestIndividualProbability)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Tournament size", String.valueOf(Parameters.tournamentSize)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Binary tournament", String.valueOf(Parameters.binarySelection)};
+        csvWriter.writeNext(results, false);
+
+        results = new String[]{"Gurobi Parameters:", "---------"};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Symmetry", Parameters.symmetry};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Model time limit", String.valueOf(Parameters.modelTimeLimit)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Model mip gap", String.valueOf(Parameters.modelMipGap)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Upper bound on q", String.valueOf(Parameters.upperBoundQuantity)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Upper bound on q0", String.valueOf(Parameters.upperBoundOvertime)};
         csvWriter.writeNext(results, false);
 
         csvWriter.close();

@@ -139,7 +139,7 @@ public class JourneyBasedModel {
         }
         for (int d = 0; d < dataMIP.numPeriods; d++) {
             String variable_name = String.format("qO[%d]", d);
-            qO[d] = model.addVar(0.0, Master2020.DataFiles.Parameters.overtimeLimit[d], dataMIP.costOvertime[d], GRB.CONTINUOUS, variable_name);
+            qO[d] = model.addVar(0.0, Data.overtimeLimit[d], dataMIP.costOvertime[d], GRB.CONTINUOUS, variable_name);
         }
     }
 
@@ -843,7 +843,7 @@ public class JourneyBasedModel {
         JourneyBasedModel jbm = new JourneyBasedModel(dataMip);
         jbm.runModel(Master2020.DataFiles.Parameters.symmetry);
         Individual individual = jbm.getIndividual();
-        Master2020.StoringResults.Result res = new Master2020.StoringResults.Result(individual);
+        Master2020.StoringResults.Result res = new Master2020.StoringResults.Result(individual, "JBM");
         res.store();
         //PlotIndividual visualizer = new PlotIndividual(data);
         //visualizer.visualize(individual);

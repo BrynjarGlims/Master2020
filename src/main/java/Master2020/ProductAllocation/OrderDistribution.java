@@ -9,6 +9,7 @@ import Master2020.MIP.ArcFlowModel;
 import Master2020.MIP.OrderAllocationModel;
 import Master2020.PR.DataMIP;
 import Master2020.PR.JourneyBasedModel;
+import Master2020.PR.PathFlowModel;
 import gurobi.GRB;
 import gurobi.GRBException;
 import gurobi.GRBVar;
@@ -75,6 +76,12 @@ public class OrderDistribution {
 
     public void makeDistributionFromJourneyBasedModel(JourneyBasedModel jbm) throws GRBException {
         setVolumeAndOrdersFromMIP( jbm.u, jbm.q, jbm.dataMIP);
+        setVolumePerPeriod();
+        setFitness();
+    }
+
+    public void makeDistributionFromPathFlowModel(PathFlowModel pfm) throws GRBException {
+        setVolumeAndOrdersFromMIP( pfm.u, pfm.q, pfm.dataMIP);
         setVolumePerPeriod();
         setFitness();
     }
@@ -165,14 +172,14 @@ public class OrderDistribution {
     private void setFitness(){
         fitness = 0;
         for (int p = 0; p < data.numberOfPeriods; p++){
-            fitness += Parameters.overtimeCost[p]*Math.max(0, this.volumePerPeriod[p] - Parameters.overtimeLimit[p]);
+            fitness += Parameters.overtimeCost[p]*Math.max(0, this.volumePerPeriod[p] - Data.overtimeLimit[p]);
         }
     }
 
     public double getFitness(){
         fitness = 0;
         for (int p = 0; p < data.numberOfPeriods; p++){
-            fitness += Parameters.overtimeCost[p]*Math.max(0, this.volumePerPeriod[p] - Parameters.overtimeLimit[p]);
+            fitness += Parameters.overtimeCost[p]*Math.max(0, this.volumePerPeriod[p] - Data.overtimeLimit[p]);
         }
         return fitness;
     }
@@ -335,7 +342,7 @@ public class OrderDistribution {
     public double getOvertimeValue(){
         fitness = 0;
         for (int d = 0; d < data.numberOfPeriods; d++ ){
-            fitness += Parameters.overtimeCost[d]*Math.max(0 , this.volumePerPeriod[d]-Parameters.overtimeLimit[d]);
+            fitness += Parameters.overtimeCost[d]*Math.max(0 , this.volumePerPeriod[d]-Data.overtimeLimit[d]);
         }
         return fitness;
     }

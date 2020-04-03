@@ -60,14 +60,14 @@ public class Parameters {
     public static final double indifferenceValue = 0.0001;
 
     //Cost parameters
-    public static final double[] overtimeLimit = {100, 100, 100, 100, 100, 50};
+    public static final double[] overtimeLimitPercentage = {0.19, 0.19, 0.19, 0.19, 0.19, 0.05};
     public static final double[] overtimeCost = {100, 100, 100, 100, 100, 100};
-    public static final double scalingDrivingCost = 25;
+    public static final double scalingDrivingCost = 25;  // // TODO: 03/04/2020 Not sure if implemented correctly 
 
     //Tournament selection parameters
     public static final int nearestNeighborsDiversity = 5;  // Neighbours from calculating diversity
     public static final int diversityCalculationInterval = 100;
-    public static final double besIndividualProbability = 0.6;
+    public static final double bestIndividualProbability = 0.6;
     public static final int tournamentSize = 5;  // 2 or larger, size = 2 --> binary tournament selection
     public static final boolean binarySelection = true;  // if true, bestIndProp must be much larger than 0.5
 
@@ -83,7 +83,7 @@ public class Parameters {
     // Verbose parameters
     public static final boolean verboseArcFlow = false;
     public static final boolean verbosePathFlow = false;
-    public static final boolean verboseJourneyBased = true;
+    public static final boolean verboseJourneyBased = false;
     public static final boolean savePlots = false;
     public static final boolean verbose = false;
     public static final char separator = ';';

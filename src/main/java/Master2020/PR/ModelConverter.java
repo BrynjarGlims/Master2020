@@ -19,6 +19,7 @@ public class ModelConverter {
     private static Individual individual;
     private static ArcFlowModel arcFlowModel;
     private static JourneyBasedModel journeyBasedModel;
+    private static PathFlowModel pathFlowModel;
     private static Data data;
 
 
@@ -30,6 +31,17 @@ public class ModelConverter {
         individual = jbm.getIndividual();
         //set giant tour chromosome and support strucutres in new individual
         initializeGiantTourInIndividualForJBM();
+        individual.setOrderDistribution(orderDistribution);
+    }
+
+    public static void initializeIndividualFromPathFlowModel(PathFlowModel pfm) throws GRBException {
+        pathFlowModel = pfm;
+        data = pathFlowModel.dataMIP.newData;
+        orderDistribution = pfm.getOrderDistribution();
+        orderDistribution.makeDistributionFromPathFlowModel(pathFlowModel);
+        individual = pfm.getIndividual();
+        //set giant tour chromosome and support strucutres in new individual
+        initializeGiantTourInIndividualForPFM();
         individual.setOrderDistribution(orderDistribution);
     }
 
@@ -71,7 +83,17 @@ public class ModelConverter {
         individual.setTripMap(tripMap);
         individual.setTripList(tripList);
         individual.setGiantTour(createGiantTour(giantTour));
+    }
 
+    private static void initializeGiantTourInIndividualForPFM() throws GRBException {
+        ArrayList<Trip>[][] tripList = initializeTripList();
+        updateTripListPFM(tripList);
+        ArrayList<Integer>[][] giantTour = initializeGiantTourChromosome();
+        updateGiantTourChromosome(giantTour,tripList);
+        HashMap<Integer, HashMap<Integer, Trip>> tripMap = getTripMap(tripList);
+        individual.setTripMap(tripMap);
+        individual.setTripList(tripList);
+        individual.setGiantTour(createGiantTour(giantTour));
     }
 
 
@@ -141,16 +163,31 @@ public class ModelConverter {
                 }
             }
         }
+    }
 
+    private static void updateTripListPFM(ArrayList<Trip>[][] tripList) throws GRBException {
+        Trip currentTrip;
+        ArrayList<Integer> customers;
 
-        /*
-        for(int p = 0; p < data.numberOfPeriods; p++){
-            for (int vt = 0; vt < data.numberOfVehicleTypes; vt ++){
-                checkIfEmpty(tripList[p][vt]);
+        for (int d = 0; d < pathFlowModel.dataMIP.numPeriods; d++) {
+            for (int v = 0; v < pathFlowModel.dataMIP.numVehicles; v++) {
+                for (int r = 0; r < pathFlowModel.dataMIP.numTrips; r++) {
+                    for (Path path : pathFlowModel.dataMIP.pathMap.get(d).get(pathFlowModel.dataMIP.vehicles[v].vehicleType.type)) {
+                        if (Math.round(pathFlowModel.lambda[d][v][r][path.pathId].get(GRB.DoubleAttr.X)) == 1) {
+                            currentTrip = new Trip();
+                            customers = new ArrayList<Integer>();
+                            currentTrip.initialize(d, data.vehicles[v].vehicleType.vehicleTypeID, v);
+                            for (Customer customer : path.customers) {
+                                customers.add(customer.customerID);
+                            }
+                            currentTrip.setCustomers(customers);
+                            currentTrip.setTripIndex(tripList[d][pathFlowModel.dataMIP.vehicles[v].vehicleType.type].size());
+                            tripList[d][pathFlowModel.dataMIP.vehicles[v].vehicleType.type].add(currentTrip);
+                        }
+                    }
+                }
             }
         }
-
-         */
     }
 
 
@@ -189,15 +226,6 @@ public class ModelConverter {
                 }
             }
         }
-        /*
-        for(int p = 0; p < data.numberOfPeriods; p++){
-            for (int vt = 0; vt < data.numberOfVehicleTypes; vt ++){
-                checkIfEmpty(tripList[p][vt]);
-            }
-        }
-
-         */
-
     }
 
     private static void checkIfEmpty( ArrayList<Trip> tripList){

@@ -149,7 +149,7 @@ public class App {
     }
 
 
-    public static void runMIP(int samples){
+    public static void runMIPAFM(int samples){
         for (int i = 0 ; i < samples ; i++){
             Parameters.randomSeedValue += 1;
             Data data = Master2020.DataFiles.DataReader.loadData();
@@ -157,7 +157,7 @@ public class App {
             JourneyBasedModel jbm = new JourneyBasedModel(dataMip);
             jbm.runModel(Master2020.DataFiles.Parameters.symmetry);
             Individual bestIndividual = jbm.getIndividual();
-            Result result = new Result(bestIndividual);
+            Result result = new Result(bestIndividual, "AFM");
             try{
                 result.store();
             } catch (IOException e) {
@@ -167,86 +167,126 @@ public class App {
         }
     }
 
-
-
-    public static void runGA() throws IOException, GRBException {
-        System.out.println("Initialize population..");
-        initialize();
-
-        while ((population.getIterationsWithoutImprovement() < Parameters.maxNumberIterationsWithoutImprovement &&
-                numberOfIterations < Parameters.maxNumberOfGenerations)) {
-            System.out.println("Start generation: " + numberOfIterations);
-
-            //Find best OD for the distribution
-            System.out.println("Assign best OD..");
-            findBestOrderDistribution();
-
-            //Generate new population
-            for (Individual individual : population.infeasiblePopulation){
-                if (!Master2020.Testing.IndividualTest.testIndividual(individual)){
-                    System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: PRIOR");
-                }
+    public static void runMIPPFM(int samples){
+        for (int i = 0 ; i < samples ; i++){
+            Parameters.randomSeedValue += 1;
+            Data data = Master2020.DataFiles.DataReader.loadData();
+            DataMIP dataMip = DataConverter.convert(data);
+            JourneyBasedModel jbm = new JourneyBasedModel(dataMip);
+            jbm.runModel(Master2020.DataFiles.Parameters.symmetry);
+            Individual bestIndividual = jbm.getIndividual();
+            Result result = new Result(bestIndividual, "PFM");
+            try{
+                result.store();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
 
-            System.out.println("Populate..");
-            while (population.infeasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize &&
-                    population.feasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize) {
-                Individual newIndividual = PIX();
-                if (!Master2020.Testing.IndividualTest.testIndividual(newIndividual)){
-                    System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: PIX");
-                }
-                educate(newIndividual);
-                if (!Master2020.Testing.IndividualTest.testIndividual(newIndividual)){
-                    System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: EDUCATE");
-                }
-                setOptimalOrderDistribution(newIndividual);
-                if (!Master2020.Testing.IndividualTest.testIndividual(newIndividual)){
-                    System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: OD OPTIMIZER");
-                }
-                tripOptimizer(newIndividual);
-                if (!Master2020.Testing.IndividualTest.testIndividual(newIndividual)){
-                    System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: TRIP OPTIMIZER");
-                }
-                population.addChildToPopulation(newIndividual);
+        }
+    }
 
-
+    public static void runMIPJBM(int samples){
+        for (int i = 0 ; i < samples ; i++){
+            Parameters.randomSeedValue += 1;
+            Data data = Master2020.DataFiles.DataReader.loadData();
+            DataMIP dataMip = DataConverter.convert(data);
+            JourneyBasedModel jbm = new JourneyBasedModel(dataMip);
+            jbm.runModel(Master2020.DataFiles.Parameters.symmetry);
+            Individual bestIndividual = jbm.getIndividual();
+            Result result = new Result(bestIndividual, "JBM");
+            try{
+                result.store();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            for (Individual individual : population.getTotalPopulation()){
-                IndividualTest.checkIfIndividualIsComplete(individual);
+        }
+    }
+
+
+
+
+    public static void runGA(int samples) throws IOException, GRBException {
+        for (int i = 0 ; i < samples ; i++) {
+            System.out.println("Initialize population..");
+            initialize();
+
+            while ((population.getIterationsWithoutImprovement() < Parameters.maxNumberIterationsWithoutImprovement &&
+                    numberOfIterations < Parameters.maxNumberOfGenerations)) {
+                System.out.println("Start generation: " + numberOfIterations);
+
+                //Find best OD for the distribution
+                System.out.println("Assign best OD..");
+                findBestOrderDistribution();
+
+                //Generate new population
+                for (Individual individual : population.infeasiblePopulation) {
+                    if (!Master2020.Testing.IndividualTest.testIndividual(individual)) {
+                        System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: PRIOR");
+                    }
+                }
+
+                System.out.println("Populate..");
+                while (population.infeasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize &&
+                        population.feasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize) {
+                    Individual newIndividual = PIX();
+                    if (!Master2020.Testing.IndividualTest.testIndividual(newIndividual)) {
+                        System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: PIX");
+                    }
+                    educate(newIndividual);
+                    if (!Master2020.Testing.IndividualTest.testIndividual(newIndividual)) {
+                        System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: EDUCATE");
+                    }
+                    setOptimalOrderDistribution(newIndividual);
+                    if (!Master2020.Testing.IndividualTest.testIndividual(newIndividual)) {
+                        System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: OD OPTIMIZER");
+                    }
+                    tripOptimizer(newIndividual);
+                    if (!Master2020.Testing.IndividualTest.testIndividual(newIndividual)) {
+                        System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: TRIP OPTIMIZER");
+                    }
+                    population.addChildToPopulation(newIndividual);
+
+
+                }
+                for (Individual individual : population.getTotalPopulation()) {
+                    IndividualTest.checkIfIndividualIsComplete(individual);
+                }
+
+                System.out.println("Repair..");
+                repair();
+
+                System.out.println("Selection..");
+                selection();
             }
 
-            System.out.println("Repair..");
-            repair();
 
-            System.out.println("Selection..");
-            selection();
+            Individual bestIndividual = population.returnBestIndividual();
+            if (!Master2020.Testing.IndividualTest.testIndividual(bestIndividual)) {
+                System.out.println("BEST INDIVIDUAL IS NOT COMPLETE");
+            }
+            System.out.println("Individual feasible: " + bestIndividual.isFeasible());
+            System.out.println("Fitness: " + bestIndividual.getFitness(false));
+            if (Parameters.savePlots) {
+                PlotIndividual visualizer = new PlotIndividual(data);
+                visualizer.visualize(bestIndividual);
+            }
+            Result res = new Result(population, "GA");
+            res.store();
+            orderAllocationModel.terminateEnvironment();
         }
-
-
-        Individual bestIndividual = population.returnBestIndividual();
-        if (!Master2020.Testing.IndividualTest.testIndividual(bestIndividual)){
-            System.out.println("BEST INDIVIDUAL IS NOT COMPLETE");
-        }
-        System.out.println("Individual feasible: " + bestIndividual.isFeasible());
-        System.out.println("Fitness: " + bestIndividual.getFitness(false));
-        if (Parameters.savePlots){
-            PlotIndividual visualizer = new PlotIndividual(data);
-            visualizer.visualize(bestIndividual);
-        }
-        Result res = new Result(population);
-        res.store();
-        orderAllocationModel.terminateEnvironment();
-
     }
 
 
 
     public static void main(String[] args) throws Exception {
-        if (args[0].equals("MIP")){
-            runMIP(Parameters.samples);
-        }
+        if (args[0].equals("AFM"))
+            runMIPAFM(Parameters.samples);
+        else if (args[0].equals("PFM"))
+            runMIPPFM(Parameters.samples);
+        else if (args[0].equals("JBM"))
+            runMIPJBM(Parameters.samples);
         else {
-            runGA();
+            runGA(Parameters.samples);
         }
     }
 

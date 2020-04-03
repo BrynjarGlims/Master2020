@@ -180,6 +180,15 @@ public class Converter {
         return String.format("%02d:%02d", (int) (returnValue), (int) ((60*(returnValue)) % 60));
     }
 
+    public static double[] roundArray(double[] array, int decimals){
+        for (int i = 0; i < array.length; i++){
+            array[i] *= decimals;
+            array[i] = Math.round(array[i]);
+            array[i] /= decimals;
+        }
+        return array;
+    }
+
     public static String calculateDrivingTime(Trip t, Data data) {
         ArrayList<Integer> customers = (ArrayList) t.customers;
         double vehicleDrivingDistance = 0;

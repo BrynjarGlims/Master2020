@@ -1227,7 +1227,7 @@ public class ArcFlowModel {
         ArcFlowModel afm = new ArcFlowModel(dataMip);
         afm.runModel(Master2020.DataFiles.Parameters.symmetry);
         Individual individual = afm.getIndividual();
-        Master2020.StoringResults.Result res = new Master2020.StoringResults.Result(individual);
+        Master2020.StoringResults.Result res = new Master2020.StoringResults.Result(individual, "AFM");
         res.store();
         //PlotIndividual visualizer = new PlotIndividual(data);
         //visualizer.visualize(individual);

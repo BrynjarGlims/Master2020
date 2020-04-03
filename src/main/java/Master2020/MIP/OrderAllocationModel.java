@@ -206,8 +206,8 @@ public class OrderAllocationModel {
                 }
             }
             lhs.addTerm(-1.0, qO[d]); // Add the over time variable for that day
-            String constraint_name = String.format("2 -Overtime on day %d. OvertimeLimit %f ", d, Parameters.overtimeLimit[d]);
-            model.addConstr(lhs, GRB.LESS_EQUAL, Parameters.overtimeLimit[d], constraint_name);
+            String constraint_name = String.format("2 -Overtime on day %d. OvertimeLimit %f ", d, Data.overtimeLimit[d]);
+            model.addConstr(lhs, GRB.LESS_EQUAL, Data.overtimeLimit[d], constraint_name);
         }
     }
 

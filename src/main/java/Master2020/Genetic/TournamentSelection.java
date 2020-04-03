@@ -34,13 +34,13 @@ public class TournamentSelection {
         Random r = new Random();
         double sumProbability = 0;
         for (int i = 0; i < tournament.size(); i++){
-            sumProbability = Parameters.besIndividualProbability*Math.pow(1-Parameters.besIndividualProbability, i);
+            sumProbability = Parameters.bestIndividualProbability *Math.pow(1-Parameters.bestIndividualProbability, i);
         }
 
         double randomValue = r.nextDouble()*sumProbability;
         
         for (int i = 0; i < tournament.size(); i++){
-            randomValue -= Parameters.besIndividualProbability*Math.pow(1-Parameters.besIndividualProbability, i);
+            randomValue -= Parameters.bestIndividualProbability *Math.pow(1-Parameters.bestIndividualProbability, i);
             if (randomValue <= 0){
                 return tournament.get(i);
             }

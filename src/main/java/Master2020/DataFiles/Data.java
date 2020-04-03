@@ -3,6 +3,7 @@ package Master2020.DataFiles;
 
 import gurobi.GRBVar;
 import org.numenta.nupic.util.ArrayUtils;
+import scala.xml.PrettyPrinter;
 
 import java.lang.*;
 import java.util.Arrays;
@@ -13,7 +14,7 @@ public class Data {
     public Vehicle[] vehicles;
     public Order[] orders;
     public Depot depot;
-    public VehicleType[] vehicleTypes;  // todo: initialize
+    public VehicleType[] vehicleTypes;
 
     public int numberOfPeriods = Parameters.numberOfPeriods;
     public int numberOfTrips = Parameters.numberOfTrips;
@@ -23,9 +24,9 @@ public class Data {
     public int numberOfNodes = Parameters.numberOfCustomers + 2;
     public int[] numberOfCustomerVisitsInPeriod;
     public int numberOfCustomerVisitsInPlanningHorizon;
+    public static double[] overtimeLimit;
 
-
-    //Gurobi spesific variables
+    //Gurobi specific variables
     public GRBVar[][][][][] arcs;
 
     public double totalVolume;
@@ -55,6 +56,14 @@ public class Data {
         this.setDerivedParameters();
         this.setNumberOfCustomerVisitsInPeriod();
         this.setCorrectOrderID();
+        this.setOvertimeLimit();
+    }
+
+    private void setOvertimeLimit(){
+        overtimeLimit = new double[numberOfPeriods];
+        for (int p = 0; p < numberOfPeriods; p++){
+            overtimeLimit[p] = totalVolume* Parameters.overtimeLimitPercentage[p];
+        }
     }
 
     private void setCorrectOrderID(){
