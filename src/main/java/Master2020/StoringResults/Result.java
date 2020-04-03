@@ -28,7 +28,7 @@ public class Result {
     Data data;
     Individual bestIndividual;
     OrderDistribution bestOD;
-
+    String modelName;
 
 
 
@@ -40,9 +40,19 @@ public class Result {
     }
 
     public Result(Individual individual){
+        this.bestOD = individual.orderDistribution;
         this.data = individual.data;
         this.bestIndividual = individual;
-        this.bestOD = individual.orderDistribution;
+    }
+
+    public Result(Individual individual, String modelName){
+        this(individual);
+        this.modelName = modelName;
+    }
+
+    public Result(Population population, String modelName){
+        this(population);
+        this.modelName = modelName;
     }
 
 
@@ -248,6 +258,55 @@ public class Result {
         writer.close();
     }
 
+    private void storeParameters(String fileName) throws IOException {
+        String filePath  = FileParameters.filePathDetailed + "/" + fileName + "/parameters.csv";
+        File newFile = new File(filePath);
+        System.out.println("Path : " + newFile.getAbsolutePath());
+        Writer writer = Files.newBufferedWriter( Paths.get(filePath), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+        CSVWriter csvWriter = new CSVWriter(writer, Parameters.separator, CSVWriter.NO_QUOTE_CHARACTER,
+                CSVWriter.DEFAULT_ESCAPE_CHARACTER,
+                CSVWriter.DEFAULT_LINE_END);
+        NumberFormat formatter = new DecimalFormat("#0.0000");
+        SimpleDateFormat date_formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        System.out.println("Changing detailed file...");
+        if (newFile.length() == 0){
+            String[] CSV_COLUMNS = {"Parameter",  "Value" };
+            csvWriter.writeNext(CSV_COLUMNS, false);
+        }
+        //Add parameters
+        String[] results = {"Seed value", String.valueOf(Parameters.randomSeedValue)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Maximum sub population size", String.valueOf(Parameters.maximumSubIndividualPopulationSize)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Minimum sub population size", String.valueOf(Parameters.minimumSubIndividualPopulationSize)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Initial population size", String.valueOf(Parameters.initialPopulationSize)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Initial order distribution population size", String.valueOf(Parameters.initialOrderDistributionPopulationSize)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Maximum number of generations", String.valueOf(Parameters.maxNumberOfGenerations)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Maximum number of generations without improvement", String.valueOf(Parameters.maxNumberIterationsWithoutImprovement)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Number of periods", String.valueOf(Parameters.numberOfPeriods)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Number of trips", String.valueOf(Parameters.numberOfTrips)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Number of customers", String.valueOf(Parameters.numberOfCustomers)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Number of vehicles", String.valueOf(Parameters.numberOfVehicles)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Distance cutoff from depot", String.valueOf(Parameters.distanceCutOffFromDepot)};
+        csvWriter.writeNext(results, false);
+
+        results = new String[]{"Maximum number of generations without improvement", String.valueOf(Parameters.maxNumberIterationsWithoutImprovement)};
+        csvWriter.writeNext(results, false);
+
+
+        csvWriter.close();
+        writer.close();
+    }
+
 
     private void storeSummary(String fileName) throws IOException {
         String filePath  = FileParameters.filePathSummary + "/main_results.csv";
@@ -260,12 +319,12 @@ public class Result {
         SimpleDateFormat date_formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         System.out.println("Changing summary file...");
         if (newFile.length() == 0){
-            String[] CSV_COLUMNS = {"File name" , "Objective Value", "Runtime", "Date", "Master2020.Population Size ", "Generations",
+            String[] CSV_COLUMNS = {"File name" ,"Objective Value", "Model", "Runtime", "Date", "Population Size ", "Generations",
                     "Customers", "Vehicles" };
             csvWriter.writeNext(CSV_COLUMNS, false);
         }
 
-        String[] results = {fileName, String.format("%.4f",bestIndividual.getFitness(false)), "0", date_formatter.format(new Date()),
+        String[] results = {fileName, String.format("%.4f",bestIndividual.getFitness(false)), modelName, "0", date_formatter.format(new Date()),
                 String.valueOf(Parameters.maximumSubIndividualPopulationSize),String.valueOf(Parameters.maxNumberOfGenerations), String.valueOf(Parameters.numberOfCustomers)
         , String.valueOf(Parameters.numberOfVehicles)};
         csvWriter.writeNext(results, false);

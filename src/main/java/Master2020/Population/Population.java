@@ -140,34 +140,9 @@ public class Population {
         }
     }
 
-    public void setSurvivorsForNextGeneration(){
-        ArrayList<Individual> listToBeSorted = new ArrayList<Individual>(this.getTotalPopulation());
-        Collections.sort(listToBeSorted);
-        int counter = 0;
-        for (Individual individual : listToBeSorted){
-            if (counter < Parameters.numberOfElitismSurvivorsPerGeneration){
-                individual.isSurvivor = true;
-                counter++;
-            }
-            else{
-                individual.isSurvivor = false;
-            }
-        }
-    }
-
 
     private static double getFitnessDifference(Individual i1, Individual i2) {
         return (Math.abs(i1.getFitness(false) - i2.getFitness(false)));
-    }
-
-
-    private Set<Individual> getFeasibleClonesForAnIndividual(Individual individual) {
-        Set<Individual> setOfClones = new HashSet<Individual>();
-        for (Individual ind: feasiblePopulation)
-            if (getFitnessDifference(individual, ind) <= Parameters.minimumFitnessDifferenceForClones) {
-                setOfClones.add(ind);
-            }
-        return setOfClones;
     }
 
     public void addChildToPopulation(Individual individual){

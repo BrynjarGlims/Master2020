@@ -157,8 +157,16 @@ public class App {
             DataMIP dataMip = DataConverter.convert(data);
             JourneyBasedModel jbm = new JourneyBasedModel(dataMip);
             jbm.runModel(Master2020.DataFiles.Parameters.symmetry);
+            Individual bestIndividual = jbm.getIndividual();
+            Result result = new Result(bestIndividual);
+            try{
+                result.store();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         }
-        }
+    }
 
 
 

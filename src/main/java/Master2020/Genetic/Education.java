@@ -37,7 +37,7 @@ public class Education {
         int totalImprovements = 0;
         Collections.shuffle(customers);
         for (int c : customers) {
-            taboo = new int[Parameters.EducationTabooSize];
+            taboo = new int[Parameters.educationTabooSize];
             for (int period = 0; period < data.numberOfPeriods; period++) {
                 if (data.customers[c].requiredVisitPeriod[period] == 0) {
                     continue;
@@ -64,7 +64,7 @@ public class Education {
                                 if (temp) {
                                     totalImprovements++;
                                     taboo[index] = move;
-                                    index = (index + 1) % Parameters.EducationTabooSize;
+                                    index = (index + 1) % Parameters.educationTabooSize;
                                 }
                                 break;
                             case 1:
@@ -73,7 +73,7 @@ public class Education {
                                 if (temp) {
                                     totalImprovements++;
                                     taboo[index] = move;
-                                    index = (index + 1) % Parameters.EducationTabooSize;
+                                    index = (index + 1) % Parameters.educationTabooSize;
                                 }
                                 break;
                             case 2:
@@ -82,7 +82,7 @@ public class Education {
                                 if (temp) {
                                     totalImprovements++;
                                     taboo[index] = move;
-                                    index = (index + 1) % Parameters.EducationTabooSize;
+                                    index = (index + 1) % Parameters.educationTabooSize;
                                 }
                                 break;
                             case 3:
@@ -91,7 +91,7 @@ public class Education {
                                 if (temp) {
                                     totalImprovements++;
                                     taboo[index] = move;
-                                    index = (index + 1) % Parameters.EducationTabooSize;
+                                    index = (index + 1) % Parameters.educationTabooSize;
                                 }
                                 break;
                             case 4:
@@ -100,7 +100,7 @@ public class Education {
                                 if (temp) {
                                     totalImprovements++;
                                     taboo[index] = move;
-                                    index = (index + 1) % Parameters.EducationTabooSize;
+                                    index = (index + 1) % Parameters.educationTabooSize;
                                 }
                                 break;
                             case 5:
@@ -109,7 +109,7 @@ public class Education {
                                 if (temp) {
                                     totalImprovements++;
                                     taboo[index] = move;
-                                    index = (index + 1) % Parameters.EducationTabooSize;
+                                    index = (index + 1) % Parameters.educationTabooSize;
                                 }
                                 break;
                             case 6:
@@ -118,7 +118,7 @@ public class Education {
                                 if (temp) {
                                     totalImprovements++;
                                     taboo[index] = move;
-                                    index = (index + 1) % Parameters.EducationTabooSize;
+                                    index = (index + 1) % Parameters.educationTabooSize;
                                 }
                                 break;
                             case 7:
@@ -127,7 +127,7 @@ public class Education {
                                 if (temp) {
                                     totalImprovements++;
                                     taboo[index] = move;
-                                    index = (index + 1) % Parameters.EducationTabooSize;
+                                    index = (index + 1) % Parameters.educationTabooSize;
                                 }
                                 break;
                             case 8:
@@ -136,7 +136,7 @@ public class Education {
                                 if (temp) {
                                     totalImprovements++;
                                     taboo[index] = move;
-                                    index = (index + 1) % Parameters.EducationTabooSize;
+                                    index = (index + 1) % Parameters.educationTabooSize;
                                 }
                                 break;
                         }
