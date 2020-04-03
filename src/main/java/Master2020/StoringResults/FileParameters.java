@@ -3,7 +3,7 @@ package Master2020.StoringResults;
 public class FileParameters {
 
     //Running parameters
-    public static final boolean useDefaultFileName = false;
+    public static final boolean useDefaultFileName = true;
 
     //Storing data parameters
     public static final String filePathSummary = "results";

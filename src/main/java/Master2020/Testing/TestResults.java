@@ -202,14 +202,8 @@ public class TestResults {
         String path = "results/results_detailed/Ga_sol_5_ap";
         evaluateSolution(path);
         System.out.println(" ----- ");
-<<<<<<< HEAD:src/main/java/Master2020/Testing/TestResults.java
-        System.out.println("Results from Master2020.MIP");
-        path = "results/results_detailed/Test_MIP";
-=======
-
         System.out.println("Results from MIP");
         path = "results/results_detailed/Mip_sol_1_ap";
->>>>>>> feasibilityCheck:src/Testing/TestResults.java
         evaluateSolution(path);
 
 
