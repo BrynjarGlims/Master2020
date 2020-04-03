@@ -15,6 +15,7 @@ public class Parameters {
     public static final int samples = 5;
     public static long randomSeedValue = 1;
 
+
     // Population parameters
     public static final int maximumSubIndividualPopulationSize = 75; //TODO: find reasonable value
     public static final int minimumSubIndividualPopulationSize = 25;
@@ -23,12 +24,15 @@ public class Parameters {
     public static final int maxNumberIterationsWithoutImprovement = 10;
     public static final int maxNumberOfGenerations = 2;
 
+
+
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
     public static final int numberOfCustomers = 7; // A maximum of 76
     public static final int numberOfVehicles = 5;
     public static final double distanceCutOffFromDepot = 3.5;
+
 
     // GA specific parameters
     public static final int nearestNeighbors = 5; //Neighborhood size for each customer
@@ -56,8 +60,8 @@ public class Parameters {
     //Tournament selection parameters
     public static final int nearestNeighborsDiversity = 5;  // Neighbours from calculating diversity
     public static final double besIndividualProbability = 0.6;
-    public static final int tournamentSize = 10;  // 2 or larger, size = 2 --> binary tournament selection
-    public static final boolean binarySelection = false;  // if true, bestIndProp must be much larger than 0.5
+    public static final int tournamentSize = 5;  // 2 or larger, size = 2 --> binary tournament selection
+    public static final boolean binarySelection = true;  // if true, bestIndProp must be much larger than 0.5
 
     //Period parameters
     public static final double[] overtimeLimit = {100, 100, 100, 100, 100, 50};

@@ -24,10 +24,15 @@ public class TestResults {
         double vehicleCost = findObjectiveValuesOfVehicle(vehicleData);
         double overtimeAtDepotCost = findObjectiveValuesOfOrders(ordersData);
         double objectiveValue = travelCost + vehicleCost + overtimeAtDepotCost;
+        double timeWarpValue = findTimeWarpValue(tripData);
+        double overloadValue = findOverLoadValue(tripData, ordersData);
         System.out.println("Objective value: " + objectiveValue);
+        System.out.println("Fitness ink inf: " + (objectiveValue + timeWarpValue + overloadValue));
         System.out.println("Travel Cost: " + travelCost);
         System.out.println("Vehicle Cost: " + vehicleCost );
         System.out.println("Overtime at depot cost: " + overtimeAtDepotCost);
+        System.out.println("TimeWarp cost: " + timeWarpValue);
+        System.out.println("Overload cost: " + overloadValue);
 
     }
 
@@ -47,6 +52,73 @@ public class TestResults {
                                      data.distanceMatrix[previousCustomer][data.numberOfCustomers];
         }
         return travelValue;
+    }
+
+    private static double findTimeWarpValue(List<String[]> tripData){
+        //if second trip, add loading time at depot
+        double vehicleTotalTravelTime = 0;
+        double timeWarpInfeasibility = 0;
+
+        for (int line = 0; line < tripData.size(); line++) {  // given that vehicles get in order
+            if (line != 0){
+                if (tripData.get(line - 1)[3].equals(tripData.get(line)[3]) &&
+                        tripData.get(line - 1)[2].equals(tripData.get(line)[2]) &&
+                        Integer.parseInt(tripData.get(line - 1)[1]) + 1 == Integer.parseInt(tripData.get(line)[1]))
+                {
+                    vehicleTotalTravelTime += data.vehicles[Integer.parseInt(tripData.get(line)[3])].vehicleType.loadingTimeAtDepot;
+                }else{
+                    vehicleTotalTravelTime = 0;
+                }
+            }
+
+            ArrayList<Integer> customers = createListFromCustomers(tripData.get(line)[9]);
+
+            //initialize
+            int previousCustomer = data.numberOfCustomers;
+
+            //three cases, from depot to cust, cust to cust, cust to depot
+            for (int customerID : customers) {
+                vehicleTotalTravelTime += data.distanceMatrix[previousCustomer][customerID];
+                vehicleTotalTravelTime = Math.max(vehicleTotalTravelTime, data.customers[customerID].timeWindow[getDayFromString(tripData.get(line)[2])][0]);
+                if (vehicleTotalTravelTime > data.customers[customerID].timeWindow[getDayFromString(tripData.get(line)[2])][1]) {
+                    timeWarpInfeasibility += vehicleTotalTravelTime - data.customers[customerID].timeWindow[getDayFromString(tripData.get(line)[2])][1];
+                    vehicleTotalTravelTime = data.customers[customerID].timeWindow[getDayFromString(tripData.get(line)[2])][1];
+                }
+                vehicleTotalTravelTime += data.customers[customerID].totalUnloadingTime;
+                previousCustomer = customerID;
+            }
+
+            vehicleTotalTravelTime += data.distanceMatrix[previousCustomer][data.numberOfCustomers];
+            if (vehicleTotalTravelTime > Parameters.maxJourneyDuration) {
+                timeWarpInfeasibility += vehicleTotalTravelTime - Parameters.maxJourneyDuration;
+                vehicleTotalTravelTime = Parameters.maxJourneyDuration;
+            }
+        }
+        return timeWarpInfeasibility*Parameters.initialTimeWarpPenalty;
+    }
+
+    private static double findOverLoadValue(List<String[]> tripData, List<String[]> ordersData) {
+        double overloadInfeasibility = 0;
+        double volumeOfTrip;
+        for (int line = 0; line < tripData.size(); line++) {  // given that vehicles get in order
+            ArrayList<Integer> customers = createListFromCustomers(tripData.get(line)[9]);
+            //initialize
+
+            volumeOfTrip = 0;
+            //three cases, from depot to cust, cust to cust, cust to depot
+            for (int customerID : customers) {
+                for (int line2 = 0; line2 < ordersData.size(); line2++) {  // given that vehicles get in order
+                    if (ordersData.get(line2)[4].equals(tripData.get(line)[2]) &&
+                            Integer.parseInt(ordersData.get(line2)[5]) == customerID &&
+                            ordersData.get(line2)[7].equals(tripData.get(line)[3])){
+                        volumeOfTrip += Double.parseDouble(ordersData.get(line2)[3]);
+                    }
+                }
+            }
+            overloadInfeasibility += Math.max(0, volumeOfTrip - data.vehicles[Integer.parseInt(tripData.get(line)[3])].vehicleType.capacity) * Parameters.initialCapacityPenalty;
+        }
+
+        return overloadInfeasibility;
     }
 
     private static double findObjectiveValuesOfVehicle(List<String[]> vehicleData){
@@ -127,12 +199,20 @@ public class TestResults {
 
     public static void main(String[] args){
         System.out.println("Results from GA:");
-        String path = "results/results_detailed/bestGA";
+        String path = "results/results_detailed/Ga_sol_5_ap";
         evaluateSolution(path);
         System.out.println(" ----- ");
+<<<<<<< HEAD:src/main/java/Master2020/Testing/TestResults.java
         System.out.println("Results from Master2020.MIP");
         path = "results/results_detailed/Test_MIP";
+=======
+
+        System.out.println("Results from MIP");
+        path = "results/results_detailed/Mip_sol_1_ap";
+>>>>>>> feasibilityCheck:src/Testing/TestResults.java
         evaluateSolution(path);
+
+
     }
 
 

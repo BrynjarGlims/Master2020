@@ -137,6 +137,7 @@ public class App {
         bestIndividual = population.returnBestIndividual();
         bestIndividualScore = bestIndividual.getFitness(false);
 
+
         // Check if it has improved for early termination
         if (bestIndividualScore == bestIndividual.getFitness(false)){
             population.setIterationsWithoutImprovement(population.getIterationsWithoutImprovement()+1);
@@ -146,7 +147,9 @@ public class App {
         }
 
         Individual bestFeasibleIndividual = population.returnBestIndividual();
+        Individual bestInfeasibleIndividual = population.returnBestInfeasibleIndividual();
         bestFeasibleIndividual.printDetailedFitness();
+        bestInfeasibleIndividual.printDetailedFitness();
     }
 
 

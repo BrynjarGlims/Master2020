@@ -13,7 +13,6 @@ public class AdSplit {
 
 
 
-
     //MAIN ADSPLIT ALGORITHM------------------------------------------------------------------------------------------------------------------------------------------------------
     public static void adSplitPlural(Individual ind){
         adSplitPlural(ind, 1);
