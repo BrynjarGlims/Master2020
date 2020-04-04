@@ -892,36 +892,39 @@ public class PathFlowModel {
             System.out.println("Optimize model");
             optimizeModel();
             System.out.println("Print results:");
-            displayResults(true);
-            if (optimstatus == 3) {
-                System.out.println("no solution found");
+            displayResults(false);
+            if (model.get(GRB.IntAttr.SolCount) == 0){
+                System.out.println("No solution found");
                 infeasible = true;
-                System.out.println("Terminate model");
-                terminateModel();
-            }
-            else if (optimstatus == 2){
-                if (Parameters.plotArcFlow){
-                    GraphPlot plotter = new GraphPlot(dataMIP);
-                    plotter.visualize(false);
-                }
-                System.out.println("Create and store results");
-                storePath();
-                createIndividualAndOrderDistributionObject();
-                infeasible = false;
-                if (Parameters.verbosePathFlow)
-                    printSolution();
+                createEmptyIndividualAndOrderDistribution();
                 System.out.println("Terminate model");
                 terminateModel();
             }
             else{
-                System.out.println("Create and store results");
-                storePath();
-                infeasible = true;
-                createIndividualAndOrderDistributionObject();
-                if (Parameters.verbosePathFlow)
-                    printSolution();
-                System.out.println("Terminate model");
-                terminateModel();
+                if (optimstatus == 2){
+                    if (Parameters.plotArcFlow){
+                        GraphPlot plotter = new GraphPlot(dataMIP);
+                        plotter.visualize(false);
+                    }
+                    System.out.println("Create and store results");
+                    storePath();
+                    createIndividualAndOrderDistributionObject();
+                    infeasible = false;
+                    if (Parameters.verbosePathFlow)
+                        printSolution();
+                    System.out.println("Terminate model");
+                    terminateModel();
+                }
+                else {
+                    System.out.println("Create and store results");
+                    storePath();
+                    infeasible = false;
+                    createIndividualAndOrderDistributionObject();
+                    if (Parameters.verbosePathFlow)
+                        printSolution();
+                    System.out.println("Terminate model");
+                    terminateModel();
+                }
             }
         } catch (GRBException | FileNotFoundException e) {
             System.out.println("ERROR: " + e);

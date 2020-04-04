@@ -195,6 +195,7 @@ public class App {
             JourneyBasedModel jbm = new JourneyBasedModel(dataMip);
             jbm.runModel(Master2020.DataFiles.Parameters.symmetry);
             Individual bestIndividual = jbm.getIndividual();
+            System.out.println("hei");
             Result result = new Result(bestIndividual, "JBM");
             try{
                 result.store();
@@ -281,12 +282,10 @@ public class App {
 
 
     public static void main(String[] args) throws Exception {
+
         runGA(Parameters.samples);
-        Parameters.randomSeedValue = 11;
         runMIPJBM(Parameters.samples);
-        Parameters.randomSeedValue = 11;
         runMIPPFM(Parameters.samples);
-        Parameters.randomSeedValue = 11;
         runMIPAFM(Parameters.samples);
         //runMIPJBM(Parameters.samples);
 

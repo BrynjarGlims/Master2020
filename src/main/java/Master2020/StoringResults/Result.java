@@ -30,6 +30,8 @@ public class Result {
     Individual bestIndividual;
     OrderDistribution bestOD;
     String modelName;
+    boolean isFeasible;
+    boolean isOptimal;
 
 
 
@@ -264,13 +266,6 @@ public class Result {
 
 
                 }
-                else{
-                    System.out.print("Impossible order found: ");
-                    System.out.print(" orderID:" + orderDelivery.order.orderID);
-                    System.out.print(" period:" + orderDelivery.getPeriod());
-                    System.out.println(" customerID:" + orderDelivery.order.customerID);
-                    System.out.println("----------------");
-                }
             }
             else{
                 for (int period = 0; period < data.numberOfPeriods; period++ ){
@@ -444,6 +439,44 @@ public class Result {
         writer.close();
     }
 
+    private void storeSummaryDetailed(String fileName) throws IOException {
+        String filePath  = FileParameters.filePathDetailed + "/" + fileName + "/" + fileName + "_summary.csv";
+        File newFile = new File(filePath);
+        Writer writer = Files.newBufferedWriter(Paths.get(filePath), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+        CSVWriter csvWriter = new CSVWriter(writer, Parameters.separator, CSVWriter.NO_QUOTE_CHARACTER,
+                CSVWriter.DEFAULT_ESCAPE_CHARACTER,
+                CSVWriter.DEFAULT_LINE_END);
+        NumberFormat formatter = new DecimalFormat("#0.00000000");
+        SimpleDateFormat date_formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        System.out.println("Changing summary file...");
+        if (newFile.length() == 0){
+            String[] CSV_COLUMNS = {"File name" ,"Objective Value", "Model", "Runtime", "Date", "Population Size ", "Generations",
+                    "Customers", "Vehicles", "isOptimal", "isFeasible" };
+            csvWriter.writeNext(CSV_COLUMNS, false);
+        }
+
+        if (modelName == "GA") {
+            isFeasible = bestIndividual.isFeasible();
+        }
+        else{
+            isFeasible = true;
+        }
+
+        if (modelName == "GA"){
+            isOptimal = false;
+        }
+        else{
+            isOptimal = true;
+        }
+
+        String[] results = {fileName, String.format("%.4f",bestIndividual.getFitness(false)), modelName, "0", date_formatter.format(new Date()),
+                String.valueOf(Parameters.maximumSubIndividualPopulationSize),String.valueOf(Parameters.maxNumberOfGenerations), String.valueOf(Parameters.numberOfCustomers)
+                , String.valueOf(Parameters.numberOfVehicles), String.valueOf(isFeasible), String.valueOf(isOptimal)};
+        csvWriter.writeNext(results, false);
+        csvWriter.close();
+        writer.close();
+    }
+
 
     private void storeSummary(String fileName) throws IOException {
         String filePath  = FileParameters.filePathSummary + "/main_results.csv";
@@ -477,8 +510,6 @@ public class Result {
         else{
             isOptimal = true;
         }
-
-
 
         String[] results = {fileName, String.format("%.4f",bestIndividual.getFitness(false)), modelName, "0", date_formatter.format(new Date()),
                 String.valueOf(Parameters.maximumSubIndividualPopulationSize),String.valueOf(Parameters.maxNumberOfGenerations), String.valueOf(Parameters.numberOfCustomers)

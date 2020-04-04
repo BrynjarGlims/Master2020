@@ -14,7 +14,7 @@ public class Parameters {
     public static final String dataSet = "Trøndelag";
     public static final boolean doRandomSeed = true;
     public static final int samples = 1;
-    public static long randomSeedValue = 11;
+    public static long randomSeedValue = 5;
 
     // Population parameters
     public static final int maximumSubIndividualPopulationSize = 75; //TODO: find reasonable value
@@ -27,8 +27,8 @@ public class Parameters {
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static final int numberOfCustomers = 3; // A maximum of 76
-    public static final int numberOfVehicles = 3;
+    public static final int numberOfCustomers = 7; // A maximum of 76
+    public static final int numberOfVehicles = 7;
     public static final double distanceCutOffFromDepot = 3.5;
 
     // GA specific parameters
@@ -73,7 +73,7 @@ public class Parameters {
 
     //GUROBI parameters
     public static final String symmetry =  "none";      // // none, car, trips, customers, cost, duration
-    public static final double modelTimeLimit = 3600;
+    public static final double modelTimeLimit = 30;
     public static final double modelMipGap = 0.001;
     public static final boolean plotArcFlow = false;
     public static final String instanceName = "testDataFromAsko";

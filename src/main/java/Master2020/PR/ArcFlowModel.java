@@ -1160,45 +1160,39 @@ public class ArcFlowModel {
             System.out.println("Optimize model");
             optimizeModel();
             System.out.println("Print results:");
-            displayResults(true);
+            displayResults(false);
 
-            // Master2020.Testing session
-            //Master2020.Testing.MIPTest.printZSolutions(this);
-            //Master2020.Testing.MIPTest.checkSpesificCase(this);
-            Master2020.Testing.MIPTest.getDetailedResult(this);
-
-
-            if (optimstatus == 3) {
+            if (model.get(GRB.IntAttr.SolCount) == 0){
                 this.infeasible = true;
                 System.out.println("No solution found");
                 createEmptyIndividualAndOrderDistribution();
                 System.out.println("Terminate model");
                 terminateModel();
             }
-            else if (optimstatus == 2){
-                this.infeasible = false;
-
-                if (Parameters.plotArcFlow){
-                    GraphPlot plotter = new GraphPlot(dataMIP);
-                    plotter.visualize(true);
-                }
-
-                System.out.println("Create and store results");
-                storePath();
-                createIndividualAndOrderDistributionObject();
-                if (Parameters.verboseArcFlow)
-                    printSolution();
-                System.out.println("Terminate model");
-                terminateModel();
-            }
             else{
-                System.out.println("Create and store results");
-                storePath();
-                if (Parameters.verboseArcFlow)
-                    printSolution();
-                createEmptyIndividualAndOrderDistribution();
-                System.out.println("Terminate model");
-                terminateModel();
+                if (optimstatus == 2){
+                    this.infeasible = false;
+                    if (Parameters.plotArcFlow){
+                        GraphPlot plotter = new GraphPlot(dataMIP);
+                        plotter.visualize(true);
+                    }
+                    System.out.println("Create and store results");
+                    storePath();
+                    createIndividualAndOrderDistributionObject();
+                    if (Parameters.verboseArcFlow)
+                        printSolution();
+                    System.out.println("Terminate model");
+                    terminateModel();
+                }
+                else {
+                    System.out.println("Create and store results");
+                    storePath();
+                    if (Parameters.verboseArcFlow)
+                        printSolution();
+                    createEmptyIndividualAndOrderDistribution();
+                    System.out.println("Terminate model");
+                    terminateModel();
+                }
             }
         } catch (GRBException | FileNotFoundException e) {
             System.out.println("ERROR: " + e);

@@ -791,28 +791,35 @@ public class JourneyBasedModel {
             System.out.println("Optimize model");
             optimizeModel();
             System.out.println("Print results:");
-            displayResults(true);
-            if (optimstatus == 3) {
-                System.out.println("no solution found");
-                terminateModel();
-            }
-            else if (optimstatus == 2){
-                storePath();
-                createIndividualAndOrderDistributionObject();
-                if (Parameters.verboseJourneyBased)
-                    printSolution();
-                terminateModel();
-            }
-            else{
-                System.out.println("Create and store results");
-                storePath();
-                Result res = createAndStoreModelResults(true, 0);
-                if (Parameters.verboseJourneyBased)
-                    printSolution();
+            displayResults(false);
+
+            if (model.get(GRB.IntAttr.SolCount) == 0){
+                System.out.println("No solution found");
+                infeasible = true;
+                createEmptyIndividualAndOrderDistribution();
                 System.out.println("Terminate model");
                 terminateModel();
             }
-
+            else{
+                if (optimstatus == 2){
+                    storePath();
+                    infeasible = true;
+                    createIndividualAndOrderDistributionObject();
+                    if (Parameters.verboseJourneyBased)
+                        printSolution();
+                    terminateModel();
+                }
+                else {
+                    System.out.println("Create and store results");
+                    infeasible = false;
+                    storePath();
+                    createIndividualAndOrderDistributionObject();
+                    if (Parameters.verboseJourneyBased)
+                        printSolution();
+                    System.out.println("Terminate model");
+                    terminateModel();
+                }
+            }
         } catch (GRBException | FileNotFoundException e) {
             System.out.println("ERROR: " + e);
         } catch (Error e) {
