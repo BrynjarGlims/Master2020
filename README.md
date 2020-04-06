@@ -17,9 +17,9 @@ cd /storage/global
 
 mkdir \<your-username\>
 
-cd "<your-username>"
+cd \<your-username\>
 
-git clone "<master-project-link>"
+git clone \<master-project-link\>
 
 cd Master2020
 
