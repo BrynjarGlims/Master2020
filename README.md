@@ -1,21 +1,44 @@
 # Master2020
 
-mvn install:install-file -Dfile=C:\gurobi811\win64\lib\gurobi.jar -DgroupId=gurobi -DartifactId=gurobi -Dversion=8 -Dpackaging=jar
+SETUP FOR SOLSTORM:
 
+1. Login via Putty (Solstorm-login.iot.ntnu.no)
 
+2. Add java to path and create JAVA_HOME environment variable:
 
-SETUP SOLSTORM:
+export PATH=$PATH:~:/share/apps/Java/11.0.2/bin export JAVA_HOME=/share/apps/Java/11.0.2
+3. Add Maven to path:
 
-add java to path:
+export PATH=$PATH:~:/share/apps/Maven/3.6.3/bin
 
-export PATH=$PATH:~:/share/apps/Java/11.0.2/bin
-export JAVA_HOME=/share/apps/Java/11.0.2
+4. clone master project to storage:
 
-*MIDLERTIDIG*
-legg til maven:
+cd /storage/global
 
-Kopier apache-maven-3.6.3 mappen over i ditt directory på solstorm (storage/global/brynjag/Maven/apache-maven-3.6.3 for min del)
+mkdir \<your-username\>
 
-legg til Maven på pathen:
+cd \<your-username\>
 
-export PATH=$PATH:~:/storage/global/brynjag/Maven/apache-maven-3.6.3/bin
+git clone \<master-project-link\>
+
+cd Master2020
+
+5. Install gurobi to maven:
+
+mvn install:install-file -Dfile=/share/apps/gurobi/8.1.1/lib/gurobi.jar -DgroupId=gurobi -DartifactId=gurobi -Dversion=8 -Dpackaging=jar
+
+6. Add gurobi environment variables:
+
+export PATH=$PATH:~:/share/apps/gurobi/8.1.1/bin
+
+export LD_LIBRARY_PATH=/share/apps/gurobi/8.1.1/lib
+
+export GRB_LICENSE_FILE="/share/apps/gurobi/gurobi.lic"
+
+7. Build maven project:
+
+mvn clean package
+
+8. Run project!
+
+java -jar target/test-1.0-SNAPSHOT.jar
