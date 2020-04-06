@@ -1175,6 +1175,8 @@ public class ArcFlowModel {
                 System.out.println("------------------ INFEASIBLE---------------");
                 terminateModel();
                 this.MIPGap = -1;
+                runTime = (System.currentTimeMillis() - time)/1000;
+
             }
             else{
                 if (optimstatus == 2){
@@ -1190,6 +1192,9 @@ public class ArcFlowModel {
                     if (Parameters.verboseArcFlow)
                         printSolution();
                     System.out.println("Terminate model");
+                    this.MIPGap = model.get(GRB.DoubleAttr.MIPGap);
+                    runTime = (System.currentTimeMillis() - time)/1000;
+
                     terminateModel();
                 }
                 else {
@@ -1201,11 +1206,12 @@ public class ArcFlowModel {
                         printSolution();
                     createIndividualAndOrderDistributionObject();
                     System.out.println("Terminate model");
+                    this.MIPGap = model.get(GRB.DoubleAttr.MIPGap);
+                    runTime = (System.currentTimeMillis() - time)/1000;
+
                     terminateModel();
                 }
-                this.MIPGap = model.get(GRB.DoubleAttr.MIPGap);
             }
-            runTime = (System.currentTimeMillis() - time)/1000;
         } catch (GRBException | FileNotFoundException e) {
             System.out.println("ERROR: " + e);
         } catch (Error e) {

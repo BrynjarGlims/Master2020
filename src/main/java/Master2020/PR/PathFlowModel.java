@@ -904,6 +904,7 @@ public class PathFlowModel {
                 createEmptyIndividualAndOrderDistribution();
                 System.out.println("Terminate model");
                 terminateModel();
+                runTime = (System.currentTimeMillis() - time)/1000;
                 this.MIPGap = -1;
             }
             else{
@@ -920,6 +921,8 @@ public class PathFlowModel {
                     if (Parameters.verbosePathFlow)
                         printSolution();
                     System.out.println("Terminate model");
+                    this.MIPGap = model.get(GRB.DoubleAttr.MIPGap);
+                    runTime = (System.currentTimeMillis() - time)/1000;
                     terminateModel();
                 }
                 else {
@@ -931,11 +934,11 @@ public class PathFlowModel {
                     if (Parameters.verbosePathFlow)
                         printSolution();
                     System.out.println("Terminate model");
+                    this.MIPGap = model.get(GRB.DoubleAttr.MIPGap);
+                    runTime = (System.currentTimeMillis() - time)/1000;
                     terminateModel();
                 }
-                this.MIPGap = model.get(GRB.DoubleAttr.MIPGap);
             }
-            runTime = (System.currentTimeMillis() - time)/1000;
 
         } catch (GRBException | FileNotFoundException e) {
             System.out.println("ERROR: " + e);

@@ -805,6 +805,8 @@ public class JourneyBasedModel {
                 System.out.println("Terminate model");
                 terminateModel();
                 this.MIPGap = -1;
+                runTime = (System.currentTimeMillis() - time)/1000;
+
             }
             else{
                 if (optimstatus == 2){
@@ -814,6 +816,8 @@ public class JourneyBasedModel {
                     createIndividualAndOrderDistributionObject();
                     if (Parameters.verboseJourneyBased)
                         printSolution();
+                    this.MIPGap = model.get(GRB.DoubleAttr.MIPGap);
+                    runTime = (System.currentTimeMillis() - time)/1000;
                     terminateModel();
                 }
                 else {
@@ -825,11 +829,11 @@ public class JourneyBasedModel {
                     if (Parameters.verboseJourneyBased)
                         printSolution();
                     System.out.println("Terminate model");
+                    this.MIPGap = model.get(GRB.DoubleAttr.MIPGap);
+                    runTime = (System.currentTimeMillis() - time)/1000;
                     terminateModel();
                 }
-                this.MIPGap = model.get(GRB.DoubleAttr.MIPGap);
             }
-            runTime = (System.currentTimeMillis() - time)/1000;
         } catch (GRBException | FileNotFoundException e) {
             System.out.println("ERROR: " + e);
         } catch (Error e) {
