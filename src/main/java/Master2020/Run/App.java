@@ -39,6 +39,7 @@ public class App {
     public static int numberOfIterations;
     public static OrderAllocationModel orderAllocationModel;
 
+
     public static void initialize() throws GRBException {
         data = DataReader.loadData();
         population = new Population(data);
@@ -159,9 +160,9 @@ public class App {
             ArcFlowModel afm = new ArcFlowModel(dataMip);
             afm.runModel(Master2020.DataFiles.Parameters.symmetry);
             Individual bestIndividual = afm.getIndividual();
-            Result result = new Result(bestIndividual, "AFM");
+            Result result = new Result(bestIndividual, "AFM", afm.feasible, afm.optimal);
             try{
-                result.store();
+                result.store(afm.runTime, afm.MIPGap);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -177,9 +178,9 @@ public class App {
             PathFlowModel pfm = new PathFlowModel(dataMip);
             pfm.runModel(Master2020.DataFiles.Parameters.symmetry);
             Individual bestIndividual = pfm.getIndividual();
-            Result result = new Result(bestIndividual, "PFM");
+            Result result = new Result(bestIndividual, "PFM", pfm.feasible, pfm.optimal);
             try{
-                result.store();
+                result.store(pfm.runTime, pfm.MIPGap);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -196,9 +197,9 @@ public class App {
             jbm.runModel(Master2020.DataFiles.Parameters.symmetry);
             Individual bestIndividual = jbm.getIndividual();
             System.out.println("hei");
-            Result result = new Result(bestIndividual, "JBM");
+            Result result = new Result(bestIndividual, "JBM", jbm.feasible, jbm.optimal);
             try{
-                result.store();
+                result.store(jbm.runTime, jbm.MIPGap);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -209,6 +210,7 @@ public class App {
 
 
     public static void runGA(int samples) throws IOException, GRBException {
+        double time = System.currentTimeMillis();
         for (int i = 0 ; i < samples ; i++) {
             System.out.println("Initialize population..");
             initialize();
@@ -273,8 +275,9 @@ public class App {
                 PlotIndividual visualizer = new PlotIndividual(data);
                 visualizer.visualize(bestIndividual);
             }
+            double runTime = (System.currentTimeMillis() - time)/1000;
             Result res = new Result(population, "GA");
-            res.store();
+            res.store(runTime, -1);
             orderAllocationModel.terminateEnvironment();
         }
     }

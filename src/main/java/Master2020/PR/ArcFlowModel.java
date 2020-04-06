@@ -22,7 +22,10 @@ public class ArcFlowModel {
     public int optimstatus;
     public double objval;
     public String symmetry;
-    public boolean infeasible;
+    public boolean feasible;
+    public boolean optimal;
+    public double runTime;
+    public double MIPGap;
 
     //NEW RESULT VARIABLES:
     public Individual individual;
@@ -1148,6 +1151,7 @@ public class ArcFlowModel {
 
     public void runModel(String symmetry) {
         try {
+            double time = System.currentTimeMillis();
             this.symmetry = symmetry;
             System.out.println("Initalize model");
             initializeModel();
@@ -1163,15 +1167,19 @@ public class ArcFlowModel {
             displayResults(false);
 
             if (model.get(GRB.IntAttr.SolCount) == 0){
-                this.infeasible = true;
+                this.feasible = false;
+                this.optimal = false;
                 System.out.println("No solution found");
                 createEmptyIndividualAndOrderDistribution();
                 System.out.println("Terminate model");
+                System.out.println("------------------ INFEASIBLE---------------");
                 terminateModel();
+                this.MIPGap = -1;
             }
             else{
                 if (optimstatus == 2){
-                    this.infeasible = false;
+                    this.feasible = true;
+                    this.optimal = true;
                     if (Parameters.plotArcFlow){
                         GraphPlot plotter = new GraphPlot(dataMIP);
                         plotter.visualize(true);
@@ -1186,14 +1194,18 @@ public class ArcFlowModel {
                 }
                 else {
                     System.out.println("Create and store results");
+                    this.feasible = true;
+                    this.optimal = false;
                     storePath();
                     if (Parameters.verboseArcFlow)
                         printSolution();
-                    createEmptyIndividualAndOrderDistribution();
+                    createIndividualAndOrderDistributionObject();
                     System.out.println("Terminate model");
                     terminateModel();
                 }
+                this.MIPGap = model.get(GRB.DoubleAttr.MIPGap);
             }
+            runTime = (System.currentTimeMillis() - time)/1000;
         } catch (GRBException | FileNotFoundException e) {
             System.out.println("ERROR: " + e);
         } catch (Error e) {

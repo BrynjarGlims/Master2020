@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.text.DecimalFormat;
@@ -32,48 +33,75 @@ public class Result {
     String modelName;
     boolean isFeasible;
     boolean isOptimal;
+    double runTime;
+    double MIPGap;
 
 
 
-    public Result(Population population){
+    public Result(Population population, String modelName){
         this.population = population;
         this.data = population.data;
         this.bestIndividual = population.returnBestIndividual();
         this.bestOD = bestIndividual.orderDistribution;
-    }
-
-    public Result(Individual individual){
-        this.bestOD = individual.orderDistribution;
-        this.data = individual.data;
-        this.bestIndividual = individual;
+        this.isFeasible = bestIndividual.isFeasible();
+        this.isOptimal = false;
+        this.modelName = modelName;
     }
 
     public Result(Individual individual, String modelName){
-        this(individual);
+        this.bestOD = individual.orderDistribution;
+        this.data = individual.data;
+        this.bestIndividual = individual;
+        this.isFeasible = bestIndividual.isFeasible();
+        this.isOptimal = false;
         this.modelName = modelName;
     }
 
-    public Result(Population population, String modelName){
-        this(population);
+    public Result(Individual individual, String modelName, boolean isFeasible, boolean isOptimal){
+        this(individual, modelName);
+        this.isFeasible = isFeasible;
+        this.isOptimal = isOptimal;
+
+    }
+
+    public Result(Population population, String modelName, boolean isFeasible, boolean isOptimal){
+        this(population, modelName);
+        this.isFeasible = isFeasible;
+        this.isOptimal = isOptimal;
         this.modelName = modelName;
     }
 
-
-    public void store() throws IOException{
-        store(true);
+    public void store() throws IOException {
+        store(0, -1);
     }
 
-    public void store(boolean isFeasible) throws IOException {
+    public void store(double runTime, double MIPGap) throws IOException {
+        this.runTime = runTime;
+        this.MIPGap = MIPGap;
+        createDirectory();
+
         String fileName = getFileName();
-        if (isFeasible) {
+        if (!this.isFeasible && modelName != "GA") {
+            createEmptyResult(fileName);
+            System.out.println("Storing complete");
+        }
+        else{
             storeSummary(fileName);
             createDetailedDirectory(fileName);
             storeDetailed(fileName);
             System.out.println("Storing complete");
+
         }
-        else{
-            createEmptyResult(fileName);
-            System.out.println("Storing complete");
+    }
+
+    private void createDirectory(){
+        File f = new File(FileParameters.filePathSummary);
+        if (!f.exists()) {
+            f.mkdir();
+        }
+        f = new File(FileParameters.filePathDetailed);
+        if (!f.exists()) {
+            f.mkdir();
         }
     }
 
@@ -88,14 +116,14 @@ public class Result {
         SimpleDateFormat date_formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         System.out.println("Changing summary file...");
         if (newFile.length() == 0){
-            String[] CSV_COLUMNS = {"File name" ,"Objective Value", "Model", "Runtime", "Date", "Population Size ", "Generations",
-                    "Customers", "Vehicles", "isFeasible" };
+            String[] CSV_COLUMNS = {"File name" ,"Objective Value", "Model", "Runtime", "Date", "Seed value", "Population Size ", "Generations",
+                    "Customers", "Vehicles", "isFeasible", "isOptimal", "MIPGap"};
             csvWriter.writeNext(CSV_COLUMNS, false);
         }
 
-        String[] results = {fileName, "-", modelName, "-", date_formatter.format(new Date()),
+        String[] results = {fileName, "-", modelName, String.valueOf(this.runTime), date_formatter.format(new Date()),  String.valueOf(Parameters.randomSeedValue),
                 String.valueOf(Parameters.maximumSubIndividualPopulationSize),String.valueOf(Parameters.maxNumberOfGenerations), String.valueOf(Parameters.numberOfCustomers)
-                , String.valueOf(Parameters.numberOfVehicles), "false", "false"};
+                , String.valueOf(Parameters.numberOfVehicles), "FALSE", "FALSE", "-1"};
         csvWriter.writeNext(results, false);
         csvWriter.close();
         writer.close();
@@ -131,7 +159,7 @@ public class Result {
     };
 
     private void storeDetailed(String fileName) throws IOException {
-
+        storeSummaryDetailed(fileName);
         storeDetailedVehicle(fileName);
         storeDetailedCustomer(fileName);
         storeDetailedTrip(fileName);
@@ -450,28 +478,23 @@ public class Result {
         SimpleDateFormat date_formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         System.out.println("Changing summary file...");
         if (newFile.length() == 0){
-            String[] CSV_COLUMNS = {"File name" ,"Objective Value", "Model", "Runtime", "Date", "Population Size ", "Generations",
-                    "Customers", "Vehicles", "isOptimal", "isFeasible" };
+            String[] CSV_COLUMNS = {"File name" ,"Objective Value", "Model", "Runtime", "Date", "Seed value", "Population Size ", "Generations",
+                    "Customers", "Vehicles", "isFeasible", "isOptimal", "MIPGap"};
             csvWriter.writeNext(CSV_COLUMNS, false);
         }
 
         if (modelName == "GA") {
-            isFeasible = bestIndividual.isFeasible();
-        }
-        else{
-            isFeasible = true;
+            this.isFeasible = bestIndividual.isFeasible();
         }
 
         if (modelName == "GA"){
-            isOptimal = false;
-        }
-        else{
-            isOptimal = true;
+            this.isOptimal = false;
         }
 
-        String[] results = {fileName, String.format("%.4f",bestIndividual.getFitness(false)), modelName, "0", date_formatter.format(new Date()),
+
+        String[] results = {fileName, String.format("%.4f",bestIndividual.getFitness(false)), modelName, String.valueOf(this.runTime), date_formatter.format(new Date()), String.valueOf(Parameters.randomSeedValue),
                 String.valueOf(Parameters.maximumSubIndividualPopulationSize),String.valueOf(Parameters.maxNumberOfGenerations), String.valueOf(Parameters.numberOfCustomers)
-                , String.valueOf(Parameters.numberOfVehicles), String.valueOf(isFeasible), String.valueOf(isOptimal)};
+                , String.valueOf(Parameters.numberOfVehicles), String.valueOf(this.isFeasible), String.valueOf(this.isOptimal), String.valueOf(this.MIPGap)};
         csvWriter.writeNext(results, false);
         csvWriter.close();
         writer.close();
@@ -489,31 +512,23 @@ public class Result {
         SimpleDateFormat date_formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         System.out.println("Changing summary file...");
         if (newFile.length() == 0){
-            String[] CSV_COLUMNS = {"File name" ,"Objective Value", "Model", "Runtime", "Date", "Population Size ", "Generations",
-                    "Customers", "Vehicles", "isOptimal", "isFeasible" };
+            String[] CSV_COLUMNS = {"File name" ,"Objective Value", "Model", "Runtime", "Date", "Seed value", "Population Size ", "Generations",
+                    "Customers", "Vehicles", "isFeasible", "isOptimal", "MIPGap"};
             csvWriter.writeNext(CSV_COLUMNS, false);
         }
 
-
-        boolean isFeasible;
-        boolean isOptimal;
         if (modelName == "GA") {
-            isFeasible = bestIndividual.isFeasible();
-        }
-        else{
-            isFeasible = true;
+            this.isFeasible = bestIndividual.isFeasible();
         }
 
         if (modelName == "GA"){
-            isOptimal = false;
-        }
-        else{
-            isOptimal = true;
+            this.isOptimal = false;
         }
 
-        String[] results = {fileName, String.format("%.4f",bestIndividual.getFitness(false)), modelName, "0", date_formatter.format(new Date()),
+
+        String[] results = {fileName, String.format("%.4f",bestIndividual.getFitness(false)), modelName, String.valueOf(this.runTime), date_formatter.format(new Date()), String.valueOf(Parameters.randomSeedValue),
                 String.valueOf(Parameters.maximumSubIndividualPopulationSize),String.valueOf(Parameters.maxNumberOfGenerations), String.valueOf(Parameters.numberOfCustomers)
-        , String.valueOf(Parameters.numberOfVehicles), String.valueOf(isFeasible), String.valueOf(isOptimal)};
+        , String.valueOf(Parameters.numberOfVehicles), String.valueOf(this.isFeasible), String.valueOf(this.isOptimal), String.valueOf(this.MIPGap)};
         csvWriter.writeNext(results, false);
         csvWriter.close();
         writer.close();
@@ -528,7 +543,7 @@ public class Result {
         OrderDistribution firstOD = odp.getRandomOrderDistribution();
         population.setOrderDistributionPopulation(odp);
         population.initializePopulation(firstOD);
-        Result res = new Result(population);
+        Result res = new Result(population, "GA");
         res.store();
     }
 

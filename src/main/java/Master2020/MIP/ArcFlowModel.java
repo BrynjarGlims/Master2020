@@ -1272,7 +1272,7 @@ public class ArcFlowModel {
         ArcFlowModel arcFlowModel = new ArcFlowModel(data);
         arcFlowModel.runModel();
         Individual individual = arcFlowModel.getIndividual();
-        Result res = new Result(individual);
+        Result res = new Result(individual, "GA");
         res.store();
     }
 

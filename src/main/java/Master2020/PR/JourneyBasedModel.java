@@ -22,7 +22,10 @@ public class JourneyBasedModel {
     public int optimstatus;
     public double objval;
     public String symmetry;
-    public boolean infeasible;
+    public boolean feasible;
+    public boolean optimal;
+    public double runTime;
+    public double MIPGap;
 
     // Master 2020 parameters
     private Individual individual;
@@ -779,6 +782,7 @@ public class JourneyBasedModel {
 
     public void runModel(String symmetry) {
         try {
+            double time = System.currentTimeMillis();
             this.symmetry = symmetry;
             System.out.println("Initalize model");
             initializeModel();
@@ -795,15 +799,18 @@ public class JourneyBasedModel {
 
             if (model.get(GRB.IntAttr.SolCount) == 0){
                 System.out.println("No solution found");
-                infeasible = true;
+                feasible = false;
+                optimal = false;
                 createEmptyIndividualAndOrderDistribution();
                 System.out.println("Terminate model");
                 terminateModel();
+                this.MIPGap = -1;
             }
             else{
                 if (optimstatus == 2){
                     storePath();
-                    infeasible = true;
+                    feasible = true;
+                    optimal = true;
                     createIndividualAndOrderDistributionObject();
                     if (Parameters.verboseJourneyBased)
                         printSolution();
@@ -811,7 +818,8 @@ public class JourneyBasedModel {
                 }
                 else {
                     System.out.println("Create and store results");
-                    infeasible = false;
+                    feasible = true;
+                    optimal = false;
                     storePath();
                     createIndividualAndOrderDistributionObject();
                     if (Parameters.verboseJourneyBased)
@@ -819,7 +827,9 @@ public class JourneyBasedModel {
                     System.out.println("Terminate model");
                     terminateModel();
                 }
+                this.MIPGap = model.get(GRB.DoubleAttr.MIPGap);
             }
+            runTime = (System.currentTimeMillis() - time)/1000;
         } catch (GRBException | FileNotFoundException e) {
             System.out.println("ERROR: " + e);
         } catch (Error e) {

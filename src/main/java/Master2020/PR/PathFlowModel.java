@@ -27,7 +27,10 @@ public class PathFlowModel {
     public String symmetry;
     private Individual individual;
     private OrderDistribution orderDistribution;
-    public boolean infeasible;
+    public boolean feasible;
+    public boolean optimal;
+    public double runTime;
+    public double MIPGap;
 
 
     // derived variables
@@ -880,6 +883,7 @@ public class PathFlowModel {
 
     public void runModel(String symmetry) {
         try {
+            double time  = System.currentTimeMillis();
             this.symmetry = symmetry;
             System.out.println("Initalize model");
             initializeModel();
@@ -895,10 +899,12 @@ public class PathFlowModel {
             displayResults(false);
             if (model.get(GRB.IntAttr.SolCount) == 0){
                 System.out.println("No solution found");
-                infeasible = true;
+                feasible = false;
+                optimal = false;
                 createEmptyIndividualAndOrderDistribution();
                 System.out.println("Terminate model");
                 terminateModel();
+                this.MIPGap = -1;
             }
             else{
                 if (optimstatus == 2){
@@ -909,7 +915,8 @@ public class PathFlowModel {
                     System.out.println("Create and store results");
                     storePath();
                     createIndividualAndOrderDistributionObject();
-                    infeasible = false;
+                    feasible = true;
+                    optimal = true;
                     if (Parameters.verbosePathFlow)
                         printSolution();
                     System.out.println("Terminate model");
@@ -918,14 +925,18 @@ public class PathFlowModel {
                 else {
                     System.out.println("Create and store results");
                     storePath();
-                    infeasible = false;
+                    feasible = true;
+                    optimal = false;
                     createIndividualAndOrderDistributionObject();
                     if (Parameters.verbosePathFlow)
                         printSolution();
                     System.out.println("Terminate model");
                     terminateModel();
                 }
+                this.MIPGap = model.get(GRB.DoubleAttr.MIPGap);
             }
+            runTime = (System.currentTimeMillis() - time)/1000;
+
         } catch (GRBException | FileNotFoundException e) {
             System.out.println("ERROR: " + e);
         } catch (Error e) {

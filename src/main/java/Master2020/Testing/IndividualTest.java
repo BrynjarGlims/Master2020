@@ -224,7 +224,7 @@ public class IndividualTest {
         System.out.println(individual.getFitness(true));
         individual.printDetailedFitness();
         System.out.println("Done");
-        Result res = new Result(individual);
+        Result res = new Result(individual, "GA");
         res.store();
 
 
