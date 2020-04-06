@@ -285,18 +285,7 @@ public class App {
 
 
     public static void main(String[] args) throws Exception {
-
-        runGA(Parameters.samples);
-        Parameters.randomSeedValue = 11;
-        runMIPJBM(Parameters.samples);
-        Parameters.randomSeedValue = 11;
-        runMIPPFM(Parameters.samples);
-        Parameters.randomSeedValue = 11;
-        runMIPAFM(Parameters.samples);
-        //runMIPJBM(Parameters.samples);
-
-        //runMIPPFM(Parameters.samples);
-        /*if (args[0].equals("AFM"))
+        if (args[0].equals("AFM"))
             runMIPAFM(Parameters.samples);
         else if (args[0].equals("PFM"))
             runMIPPFM(Parameters.samples);
@@ -305,8 +294,6 @@ public class App {
         else {
             runGA(Parameters.samples);
         }
-
-         */
     }
 
 }
