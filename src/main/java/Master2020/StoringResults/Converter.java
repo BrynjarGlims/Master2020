@@ -60,7 +60,7 @@ public class Converter {
     public static String findCustomersFromID(ArrayList<Integer> customerIDs, Data data) {
         String customerString = "";
         for (int customerID : customerIDs) {
-            customerString += data.customers[customerID].customerName + " - ";
+            customerString += data.customers[customerID].customerName + " -> ";
         }
         return customerString.substring(0, customerString.length() - 3);
     }
@@ -118,7 +118,7 @@ public class Converter {
         for(int customerID : customers){
             returnString += Converter.convertTimeWindow(data.customers[customerID].timeWindow[period][0], data.customers[customerID].timeWindow[period][1]);
             if (! (customerID == customers.get(customers.size()-1)))
-                returnString += " ---> ";
+                returnString += " -> ";
         }
         return returnString;
     }

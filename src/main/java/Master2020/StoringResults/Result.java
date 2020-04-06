@@ -123,7 +123,7 @@ public class Result {
 
         String[] results = {fileName, "-", modelName, String.valueOf(this.runTime), date_formatter.format(new Date()),  String.valueOf(Parameters.randomSeedValue),
                 String.valueOf(Parameters.maximumSubIndividualPopulationSize),String.valueOf(Parameters.maxNumberOfGenerations), String.valueOf(Parameters.numberOfCustomers)
-                , String.valueOf(Parameters.numberOfVehicles), "FALSE", "FALSE", "-1"};
+                , String.valueOf(Parameters.numberOfVehicles), "FALSE", "FALSE", "-100%"};
         csvWriter.writeNext(results, false);
         csvWriter.close();
         writer.close();
