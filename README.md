@@ -15,7 +15,7 @@ export PATH=$PATH:~:/share/apps/Maven/3.6.3/bin
 
 cd /storage/global
 
-mkdir "<your-username>"
+mkdir \<your-username\>
 
 cd "<your-username>"
 
