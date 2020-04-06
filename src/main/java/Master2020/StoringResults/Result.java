@@ -494,7 +494,7 @@ public class Result {
 
         String[] results = {fileName, String.format("%.4f",bestIndividual.getFitness(false)), modelName, String.valueOf(this.runTime), date_formatter.format(new Date()), String.valueOf(Parameters.randomSeedValue),
                 String.valueOf(Parameters.maximumSubIndividualPopulationSize),String.valueOf(Parameters.maxNumberOfGenerations), String.valueOf(Parameters.numberOfCustomers)
-                , String.valueOf(Parameters.numberOfVehicles), String.valueOf(this.isFeasible), String.valueOf(this.isOptimal), String.valueOf(this.MIPGap)};
+                , String.valueOf(Parameters.numberOfVehicles), String.valueOf(this.isFeasible), String.valueOf(this.isOptimal), String.valueOf(Math.round(this.MIPGap*1000000)/10000) + "%"};
         csvWriter.writeNext(results, false);
         csvWriter.close();
         writer.close();
@@ -528,7 +528,7 @@ public class Result {
 
         String[] results = {fileName, String.format("%.4f",bestIndividual.getFitness(false)), modelName, String.valueOf(this.runTime), date_formatter.format(new Date()), String.valueOf(Parameters.randomSeedValue),
                 String.valueOf(Parameters.maximumSubIndividualPopulationSize),String.valueOf(Parameters.maxNumberOfGenerations), String.valueOf(Parameters.numberOfCustomers)
-        , String.valueOf(Parameters.numberOfVehicles), String.valueOf(this.isFeasible), String.valueOf(this.isOptimal), String.valueOf(this.MIPGap)};
+        , String.valueOf(Parameters.numberOfVehicles), String.valueOf(this.isFeasible), String.valueOf(this.isOptimal), String.valueOf(Math.round(this.MIPGap*1000000)/10000) + "%"};
         csvWriter.writeNext(results, false);
         csvWriter.close();
         writer.close();
