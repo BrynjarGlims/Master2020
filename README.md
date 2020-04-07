@@ -7,6 +7,7 @@ SETUP FOR SOLSTORM:
 2. Add java to path and create JAVA_HOME environment variable:
 
 export PATH=$PATH:~:/share/apps/Java/11.0.2/bin export JAVA_HOME=/share/apps/Java/11.0.2
+
 3. Add Maven to path:
 
 export PATH=$PATH:~:/share/apps/Maven/3.6.3/bin
