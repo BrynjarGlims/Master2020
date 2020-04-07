@@ -285,6 +285,7 @@ public class App {
 
 
     public static void main(String[] args) throws Exception {
+        Parameters.numberOfCustomers = Integer.parseInt(args[1]);
         if (args[0].equals("AFM"))
             runMIPAFM(Parameters.samples);
         else if (args[0].equals("PFM"))
@@ -294,6 +295,7 @@ public class App {
         else {
             runGA(Parameters.samples);
         }
+
     }
 
 }

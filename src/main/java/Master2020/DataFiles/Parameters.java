@@ -13,7 +13,7 @@ public class Parameters {
     public static final String vehicleFilePath = "data/Vehicles.csv";
     public static final String dataSet = "Trøndelag";
     public static final boolean doRandomSeed = true;
-    public static final int samples = 1;
+    public static final int samples = 10;
     public static long randomSeedValue = 11;
 
     // Population parameters
@@ -27,8 +27,8 @@ public class Parameters {
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static final int numberOfCustomers = 7; // A maximum of 76
-    public static final int numberOfVehicles = 7;
+    public static int numberOfCustomers = 25; // A maximum of 76
+    public static final int numberOfVehicles = 10;
     public static final double distanceCutOffFromDepot = 3.5;
 
     // GA specific parameters
@@ -72,8 +72,8 @@ public class Parameters {
     public static final boolean binarySelection = true;  // if true, bestIndProp must be much larger than 0.5
 
     //GUROBI parameters
-    public static final String symmetry =  "none";      // // none, car, trips, customers, cost, duration
-    public static final double modelTimeLimit = 30;
+    public static final String symmetry =  "car";      // // none, car, trips, customers, cost, duration
+    public static final double modelTimeLimit = 10800;
     public static final double modelMipGap = 0.001;
     public static final boolean plotArcFlow = false;
     public static final String instanceName = "testDataFromAsko";
