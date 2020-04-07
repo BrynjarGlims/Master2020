@@ -42,7 +42,7 @@ mvn clean package
 
 8. Run project!
 
-java -jar target/test-1.0-SNAPSHOT.jar <model> <num_customers>
+java -jar target/test-1.0-SNAPSHOT.jar \<model\> \<num_customers\>
 
 example:
 
