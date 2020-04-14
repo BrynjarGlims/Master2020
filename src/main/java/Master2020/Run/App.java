@@ -290,7 +290,7 @@ public class App {
             runMIPAFM(Parameters.samples);
         else if (args[0].equals("PFM"))
             runMIPPFM(Parameters.samples);
-        else if (args[0].equals("JBM"))
+        //else if (args[0].equals("JBM"))
             runMIPJBM(Parameters.samples);
         else {
             runGA(Parameters.samples);
