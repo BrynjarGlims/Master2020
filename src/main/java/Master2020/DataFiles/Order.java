@@ -1,5 +1,7 @@
 package Master2020.DataFiles;
 
+import scala.xml.PrettyPrinter;
+
 public class Order {
 
     // All values can be found in FFV
@@ -24,7 +26,7 @@ public class Order {
 
         this.orderID = orderID;
         this.customerID = customerID;
-        this.volume = volume;
+        this.volume = this.adjustVolume(volume);
         this.isDividable = isDividable;
         this.commodityFlow = commodityFlow;
         this.storeFrequency = storeFrequency;
@@ -33,6 +35,10 @@ public class Order {
         this.setMinVolume();
         this.setMaxVolume();
 
+    }
+
+    private double adjustVolume(double volume){
+        return Parameters.scalingVolumeValue*volume; //todo: implement rounding to 0.5
     }
 
     private void setMaxVolume(){

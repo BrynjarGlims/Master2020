@@ -58,6 +58,7 @@ public class Parameters {
     public static final double scalingUnloadingTimeAtCustomerVariable = 0.001;
     public static final double scalingVehicleCapacity = 0.01;
     public static final double indifferenceValue = 0.0001;
+    public static final double scalingVolumeValue = 1.2;
 
     //Cost parameters
     public static final double[] overtimeLimitPercentage = {0.19, 0.19, 0.19, 0.19, 0.19, 0.05};

@@ -8,7 +8,6 @@ public class Customer {
     //DL = detaljerte leveringstider
     //FFV = Frajsoner, frekvenser og volum
 
-
     public int customerID;
     public int customerNumber; //customer code, DL
     public String customerName; // kundenavn
