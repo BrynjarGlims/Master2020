@@ -74,7 +74,7 @@ public class Parameters {
 
     //GUROBI parameters
     public static final String symmetry =  "trips";      // // none, car, trips, customers, cost, duration
-    public static final double modelTimeLimit = 300;
+    public static final double modelTimeLimit = 36000;
     public static final double modelMipGap = 0.001;
     public static final boolean plotArcFlow = false;
     public static final String instanceName = "testDataFromAsko";
