@@ -87,5 +87,5 @@ public class Parameters {
     public static final boolean verboseJourneyBased = false;
     public static final boolean savePlots = false;
     public static final boolean verbose = false;
-    public static final char separator = ',';
+    public static final char separator = ';';
 }
