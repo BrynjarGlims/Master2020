@@ -110,10 +110,10 @@ public class Customer {
     }
 
     public String toString(){
-        String string = "CustomerNR: " + this.customerID + " - " + this.customerName + " \n " ;
+        String string = "C-NR: " + this.customerID + "-" + this.customerName + " \n " ;
         for (double[] tw : this.timeWindow){
-            string += "Time Window Start: " + tw[0] + "   ";
-            string += "Time Window End: " + tw[1] + "  \n ";
+            string += "TW S: " + tw[0] + "  ";
+            string += "TW E: " + tw[1] + " \n ";
         }
 
         for(Order order :this.orders) {

@@ -285,16 +285,16 @@ public class App {
 
 
     public static void main(String[] args) throws Exception {
-        Parameters.numberOfCustomers = Integer.parseInt(args[1]);
-        if (args[0].equals("AFM"))
-            runMIPAFM(Parameters.samples);
-        else if (args[0].equals("PFM"))
-            runMIPPFM(Parameters.samples);
+        //Parameters.numberOfCustomers = Integer.parseInt(args[1]);
+        //if (args[0].equals("AFM"))
+        runMIPAFM(Parameters.samples);
+        //else if (args[0].equals("PFM"))
+        //    runMIPPFM(Parameters.samples);
         //else if (args[0].equals("JBM"))
-            runMIPJBM(Parameters.samples);
-        else {
-            runGA(Parameters.samples);
-        }
+        //    runMIPJBM(Parameters.samples);
+        //else {
+        //    runGA(Parameters.samples);
+        //}
 
     }
 
