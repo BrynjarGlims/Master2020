@@ -2,11 +2,13 @@ package Master2020.DataFiles;
 
 
 import gurobi.GRBVar;
+import org.apache.commons.math3.linear.IllConditionedOperatorException;
 import org.numenta.nupic.util.ArrayUtils;
 import scala.xml.PrettyPrinter;
 
 import java.lang.*;
 import java.util.Arrays;
+import java.util.IllegalFormatException;
 
 public class Data {
 
@@ -37,6 +39,7 @@ public class Data {
     //Derived parameters
     public int numberOfVehicleTypes;
     public int[] numberOfVehiclesInVehicleType;
+    public int infeasibleCustomers = 0; //DEBUG PARAMETER
 
 
     // Constructor
@@ -46,6 +49,28 @@ public class Data {
         this.depot = depot;
         this.vehicleTypes = vehicleTypes;
         this.initialize();
+        this.checkFeasibility();
+
+    }
+
+    private void checkFeasibility(){
+        for (Customer customer : customers){
+            for (int p  = 0; p < numberOfPeriods; p++){
+                if (customer.requiredVisitPeriod[p] == 1){
+                    if (customer.timeWindow[p][0] + customer.totalUnloadingTime +
+                            distanceMatrix[numberOfCustomers][customer.customerID] > Parameters.maxJourneyDuration) {
+                        System.out.println("Customer " + customer.customerID + " is infeasible in period " + p + " (late arrival)");
+                        infeasibleCustomers += 1;
+                        throw new IllegalArgumentException("Customer " + customer.customerID + " is infeasible in period " + p + " (late arrival) TWS: " + customer.timeWindow[p][0] + ", WTE: " + customer.timeWindow[p][1] + " Distance: " + distanceMatrix[numberOfCustomers][customer.customerID] + " Unloading: " + customer.totalUnloadingTime);
+                    } else if (distanceMatrix[numberOfCustomers][customer.customerID] > customer.timeWindow[p][1]) {
+                        System.out.println("Customer " + customer.customerID + " is infeasible in period " + p + " (early arrival)");
+                        infeasibleCustomers += 1;
+                        throw new IllegalArgumentException("Customer " + customer.customerID + " is infeasible in period " + p + " (early arrival). TWS: " + customer.timeWindow[p][0] + ", WTE: " + customer.timeWindow[p][1]);
+
+                    }
+                }
+            }
+        }
     }
 
     private void initialize(){

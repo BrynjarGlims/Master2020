@@ -15,6 +15,7 @@ import java.util.HashMap;
 public class DataReader {
 
 
+
     private static List<String[]> readCSVFile( String file) {
         List<String[]> content = new ArrayList<>();
         try {
@@ -155,6 +156,22 @@ public class DataReader {
             timeWindows[5][0] = convertTimeToDouble(timeWindowData.get(line)[23]);
             timeWindows[5][1] = convertTimeToDouble(timeWindowData.get(line)[24]);
         }
+        if (Parameters.adjustTimeWindow){
+            for (int p = 0; p < Parameters.numberOfPeriods; p++){
+                if ((timeWindows[p][0] > Parameters.adjustTimeWindowLimit) || (timeWindows[p][1] > Parameters.adjustTimeWindowLimit)){
+                    timeWindows[p][0] -= Parameters.adjustTimeWindowReduction;
+                    timeWindows[p][1] -= Parameters.adjustTimeWindowReduction;
+                    if (timeWindows[p][0] < 0){
+                        timeWindows[p][0] = 0;
+                    }
+                    if (timeWindows[p][1] < 0){
+                        timeWindows[p][1] = 0;
+                    }
+                }
+
+            }
+
+        }
         return timeWindows;
     }
 
@@ -170,9 +187,9 @@ public class DataReader {
         if (number < 0){
             return 0;
         }
-        else if (number > Parameters.maxJourneyDuration){
-            return Parameters.maxJourneyDuration;
-        }
+        //else if (number > Parameters.maxJourneyDuration){
+        //    return Parameters.maxJourneyDuration;
+        //}
         else{
             return number;
         }

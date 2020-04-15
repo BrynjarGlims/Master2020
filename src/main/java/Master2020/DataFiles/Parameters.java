@@ -27,9 +27,12 @@ public class Parameters {
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 25; // A maximum of 76
+    public static int numberOfCustomers = 75; // A maximum of 75
     public static final int numberOfVehicles = 10;
-    public static final double distanceCutOffFromDepot = 3.5;
+    public static final double distanceCutOffFromDepot = 3.0;
+    public static final boolean adjustTimeWindow = true;
+    public static final double adjustTimeWindowReduction = 5;
+    public static final double adjustTimeWindowLimit = 9.5;
 
     // GA specific parameters
     public static final int nearestNeighbors = 5; //Neighborhood size for each customer
@@ -49,8 +52,8 @@ public class Parameters {
     public static final double penaltyFactorForUnderFilling = 1.5;
 
     // Scaling parameters
-    public static final double scalingDistanceParameter = 2.2; //set to 2.2
-    public static final double timeShift = 4;
+    public static final double scalingDistanceParameter = 2.0; //set to 2.2
+    public static final double timeShift = 6;
     public static final double maxJourneyDuration = 10; //changed to journey duration
     public static final double loadingTimeAtDepotConstant = 0.03;
     public static final double loadingTimeAtDepotVariable = 0.001;
