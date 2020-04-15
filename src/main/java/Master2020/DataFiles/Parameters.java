@@ -14,7 +14,7 @@ public class Parameters {
     public static final String dataSet = "Trøndelag";
     public static final boolean doRandomSeed = true;
     public static final int samples = 10;
-    public static long randomSeedValue = 6;
+    public static long randomSeedValue = 1;
 
     // Population parameters
     public static final int maximumSubIndividualPopulationSize = 75; //TODO: find reasonable value
@@ -76,8 +76,8 @@ public class Parameters {
     public static final boolean binarySelection = true;  // if true, bestIndProp must be much larger than 0.5
 
     //GUROBI parameters
-    public static final String symmetry =  "car";      // // none, car, trips, customers, cost, duration
-    public static final double modelTimeLimit = 10800;
+    public static final String symmetry =  "trips";      // // none, car, trips, customers, cost, duration
+    public static final double modelTimeLimit = 36000;
     public static final double modelMipGap = 0.001;
     public static final boolean plotArcFlow = false;
     public static final String instanceName = "testDataFromAsko";
@@ -90,5 +90,5 @@ public class Parameters {
     public static final boolean verboseJourneyBased = false;
     public static final boolean savePlots = false;
     public static final boolean verbose = false;
-    public static final char separator = ',';
+    public static final char separator = ';';
 }
