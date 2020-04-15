@@ -14,7 +14,7 @@ public class Parameters {
     public static final String dataSet = "Trøndelag";
     public static final boolean doRandomSeed = true;
     public static final int samples = 10;
-    public static long randomSeedValue = 1;
+    public static long randomSeedValue = 15;
 
     // Population parameters
     public static final int maximumSubIndividualPopulationSize = 75; //TODO: find reasonable value
@@ -51,7 +51,7 @@ public class Parameters {
     // Scaling parameters
     public static final double scalingDistanceParameter = 2.2; //set to 2.2
     public static final double timeShift = 4;
-    public static final double maxJourneyDuration = 20; //changed to journey duration
+    public static final double maxJourneyDuration = 10; //changed to journey duration
     public static final double loadingTimeAtDepotConstant = 0.03;
     public static final double loadingTimeAtDepotVariable = 0.001;
     public static final double scalingUnloadingTimeAtCustomerConstant = 0.03;

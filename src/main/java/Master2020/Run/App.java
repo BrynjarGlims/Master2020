@@ -7,10 +7,7 @@ import Master2020.Genetic.*;
 import Master2020.Individual.Individual;
 import Master2020.MIP.DataConverter;
 import Master2020.MIP.OrderAllocationModel;
-import Master2020.PR.ArcFlowModel;
-import Master2020.PR.DataMIP;
-import Master2020.PR.JourneyBasedModel;
-import Master2020.PR.PathFlowModel;
+import Master2020.PR.*;
 import Master2020.Population.Population;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Population.OrderDistributionPopulation;
@@ -285,16 +282,35 @@ public class App {
 
 
     public static void main(String[] args) throws Exception {
-        Parameters.numberOfCustomers = Integer.parseInt(args[1]);
-        if (args[0].equals("AFM"))
-            runMIPAFM(Parameters.samples);
-        else if (args[0].equals("PFM"))
-            runMIPPFM(Parameters.samples);
-        else if (args[0].equals("JBM"))
-            runMIPJBM(Parameters.samples);
-        else {
-            runGA(Parameters.samples);
+        double time = System.currentTimeMillis();
+        Data data = Master2020.DataFiles.DataReader.loadData();
+        DataMIP dataMip = DataConverter.convert(data);
+        PathGenerator pg = new PathGenerator(dataMip);
+        JourneyGenerator jg = new JourneyGenerator(dataMip);
+        dataMip.setPathMap(pg.generateAllPaths());
+        dataMip.setJourneyMap(jg.generateAllJourneys());
+        double timePost = System.currentTimeMillis();
+        double total = (timePost - time)/1000;
+        System.out.println("time: " + total);
+        double paths = 0;
+        for (int p = 0 ; p < dataMip.numPeriods ; p++){
+            for (int vt = 0 ; vt < dataMip.numVehicleTypes ; vt++){
+                paths += dataMip.journeyMap.get(p).get(vt).size();
+            }
         }
+        System.out.println("paths: " + paths);
+
+
+//        runMIPJBM(1);
+//        if (args[0].equals("AFM"))
+//            runMIPAFM(Parameters.samples);
+//        else if (args[0].equals("PFM"))
+//            runMIPPFM(Parameters.samples);
+//        else if (args[0].equals("JBM"))
+//            runMIPJBM(Parameters.samples);
+//        else {
+//            runGA(Parameters.samples);
+//        }
 
     }
 
