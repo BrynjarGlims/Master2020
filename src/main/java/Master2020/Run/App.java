@@ -282,36 +282,34 @@ public class App {
 
 
     public static void main(String[] args) throws Exception {
-        double time = System.currentTimeMillis();
-        Data data = Master2020.DataFiles.DataReader.loadData();
-        DataMIP dataMip = DataConverter.convert(data);
-        PathGenerator pg = new PathGenerator(dataMip);
-        JourneyGenerator jg = new JourneyGenerator(dataMip);
-        dataMip.setPathMap(pg.generateAllPaths());
-        dataMip.setJourneyMap(jg.generateAllJourneys());
-        double timePost = System.currentTimeMillis();
-        double total = (timePost - time)/1000;
-        System.out.println("time: " + total);
-        double paths = 0;
-        for (int p = 0 ; p < dataMip.numPeriods ; p++){
-            for (int vt = 0 ; vt < dataMip.numVehicleTypes ; vt++){
-                paths += dataMip.journeyMap.get(p).get(vt).size();
-            }
+        Parameters.numberOfCustomers = Integer.parseInt(args[1]);
+        if (args[0].equals("AFM"))
+            runMIPAFM(Parameters.samples);
+        else if (args[0].equals("PFM"))
+            runMIPPFM(Parameters.samples);
+        else if (args[0].equals("JBM"))
+            runMIPJBM(Parameters.samples);
+        else {
+            runGA(Parameters.samples);
         }
-        System.out.println("paths: " + paths);
 
-
-//        runMIPJBM(1);
-//        if (args[0].equals("AFM"))
-//            runMIPAFM(Parameters.samples);
-//        else if (args[0].equals("PFM"))
-//            runMIPPFM(Parameters.samples);
-//        else if (args[0].equals("JBM"))
-//            runMIPJBM(Parameters.samples);
-//        else {
-//            runGA(Parameters.samples);
+//        double time = System.currentTimeMillis();
+//        Data data = Master2020.DataFiles.DataReader.loadData();
+//        DataMIP dataMip = DataConverter.convert(data);
+//        PathGenerator pg = new PathGenerator(dataMip);
+//        JourneyGenerator jg = new JourneyGenerator(dataMip);
+//        dataMip.setPathMap(pg.generateAllPaths());
+//        dataMip.setJourneyMap(jg.generateAllJourneys());
+//        double timePost = System.currentTimeMillis();
+//        double total = (timePost - time)/1000;
+//        System.out.println("time: " + total);
+//        double paths = 0;
+//        for (int p = 0 ; p < dataMip.numPeriods ; p++){
+//            for (int vt = 0 ; vt < dataMip.numVehicleTypes ; vt++){
+//                paths += dataMip.journeyMap.get(p).get(vt).size();
+//            }
 //        }
-
+//        System.out.println("paths: " + paths);
 
     }
 
