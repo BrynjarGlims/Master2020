@@ -287,13 +287,13 @@ public class App {
     public static void main(String[] args) throws Exception {
         //Parameters.numberOfCustomers = Integer.parseInt(args[1]);
         //if (args[0].equals("AFM"))
-        runMIPAFM(Parameters.samples);
+        //runMIPAFM(Parameters.samples);
         //else if (args[0].equals("PFM"))
         //    runMIPPFM(Parameters.samples);
         //else if (args[0].equals("JBM"))
         //    runMIPJBM(Parameters.samples);
         //else {
-        //    runGA(Parameters.samples);
+        runGA(Parameters.samples);
         //}
 
     }

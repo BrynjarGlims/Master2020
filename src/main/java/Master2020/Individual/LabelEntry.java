@@ -148,6 +148,7 @@ public class LabelEntry implements Comparable<LabelEntry> {
         return vehicleDrivingDistance;
     }
 
+    public double getVehicleCurrentTime(){ return currentVehicleTime;}
 
     public double getTimeWarpInfeasibility(){
         return timeWarpInfeasibility ;
