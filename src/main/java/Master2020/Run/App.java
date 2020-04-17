@@ -291,7 +291,7 @@ public class App {
         else if (args[0].equals("JBM"))
             runMIPJBM(Parameters.samples);
         else {
-            runGA(Parameters.samples);
+           runGA(Parameters.samples);
         }
 
 //        double time = System.currentTimeMillis();
