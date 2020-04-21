@@ -45,7 +45,16 @@ public class Parameters {
     public static final double ODMIPProbability = 0.5;
     public static final double heuristicDominanceValue = 5;
 
-    //Penalty parameters for genetic algorithm
+    // ABC specific parameters
+    public static final int numberOfBees = 50;
+
+    public static final int maxBoundDimensionality = 4; //max amount of dimensions that can be changed, chosen randomly from 1-this
+    public static final double weightNeighborEmployed = 1;
+    public static final double weightNeighborOnlooker = 1.5;
+    public static final double weightGlobalBest = 0.5;
+    public static final double movementRange = 1; //both positive and negative
+
+    //Penalty parameters for heuristics
     public static final double initialCapacityPenalty = 1000;  // lambda
     public static final double initialTimeWarpPenalty = 1000;  // theta
     public static final double initialDrivingCostPenalty = 1; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
