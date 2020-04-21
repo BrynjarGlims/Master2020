@@ -267,7 +267,13 @@ public class Individual implements Comparable<Individual> {
         Double trueFitness = IndividualTest.getTrueIndividualFitness(this);
         System.out.println("True fitness (if feasible): " + trueFitness);
         if ( Math.round(trueFitness*1000) != Math.round((travelCost+orderDistribution.fitness + vehicleUsageCost)*1000)){
+            System.out.println("travel cost: " + travelCost);
+            System.out.println("orderdistribution fitness: " + orderDistribution.fitness);
+            System.out.println("Vehicle usage: " + vehicleUsageCost);;
+            System.out.println("Test value 1: " +  Math.round(trueFitness*1000));
+            System.out.println("Test value 2: " + Math.round((travelCost+orderDistribution.fitness + vehicleUsageCost)*1000));
             System.out.println("Sjekk individ");
+
         }
         System.out.println("-------------------------------------");
     }

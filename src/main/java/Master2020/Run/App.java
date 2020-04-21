@@ -282,7 +282,7 @@ public class App {
 
 
     public static void main(String[] args) throws Exception {
-
+        /*
         Parameters.numberOfCustomers = Integer.parseInt(args[1]);
         if (args[0].equals("AFM"))
             runMIPAFM(Parameters.samples);
@@ -291,8 +291,12 @@ public class App {
         else if (args[0].equals("JBM"))
             runMIPJBM(Parameters.samples);
         else {
-           runGA(Parameters.samples);
+            runGA(Parameters.samples);
         }
+
+         */
+        runGA(Parameters.samples);
+
 
 //        double time = System.currentTimeMillis();
 //        Data data = Master2020.DataFiles.DataReader.loadData();
