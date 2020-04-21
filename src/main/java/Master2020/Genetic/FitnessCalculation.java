@@ -26,7 +26,7 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
                         continue;
                     }
                     if (journey.trips.size() == 0){
-                        System.out.println("No trips in joureny");
+                        System.out.println("No trips in journey");
                     }
                     fitnesses = getJourneyFitness(journey, individual.orderDistribution, penaltyMultiplier);
                     travelCost += fitnesses[0];

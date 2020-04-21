@@ -216,6 +216,11 @@ public class Result {
         for (ArrayList<Trip>[] periodTrips : bestIndividual.tripList ){
             for (ArrayList<Trip> vehicleTypeTrips : periodTrips ){
                 for (Trip t : vehicleTypeTrips){
+
+                    if(t.customers.size() == 0){
+                        System.out.println("Empty trip");
+                        continue;
+                    }
                     String[] results = {String.valueOf(tripNumber), Converter.getTripNumber(t, bestIndividual) , Converter.periodConverter(t.period),String.valueOf(t.vehicleID)
                             ,data.vehicles[t.vehicleID].vehicleName, String.valueOf(data.vehicleTypes[t.vehicleType].capacity),
                             Converter.getStartingTimeForTrip(t, data)

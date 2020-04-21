@@ -13,8 +13,8 @@ public class Parameters {
     public static final String vehicleFilePath = "data/Vehicles.csv";
     public static final String dataSet = "Trøndelag";
     public static final boolean doRandomSeed = true;
-    public static final int samples = 10;
-    public static long randomSeedValue = 15;
+    public static final int samples = 1;
+    public static long randomSeedValue = 46;
 
     // Population parameters
     public static final int maximumSubIndividualPopulationSize = 75; //TODO: find reasonable value

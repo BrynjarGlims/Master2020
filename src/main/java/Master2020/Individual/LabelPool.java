@@ -108,27 +108,29 @@ public class LabelPool {
 
 
     private boolean checkDominance(Label firstLabel, Label secondLabel){
-        double firstLabelValue = 0;
-        firstLabelValue += calculateDeltaSumValue(firstLabel.labelEntries, secondLabel.labelEntries);
-        firstLabelValue *= Parameters.initialTimeWarpPenalty;
-        firstLabelValue += firstLabel.costOfLabel;
-        double secondLabelValue = secondLabel.costOfLabel*Parameters.heuristicDominanceValue;
+        double firstLabelValue = firstLabel.costOfLabel;
+        double secondLabelValue = secondLabel.costOfLabel;
+        if (firstLabelValue > secondLabelValue){
+            return false;
+        }
+        secondLabelValue *= Parameters.heuristicDominanceValue;
+        firstLabelValue += calculateDeltaSumValue(firstLabel.labelEntries, secondLabel.labelEntries)
+                *Parameters.initialTimeWarpPenalty;
         return firstLabelValue <= secondLabelValue;
     }
 
     private double calculateDeltaSumValue(LabelEntry[] firstLabelEntries, LabelEntry[] secondLabelEntries){
         double sum = 0;
         for(int k = 0; k < firstLabelEntries.length; k++){
-            sum += deltaFunction(firstLabelEntries[k].getDrivingDistance(),
-                    secondLabelEntries[k].getDrivingDistance());
+            sum += deltaFunction(firstLabelEntries[k].getVehicleCurrentTime(),
+                    secondLabelEntries[k].getVehicleCurrentTime());
         }
         return sum;
     }
 
 
     public double deltaFunction(double firstVehicleTravelTime, double secondVehicleTravelTime) {
-        return Math.max(0,  firstVehicleTravelTime
-                -  secondVehicleTravelTime);
+        return Math.max(0,  firstVehicleTravelTime -  secondVehicleTravelTime);
     }
 
 }

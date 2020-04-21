@@ -1,16 +1,18 @@
 package Master2020.Individual;
-import Master2020.DataFiles.*;
+
+import Master2020.DataFiles.Data;
+import Master2020.DataFiles.DataReader;
+import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.FitnessCalculation;
 import Master2020.Population.Population;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Testing.IndividualTest;
-import scala.xml.PrettyPrinter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
+public class PeriodicIndividual implements Comparable<Master2020.Individual.PeriodicIndividual> {
 
-public class Individual implements Comparable<Individual> {
     //chromosomes
     public GiantTour giantTour;  //period, vehicleType
     public OrderDistribution orderDistribution;
@@ -20,7 +22,6 @@ public class Individual implements Comparable<Individual> {
     public ArrayList<Journey>[][] journeyList; //period, vehicleType
     public Data data;
 
-    public Label[][] bestLabels;
 
     //fitness values:
     public double travelCost;
@@ -35,25 +36,24 @@ public class Individual implements Comparable<Individual> {
 
     private double diversityRank;
     private double fitnessRank;
-    public boolean isSurvivor;
 
 
-    public Individual(Data data) {
+
+    public PeriodicIndividual(Data data) {
         this.data = data;
         this.giantTour = new GiantTour(data);
-        this.bestLabels = new Label[data.numberOfPeriods][data.numberOfVehicleTypes];
         this.initializeTripMap();
         this.initializeTripList();
         this.initializeJourneyList();
     }
 
 
-    public Individual(Data data, Population population) {
+    public PeriodicIndividual(Data data, Population population) {
         this(data);
         this.population = population;
     }
 
-    public  void initializeTripList(){
+    public void initializeTripList(){
         this.tripList = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
         for (int p = 0 ; p < data.numberOfPeriods; p++){
             for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
@@ -121,7 +121,7 @@ public class Individual implements Comparable<Individual> {
     public void     setOptimalOrderDistribution(OrderDistribution orderDistribution, boolean doAdSplit) {
         this.orderDistribution = orderDistribution;
         if (doAdSplit){
-            AdSplit.adSplitPlural(this);
+            AdSplit.adSplitPlural(null); //todo:change
         }
         this.updateFitness();
     }
@@ -194,9 +194,9 @@ public class Individual implements Comparable<Individual> {
         updateFitness(1);
     }
 
-    public void updateFitness(double penaltyMultiplier) {
+    public void updateFitness(double penaltyMultiplier) {  //todo: change
         //Calculate objective costs
-        double[] fitnesses = FitnessCalculation.getIndividualFitness(this, penaltyMultiplier);
+        double[] fitnesses = FitnessCalculation.getIndividualFitness(null, penaltyMultiplier); //// TODO: 21/04/2020 change 
         this.travelCost = fitnesses[0];
         this.infeasibilityCost = fitnesses[1] + fitnesses[2];
         this.vehicleUsageCost = fitnesses[3];
@@ -251,7 +251,7 @@ public class Individual implements Comparable<Individual> {
         System.out.println("-------------------------------------");
         System.out.println("Individual - " + this.hashCode());
         System.out.println("Fitness: " + fitness);
-        System.out.println("True fitness: " + Master2020.Testing.IndividualTest.getTrueIndividualFitness(this));
+        //System.out.println("True fitness: " + Master2020.Testing.IndividualTest.getTrueIndividualFitness(this)); // TODO: 21/04/2020 Implement for periodic individual
         System.out.println("Is feasbile: " + isFeasible());
         System.out.println("Infeasibility cost2: " + infeasibilityCost);
         System.out.println("Biased fitness: " + biasedFitness);
@@ -264,7 +264,8 @@ public class Individual implements Comparable<Individual> {
         System.out.println("Time warp cost: " + timeWarpCost);
         System.out.println("Over load cost: " + overLoadCost);
 
-        Double trueFitness = IndividualTest.getTrueIndividualFitness(this);
+        /*
+        Double trueFitness = IndividualTest.getTrueIndividualFitness(null);  //implement // TODO: 21/04/2020 Implement
         System.out.println("True fitness (if feasible): " + trueFitness);
         if ( Math.round(trueFitness*1000) != Math.round((travelCost+orderDistribution.fitness + vehicleUsageCost)*1000)){
             System.out.println("travel cost: " + travelCost);
@@ -275,14 +276,16 @@ public class Individual implements Comparable<Individual> {
             System.out.println("Sjekk individ");
 
         }
+
+         */
         System.out.println("-------------------------------------");
     }
 
-    public static Individual makeIndividual() {
+    public static Master2020.Individual.Individual makeIndividual() {
         Data data = DataReader.loadData();
         OrderDistribution od = new OrderDistribution(data);
         od.makeInitialDistribution();
-        Individual individual = new Individual(data);
+        Master2020.Individual.Individual individual = new Master2020.Individual.Individual(data);
         individual.initializeIndividual(od);
         for( int i = 0; i < 100; i++){
             AdSplit.adSplitPlural(individual);
@@ -292,17 +295,11 @@ public class Individual implements Comparable<Individual> {
         return individual;
     }
 
-    public int compareTo(Individual individual) { // TODO: 04.03.2020 Sort by biased fitness and not fitness
-        return this.getBiasedFitness() > individual.getBiasedFitness() ? 1 : -1;
+    public int compareTo(Master2020.Individual.PeriodicIndividual periodicIndividual) { // TODO: 04.03.2020 Sort by biased fitness and not fitness
+        return this.getBiasedFitness() > periodicIndividual.getBiasedFitness() ? 1 : -1;
 
 
     }
 }
-
-
-
-
-
-
 
 
