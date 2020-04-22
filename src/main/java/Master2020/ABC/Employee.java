@@ -53,7 +53,7 @@ public class Employee extends Bee {
             this.fitness = fitness;
             this.position = currentPosition;
             if (fitness < colony.globalBestFitness){
-                colony.globalBest = this.position.clone();
+                colony.globalBestPosition = this.position.clone();
                 colony.globalBestFitness = this.fitness;
                 trials = 0;
             }

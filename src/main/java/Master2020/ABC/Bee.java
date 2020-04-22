@@ -9,8 +9,6 @@ import Master2020.ProductAllocation.OrderDistribution;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class Bee {
@@ -28,6 +26,7 @@ public abstract class Bee {
     public Bee(Data data, int period, OrderDistribution orderDistribution, PeriodSwarm colony){
         this.period = period;
         this.data = data;
+        this.numCustomers = data.numberOfCustomerVisitsInPeriod[period];
         this.orderDistribution = orderDistribution;
         this.colony = colony;
         scout();
@@ -55,7 +54,7 @@ public abstract class Bee {
         for (int d : dimensions){
             newPosition[d] = (newPosition[d]
                     + weight * random.nextDouble(-(Parameters.movementRange/2), Parameters.movementRange) * (neighborPosition[d] - newPosition[d])
-                    +  random.nextDouble(0, Parameters.weightGlobalBest) * (colony.globalBest[d] - newPosition[d])
+                    +  random.nextDouble(0, Parameters.weightGlobalBest) * (colony.globalBestPosition[d] - newPosition[d])
                     + data.numberOfVehicleTypes) % data.numberOfVehicleTypes;
         }
     }

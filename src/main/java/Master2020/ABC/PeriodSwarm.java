@@ -25,7 +25,7 @@ public class PeriodSwarm extends Thread {
     public CyclicBarrier downstreamGate;
     public CyclicBarrier upstreamGate;
     public double globalBestFitness;
-    public double[] globalBest;
+    public double[] globalBestPosition;
 
 
     public PeriodSwarm(Data data, int period, OrderDistribution orderDistribution, CyclicBarrier downstreamGate, CyclicBarrier upstreamGate){
@@ -42,6 +42,13 @@ public class PeriodSwarm extends Thread {
         this.period = period;
         this.orderDistribution = orderDistribution;
         initialize();
+    }
+
+    public void runGenerations(int generations){
+        for (int i = 0 ; i < generations ; i++){
+            runGeneration();
+            System.out.println(globalBestFitness);
+        }
     }
 
 
@@ -124,11 +131,16 @@ public class PeriodSwarm extends Thread {
         employees = IntStream.range(0, Parameters.numberOfEmployees).parallel().mapToObj(o -> new Employee(data, period, orderDistribution, this)).collect(Collectors.toList());
         onlookers = IntStream.range(0, Parameters.numberOfOnlookers).parallel().mapToObj(o -> new Onlooker(data, period, orderDistribution, this)).collect(Collectors.toList());
         globalBestFitness = Double.MAX_VALUE;
+        globalBestPosition = employees.get(0).position;
     }
 
 
     public static void main(String[] args){
         Data data = DataReader.loadData();
+        OrderDistribution orderDistribution = new OrderDistribution(data);
+        orderDistribution.makeInitialDistribution();
+        PeriodSwarm periodSwarm = new PeriodSwarm(data, 0, orderDistribution);
+        periodSwarm.runGenerations(10);
 
     }
 
