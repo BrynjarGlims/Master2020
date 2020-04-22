@@ -1,12 +1,9 @@
 package Master2020.Individual;
 
 import Master2020.DataFiles.Data;
-import Master2020.DataFiles.Order;
-import Master2020.ProductAllocation.OrderDelivery;
 import Master2020.DataFiles.Parameters;
 import Master2020.ProductAllocation.OrderDistribution;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class AdSplit {
@@ -22,17 +19,52 @@ public class AdSplit {
     }
 
     public static void adSplitPlural(Individual individual, double penaltyMultiplier) {
-        for (int p = 0; p < individual.data.numberOfPeriods; p++) {
+        for (int p = 0; p < individual.numberOfPeriods; p++) {
             for (int vt = 0; vt < individual.data.numberOfVehicleTypes; vt++) {
-                adSplitSingular(individual, p , vt, penaltyMultiplier);
+                if (!Parameters.isPeriodic) {
+                    adSplitSingular(individual, p, vt, penaltyMultiplier);
+                } else {
+                    adSplitSingularPeriodic(individual, individual.actualPeriod, vt, penaltyMultiplier);
+                }
+
             }
         }
     }
 
+    public static void adSplitSingularPeriodic (Individual individual, int p, int vt, double penaltyMultiplier){
+        if (individual.giantTour.chromosome[0][vt] == null){
+            System.out.println("Stop");
+        }
 
-    public static void adSplitSingular (Individual individual, int p, int vt, double penaltyMultiplier) {
+        if (individual.giantTour.chromosome[0][vt].size() == 0) {
+            individual.bestLabels[0][vt] = new Label(individual.data, 0, individual.getOrderDistribution().orderVolumeDistribution, p, vt);
+            individual.journeyList[0][vt] = new ArrayList<Journey>();
+            individual.tripList[0][vt] = new ArrayList<Trip>();
+        }
+        else{
+            //Shortest path algorithm
+            ArrayList<ArrayList<Integer>> matrixOfTrips = createTrips(individual.giantTour.chromosome[0][vt], individual.data, individual.orderDistribution, p, vt, penaltyMultiplier);
+
+            //Labeling algorithm
+            Label bestLabel  = labelingAlgorithm(matrixOfTrips, individual.data, individual.orderDistribution, p, vt, matrixOfTrips, penaltyMultiplier);   // Sets bestLabel.
+
+            //Trip generation
+            ArrayList<Journey> journeyList = tripAssignment(bestLabel, matrixOfTrips, individual.data);
+
+            updateIndividual(individual, journeyList, matrixOfTrips, p, vt);
+
+        }
+    }
+
+    public static void adSplitSingular (Individual individual, int p, int vt, double penaltyMultiplier){
+        if (individual.giantTour.chromosome[p][vt] == null){
+            System.out.println("Stop");
+        }
+
         if (individual.giantTour.chromosome[p][vt].size() == 0) {
             individual.bestLabels[p][vt] = new Label(individual.data, 0, individual.getOrderDistribution().orderVolumeDistribution, p, vt);
+            individual.journeyList[p][vt] = new ArrayList<Journey>();
+            individual.tripList[p][vt] = new ArrayList<Trip>();
         }
         else{
             //Shortest path algorithm
@@ -72,7 +104,7 @@ public class AdSplit {
 
 
 
-    // ------------- NEW A DSPLIT
+    // ------------- NEW ADSPLIT ---------------------
     public static ArrayList<Journey> adSplitSingular(ArrayList<Integer> giantTour, Data data,
                                                      OrderDistribution orderDistribution, int p, int vt, double penaltyMultiplier){
         if (giantTour.size() == 0) {
@@ -125,7 +157,7 @@ public class AdSplit {
 
 
     private static void setTripMap(Individual individual, int p, int vt){
-        for (Trip trip : individual.tripList[p][vt]){
+        for (Trip trip : individual.tripList[p][vt]){  //todo: is setTripMap at any time reseted?
             for (int customerID : trip.customers){
                 individual.tripMap.get(p).put(customerID, trip);
             }

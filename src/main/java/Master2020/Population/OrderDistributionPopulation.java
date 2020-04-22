@@ -21,7 +21,9 @@ public class OrderDistributionPopulation {
     public Data data;
     public Set<OrderDistribution> setOfOrderDistributions;
     private Population population;
+    private PeriodicPopulation periodicPopulation;
     private HashMap<Individual, HashMap<OrderDistribution, Double>> fillingLevelFitness;  //todo: maybe in addition to overTimeAtDepotFitness
+
 
     //private Set<Individual> currentGiantTourPopulation;
 
@@ -32,6 +34,15 @@ public class OrderDistributionPopulation {
 
     public void initializeOrderDistributionPopulation(Population population) {
         this.population = population;
+        for (int i = 0; i < Parameters.initialOrderDistributionPopulationSize; i++) {
+            OrderDistribution od = new OrderDistribution(data);
+            od.makeInitialDistribution();
+            this.setOfOrderDistributions.add(od);
+        }
+    }
+
+    public void initializeOrderDistributionPopulation(PeriodicPopulation periodicPopulation) {
+        this.periodicPopulation  = periodicPopulation;
         for (int i = 0; i < Parameters.initialOrderDistributionPopulationSize; i++) {
             OrderDistribution od = new OrderDistribution(data);
             od.makeInitialDistribution();

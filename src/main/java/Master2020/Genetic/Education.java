@@ -38,7 +38,7 @@ public class Education {
         Collections.shuffle(customers);
         for (int c : customers) {
             taboo = new int[Parameters.educationTabooSize];
-            for (int period = 0; period < data.numberOfPeriods; period++) {
+            for (int period = 0; period < individual.numberOfPeriods; period++) {
                 if (data.customers[c].requiredVisitPeriod[period] == 0) {
                     continue;
                 }

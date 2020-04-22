@@ -4,7 +4,6 @@ import Master2020.Genetic.FitnessCalculation;
 import Master2020.Population.Population;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Testing.IndividualTest;
-import scala.xml.PrettyPrinter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,21 +36,37 @@ public class Individual implements Comparable<Individual> {
     private double fitnessRank;
     public boolean isSurvivor;
 
+    public boolean isPeriodic;
+    public int numberOfPeriods;
+    public int actualPeriod;
+
 
     public Individual(Data data) {
+        this(data, null, false,  -1);
+    }
+
+    public Individual(Data data, Population population) {
+        this(data, population, false, -1);
+
+    }
+
+    public Individual(Data data, Population population, boolean isPeriodic, int actualPeriod) {
         this.data = data;
-        this.giantTour = new GiantTour(data);
+        this.isPeriodic = isPeriodic;
+        this.numberOfPeriods = (isPeriodic) ? 1 : data.numberOfPeriods;
+        if (isPeriodic){
+            this.actualPeriod = actualPeriod;
+        }
+        this.giantTour = new GiantTour(data, this.isPeriodic, this.actualPeriod);
         this.bestLabels = new Label[data.numberOfPeriods][data.numberOfVehicleTypes];
         this.initializeTripMap();
         this.initializeTripList();
         this.initializeJourneyList();
-    }
-
-
-    public Individual(Data data, Population population) {
-        this(data);
         this.population = population;
+
     }
+
+
 
     public  void initializeTripList(){
         this.tripList = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
@@ -118,7 +133,7 @@ public class Individual implements Comparable<Individual> {
         setOptimalOrderDistribution(orderDistribution, true);
     }
 
-    public void     setOptimalOrderDistribution(OrderDistribution orderDistribution, boolean doAdSplit) {
+    public void setOptimalOrderDistribution(OrderDistribution orderDistribution, boolean doAdSplit) {
         this.orderDistribution = orderDistribution;
         if (doAdSplit){
             AdSplit.adSplitPlural(this);
@@ -146,7 +161,7 @@ public class Individual implements Comparable<Individual> {
 
     public void setGiantTourFromTrips(){
         //updates giantTour chromosome from trips changed in education
-        GiantTour gt = new GiantTour(data);
+        GiantTour gt = new GiantTour(data, isPeriodic, actualPeriod);
         for (int period = 0 ; period < data.numberOfPeriods ; period++){
             for (int vehicleType = 0 ; vehicleType < data.numberOfVehicleTypes ; vehicleType++){
                 setGiantTourFromTripsPerPeriodVehicleType(period, vehicleType, gt);

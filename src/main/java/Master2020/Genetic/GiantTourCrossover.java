@@ -4,6 +4,7 @@ package Master2020.Genetic;
 import Master2020.DataFiles.Customer;
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
+import Master2020.DataFiles.Parameters;
 import Master2020.Individual.Individual;
 import Master2020.Individual.AdSplit;
 import Master2020.Individual.Trip;
@@ -24,13 +25,13 @@ public class GiantTourCrossover {
 
     public static Individual crossOver(Individual parent1, Individual parent2, OrderDistribution orderDistribution){
         data = parent1.data;
-        numPeriodVehicleTypeCouples = data.numberOfPeriods * data.numberOfVehicleTypes;
-        Individual child = new Individual(data, parent1.population);
+        numPeriodVehicleTypeCouples = parent1.numberOfPeriods * data.numberOfVehicleTypes;
+        Individual child = new Individual(data, parent1.population, Parameters.isPeriodic, parent1.actualPeriod);
         child.orderDistribution = orderDistribution;
         HashSet<Integer>[] sets = initializeSets();
         HashMap<Integer, HashSet<Integer>> visitedCustomers = new HashMap<>();
 
-        for (int i = 0 ; i < data.numberOfPeriods ; i++){
+        for (int i = 0 ; i < parent1.numberOfPeriods ; i++){
             visitedCustomers.put(i, new HashSet<Integer>());
         }
 
@@ -51,7 +52,7 @@ public class GiantTourCrossover {
         int period;
         int vehicleType;
         for (Integer i : lambda1){
-            period = i / data.numberOfVehicleTypes;
+            period = i / parent1.numberOfPeriods;
             vehicleType = i % data.numberOfVehicleTypes;
             copyArrayList = new ArrayList<>(getRoute(parent1, i));
             child.giantTour.chromosome[period][vehicleType] = copyArrayList;
@@ -156,7 +157,7 @@ public class GiantTourCrossover {
                 AdSplit.adSplitSingular(child, p, currentBestVehicleType);
             }
         }
-        IndividualTest.isMissingCustomersAdded(missingCustomers, child);
+        // IndividualTest.isMissingCustomersAdded(missingCustomers, child); //todo: create new test
     }
 
     private static HashMap<Integer, HashSet<Integer>> findMissingCustomers(HashMap<Integer, HashSet<Integer>> visitedCustomers){

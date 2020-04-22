@@ -14,7 +14,6 @@ import java.util.*;
 
 
 public class Population {
-    private int totalPopulationSize;
     public Data data;
     public Set<Individual> feasiblePopulation;
     public Set<Individual> infeasiblePopulation;
@@ -22,112 +21,28 @@ public class Population {
 
     int iterationsWithoutImprovement = 0;
 
-    public Population(Data data) {
+
+    boolean isPeriodic;
+    int actualPeriod;
+    int numberOfPeriods;
+
+    public Population(Data data, int actualPeriod) {
         this.data = data;
-        this.orderDistributionPopulation = orderDistributionPopulation;
         this.feasiblePopulation = new HashSet<Individual>();
         this.infeasiblePopulation = new HashSet<Individual>();
+        this.isPeriodic = (actualPeriod != -1);
+        this.numberOfPeriods = (isPeriodic) ? 1 : data.numberOfPeriods;
+        this.actualPeriod = actualPeriod;
     }
 
-    public void setIterationsWithoutImprovement(int iterations){
-        this.iterationsWithoutImprovement = iterations;
-    }
-    public int getIterationsWithoutImprovement(){
-        return this.iterationsWithoutImprovement;
-    }
-
-    public int getPopulationSize(){
-        return feasiblePopulation.size() + infeasiblePopulation.size();
-    }
-
-    public void survivorSelection(){
-        this.reduceFeasiblePopulation();
-        this.reduceInfeasiblePopulation();
-    }
-
-    public void improvedSurvivorSelection(){
-        int feasibleIndividualsToRemove = this.feasiblePopulation.size() - Parameters.minimumSubIndividualPopulationSize;
-        int infeasibleIndividualsToRemove = this.infeasiblePopulation.size() - Parameters.minimumSubIndividualPopulationSize;
-        for (int i = 0; i < feasibleIndividualsToRemove; i++){
-            if ( i % Parameters.diversityCalculationInterval == 0) {
-                BiasedFitness.setBiasedFitnessScoreForFeasibleIndividuals(this);
-            }
-            reduceFeasiblePopulationByOne();
-        }
-
-        for (int i = 0; i < infeasibleIndividualsToRemove; i++){
-            if ( i % Parameters.diversityCalculationInterval == 0) {
-                BiasedFitness.setBiasedFitnessScoreForInfeasibleIndividuals(this);
-            }
-            reduceInfeasiblePopulationByOne();
-        }
-    }
-
-    private void reduceFeasiblePopulationByOne(){
-        ArrayList<Individual> worstIndividuals = new ArrayList<Individual>(feasiblePopulation);
-        Collections.sort(worstIndividuals);
-        Individual worstIndividual = worstIndividuals.get(worstIndividuals.size()-1) ;
-        feasiblePopulation.remove(worstIndividual);
-    }
-
-    private void reduceInfeasiblePopulationByOne(){
-        ArrayList<Individual> worstIndividuals = new ArrayList<Individual>(infeasiblePopulation);
-        Collections.sort(worstIndividuals);
-        Individual worstIndividual = worstIndividuals.get(worstIndividuals.size()-1) ;
-        infeasiblePopulation.remove(worstIndividual);
-    }
-
-
-    private void reduceFeasiblePopulation(){
-        int numberOfIndividualsToRemove = feasiblePopulation.size() - Parameters.minimumSubIndividualPopulationSize;
-        ArrayList<Individual> worstIndividuals = new ArrayList<Individual>();
-        for (Individual individual : feasiblePopulation){
-            if ( individual.isSurvivor){
-                continue;
-            }
-            worstIndividuals.add(individual);
-            if(worstIndividuals.size() < numberOfIndividualsToRemove){
-                Collections.sort(worstIndividuals);
-            }
-            else{
-                Collections.sort(worstIndividuals);
-                worstIndividuals.remove(worstIndividuals.size()-1);
-            }
-        }
-        this.feasiblePopulation.removeAll(worstIndividuals);
-    }
-
-    private void reduceInfeasiblePopulation(){
-        int numberOfIndividualsToRemove = infeasiblePopulation.size() - Parameters.minimumSubIndividualPopulationSize;
-        if (numberOfIndividualsToRemove < 0)
-            return;
-        ArrayList<Individual> worstIndividuals = new ArrayList<Individual>();
-        for (Individual individual : infeasiblePopulation){
-            if ( individual.isSurvivor){
-                continue;
-            }
-            worstIndividuals.add(individual);
-            if(worstIndividuals.size() < numberOfIndividualsToRemove){
-                Collections.sort(worstIndividuals);
-            }
-            else{
-                Collections.sort(worstIndividuals);
-                worstIndividuals.remove(worstIndividuals.size()-1);
-            }
-        }
-        this.infeasiblePopulation.removeAll(worstIndividuals);
-    }
-
-
-
-    public void setOrderDistributionPopulation(OrderDistributionPopulation odp){
-        this.orderDistributionPopulation = odp;
+    public Population(Data data){
+        this(data, -1);   //used if not periodic
     }
 
 
     public void initializePopulation (OrderDistribution od) {
         for (int i = 0; i < Parameters.initialPopulationSize; i++) {
-            Individual individual = new Individual(this.data, this);
+            Individual individual = new Individual(this.data, this, isPeriodic, actualPeriod);
             individual.initializeIndividual(od);
             AdSplit.adSplitPlural(individual);
             individual.updateFitness();
@@ -231,6 +146,105 @@ public class Population {
     }
 
 
+
+
+
+    public void setIterationsWithoutImprovement(int iterations){
+        this.iterationsWithoutImprovement = iterations;
+    }
+    public int getIterationsWithoutImprovement(){
+        return this.iterationsWithoutImprovement;
+    }
+
+    public int getPopulationSize(){
+        return feasiblePopulation.size() + infeasiblePopulation.size();
+    }
+
+    public void survivorSelection(){
+        this.reduceFeasiblePopulation();
+        this.reduceInfeasiblePopulation();
+    }
+
+    public void improvedSurvivorSelection(){
+        int feasibleIndividualsToRemove = this.feasiblePopulation.size() - Parameters.minimumSubIndividualPopulationSize;
+        int infeasibleIndividualsToRemove = this.infeasiblePopulation.size() - Parameters.minimumSubIndividualPopulationSize;
+        for (int i = 0; i < feasibleIndividualsToRemove; i++){
+            if ( i % Parameters.diversityCalculationInterval == 0) {
+                BiasedFitness.setBiasedFitnessScoreForFeasibleIndividuals(this);
+            }
+            reduceFeasiblePopulationByOne();
+        }
+
+        for (int i = 0; i < infeasibleIndividualsToRemove; i++){
+            if ( i % Parameters.diversityCalculationInterval == 0) {
+                BiasedFitness.setBiasedFitnessScoreForInfeasibleIndividuals(this);
+            }
+            reduceInfeasiblePopulationByOne();
+        }
+    }
+
+    private void reduceFeasiblePopulationByOne(){
+        ArrayList<Individual> worstIndividuals = new ArrayList<Individual>(feasiblePopulation);
+        Collections.sort(worstIndividuals);
+        Individual worstIndividual = worstIndividuals.get(worstIndividuals.size()-1) ;
+        feasiblePopulation.remove(worstIndividual);
+    }
+
+    private void reduceInfeasiblePopulationByOne(){
+        ArrayList<Individual> worstIndividuals = new ArrayList<Individual>(infeasiblePopulation);
+        Collections.sort(worstIndividuals);
+        Individual worstIndividual = worstIndividuals.get(worstIndividuals.size()-1) ;
+        infeasiblePopulation.remove(worstIndividual);
+    }
+
+
+    private void reduceFeasiblePopulation(){
+        int numberOfIndividualsToRemove = feasiblePopulation.size() - Parameters.minimumSubIndividualPopulationSize;
+        ArrayList<Individual> worstIndividuals = new ArrayList<Individual>();
+        for (Individual individual : feasiblePopulation){
+            if ( individual.isSurvivor){
+                continue;
+            }
+            worstIndividuals.add(individual);
+            if(worstIndividuals.size() < numberOfIndividualsToRemove){
+                Collections.sort(worstIndividuals);
+            }
+            else{
+                Collections.sort(worstIndividuals);
+                worstIndividuals.remove(worstIndividuals.size()-1);
+            }
+        }
+        this.feasiblePopulation.removeAll(worstIndividuals);
+    }
+
+    private void reduceInfeasiblePopulation(){
+        int numberOfIndividualsToRemove = infeasiblePopulation.size() - Parameters.minimumSubIndividualPopulationSize;
+        if (numberOfIndividualsToRemove < 0)
+            return;
+        ArrayList<Individual> worstIndividuals = new ArrayList<Individual>();
+        for (Individual individual : infeasiblePopulation){
+            if ( individual.isSurvivor){
+                continue;
+            }
+            worstIndividuals.add(individual);
+            if(worstIndividuals.size() < numberOfIndividualsToRemove){
+                Collections.sort(worstIndividuals);
+            }
+            else{
+                Collections.sort(worstIndividuals);
+                worstIndividuals.remove(worstIndividuals.size()-1);
+            }
+        }
+        this.infeasiblePopulation.removeAll(worstIndividuals);
+    }
+
+
+
+    public void setOrderDistributionPopulation(OrderDistributionPopulation odp){
+        this.orderDistributionPopulation = odp;
+    }
+
+
     public static void main( String[] args){
         Data data = DataReader.loadData();
         Population population = new Population(data);
@@ -240,6 +254,4 @@ public class Population {
         Individual individual = TournamentSelection.performSelection(population);
         individual.printDetailedFitness();
     }
-
-
 }
