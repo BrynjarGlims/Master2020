@@ -162,7 +162,7 @@ public class Individual implements Comparable<Individual> {
     public void setGiantTourFromTrips(){
         //updates giantTour chromosome from trips changed in education
         GiantTour gt = new GiantTour(data, isPeriodic, actualPeriod);
-        for (int period = 0 ; period < data.numberOfPeriods ; period++){
+        for (int period = 0 ; period < this.numberOfPeriods ; period++){
             for (int vehicleType = 0 ; vehicleType < data.numberOfVehicleTypes ; vehicleType++){
                 setGiantTourFromTripsPerPeriodVehicleType(period, vehicleType, gt);
             }

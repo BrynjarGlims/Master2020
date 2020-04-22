@@ -85,7 +85,7 @@ public class Parameters {
     public static final int upperBoundOvertime = 1000;  // upper bound qO variable
 
     //Periodic parameters
-    public static final boolean isPeriodic = false;
+    public static final boolean isPeriodic = true;
     public static final int minimumPeriodicSubPopulationSize = 20;
     public static final int maksimumPeriodicSubPopulationSize = 50;
 

@@ -40,7 +40,7 @@ public class GiantTourCrossover {
         combined.addAll(sets[1]);
         combined.addAll(sets[2]);
         inheritParent2(parent2, child, combined, visitedCustomers);
-        bestInsertion(child, orderDistribution, findMissingCustomers(visitedCustomers));
+        bestInsertion(child, orderDistribution, findMissingCustomers(visitedCustomers, child));
         AdSplit.adSplitPlural(child);
         child.updateFitness();
         return child;
@@ -52,7 +52,7 @@ public class GiantTourCrossover {
         int period;
         int vehicleType;
         for (Integer i : lambda1){
-            period = i / parent1.numberOfPeriods;
+            period = i / data.numberOfVehicleTypes;
             vehicleType = i % data.numberOfVehicleTypes;
             copyArrayList = new ArrayList<>(getRoute(parent1, i));
             child.giantTour.chromosome[period][vehicleType] = copyArrayList;
@@ -160,18 +160,29 @@ public class GiantTourCrossover {
         // IndividualTest.isMissingCustomersAdded(missingCustomers, child); //todo: create new test
     }
 
-    private static HashMap<Integer, HashSet<Integer>> findMissingCustomers(HashMap<Integer, HashSet<Integer>> visitedCustomers){
+    private static HashMap<Integer, HashSet<Integer>> findMissingCustomers(HashMap<Integer, HashSet<Integer>> visitedCustomers, Individual child){
         HashMap<Integer, HashSet<Integer>> missingCustomers = new HashMap<>();
-        for (int i = 0 ; i < data.numberOfPeriods ; i++){
+        for (int i = 0 ; i < child.numberOfPeriods ; i++){
             missingCustomers.put(i, new HashSet<Integer>());
         }
         for (Customer c : data.customers){
-            for (int i = 0 ; i < data.numberOfPeriods ; i++){
-                if (c.requiredVisitPeriod[i] == 1 && !visitedCustomers.get(i).contains(c.customerID)){
-                    missingCustomers.get(i).add(c.customerID);
+            for (int i = 0 ; i < child.numberOfPeriods ; i++){
+                if (Parameters.isPeriodic){
+                    if (c.requiredVisitPeriod[child.actualPeriod] == 1 && !visitedCustomers.get(i).contains(c.customerID)){
+                        missingCustomers.get(i).add(c.customerID);
+                    }
                 }
+                else{
+                    if (c.requiredVisitPeriod[i] == 1 && !visitedCustomers.get(i).contains(c.customerID)){
+                        missingCustomers.get(i).add(c.customerID);
+                    }
+                }
+
             }
         }
+
+
+
 
         return missingCustomers;
     }
