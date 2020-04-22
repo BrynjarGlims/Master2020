@@ -8,6 +8,7 @@ import scala.xml.PrettyPrinter;
 
 import java.lang.*;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.IllegalFormatException;
 
 public class Data {
@@ -25,6 +26,7 @@ public class Data {
     public int numberOfVehicles = Parameters.numberOfVehicles;
     public int numberOfNodes = Parameters.numberOfCustomers + 2;
     public int[] numberOfCustomerVisitsInPeriod;
+    public HashMap<Integer, int[]> customersInPeriod; //maps from period to array of customerIDs
     public int numberOfCustomerVisitsInPlanningHorizon;
     public static double[] overtimeLimit;
 
@@ -108,11 +110,24 @@ public class Data {
 
     private void setNumberOfCustomerVisitsInPeriod(){
         numberOfCustomerVisitsInPeriod = new int[numberOfPeriods];
-        for (Customer customer : customers){
-            for (int p = 0; p < numberOfPeriods; p++){
+        customersInPeriod = new HashMap<>();
+        for (int p = 0; p < numberOfPeriods; p++){
+            for (Customer customer : customers){
                 this.numberOfCustomerVisitsInPeriod[p] += customer.requiredVisitPeriod[p];
                 this.numberOfCustomerVisitsInPlanningHorizon += customer.requiredVisitPeriod[p];
             }
+        }
+        int index;
+        for (int p = 0; p < numberOfPeriods; p++){
+            int[] visits = new int[numberOfCustomerVisitsInPeriod[p]];
+            index = 0;
+            for (Customer customer : customers){
+                if (customer.requiredVisitPeriod[p] == 1){
+                    visits[index] = customer.customerID;
+                    index++;
+                }
+            }
+            customersInPeriod.put(p, visits);
         }
     }
 
