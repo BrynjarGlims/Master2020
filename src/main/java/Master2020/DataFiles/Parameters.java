@@ -86,8 +86,10 @@ public class Parameters {
 
     //Periodic parameters
     public static final boolean isPeriodic = true;
+    public static final int newIndividualCominationsGenerated = 100;
     public static final int minimumPeriodicSubPopulationSize = 20;
     public static final int maksimumPeriodicSubPopulationSize = 50;
+
 
 
     // Verbose parameters

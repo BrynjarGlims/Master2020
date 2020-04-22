@@ -356,10 +356,7 @@ public class App {
                         if (!Master2020.Testing.IndividualTest.testIndividual(newIndividual)) {
                             System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: EDUCATE");
                         }
-                        setOptimalOrderDistribution(newIndividual);
-                        if (!Master2020.Testing.IndividualTest.testIndividual(newIndividual)) {
-                            System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: OD OPTIMIZER");
-                        }
+
                         tripOptimizer(newIndividual);
                         if (!Master2020.Testing.IndividualTest.testIndividual(newIndividual)) {
                             System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: TRIP OPTIMIZER");
@@ -380,8 +377,20 @@ public class App {
                 }
 
 
-            }
 
+
+                // // TODO: 22/04/2020  Implement so it works on the best individual of the population
+                /*
+                setOptimalOrderDistribution(newIndividual);
+                if (!Master2020.Testing.IndividualTest.testIndividual(newIndividual)) {
+                    System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: OD OPTIMIZER");
+                }
+                
+                 */
+
+
+            }
+            /* // TODO: 22/04/2020 FIX 
             Individual bestIndividual = population.returnBestIndividual();
             if (!Master2020.Testing.IndividualTest.testIndividual(bestIndividual)) {
                 System.out.println("BEST INDIVIDUAL IS NOT COMPLETE");
@@ -396,6 +405,8 @@ public class App {
             Result res = new Result(population, "GA");
             res.store(runTime, -1);
             orderAllocationModel.terminateEnvironment();
+            
+             */
         }
     }
 
