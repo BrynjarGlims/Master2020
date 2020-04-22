@@ -140,10 +140,7 @@ public class PeriodSwarm extends Thread {
         OrderDistribution orderDistribution = new OrderDistribution(data);
         orderDistribution.makeInitialDistribution();
         PeriodSwarm periodSwarm = new PeriodSwarm(data, 0, orderDistribution);
-        periodSwarm.runGenerations(10);
+        periodSwarm.runGenerations(100);
 
     }
-
-
-
 }

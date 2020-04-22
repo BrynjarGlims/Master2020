@@ -49,7 +49,7 @@ public class Employee extends Bee {
     }
 
     private void updateTrials(double fitness, double[] currentPosition, boolean searched){
-        if (fitness < fitness){
+        if (fitness < this.fitness){
             this.fitness = fitness;
             this.position = currentPosition;
             if (fitness < colony.globalBestFitness){
