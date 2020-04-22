@@ -10,12 +10,12 @@ import java.util.stream.IntStream;
 public class HelperFunctions {
 
 
-    public static ArrayList<Integer>[] parsePosition(Bee bee){
+    public static ArrayList<Integer>[] parsePosition(Bee bee, double[] position){
         Data data = bee.data;
         ArrayList[] customerVisits = new ArrayList[data.numberOfVehicleTypes];
-        int[] sortedIndices = IntStream.range(0, bee.position.length)
+        int[] sortedIndices = IntStream.range(0, position.length)
                 .boxed()
-                .sorted(Comparator.comparingDouble(i -> bee.position[i]))
+                .sorted(Comparator.comparingDouble(i -> position[i]))
                 .mapToInt(i -> i)
                 .toArray();
 
@@ -24,7 +24,7 @@ public class HelperFunctions {
         int accumulatedValue = 0;
         for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
             int finalVt = vt;
-            numVisitsByVehicleType = (int) Arrays.stream(bee.position).filter(c -> c >= finalVt).filter(c -> c < (finalVt + 1)).count();
+            numVisitsByVehicleType = (int) Arrays.stream(position).filter(c -> c >= finalVt).filter(c -> c < (finalVt + 1)).count();
             customerVisits[vt] = new ArrayList<>(Arrays.asList(new Integer[numVisitsByVehicleType]));
             accumulatedValue += numVisitsByVehicleType;
             accumulatedValues[vt + 1] = accumulatedValue;

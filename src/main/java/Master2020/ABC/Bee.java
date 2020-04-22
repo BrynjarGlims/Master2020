@@ -3,71 +3,99 @@ package Master2020.ABC;
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Parameters;
-import scala.xml.PrettyPrinter;
+import Master2020.Individual.AdSplit;
+import Master2020.Individual.Journey;
+import Master2020.ProductAllocation.OrderDistribution;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class Bee {
+public abstract class Bee {
 
     public Data data;
     public int period;
+    public OrderDistribution orderDistribution;
     public int numCustomers;
     public double[] position;
-    public boolean employed;
-    public int trials;
-    private ThreadLocalRandom random = ThreadLocalRandom.current();
+    public double fitness;
+    public PeriodSwarm colony;
+    protected ThreadLocalRandom random = ThreadLocalRandom.current();
 
-    public Bee(Data data, int period){
+
+    public Bee(Data data, int period, OrderDistribution orderDistribution, PeriodSwarm colony){
         this.period = period;
         this.data = data;
+        this.orderDistribution = orderDistribution;
+        this.colony = colony;
         scout();
     }
 
-
-    public void scout(){
+    protected double[] scout(){
         //set random position of bee individual
-        position = new double[data.numberOfCustomerVisitsInPeriod[period]];
+        double[] position = new double[data.numberOfCustomerVisitsInPeriod[period]];
         for (int i = 0 ; i < position.length ; i++){
             position[i] = ThreadLocalRandom.current().nextDouble(0, data.numberOfVehicleTypes);
         }
+        return position;
     }
 
 
-    public void search(Bee neighbor, double[] globalBest){
+
+
+    protected void updatePosition(double[] newPosition, double[] neighborPosition, boolean employee){
         int numDimensions = random.nextInt(1, Math.min(numCustomers, Parameters.maxBoundDimensionality + 1));
         int[] dimensions  = new int[numDimensions];
         for (int d = 0 ; d < numDimensions ; d++){
             dimensions[d] = random.nextInt(0, numCustomers);
         }
-        double weight = employed ? Parameters.weightNeighborEmployed : Parameters.weightNeighborOnlooker;
+        double weight = employee ? Parameters.weightNeighborEmployed : Parameters.weightNeighborOnlooker;
         for (int d : dimensions){
-            position[d] = (position[d]
-                    + weight * random.nextDouble(-Parameters.movementRange, Parameters.movementRange) * neighbor.position[d]
-                    +  random.nextDouble(0, Parameters.weightGlobalBest) * globalBest[d]
+            newPosition[d] = (newPosition[d]
+                    + weight * random.nextDouble(-(Parameters.movementRange/2), Parameters.movementRange) * (neighborPosition[d] - newPosition[d])
+                    +  random.nextDouble(0, Parameters.weightGlobalBest) * (colony.globalBest[d] - newPosition[d])
                     + data.numberOfVehicleTypes) % data.numberOfVehicleTypes;
         }
-
-
-
     }
+
 
     public double getFitness(){
-        // TODO: 21.04.2020 to be implemented
-        return -1;
+        return getFitness(true);
     }
+
+    public double getFitness(boolean update){
+        if (update){
+            this.fitness = getFitness(this.position);
+        }
+        return this.fitness;
+    }
+
+    protected double getFitness(double[] position){
+        ArrayList<Integer>[] giantTourEntry = HelperFunctions.parsePosition(this, position);
+        double fitness = 0;
+        for (int vt = 0 ; vt < giantTourEntry.length ; vt++){
+            ArrayList<Journey> journeys = AdSplit.adSplitSingular(giantTourEntry[vt], data, orderDistribution, period, vt);
+            for (Journey journey : journeys){
+                fitness += journey.getTotalFitness(orderDistribution);
+            }
+        }
+        return fitness;
+    }
+
+
 
 
 
 
     public static void main(String[] args){
         Data data = DataReader.loadData();
-        System.out.println(Arrays.toString(data.customersInPeriod.get(0)));
-        Bee bee = new Bee(data, 0);
-        System.out.println(data.numberOfVehicleTypes);
-        System.out.println(Arrays.toString(bee.position));
-        double a = (-2 + 3) % 5;
-        System.out.println(a);
+        OrderDistribution orderDistribution = new OrderDistribution(data);
+        orderDistribution.makeInitialDistribution();
+        System.out.println(Arrays.toString(data.customersInPeriod.get(1)));
+
+
     }
 
 

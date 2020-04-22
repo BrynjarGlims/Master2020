@@ -3,6 +3,8 @@ package Master2020.ABC;
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
 import Master2020.Individual.AdSplit;
+import Master2020.Population.OrderDistributionPopulation;
+import Master2020.ProductAllocation.OrderDistribution;
 
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CountDownLatch;
@@ -20,10 +22,13 @@ public class Swarm {
 
 
     Data data;
-    public int[] finished;
+    OrderDistribution orderDistribution;
+
 
     public Swarm(Data data){
         this.data = data;
+        orderDistribution = new OrderDistribution(data);
+        orderDistribution.makeInitialDistribution();
     }
 
 
@@ -31,9 +36,8 @@ public class Swarm {
         final CyclicBarrier downstreamGate = new CyclicBarrier(data.numberOfPeriods + 1);
         final CyclicBarrier upstreamGate = new CyclicBarrier(data.numberOfPeriods + 1);
         List<Thread> threads = new ArrayList<>();
-        finished = new int[data.numberOfPeriods];
         for (int p = 0 ; p < data.numberOfPeriods ; p++){
-            PeriodSwarm periodSwarm = new PeriodSwarm(data, p, downstreamGate, upstreamGate);
+            PeriodSwarm periodSwarm = new PeriodSwarm(data, p, orderDistribution, downstreamGate, upstreamGate);
             threads.add(periodSwarm);
         }
         for (Thread t : threads){

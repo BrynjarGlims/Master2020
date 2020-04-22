@@ -28,8 +28,8 @@ public class Parameters {
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 10; // A maximum of 75
-    public static final int numberOfVehicles = 25;
+    public static int numberOfCustomers = 15; // A maximum of 75
+    public static final int numberOfVehicles = 10;
     public static final double distanceCutOffFromDepot = 3.0;
     public static final boolean adjustTimeWindow = true;
     public static final double adjustTimeWindowReduction = 5;
@@ -46,13 +46,17 @@ public class Parameters {
     public static final double heuristicDominanceValue = 5;
 
     // ABC specific parameters
-    public static final int numberOfBees = 50;
-
+    public static final int numberOfEmployees = 5;
+    public static final int numberOfOnlookers = 25;
+    public static final int numberOfScoutTrials = 5;
+    public static final int maxNumberOfTrials = 5;
     public static final int maxBoundDimensionality = 4; //max amount of dimensions that can be changed, chosen randomly from 1-this
     public static final double weightNeighborEmployed = 1;
     public static final double weightNeighborOnlooker = 1.5;
     public static final double weightGlobalBest = 0.5;
-    public static final double movementRange = 1; //both positive and negative
+    public static final double movementRange = 1; //both positive and negative, but only halv in negative direction
+    public static final double onlookerRandomAdjustment = 0.2; //a random number added when onlooker goes to employers foodsource
+    public static final double globalTrialsCutoff = 1.1; //trials will not increment if solution is within this multiplier of global best
 
     //Penalty parameters for heuristics
     public static final double initialCapacityPenalty = 1000;  // lambda
