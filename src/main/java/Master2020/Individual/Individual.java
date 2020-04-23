@@ -27,6 +27,7 @@ public class Individual implements Comparable<Individual> {
     public double vehicleUsageCost;
     public double timeWarpCost;
     public double overLoadCost;
+    public double periodicCost; // all costs except orderDistribution cost
 
     private double fitness = Double.MAX_VALUE;
     private double diversity = -1;
@@ -218,7 +219,23 @@ public class Individual implements Comparable<Individual> {
         this.timeWarpCost = fitnesses[1];
         this.overLoadCost = fitnesses[2];
         this.fitness = this.travelCost + this.vehicleUsageCost + this.timeWarpCost + this.overLoadCost + this.orderDistribution.getFitness();
+    }
 
+    public double getPeriodicCost() {
+        return getPeriodicCost(1);
+    }
+
+    public double getPeriodicCost(double penaltyMultiplier) {
+        //Calculate objective costs
+        double[] fitnesses = FitnessCalculation.getIndividualFitness(this, penaltyMultiplier);
+        this.travelCost = fitnesses[0];
+        this.infeasibilityCost = fitnesses[1] + fitnesses[2];
+        this.vehicleUsageCost = fitnesses[3];
+        this.timeWarpCost = fitnesses[1];
+        this.overLoadCost = fitnesses[2];
+        this.fitness = this.travelCost + this.vehicleUsageCost + this.timeWarpCost + this.overLoadCost + this.orderDistribution.getFitness();
+        this.periodicCost = this.infeasibilityCost + this.travelCost + this.vehicleUsageCost;
+        return this.periodicCost;
     }
 
 
