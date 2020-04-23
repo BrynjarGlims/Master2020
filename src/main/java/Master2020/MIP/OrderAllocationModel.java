@@ -3,19 +3,22 @@ package Master2020.MIP;
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Parameters;
-import Master2020.Genetic.OrderDistributionCrossover;
+import Master2020.Individual.GiantTour;
 import Master2020.Individual.Individual;
+import Master2020.Individual.Journey;
 import Master2020.ProductAllocation.OrderDistribution;
 import gurobi.*;
 import Master2020.Individual.Trip;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class OrderAllocationModel {
 
-    private Individual individual;
+
     private OrderDistribution orderDistribution;
+    private ArrayList<Journey>[][] journeys;
 
     private GRBEnv env;
     private GRBModel model;
@@ -168,21 +171,24 @@ public class OrderAllocationModel {
 
         for (int d = 0; d < data.numberOfPeriods; d++) {
             for (int vt = 0; vt < data.numberOfVehicleTypes; vt++) {
-                if (individual.tripList[d][vt].isEmpty()) {
+                if (journeys[d][vt].isEmpty()) {
                     break;
                 }
-                for (Trip trip :individual.tripList[d][vt]) {
-                    lhsQ = new GRBLinExpr();
-                    for (int i : trip.customers) {
-                        for (int m = 0; m < data.customers[i].dividableOrders.length; m++) {
-                            lhsQ.addTerm(1.0, qD[d][i][m]);
+                for (Journey journey : journeys[d][vt]){
+
+                    for (Trip trip : journey.trips) {
+                        lhsQ = new GRBLinExpr();
+                        for (int i : trip.customers) {
+                            for (int m = 0; m < data.customers[i].dividableOrders.length; m++) {
+                                lhsQ.addTerm(1.0, qD[d][i][m]);
+                            }
+                            for (int m = 0; m < data.customers[i].nonDividableOrders.length; m++) {
+                                lhsQ.addTerm(1.0, qND[d][i][m]);
+                            }
                         }
-                        for (int m = 0; m < data.customers[i].nonDividableOrders.length; m++) {
-                            lhsQ.addTerm(1.0, qND[d][i][m]);
-                        }
+                        String constraint_name = String.format("1. - Capacity of a trip with vehicle type %d at period %d. Capacity %f ", vt, d, data.vehicleTypes[vt].capacity);
+                        model.addConstr(lhsQ, GRB.LESS_EQUAL, data.vehicleTypes[vt].capacity, constraint_name);
                     }
-                    String constraint_name = String.format("1. - Capacity of a trip with vehicle type %d at period %d. Capacity %f ", vt, d, data.vehicleTypes[vt].capacity);
-                    model.addConstr(lhsQ, GRB.LESS_EQUAL, data.vehicleTypes[vt].capacity, constraint_name);
                 }
             }
         }
@@ -196,13 +202,18 @@ public class OrderAllocationModel {
         for (int d = 0; d < data.numberOfPeriods; d++) {
             GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
             for (int vt = 0; vt < data.numberOfVehicleTypes; vt ++) {  // TODO: 03.03.2020 Can be changed
-                for (int customerID : individual.giantTour.chromosome[d][vt]) {
-                    for (int m = 0; m < data.customers[customerID].numberOfDividableOrders; m++) {
-                        lhs.addTerm(1.0, qD[d][customerID][m]);
+                for (Journey journey : journeys[d][vt]){
+                    for (Trip trip : journey.trips){
+                        for (int customerID : trip.customers) {
+                            for (int m = 0; m < data.customers[customerID].numberOfDividableOrders; m++) {
+                                lhs.addTerm(1.0, qD[d][customerID][m]);
+                            }
+                            for (int m = 0; m < data.customers[customerID].numberOfNonDividableOrders; m++) {
+                                lhs.addTerm(1.0, qND[d][customerID][m]);
+                            }
+                        }
                     }
-                    for (int m = 0; m < data.customers[customerID].numberOfNonDividableOrders; m++) {
-                        lhs.addTerm(1.0, qND[d][customerID][m]);
-                    }
+
                 }
             }
             lhs.addTerm(-1.0, qO[d]); // Add the over time variable for that day
@@ -218,14 +229,18 @@ public class OrderAllocationModel {
         // than the overtime limit
         for (int d = 0; d < data.numberOfPeriods; d++) {
             for (int vt = 0; vt < data.numberOfVehicleTypes; vt ++) {
-                for (int i : individual.giantTour.chromosome[d][vt]) {
-                    for (int m = 0; m < data.customers[i].numberOfNonDividableOrders; m++) {
-                        GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
-                        lhs.addTerm(data.customers[i].nonDividableOrders[m].volume, uND[d][i][m]);
-                        lhs.addTerm(-1, qND[d][i][m]);
-                        String constraint_name = String.format("3. -Fixed quantity for store %d of product %d on day %d. Fixed quantitiy %f. Number of products: %d", i, m, d, data.customers[i].nonDividableOrders[m].volume, data.customers[i].numberOfNonDividableOrders);
-                        // Activate the constraint
-                        model.addConstr(lhs, GRB.EQUAL, 0, constraint_name);
+                for (Journey journey : journeys[d][vt]){
+                    for (Trip trip : journey.trips){
+                        for (int i : trip.customers) {
+                            for (int m = 0; m < data.customers[i].numberOfNonDividableOrders; m++) {
+                                GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
+                                lhs.addTerm(data.customers[i].nonDividableOrders[m].volume, uND[d][i][m]);
+                                lhs.addTerm(-1, qND[d][i][m]);
+                                String constraint_name = String.format("3. -Fixed quantity for store %d of product %d on day %d. Fixed quantitiy %f. Number of products: %d", i, m, d, data.customers[i].nonDividableOrders[m].volume, data.customers[i].numberOfNonDividableOrders);
+                                // Activate the constraint
+                                model.addConstr(lhs, GRB.EQUAL, 0, constraint_name);
+                            }
+                        }
                     }
                 }
             }
@@ -237,22 +252,27 @@ public class OrderAllocationModel {
         // Constraint 5.7 a): Lower bound for delivery for div product.
         for (int d = 0; d < data.numberOfPeriods; d++) {
             for (int vt = 0; vt < data.numberOfVehicleTypes; vt++) {
-                for (int i : individual.giantTour.chromosome[d][vt]) {
-                    for (int m = 0; m < data.customers[i].numberOfDividableOrders; m++) {
-                        GRBLinExpr lhsU = new GRBLinExpr();
-                        GRBLinExpr lhsL = new GRBLinExpr();
-                        lhsL.addTerm(-1, qD[d][i][m]);
-                        lhsL.addTerm(data.customers[i].dividableOrders[m].minVolume, uD[d][i][m]);
-                        String constraint_name = String.format("4a -Min delivery of dividable product %d customer %d on " +
-                                "day %d. Min amount: %f", m, i, d, data.customers[i].dividableOrders[m].minVolume);
-                        // Activate the constraint
-                        model.addConstr(lhsL, GRB.LESS_EQUAL, 0, constraint_name);
-                        lhsU.addTerm(1, qD[d][i][m]);
-                        lhsU.addTerm(-data.customers[i].dividableOrders[m].maxVolume, uD[d][i][m]);
-                        constraint_name = String.format("4b -Max delivery of div.product %d customer %d on day %d. " +
-                                "Max amount %f", m, i, d, data.customers[i].dividableOrders[m].maxVolume);
-                        // Activate the constraint
-                        model.addConstr(lhsU, GRB.LESS_EQUAL, 0, constraint_name);
+                for (Journey journey : journeys[d][vt]){
+                    for (Trip trip : journey.trips){
+
+                        for (int i : trip.customers) {
+                            for (int m = 0; m < data.customers[i].numberOfDividableOrders; m++) {
+                                GRBLinExpr lhsU = new GRBLinExpr();
+                                GRBLinExpr lhsL = new GRBLinExpr();
+                                lhsL.addTerm(-1, qD[d][i][m]);
+                                lhsL.addTerm(data.customers[i].dividableOrders[m].minVolume, uD[d][i][m]);
+                                String constraint_name = String.format("4a -Min delivery of dividable product %d customer %d on " +
+                                        "day %d. Min amount: %f", m, i, d, data.customers[i].dividableOrders[m].minVolume);
+                                // Activate the constraint
+                                model.addConstr(lhsL, GRB.LESS_EQUAL, 0, constraint_name);
+                                lhsU.addTerm(1, qD[d][i][m]);
+                                lhsU.addTerm(-data.customers[i].dividableOrders[m].maxVolume, uD[d][i][m]);
+                                constraint_name = String.format("4b -Max delivery of div.product %d customer %d on day %d. " +
+                                        "Max amount %f", m, i, d, data.customers[i].dividableOrders[m].maxVolume);
+                                // Activate the constraint
+                                model.addConstr(lhsU, GRB.LESS_EQUAL, 0, constraint_name);
+                            }
+                        }
                     }
                 }
             }
@@ -529,10 +549,10 @@ public class OrderAllocationModel {
         this.orderDistribution.makeDistributionFromOrderAllocationModel(this);
     }
 
-    private OrderDistribution createODFromMIP(Individual individual) {
+    private OrderDistribution createODFromMIP(ArrayList<Journey>[][] journeys) {
         try {
-            this.orderDistribution = new OrderDistribution(individual.data);
-            this.individual = individual;
+            this.journeys = journeys;
+            this.orderDistribution = new OrderDistribution(data);
             initializeModel();
             initializeParameters();
             setObjective();
@@ -575,8 +595,23 @@ public class OrderAllocationModel {
 
 
     //MASTER FUNCTION
-    public OrderDistribution createOptimalOrderDistribution( Individual individual){
-        return this.createODFromMIP(individual);
+    public OrderDistribution createOptimalOrderDistribution(ArrayList<Journey>[][] journeys){
+        return this.createODFromMIP(journeys);
+    }
+
+    public static void main(String[] args) throws GRBException {
+        Data data = DataReader.loadData();
+        OrderDistribution orderDistribution = new OrderDistribution(data);
+        orderDistribution.makeInitialDistribution();
+        Individual individual = new Individual(data);
+        individual.setOrderDistribution(orderDistribution);
+        individual.giantTour.initializeGiantTour();
+        OrderAllocationModel oam = new OrderAllocationModel(data);
+        OrderDistribution od = oam.createOptimalOrderDistribution(individual.journeyList);
+        System.out.println(od);
+
+
+
     }
 
 
