@@ -10,8 +10,7 @@ import java.util.stream.IntStream;
 public class HelperFunctions {
 
 
-    public static ArrayList<Integer>[] parsePosition(Bee bee, double[] position){
-        Data data = bee.data;
+    public static ArrayList<Integer>[] parsePosition(Data data, int period, double[] position){
         ArrayList[] customerVisits = new ArrayList[data.numberOfVehicleTypes];
         int[] sortedIndices = IntStream.range(0, position.length)
                 .boxed()
@@ -32,7 +31,7 @@ public class HelperFunctions {
         int index = 0;
         for (int vt = 1 ; vt < data.numberOfVehicleTypes + 1 ; vt++) {
             while (index < accumulatedValues[vt]) {
-                customerVisits[vt - 1].set(index - accumulatedValues[vt - 1], data.customersInPeriod.get(bee.period)[sortedIndices[index]]);
+                customerVisits[vt - 1].set(index - accumulatedValues[vt - 1], data.customersInPeriod.get(period)[sortedIndices[index]]);
                 index++;
             }
         }

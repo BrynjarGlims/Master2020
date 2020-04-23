@@ -11,8 +11,12 @@ import Master2020.Individual.Journey;
 
 public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove parts of code in LabelEntryClass
 
+
     public static double[] getIndividualFitness(Individual individual, double penaltyMultiplier){
-        Data data = individual.data;
+        return getIndividualFitness(individual.data, individual.journeyList, individual.orderDistribution, penaltyMultiplier);
+    }
+
+    public static double[] getIndividualFitness(Data data, ArrayList<Journey>[][] journeys, OrderDistribution orderDistribution, double penaltyMultiplier){
         double travelCost = 0;
         double timeWarpCost = 0;
         double overloadCost = 0;
@@ -20,7 +24,7 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
         double[] fitnesses;
         for (int p = 0 ; p < data.numberOfPeriods ; p++){
             for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
-                for (Journey journey : individual.journeyList[p][vt]){
+                for (Journey journey : journeys[p][vt]){
                     if (journey == null){
                         System.out.println("journey is null");
                         continue;
@@ -28,7 +32,7 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
                     if (journey.trips.size() == 0){
                         System.out.println("No trips in journey");
                     }
-                    fitnesses = getJourneyFitness(journey, individual.orderDistribution, penaltyMultiplier);
+                    fitnesses = getJourneyFitness(journey, orderDistribution, penaltyMultiplier);
                     travelCost += fitnesses[0];
                     timeWarpCost += fitnesses[1];
                     overloadCost += fitnesses[2];
