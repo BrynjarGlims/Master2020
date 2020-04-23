@@ -26,15 +26,16 @@ public class PeriodSwarm extends Thread {
     public CyclicBarrier upstreamGate;
     public double globalBestFitness;
     public double[] globalBestPosition;
+    public boolean run = true;
 
 
     public PeriodSwarm(Data data, int period, OrderDistribution orderDistribution, CyclicBarrier downstreamGate, CyclicBarrier upstreamGate){
         this.data = data;
         this.period = period;
-        initialize();
         this.downstreamGate = downstreamGate;
         this.upstreamGate = upstreamGate;
         this.orderDistribution = orderDistribution;
+        initialize();
     }
 
     public PeriodSwarm(Data data, int period, OrderDistribution orderDistribution){
@@ -47,7 +48,6 @@ public class PeriodSwarm extends Thread {
     public void runGenerations(int generations){
         for (int i = 0 ; i < generations ; i++){
             runGeneration();
-            System.out.println(globalBestFitness);
         }
     }
 
@@ -101,35 +101,29 @@ public class PeriodSwarm extends Thread {
     }
 
 
-
-
-
-
-
-
-
     @Override
     public void run() {
-        try {
-            System.out.println("waiting for release");
-            downstreamGate.await();
-            System.out.println("released thread: " + getName());
-            int time = ThreadLocalRandom.current().nextInt(1000, 5000);
-            System.out.println("waiting for " + time + " milliseconds on thread " + getName());
-            sleep(time);
-            upstreamGate.await();
-            downstreamGate.await();
-            System.out.println("finished thread: " + getName());
-        } catch (InterruptedException | BrokenBarrierException e) {
-            e.printStackTrace();
+        while (run){
+            try {
+                //wait for all threads to be ready
+                downstreamGate.await();
+                //run generations
+                if (run){runGenerations(Parameters.generationsPerOrderDistribution);}
+                //wait for all periods to finish
+                upstreamGate.await();
+
+            } catch (InterruptedException | BrokenBarrierException e) {
+                e.printStackTrace();
+            }
         }
+
     }
 
 
 
     public void initialize(){
-        employees = IntStream.range(0, Parameters.numberOfEmployees).parallel().mapToObj(o -> new Employee(data, period, orderDistribution, this)).collect(Collectors.toList());
-        onlookers = IntStream.range(0, Parameters.numberOfOnlookers).parallel().mapToObj(o -> new Onlooker(data, period, orderDistribution, this)).collect(Collectors.toList());
+        employees = IntStream.range(0, Parameters.numberOfEmployees).parallel().mapToObj(o -> new Employee(data, period, this)).collect(Collectors.toList());
+        onlookers = IntStream.range(0, Parameters.numberOfOnlookers).parallel().mapToObj(o -> new Onlooker(data, period, this)).collect(Collectors.toList());
         globalBestFitness = Double.MAX_VALUE;
         globalBestPosition = employees.get(0).position;
     }
@@ -140,7 +134,7 @@ public class PeriodSwarm extends Thread {
         OrderDistribution orderDistribution = new OrderDistribution(data);
         orderDistribution.makeInitialDistribution();
         PeriodSwarm periodSwarm = new PeriodSwarm(data, 0, orderDistribution);
-        periodSwarm.runGenerations(100);
+        periodSwarm.runGenerations(10000);
 
     }
 }

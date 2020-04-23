@@ -46,6 +46,8 @@ public class Parameters {
     public static final double heuristicDominanceValue = 5;
 
     // ABC specific parameters
+    public static final int generationsPerOrderDistribution = 500;
+    public static final int orderDistributionUpdates = 50;
     public static final int numberOfEmployees = 5;
     public static final int numberOfOnlookers = 25;
     public static final int numberOfScoutTrials = 5;

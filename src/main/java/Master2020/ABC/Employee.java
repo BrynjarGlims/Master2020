@@ -13,8 +13,8 @@ public class Employee extends Bee {
     public int trials;
 
 
-    public Employee(Data data, int period, OrderDistribution orderDistribution, PeriodSwarm colony) {
-        super(data, period, orderDistribution, colony);
+    public Employee(Data data, int period, PeriodSwarm colony) {
+        super(data, period, colony);
         onlookerFitnesses = new HashMap<>();
         scout();
     }

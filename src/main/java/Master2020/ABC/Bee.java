@@ -15,7 +15,6 @@ public abstract class Bee {
 
     public Data data;
     public int period;
-    public OrderDistribution orderDistribution;
     public int numCustomers;
     public double[] position;
     public double fitness;
@@ -23,11 +22,10 @@ public abstract class Bee {
     protected ThreadLocalRandom random = ThreadLocalRandom.current();
 
 
-    public Bee(Data data, int period, OrderDistribution orderDistribution, PeriodSwarm colony){
+    public Bee(Data data, int period, PeriodSwarm colony){
         this.period = period;
         this.data = data;
         this.numCustomers = data.numberOfCustomerVisitsInPeriod[period];
-        this.orderDistribution = orderDistribution;
         this.colony = colony;
         scout();
     }
@@ -72,12 +70,12 @@ public abstract class Bee {
     }
 
     protected double getFitness(double[] position){
-        ArrayList<Integer>[] giantTourEntry = HelperFunctions.parsePosition(this, position);
+        ArrayList<Integer>[] giantTourEntry = HelperFunctions.parsePosition(data, period, position);
         double fitness = 0;
         for (int vt = 0 ; vt < giantTourEntry.length ; vt++){
-            ArrayList<Journey> journeys = AdSplit.adSplitSingular(giantTourEntry[vt], data, orderDistribution, period, vt);
+            ArrayList<Journey> journeys = AdSplit.adSplitSingular(giantTourEntry[vt], data, colony.orderDistribution, period, vt);
             for (Journey journey : journeys){
-                fitness += journey.getTotalFitness(orderDistribution);
+                fitness += journey.getTotalFitness(colony.orderDistribution);
             }
         }
         return fitness;

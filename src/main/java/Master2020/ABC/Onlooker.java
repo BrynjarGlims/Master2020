@@ -7,8 +7,8 @@ import Master2020.ProductAllocation.OrderDistribution;
 public class Onlooker extends Bee {
 
 
-    public Onlooker(Data data, int period, OrderDistribution orderDistribution, PeriodSwarm colony) {
-        super(data, period, orderDistribution, colony);
+    public Onlooker(Data data, int period, PeriodSwarm colony) {
+        super(data, period, colony);
     }
 
 
