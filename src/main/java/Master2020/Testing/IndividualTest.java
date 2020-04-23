@@ -219,7 +219,7 @@ public class IndividualTest {
         AdSplit.adSplitPlural(individual);
         OrderAllocationModel orderAllocationModel = new OrderAllocationModel(data);
 
-        OrderDistribution optimalOD = orderAllocationModel.createOptimalOrderDistribution(individual);
+        OrderDistribution optimalOD = orderAllocationModel.createOptimalOrderDistribution(individual.journeyList);
         AdSplit.adSplitPlural(individual);
         System.out.println(individual.getFitness(true));
         individual.printDetailedFitness();

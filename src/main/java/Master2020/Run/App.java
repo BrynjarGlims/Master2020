@@ -85,7 +85,7 @@ public class App {
 
     public static void setOptimalOrderDistribution(Individual individual){
         if (ThreadLocalRandom.current().nextDouble() < Parameters.ODMIPProbability){
-            OrderDistribution optimalOD = orderAllocationModel.createOptimalOrderDistribution(individual);
+            OrderDistribution optimalOD = orderAllocationModel.createOptimalOrderDistribution(individual.journeyList);
             if (optimalOD.fitness != Double.MAX_VALUE) {  // Distribution found
                 if (individual.infeasibilityCost == 0) {
                     individual.setOptimalOrderDistribution(optimalOD, true);
