@@ -5,6 +5,7 @@ import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.*;
 import Master2020.Individual.Individual;
+import Master2020.Individual.PeriodicIndividual;
 import Master2020.MIP.DataConverter;
 import Master2020.MIP.OrderAllocationModel;
 import Master2020.PR.*;
@@ -81,6 +82,10 @@ public class App {
     }
 
     public static Individual PIX(){
+        return PIX(population);
+    }
+
+    public static Individual PIX(Population population){
         // Select parents
         Individual parent1 = TournamentSelection.performSelection(population);
         Individual parent2 = TournamentSelection.performSelection(population);
@@ -94,19 +99,7 @@ public class App {
         return GiantTourCrossover.crossOver(parent1, parent2, crossoverOD[0]); // TODO: 02.04.2020 add to a pool?
     }
 
-    public static Individual PeriodicPIX(int p){
-        // Select parents
-        Individual parent1 = TournamentSelection.performSelection(periodicPopulation.populations[p]);
-        Individual parent2 = TournamentSelection.performSelection(periodicPopulation.populations[p]);
-        while (parent1.equals(parent2)){
-            parent2 = TournamentSelection.performSelection(periodicPopulation.populations[p]);
-        }
-        OrderDistribution[] crossoverOD = ODC.crossover(parent1.orderDistribution, parent2.orderDistribution); //these will be the same
-        for (OrderDistribution od : crossoverOD) { //todo: EVALUEATE IF THIS IS DECENT
-            odp.addOrderDistribution(od);
-        }
-        return GiantTourCrossover.crossOver(parent1, parent2, crossoverOD[0]); // TODO: 02.04.2020 add to a pool?
-    }
+
 
 
     public static void educate(Individual individual){
@@ -144,6 +137,10 @@ public class App {
     }
 
     public static void repair(){
+        repair(population);
+    }
+
+    public static void repair(Population population){
         repaired.clear();
         for (Individual infeasibleIndividual : population.infeasiblePopulation){
             if (ThreadLocalRandom.current().nextDouble() < Parameters.repairProbability){
@@ -156,12 +153,16 @@ public class App {
         population.feasiblePopulation.addAll(repaired);
     }
 
-
     public static void selection(){
+        selection(population);
+    }
+
+
+    public static void selection(Population population){
 
         // Reduce population size
         population.improvedSurvivorSelection();
-        odp.removeNoneUsedOrderDistributions();
+        odp.removeNoneUsedOrderDistributions(population);
         numberOfIterations++;
         bestIndividual = population.returnBestIndividual();
         bestIndividualScore = bestIndividual.getFitness(false);
@@ -344,11 +345,16 @@ public class App {
 
                 System.out.println("Populate..");
                 for (int p = 0; p < data.numberOfPeriods; p++){
+                    population = periodicPopulation.populations[p];
+                    System.out.println(" ");
+                    System.out.println(" ####### Start Period " + p + " ########");
+                    System.out.println(" ");
                     while (periodicPopulation.populations[p].infeasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize &&
                             periodicPopulation.populations[p].feasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize) {
-                        Individual newIndividual = PeriodicPIX(0);
 
+                        Individual newIndividual = PIX(periodicPopulation.populations[p]);
 
+                        /*
                         if (!Master2020.Testing.IndividualTest.testIndividual(newIndividual)) {
                             System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: PIX");
                         }
@@ -361,19 +367,31 @@ public class App {
                         if (!Master2020.Testing.IndividualTest.testIndividual(newIndividual)) {
                             System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: TRIP OPTIMIZER");
                         }
-                        population.addChildToPopulation(newIndividual);
+
+                         */
+                        periodicPopulation.populations[p].addChildToPopulation(newIndividual);
 
 
                     }
+
+                    /*  todo: implement this if needed
                     for (Individual individual : population.getTotalPopulation()) {
                         IndividualTest.checkIfIndividualIsComplete(individual);
                     }
 
+                     */
+
                     System.out.println("Repair..");
-                    repair();
+                    repair(periodicPopulation.populations[p]);
 
                     System.out.println("Selection..");
-                    selection();
+                    selection(periodicPopulation.populations[p]);
+                }
+
+                for (int j = 0; j < Parameters.newIndividualCombinationsGenerated; j++){
+                    PeriodicIndividual newPeriodicIndividual = generatePeriodicIndividual();
+                    periodicPopulation.addPeriodicIndividual(newPeriodicIndividual);
+                    newPeriodicIndividual.printDetailedInformation();
                 }
 
 
@@ -408,6 +426,16 @@ public class App {
             
              */
         }
+    }
+
+    private static PeriodicIndividual generatePeriodicIndividual(){
+        PeriodicIndividual newPeriodicIndividual = new PeriodicIndividual(data);
+        for (int p = 0; p < data.numberOfPeriods; p++){
+            Individual individual = TournamentSelection.performSelection(periodicPopulation.populations[p]);
+            newPeriodicIndividual.setPeriodicIndividual(individual, p);
+        }
+        System.out.println("Fitness: " + newPeriodicIndividual.getFitness());
+        return newPeriodicIndividual;
     }
 
 

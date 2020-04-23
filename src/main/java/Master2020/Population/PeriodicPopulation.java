@@ -3,12 +3,18 @@ package Master2020.Population;
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
 import Master2020.Individual.Individual;
+import Master2020.Individual.PeriodicIndividual;
 import Master2020.ProductAllocation.OrderDistribution;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class PeriodicPopulation {
 
     public Data data;
     public Population[] populations;
+    public Set<PeriodicIndividual> periodicFeasibleIndividualPopulation;
+    public Set<PeriodicIndividual> periodicInfeasibleIndividualPopulation;
     public OrderDistributionPopulation orderDistributionPopulation;
     int iterationsWithoutImprovement = 0;
     public OrderDistribution orderDistribution;
@@ -20,6 +26,20 @@ public class PeriodicPopulation {
         for (int p = 0; p < data.numberOfPeriods; p++){
             this.populations[p] = new Population(data, p);
         }
+        this.periodicFeasibleIndividualPopulation = new HashSet<PeriodicIndividual>();
+        this.periodicInfeasibleIndividualPopulation = new HashSet<PeriodicIndividual>();
+
+    }
+
+    public void addPeriodicIndividual(PeriodicIndividual periodicIndividual){
+        if (periodicIndividual.isFeasible())
+            this.periodicFeasibleIndividualPopulation.add(periodicIndividual);
+        else{
+            this.periodicInfeasibleIndividualPopulation.add(periodicIndividual);
+
+        }
+
+
     }
 
     public void initializePopulation(OrderDistribution orderDistribution){

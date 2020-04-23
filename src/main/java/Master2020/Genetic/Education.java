@@ -39,6 +39,10 @@ public class Education {
         for (int c : customers) {
             taboo = new int[Parameters.educationTabooSize];
             for (int period = 0; period < individual.numberOfPeriods; period++) {
+                if (Parameters.isPeriodic){
+                    period = individual.actualPeriod;
+                }
+
                 if (data.customers[c].requiredVisitPeriod[period] == 0) {
                     continue;
                 }

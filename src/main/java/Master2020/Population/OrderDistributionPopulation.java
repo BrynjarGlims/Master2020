@@ -102,7 +102,7 @@ public class OrderDistributionPopulation {
     }
 
 
-    public void removeNoneUsedOrderDistributions(){
+    public void removeNoneUsedOrderDistributions(Population population){
         Set<OrderDistribution> orderDistributionsToKeep = new HashSet<OrderDistribution>();
         for (Individual individual : population.feasiblePopulation) {
             orderDistributionsToKeep.add(individual.getOrderDistribution());
