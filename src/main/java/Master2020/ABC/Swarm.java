@@ -9,6 +9,7 @@ import Master2020.Individual.Journey;
 import Master2020.MIP.OrderAllocationModel;
 import Master2020.Population.OrderDistributionPopulation;
 import Master2020.ProductAllocation.OrderDistribution;
+import Master2020.Testing.ABCtests;
 import gurobi.GRBException;
 
 import java.util.concurrent.BrokenBarrierException;
@@ -58,14 +59,25 @@ public class Swarm {
             //update and find best order distribution
             makeOptimalOrderDistribution(threads);
             updateOrderDistributionForColonies(threads);
-            double[] fitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1);
-            double fitness = 0;
+            double Prefitnesses = orderDistribution.getFitness();
+            for (PeriodSwarm swarm : threads){
+                Prefitnesses += swarm.globalBestFitness;
+            }
+            double[] fitnesses;
+            double fitness;
+            boolean feasible;
+            double infeasibility;
+
+            fitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1);
+            fitness =  orderDistribution.getFitness();
             for (double f : fitnesses){
                 fitness+= f;
             }
-            boolean feasible = fitnesses[1] == 0 && fitnesses[2] == 0;
-            double infeasibility = fitnesses[1] + fitnesses[2];
-            System.out.println("fitness: " + fitness + " feasible: " + feasible + " cost: " + infeasibility);
+           feasible = fitnesses[1] == 0 && fitnesses[2] == 0;
+            infeasibility = fitnesses[1] + fitnesses[2];
+            System.out.println("fitness: " + fitness + " old fitness: " + Prefitnesses + " feasible: " + feasible + " cost: " + infeasibility + " time warp: " + fitnesses[1] + " overload: " + fitnesses[2]);
+
+//            System.out.println("all customers exists: " + ABCtests.allCustomersExists(journeys, data));
 
         }
         //terminate threads
