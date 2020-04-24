@@ -34,6 +34,7 @@ public class PeriodicIndividual {
                 this.journeys[p][vt] = new ArrayList<Journey>();
             }
         }
+        this.individuals = new Individual[data.numberOfPeriods];
     }
 
     public void setPeriodicIndividual(Individual individual, int p){
@@ -93,6 +94,8 @@ public class PeriodicIndividual {
         return this.infeasibilityCost == 0;
     }
 
+    public boolean getIndividualFitness(){return false; } //todo: change!! may use an already implemented function
+
     public double getFitness(boolean includeOrderDistributionCost) {
         resetCosts();
         for (int p = 0; p < data.numberOfPeriods; p++){
@@ -119,4 +122,6 @@ public class PeriodicIndividual {
         }
         return this.journeys;
     }
+
+
 }

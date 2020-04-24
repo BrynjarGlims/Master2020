@@ -84,9 +84,9 @@ public class IndividualTest {
 
     public static boolean testTripMap(Individual individual){
         Data data = individual.data;
-        for (int p = 0 ; p < data.numberOfPeriods ; p++){
+        for (int p = 0 ; p < individual.numberOfPeriods ; p++){
             for (Customer customer : data.customers){
-                if (customer.requiredVisitPeriod[p] == 1){
+                if (customer.requiredVisitPeriod[individual.getActualPeriod(p)] == 1){
                     if (!individual.tripMap.get(p).containsKey(customer.customerID)){
                         System.out.println("missing customer: " + customer.customerID + " in period " + p);
                         return false;
@@ -103,7 +103,7 @@ public class IndividualTest {
         double vehicleUseCost = 0;
         double travelCost = 0;
         double overtimeDepotCost = 0;
-        for (int p = 0; p < data.numberOfPeriods; p++){
+        for (int p = 0; p < individual.numberOfPeriods; p++){
             for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
                 if (individual.journeyList[p][vt] == null){
                     continue;

@@ -10,7 +10,6 @@ import Master2020.Individual.AdSplit;
 import Master2020.Individual.Trip;
 import Master2020.Individual.Journey;
 import Master2020.ProductAllocation.OrderDistribution;
-import Master2020.Testing.IndividualTest;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -145,8 +144,8 @@ public class GiantTourCrossover {
                 }
 
                 if(currentBestTrip == null){
-                    Trip newTrip = makeNewTrip(p, c);
-                    child.tripList[p][newTrip.vehicleType].add(newTrip);
+                    Trip newTrip = makeNewTrip(Individual.getDefaultPeriod(p), c);
+                    child.tripList[child.getActualPeriod(p)][newTrip.vehicleType].add(newTrip);
                     currentBestVehicleType = newTrip.vehicleType;
                 }
                 else{
@@ -166,18 +165,10 @@ public class GiantTourCrossover {
             missingCustomers.put(i, new HashSet<Integer>());
         }
         for (Customer c : data.customers){
-            for (int i = 0 ; i < child.numberOfPeriods ; i++){
-                if (Parameters.isPeriodic){
-                    if (c.requiredVisitPeriod[child.actualPeriod] == 1 && !visitedCustomers.get(i).contains(c.customerID)){
-                        missingCustomers.get(i).add(c.customerID);
-                    }
+            for (int p = 0 ; p < child.numberOfPeriods ; p++){
+                if (c.requiredVisitPeriod[child.getActualPeriod(p)] == 1 && !visitedCustomers.get(p).contains(c.customerID)){
+                    missingCustomers.get(p).add(c.customerID);
                 }
-                else{
-                    if (c.requiredVisitPeriod[i] == 1 && !visitedCustomers.get(i).contains(c.customerID)){
-                        missingCustomers.get(i).add(c.customerID);
-                    }
-                }
-
             }
         }
 

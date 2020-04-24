@@ -70,8 +70,8 @@ public class Individual implements Comparable<Individual> {
 
 
     public  void initializeTripList(){
-        this.tripList = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
-        for (int p = 0 ; p < data.numberOfPeriods; p++){
+        this.tripList = new ArrayList[this.numberOfPeriods][data.numberOfVehicleTypes];
+        for (int p = 0 ; p < this.numberOfPeriods; p++){
             for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
                 this.tripList[p][vt] = new ArrayList<Trip>();
             }
@@ -80,7 +80,7 @@ public class Individual implements Comparable<Individual> {
 
     public void initializeTripMap(){
         this.tripMap = new HashMap<Integer, HashMap<Integer, Trip>>();
-        for (int p = 0; p < data.numberOfPeriods; p++){
+        for (int p = 0; p < this.numberOfPeriods; p++){
             this.tripMap.put(p, new HashMap<Integer, Trip>());
         }
     }
@@ -94,8 +94,8 @@ public class Individual implements Comparable<Individual> {
     }
 
     public void initializeJourneyList(){
-        this.journeyList = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
-        for (int p = 0 ; p < data.numberOfPeriods; p++){
+        this.journeyList = new ArrayList[this.numberOfPeriods][data.numberOfVehicleTypes];
+        for (int p = 0 ; p < this.numberOfPeriods; p++){
             for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
                 this.journeyList[p][vt] = new ArrayList<Journey>();
             }
@@ -243,6 +243,15 @@ public class Individual implements Comparable<Individual> {
         return biasedFitness;
     }
 
+    public int getActualPeriod(int period){
+        if (Parameters.isPeriodic){
+            return this.actualPeriod;
+        }
+        else {
+            return period;
+        }
+    }
+
     public void calculateBiasedFitness(){
         double diversityScaling;
         if (this.isFeasible()){
@@ -261,7 +270,7 @@ public class Individual implements Comparable<Individual> {
 
     public String toString(){
         String out = "";
-        for (int p = 0 ; p < data.numberOfPeriods ; p++){
+        for (int p = 0 ; p < this.numberOfPeriods ; p++){
             out += "\n PERIOD: " + p + "\n";
             for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
                 out += "vehicle type " + vt + " take trips: ";
@@ -308,6 +317,10 @@ public class Individual implements Comparable<Individual> {
 
         }
         System.out.println("-------------------------------------");
+    }
+
+    public static int getDefaultPeriod(int period){
+        return Parameters.isPeriodic ? 0 : period;
     }
 
     public static Individual makeIndividual() {

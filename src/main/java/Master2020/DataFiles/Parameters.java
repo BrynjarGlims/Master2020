@@ -102,7 +102,8 @@ public class Parameters {
 
     //Periodic parameters
     public static final boolean isPeriodic = true;
-    public static final int generationsPerOrderDistribution = 5;
+    public static final int generationsPerOrderDistributionPeriodic = 5;
+    public static final int generationsOfOrderDistributions = 10;
     public static final int newIndividualCombinationsGenerated = 100;
     public static final int minimumPeriodicSubPopulationSize = 20;
     public static final int maksimumPeriodicSubPopulationSize = 50;

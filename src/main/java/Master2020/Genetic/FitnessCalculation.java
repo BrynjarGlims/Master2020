@@ -22,7 +22,7 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
         double overloadCost = 0;
         double vehicleUsageCost = 0;
         double[] fitnesses;
-        for (int p = 0 ; p < data.numberOfPeriods ; p++){
+        for (int p = 0 ; p < journeys.length ; p++){
             for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
                 for (Journey journey : journeys[p][vt]){
                     if (journey == null){

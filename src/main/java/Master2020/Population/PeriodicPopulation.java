@@ -36,10 +36,7 @@ public class PeriodicPopulation {
             this.periodicFeasibleIndividualPopulation.add(periodicIndividual);
         else{
             this.periodicInfeasibleIndividualPopulation.add(periodicIndividual);
-
         }
-
-
     }
 
     public void initializePopulation(OrderDistribution orderDistribution){
@@ -52,6 +49,7 @@ public class PeriodicPopulation {
     public void setIterationsWithoutImprovement(int iterations){
         this.iterationsWithoutImprovement = iterations;
     }
+
     public int getIterationsWithoutImprovement(){
         return this.iterationsWithoutImprovement;
     }
