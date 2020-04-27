@@ -124,9 +124,9 @@ public class App {
     }
 
     public static void tripOptimizer(Individual individual){
-        for (int p = 0 ; p < data.numberOfPeriods ; p++){
+        for (int p = 0 ; p < individual.numberOfPeriods ; p++){
             for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
-                for (Trip trip : individual.tripList[p][vt]) {
+                for (Trip trip : individual.tripList[Individual.getDefaultPeriod(p)][vt]) {
                     if (ThreadLocalRandom.current().nextDouble() < Parameters.tripOptimizerProbability) {
                         TripOptimizer.optimizeTrip(trip, individual.orderDistribution);
                     }
@@ -176,10 +176,14 @@ public class App {
             population.setIterationsWithoutImprovement(0);
         }
 
+
         Individual bestFeasibleIndividual = population.returnBestIndividual();
         Individual bestInfeasibleIndividual = population.returnBestInfeasibleIndividual();
-        bestFeasibleIndividual.printDetailedFitness();
-        bestInfeasibleIndividual.printDetailedFitness();
+        if (!Parameters.isPeriodic){
+            bestFeasibleIndividual.printDetailedFitness();
+            bestInfeasibleIndividual.printDetailedFitness();
+        }
+
     }
 
 
@@ -325,72 +329,39 @@ public class App {
 
             while (periodicPopulation.getIterationsWithoutImprovement() < Parameters.maxNumberIterationsWithoutImprovement &&
                     numberOfIterations < Parameters.maxNumberOfGenerations) {
-                if (numberOfIterations % Parameters.generationsOfOrderDistributions == 0) {
-                    globalOrderDistribution = odp.getRandomOrderDistribution(); //todo: DO SOMETHING CLEVER
+
+                // Assign new ODC if needed
+                if (numberOfIterations % Parameters.generationsOfOrderDistributions == 0 & numberOfIterations != 0) {
+                    System.out.println("Assigning new order distribution");
+                    globalOrderDistribution = orderAllocationModel.createOptimalOrderDistribution(periodicPopulation.returnBestIndividual().getJourneys());
                 }
 
                 System.out.println("Start generation: " + numberOfIterations);
 
 
-                //Find best OD for the distribution
-                System.out.println("Assign best OD..");
-                //findBestOrderDistribution();  //todo: design choice, implement later
-
-                //Generate new population
-
-            /*  // TODO: 22/04/2020 Implement testing
-            for (Individual individual : population.infeasiblePopulation) {
-                if (!Master2020.Testing.IndividualTest.testIndividual(individual)) {
-                    System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: PRIOR");
-                }
-            }
-            */
-
-
                 System.out.println("Populate..");
                 for (int p = 0; p < data.numberOfPeriods; p++) {
                     population = periodicPopulation.populations[p];
-                    System.out.println(" ");
-                    System.out.println(" ####### Start Period " + p + " ########");
-                    System.out.println(" ");
+                    //System.out.println(" ####### Start Period " + p + " ########");
                     while (periodicPopulation.populations[p].infeasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize &&
                             periodicPopulation.populations[p].feasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize) {
 
                         Individual newIndividual = PIX(periodicPopulation.populations[p]);
-                    /*
-                    if (!Master2020.Testing.IndividualTest.testIndividual(newIndividual)) {
-                        System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: PIX");
-                    }
-                    educate(newIndividual);
-                    if (!Master2020.Testing.IndividualTest.testIndividual(newIndividual)) {
-                        System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: EDUCATE");
-                    }
 
-                    tripOptimizer(newIndividual);
-                    if (!Master2020.Testing.IndividualTest.testIndividual(newIndividual)) {
-                        System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: TRIP OPTIMIZER");
-                    }
+                        educate(newIndividual);
 
-                     */
+                        tripOptimizer(newIndividual);
+
                         periodicPopulation.populations[p].addChildToPopulation(newIndividual);
-
-
                     }
 
-                /*  todo: implement this if needed
-                for (Individual individual : population.getTotalPopulation()) {
-                    IndividualTest.checkIfIndividualIsComplete(individual);
-                }
-
-                 */
-
-                    System.out.println("Repair..");
+                    //System.out.println("Repair..");
                     repair(periodicPopulation.populations[p]);
 
-                    System.out.println("Selection..");
+                    //System.out.println("Selection..");
                     selection(periodicPopulation.populations[p]);
                 }
-                System.out.println("Iteration ended");
+                //System.out.println("Iteration ended");
                 for (int j = 0; j < Parameters.newIndividualCombinationsGenerated; j++) {
                     PeriodicIndividual newPeriodicIndividual = generatePeriodicIndividual();
                     periodicPopulation.addPeriodicIndividual(newPeriodicIndividual);

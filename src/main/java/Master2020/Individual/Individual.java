@@ -339,8 +339,6 @@ public class Individual implements Comparable<Individual> {
 
     public int compareTo(Individual individual) { // TODO: 04.03.2020 Sort by biased fitness and not fitness
         return this.getBiasedFitness() > individual.getBiasedFitness() ? 1 : -1;
-
-
     }
 }
 

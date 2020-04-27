@@ -6,6 +6,7 @@ import Master2020.Individual.Individual;
 import Master2020.Individual.PeriodicIndividual;
 import Master2020.ProductAllocation.OrderDistribution;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -83,10 +84,25 @@ public class PeriodicPopulation {
     }
 
 
-    public Individual returnBestIndividual(){
-
-        // todo: implement
-        return null;
+    public PeriodicIndividual returnBestIndividual(){
+        PeriodicIndividual bestIndividual = null;
+        double fitnessScore = Double.MAX_VALUE;
+        for (PeriodicIndividual individual : periodicFeasibleIndividualPopulation){
+            if (individual.getFitness() < fitnessScore){
+                bestIndividual = individual;
+                fitnessScore = individual.getFitness();
+            }
+        }
+        if (bestIndividual != null){
+            return bestIndividual;
+        }
+        for (PeriodicIndividual individual : periodicInfeasibleIndividualPopulation){
+            if (individual.getFitness() < fitnessScore){
+                bestIndividual = individual;
+                fitnessScore = individual.getFitness();
+            }
+        }
+        return bestIndividual;
     }
 
 

@@ -1,6 +1,7 @@
 package Master2020.Individual;
 
 import Master2020.DataFiles.Data;
+import Master2020.Genetic.FitnessCalculation;
 import Master2020.Population.PeriodicPopulation;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Testing.IndividualTest;
@@ -38,7 +39,13 @@ public class PeriodicIndividual {
     }
 
     public void setPeriodicIndividual(Individual individual, int p){
+
         this.individuals[p] = individual;
+        initializeJourneys(p);
+    }
+
+    public ArrayList<Journey>[][] getJourneys() {
+        return journeys;
     }
 
     public void setOrderDistribution(OrderDistribution orderDistribution){
@@ -62,24 +69,16 @@ public class PeriodicIndividual {
         System.out.println("Periodic Individual - " + this.hashCode());
         System.out.println("Fitness: " + fitness);
         System.out.println("Is feasbile: " + isFeasible());
-        System.out.println("Infeasibility cost2: " + infeasibilityCost);
-        System.out.println("Biased fitness: " + biasedFitness);
-        System.out.println("Diversity: " + diversity);
+        System.out.println("Infeasibility cost: " + infeasibilityCost);
         System.out.println(" #Detailed cost# ");
         System.out.println("Travel cost: " + travelCost);
         System.out.println("Vehicle usage cost: " + vehicleUsageCost);
-        System.out.println("Order allocation cost: " + orderDistribution.fitness);
+        System.out.println("Order allocation cost: " + orderDistributionCost);
         System.out.println("Time warp cost: " + timeWarpCost);
         System.out.println("Over load cost: " + overLoadCost);
         System.out.println("-------------------------------------");
     }
 
-
-
-
-    public double getFitness(){
-        return getFitness(true);
-    }
 
     public void resetCosts(){
         this.fitness = 0;
@@ -94,33 +93,26 @@ public class PeriodicIndividual {
         return this.infeasibilityCost == 0;
     }
 
-    public boolean getIndividualFitness(){return false; } //todo: change!! may use an already implemented function
-
-    public double getFitness(boolean includeOrderDistributionCost) {
-        resetCosts();
-        for (int p = 0; p < data.numberOfPeriods; p++){
-            this.fitness += this.individuals[p].getPeriodicCost();
-            this.travelCost += this.individuals[p].travelCost;
-
-            this.infeasibilityCost += this.individuals[p].infeasibilityCost;
-            this.vehicleUsageCost += this.individuals[p].vehicleUsageCost;
-            this.timeWarpCost += this.individuals[p].timeWarpCost;
-            this.overLoadCost += this.individuals[p].overLoadCost;
-
-        }
-        if (this.orderDistribution != null){
-            this.orderDistributionCost = this.orderDistribution.getFitness();
-        }
-        return (includeOrderDistributionCost) ? this.fitness : this.fitness + this.orderDistributionCost ;
+    public double getFitness() {
+        double[] fitnesses =  FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1 );
+        this.travelCost = fitnesses[0];
+        this.timeWarpCost = fitnesses[1];
+        this.overLoadCost = fitnesses[2];
+        this.vehicleUsageCost = fitnesses[3];
+        this.infeasibilityCost = fitnesses[1] + fitnesses[2];
+        this.orderDistributionCost = orderDistribution.getFitness();
+        this.fitness = this.travelCost + this.timeWarpCost + this.overLoadCost + this.vehicleUsageCost + this.orderDistributionCost;
+        return fitness;
     }
 
-    public ArrayList<Journey>[][] getJourneys(){
-        for (int p  = 0; p < data.numberOfPeriods; p++ ){
-            for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
-                this.journeys[p][vt] = this.individuals[p].journeyList[p][vt];
-            }
+    public void initializeJourneys(int p){
+        for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
+            this.journeys[p][vt] = this.individuals[p].journeyList[0][vt];
         }
-        return this.journeys;
+    }
+
+    public int compareTo(PeriodicIndividual periodicIndividual) { // TODO: 04.03.2020 Sort by biased fitness and not fitness
+        return this.getFitness() < periodicIndividual.getFitness() ? 1 : -1;
     }
 
 

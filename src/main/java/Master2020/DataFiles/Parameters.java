@@ -23,7 +23,7 @@ public class Parameters {
 
     public static final int initialOrderDistributionPopulationSize = 50;
     public static final int maxNumberIterationsWithoutImprovement = 10;
-    public static final int maxNumberOfGenerations = 20;
+    public static final int maxNumberOfGenerations = 50;
 
     // Loading data parameters
     public static final int numberOfPeriods = 6;
@@ -101,10 +101,10 @@ public class Parameters {
     public static final int upperBoundOvertime = 1000;  // upper bound qO variable
 
     //Periodic parameters
-    public static final boolean isPeriodic = true;
+    public static final boolean isPeriodic = false;
     public static final int generationsPerOrderDistributionPeriodic = 5;
-    public static final int generationsOfOrderDistributions = 10;
-    public static final int newIndividualCombinationsGenerated = 100;
+    public static final int generationsOfOrderDistributions = 5;
+    public static final int newIndividualCombinationsGenerated = 10;
     public static final int minimumPeriodicSubPopulationSize = 20;
     public static final int maksimumPeriodicSubPopulationSize = 50;
 
