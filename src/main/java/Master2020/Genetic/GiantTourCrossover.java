@@ -4,12 +4,12 @@ package Master2020.Genetic;
 import Master2020.DataFiles.Customer;
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
+import Master2020.DataFiles.Parameters;
 import Master2020.Individual.Individual;
 import Master2020.Individual.AdSplit;
 import Master2020.Individual.Trip;
 import Master2020.Individual.Journey;
 import Master2020.ProductAllocation.OrderDistribution;
-import Master2020.Testing.IndividualTest;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -24,13 +24,13 @@ public class GiantTourCrossover {
 
     public static Individual crossOver(Individual parent1, Individual parent2, OrderDistribution orderDistribution){
         data = parent1.data;
-        numPeriodVehicleTypeCouples = data.numberOfPeriods * data.numberOfVehicleTypes;
-        Individual child = new Individual(data, parent1.population);
+        numPeriodVehicleTypeCouples = parent1.numberOfPeriods * data.numberOfVehicleTypes;
+        Individual child = new Individual(data, parent1.population, Parameters.isPeriodic, parent1.actualPeriod);
         child.orderDistribution = orderDistribution;
         HashSet<Integer>[] sets = initializeSets();
         HashMap<Integer, HashSet<Integer>> visitedCustomers = new HashMap<>();
 
-        for (int i = 0 ; i < data.numberOfPeriods ; i++){
+        for (int i = 0 ; i < parent1.numberOfPeriods ; i++){
             visitedCustomers.put(i, new HashSet<Integer>());
         }
 
@@ -39,7 +39,7 @@ public class GiantTourCrossover {
         combined.addAll(sets[1]);
         combined.addAll(sets[2]);
         inheritParent2(parent2, child, combined, visitedCustomers);
-        bestInsertion(child, orderDistribution, findMissingCustomers(visitedCustomers));
+        bestInsertion(child, orderDistribution, findMissingCustomers(visitedCustomers, child));
         AdSplit.adSplitPlural(child);
         child.updateFitness();
         return child;
@@ -144,8 +144,8 @@ public class GiantTourCrossover {
                 }
 
                 if(currentBestTrip == null){
-                    Trip newTrip = makeNewTrip(p, c);
-                    child.tripList[p][newTrip.vehicleType].add(newTrip);
+                    Trip newTrip = makeNewTrip(Individual.getDefaultPeriod(p), c);
+                    child.tripList[child.getActualPeriod(p)][newTrip.vehicleType].add(newTrip);
                     currentBestVehicleType = newTrip.vehicleType;
                 }
                 else{
@@ -156,21 +156,24 @@ public class GiantTourCrossover {
                 AdSplit.adSplitSingular(child, p, currentBestVehicleType);
             }
         }
-        IndividualTest.isMissingCustomersAdded(missingCustomers, child);
+        // IndividualTest.isMissingCustomersAdded(missingCustomers, child); //todo: create new test
     }
 
-    private static HashMap<Integer, HashSet<Integer>> findMissingCustomers(HashMap<Integer, HashSet<Integer>> visitedCustomers){
+    private static HashMap<Integer, HashSet<Integer>> findMissingCustomers(HashMap<Integer, HashSet<Integer>> visitedCustomers, Individual child){
         HashMap<Integer, HashSet<Integer>> missingCustomers = new HashMap<>();
-        for (int i = 0 ; i < data.numberOfPeriods ; i++){
+        for (int i = 0 ; i < child.numberOfPeriods ; i++){
             missingCustomers.put(i, new HashSet<Integer>());
         }
         for (Customer c : data.customers){
-            for (int i = 0 ; i < data.numberOfPeriods ; i++){
-                if (c.requiredVisitPeriod[i] == 1 && !visitedCustomers.get(i).contains(c.customerID)){
-                    missingCustomers.get(i).add(c.customerID);
+            for (int p = 0 ; p < child.numberOfPeriods ; p++){
+                if (c.requiredVisitPeriod[child.getActualPeriod(p)] == 1 && !visitedCustomers.get(p).contains(c.customerID)){
+                    missingCustomers.get(p).add(c.customerID);
                 }
             }
         }
+
+
+
 
         return missingCustomers;
     }

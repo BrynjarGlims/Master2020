@@ -38,8 +38,8 @@ public class Education {
         Collections.shuffle(customers);
         for (int c : customers) {
             taboo = new int[Parameters.educationTabooSize];
-            for (int period = 0; period < data.numberOfPeriods; period++) {
-                if (data.customers[c].requiredVisitPeriod[period] == 0) {
+            for (int period = 0; period < individual.numberOfPeriods; period++) {
+                if (data.customers[c].requiredVisitPeriod[individual.getActualPeriod(period)] == 0) {
                     continue;
                 }
                 improved = true;
@@ -158,7 +158,7 @@ public class Education {
         Trip trip2;
         trip1 = individual.tripMap.get(period).get(customer);
         for (Customer neighbor : data.customers[customer].nearestNeighbors) {
-            if (neighbor.requiredVisitPeriod[period] == 0) {
+            if (neighbor.requiredVisitPeriod[individual.getActualPeriod(period)] == 0) {
                 continue;
             }
             trip2 = individual.tripMap.get(period).get(neighbor.customerID);
@@ -184,9 +184,10 @@ public class Education {
         Trip trip2;
         trip1 = individual.tripMap.get(period).get(customer);
         for (Customer neighbor : data.customers[customer].nearestNeighbors) {
-            if (neighbor.requiredVisitPeriod[period] == 0) {
+            if (neighbor.requiredVisitPeriod[individual.getActualPeriod(period)] == 0) {
                 continue;
             }
+
             trip2 = individual.tripMap.get(period).get(neighbor.customerID);
             if (fitnessDifferenceOfSwap(trip1, trip2, customer, neighbor.customerID) > 0) {
                 performSwap(individual, trip1, trip2, customer, neighbor.customerID);
@@ -210,7 +211,7 @@ public class Education {
 
         double fitnessDifferenceOfSwap;
         for (Customer neighbor : data.customers[customer].nearestNeighbors) {
-            if (neighbor.requiredVisitPeriod[period] == 0 || neighbor.customerID == succeedingCustomer) {
+            if (neighbor.requiredVisitPeriod[individual.getActualPeriod(period)] == 0 || neighbor.customerID == succeedingCustomer) {
                 continue;
             }
             trip2 = individual.tripMap.get(period).get(neighbor.customerID);
@@ -239,7 +240,7 @@ public class Education {
         int succeedingCustomer1 = trip1.customers.get(trip1.customerToTripIndexMap.get(customer) + 1);
         int succeedingCustomer2;
         for (Customer neighbor : data.customers[customer].nearestNeighbors) {
-            if (neighbor.requiredVisitPeriod[period] == 0) {
+            if (neighbor.requiredVisitPeriod[individual.getActualPeriod(period)] == 0) {
                 continue;
             }
             trip2 = individual.tripMap.get(period).get(neighbor.customerID);
@@ -269,7 +270,7 @@ public class Education {
         }
         int succeedingCustomer1 = trip1.customers.get(trip1.customerToTripIndexMap.get(customer) + 1);
         for (Customer neighbor : data.customers[customer].nearestNeighbors) {
-            if (neighbor.requiredVisitPeriod[period] == 0) {
+            if (neighbor.requiredVisitPeriod[individual.getActualPeriod(period)] == 0) {
                 continue;
             }
             trip2 = individual.tripMap.get(period).get(neighbor.customerID);
@@ -296,7 +297,7 @@ public class Education {
         }
         int succeedingCustomer1 = trip1.customers.get(trip1.customerToTripIndexMap.get(customer) + 1);
         for (Customer neighbor : data.customers[customer].nearestNeighbors) {
-            if (neighbor.requiredVisitPeriod[period] == 0) {
+            if (neighbor.requiredVisitPeriod[individual.getActualPeriod(period)] == 0) {
                 continue;
             }
             trip2 = individual.tripMap.get(period).get(neighbor.customerID);
@@ -328,7 +329,7 @@ public class Education {
         int succeedingCustomer1 = trip1.customers.get(trip1.customerToTripIndexMap.get(customer) + 1);
         int succeedingCustomer2;
         for (Customer neighbor : data.customers[customer].nearestNeighbors) {
-            if (neighbor.requiredVisitPeriod[period] == 0) {
+            if (neighbor.requiredVisitPeriod[individual.getActualPeriod(period)] == 0) {
                 continue;
             }
             trip2 = individual.tripMap.get(period).get(neighbor.customerID);
@@ -362,7 +363,7 @@ public class Education {
         int c1;
         int c2;
         for (Customer neighbor : data.customers[customer].nearestNeighbors) {
-            if (neighbor.requiredVisitPeriod[period] == 0 || neighbor.customerID == succeedingCustomer1) {
+            if (neighbor.requiredVisitPeriod[individual.getActualPeriod(period)] == 0 || neighbor.customerID == succeedingCustomer1) {
                 continue;
             }
             trip2 = individual.tripMap.get(period).get(neighbor.customerID);

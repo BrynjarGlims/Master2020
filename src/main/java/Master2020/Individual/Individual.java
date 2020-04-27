@@ -4,7 +4,6 @@ import Master2020.Genetic.FitnessCalculation;
 import Master2020.Population.Population;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Testing.IndividualTest;
-import scala.xml.PrettyPrinter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +27,7 @@ public class Individual implements Comparable<Individual> {
     public double vehicleUsageCost;
     public double timeWarpCost;
     public double overLoadCost;
+    public double periodicCost; // all costs except orderDistribution cost
 
     private double fitness = Double.MAX_VALUE;
     private double diversity = -1;
@@ -37,25 +37,41 @@ public class Individual implements Comparable<Individual> {
     private double fitnessRank;
     public boolean isSurvivor;
 
+    public boolean isPeriodic;
+    public int numberOfPeriods;
+    public int actualPeriod;
+
 
     public Individual(Data data) {
+        this(data, null, false,  -1);
+    }
+
+    public Individual(Data data, Population population) {
+        this(data, population, false, -1);
+
+    }
+
+    public Individual(Data data, Population population, boolean isPeriodic, int actualPeriod) {
         this.data = data;
-        this.giantTour = new GiantTour(data);
+        this.isPeriodic = isPeriodic;
+        this.numberOfPeriods = (isPeriodic) ? 1 : data.numberOfPeriods;
+        if (isPeriodic){
+            this.actualPeriod = actualPeriod;
+        }
+        this.giantTour = new GiantTour(data, this.isPeriodic, this.actualPeriod);
         this.bestLabels = new Label[data.numberOfPeriods][data.numberOfVehicleTypes];
         this.initializeTripMap();
         this.initializeTripList();
         this.initializeJourneyList();
-    }
-
-
-    public Individual(Data data, Population population) {
-        this(data);
         this.population = population;
+
     }
+
+
 
     public  void initializeTripList(){
-        this.tripList = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
-        for (int p = 0 ; p < data.numberOfPeriods; p++){
+        this.tripList = new ArrayList[this.numberOfPeriods][data.numberOfVehicleTypes];
+        for (int p = 0 ; p < this.numberOfPeriods; p++){
             for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
                 this.tripList[p][vt] = new ArrayList<Trip>();
             }
@@ -64,7 +80,7 @@ public class Individual implements Comparable<Individual> {
 
     public void initializeTripMap(){
         this.tripMap = new HashMap<Integer, HashMap<Integer, Trip>>();
-        for (int p = 0; p < data.numberOfPeriods; p++){
+        for (int p = 0; p < this.numberOfPeriods; p++){
             this.tripMap.put(p, new HashMap<Integer, Trip>());
         }
     }
@@ -78,8 +94,8 @@ public class Individual implements Comparable<Individual> {
     }
 
     public void initializeJourneyList(){
-        this.journeyList = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
-        for (int p = 0 ; p < data.numberOfPeriods; p++){
+        this.journeyList = new ArrayList[this.numberOfPeriods][data.numberOfVehicleTypes];
+        for (int p = 0 ; p < this.numberOfPeriods; p++){
             for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
                 this.journeyList[p][vt] = new ArrayList<Journey>();
             }
@@ -118,7 +134,7 @@ public class Individual implements Comparable<Individual> {
         setOptimalOrderDistribution(orderDistribution, true);
     }
 
-    public void     setOptimalOrderDistribution(OrderDistribution orderDistribution, boolean doAdSplit) {
+    public void setOptimalOrderDistribution(OrderDistribution orderDistribution, boolean doAdSplit) {
         this.orderDistribution = orderDistribution;
         if (doAdSplit){
             AdSplit.adSplitPlural(this);
@@ -146,8 +162,8 @@ public class Individual implements Comparable<Individual> {
 
     public void setGiantTourFromTrips(){
         //updates giantTour chromosome from trips changed in education
-        GiantTour gt = new GiantTour(data);
-        for (int period = 0 ; period < data.numberOfPeriods ; period++){
+        GiantTour gt = new GiantTour(data, isPeriodic, actualPeriod);
+        for (int period = 0 ; period < this.numberOfPeriods ; period++){
             for (int vehicleType = 0 ; vehicleType < data.numberOfVehicleTypes ; vehicleType++){
                 setGiantTourFromTripsPerPeriodVehicleType(period, vehicleType, gt);
             }
@@ -203,12 +219,37 @@ public class Individual implements Comparable<Individual> {
         this.timeWarpCost = fitnesses[1];
         this.overLoadCost = fitnesses[2];
         this.fitness = this.travelCost + this.vehicleUsageCost + this.timeWarpCost + this.overLoadCost + this.orderDistribution.getFitness();
+    }
 
+    public double getPeriodicCost() {
+        return getPeriodicCost(1);
+    }
+
+    public double getPeriodicCost(double penaltyMultiplier) {
+        //Calculate objective costs
+        double[] fitnesses = FitnessCalculation.getIndividualFitness(this, penaltyMultiplier);
+        this.travelCost = fitnesses[0];
+        this.infeasibilityCost = fitnesses[1] + fitnesses[2];
+        this.vehicleUsageCost = fitnesses[3];
+        this.timeWarpCost = fitnesses[1];
+        this.overLoadCost = fitnesses[2];
+        this.fitness = this.travelCost + this.vehicleUsageCost + this.timeWarpCost + this.overLoadCost + this.orderDistribution.getFitness();
+        this.periodicCost = this.infeasibilityCost + this.travelCost + this.vehicleUsageCost;
+        return this.periodicCost;
     }
 
 
     public double getBiasedFitness() {
         return biasedFitness;
+    }
+
+    public int getActualPeriod(int period){
+        if (Parameters.isPeriodic){
+            return this.actualPeriod;
+        }
+        else {
+            return period;
+        }
     }
 
     public void calculateBiasedFitness(){
@@ -229,7 +270,7 @@ public class Individual implements Comparable<Individual> {
 
     public String toString(){
         String out = "";
-        for (int p = 0 ; p < data.numberOfPeriods ; p++){
+        for (int p = 0 ; p < this.numberOfPeriods ; p++){
             out += "\n PERIOD: " + p + "\n";
             for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
                 out += "vehicle type " + vt + " take trips: ";
@@ -278,6 +319,10 @@ public class Individual implements Comparable<Individual> {
         System.out.println("-------------------------------------");
     }
 
+    public static int getDefaultPeriod(int period){
+        return Parameters.isPeriodic ? 0 : period;
+    }
+
     public static Individual makeIndividual() {
         Data data = DataReader.loadData();
         OrderDistribution od = new OrderDistribution(data);
@@ -294,8 +339,6 @@ public class Individual implements Comparable<Individual> {
 
     public int compareTo(Individual individual) { // TODO: 04.03.2020 Sort by biased fitness and not fitness
         return this.getBiasedFitness() > individual.getBiasedFitness() ? 1 : -1;
-
-
     }
 }
 

@@ -2,6 +2,7 @@ package Master2020.Genetic;
 
 import Master2020.DataFiles.Parameters;
 import Master2020.Individual.Individual;
+import Master2020.Population.PeriodicPopulation;
 import Master2020.Population.Population;
 import Master2020.DataFiles.Data;
 
@@ -14,6 +15,14 @@ public class BiasedFitness {
         calculateSimplePopulationDiversity(population);
         calculateFitnessAndDiversityRank(population);
     }
+
+    public static void setBiasedFitnessScore(PeriodicPopulation periodicPopulation){
+        for (int p = 0; p < Parameters.numberOfPeriods; p++){
+            calculateSimplePopulationDiversity(periodicPopulation.populations[p]);
+            calculateFitnessAndDiversityRank(periodicPopulation.populations[p]);
+        }
+    }
+
 
     private static void calculateSimplePopulationDiversity(Population population){
         if (population.feasiblePopulation.size() > Parameters.minimumSubIndividualPopulationSize){
@@ -34,6 +43,8 @@ public class BiasedFitness {
             calculateFitnessAndDiversityRankForSubPopulation(population.infeasiblePopulation);
         }
     }
+
+
 
     public static void setBiasedFitnessScoreForInfeasibleIndividuals(Population population){
         calculateDiversityForPopulation(population.infeasiblePopulation);
@@ -83,9 +94,11 @@ public class BiasedFitness {
 
     }
 
+
+
     private static double calculateSimpleDiversityBetweenIndividuals(Individual ind1, Individual ind2){
         double diversity = 0;
-        for (int p = 0; p < ind1.data.numberOfPeriods; p++){
+        for (int p = 0; p < ind1.numberOfPeriods; p++){
             diversity += calculateSimpleSimilarityBetweenGiantTours(ind1.giantTour.chromosome[p], ind2.giantTour.chromosome[p], ind1.data);
         }
         return diversity;

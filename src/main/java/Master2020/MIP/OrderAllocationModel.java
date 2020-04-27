@@ -416,9 +416,8 @@ public class OrderAllocationModel {
         quantityDeliveryRequirementNonDivCommodity();
 
 
-        // TODO: 02.03.2020 Frequency Constraints to be added. 
-        //quantityMinFrequencyDivCommodity();
-        //quantityMaxFrequencyDivCommodity();
+        quantityMinFrequencyDivCommodity();
+        quantityMaxFrequencyDivCommodity();
 
         //fixation
         fixationRemoveNonDeliveries();

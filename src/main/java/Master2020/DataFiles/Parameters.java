@@ -25,6 +25,7 @@ public class Parameters {
     public static final int maxNumberIterationsWithoutImprovement = 100;
     public static final int maxNumberOfGenerations = 100;
 
+
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
@@ -99,6 +100,16 @@ public class Parameters {
     public static final String instanceName = "testDataFromAsko";
     public static final int upperBoundQuantity = 100;  // upper bound q variable
     public static final int upperBoundOvertime = 1000;  // upper bound qO variable
+
+    //Periodic parameters
+    public static final boolean isPeriodic = false;
+    public static final int generationsPerOrderDistributionPeriodic = 5;
+    public static final int generationsOfOrderDistributions = 5;
+    public static final int newIndividualCombinationsGenerated = 10;
+    public static final int minimumPeriodicSubPopulationSize = 20;
+    public static final int maksimumPeriodicSubPopulationSize = 50;
+
+
 
     // Verbose parameters
     public static final boolean verboseArcFlow = false;
