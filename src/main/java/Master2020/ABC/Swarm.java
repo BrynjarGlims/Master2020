@@ -112,7 +112,6 @@ public class Swarm {
                 journeys[p][vt] = journeysEntry;
             }
         }
-<<<<<<< HEAD
         double[] fitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1);
 
         this.orderDistribution = orderAllocationModel.createOptimalOrderDistribution(journeys);
@@ -126,13 +125,7 @@ public class Swarm {
             }
         }
         return fitnesses;
-=======
-        System.out.println("Old fitness: " + Arrays.toString(FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution,1)));
-        this.orderDistribution = orderAllocationModel.createOptimalOrderDistribution(journeys);
-        System.out.println("New fitness: " + Arrays.toString( FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution,1)));
 
-
->>>>>>> 68626c4b9cf5a358ce478f91c48c0bb79475cd8d
     }
 
     private void updateOrderDistributionForColonies(List<PeriodSwarm> periodSwarms){
