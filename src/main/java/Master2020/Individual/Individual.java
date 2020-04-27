@@ -67,6 +67,10 @@ public class Individual implements Comparable<Individual> {
 
     }
 
+    public void setJourneyList(ArrayList<Journey> journeyList, int period, int vehicleType){
+        this.journeyList[period][vehicleType] = journeyList;
+    }
+
 
 
     public  void initializeTripList(){

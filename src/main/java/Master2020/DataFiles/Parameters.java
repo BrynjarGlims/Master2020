@@ -28,8 +28,8 @@ public class Parameters {
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 75; // A maximum of 75
-    public static final int numberOfVehicles = 10;
+    public static int numberOfCustomers = 4; // A maximum of 75
+    public static final int numberOfVehicles = 4;
     public static final double distanceCutOffFromDepot = 3.0;
     public static final boolean adjustTimeWindow = true;
     public static final double adjustTimeWindowReduction = 5;
@@ -116,5 +116,5 @@ public class Parameters {
     public static final boolean verboseJourneyBased = false;
     public static final boolean savePlots = false;
     public static final boolean verbose = false;
-    public static final char separator = ';';
+    public static final char separator = ',';
 }
