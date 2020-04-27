@@ -22,6 +22,7 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
+import static Master2020.Testing.IndividualTest.testValidOrderDistribution;
 import static java.lang.Thread.sleep;
 
 public class Swarm {
@@ -57,9 +58,17 @@ public class Swarm {
             upstreamGate.reset();
 
             //update and find best order distribution
-            makeOptimalOrderDistribution(threads);
+            System.out.println("OD fitness pre: " + orderDistribution.getFitness());
+            System.out.println("OD pre is valid: " + testValidOrderDistribution(data, orderDistribution));
+            double[] oldFitnesses = makeOptimalOrderDistribution(threads);
+            double old = 0;
+            for (double d : oldFitnesses){
+                old += d;
+            }
             updateOrderDistributionForColonies(threads);
-            double Prefitnesses = orderDistribution.getFitness();
+            System.out.println("OD fitness post: " + orderDistribution.getFitness());
+            System.out.println("OD post is valid: " + testValidOrderDistribution(data, orderDistribution));
+            double Prefitnesses = 0;
             for (PeriodSwarm swarm : threads){
                 Prefitnesses += swarm.globalBestFitness;
             }
@@ -69,12 +78,13 @@ public class Swarm {
             double infeasibility;
 
             fitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1);
-            fitness =  orderDistribution.getFitness();
+            fitness =  0; //orderDistribution.getFitness();
             for (double f : fitnesses){
                 fitness+= f;
             }
            feasible = fitnesses[1] == 0 && fitnesses[2] == 0;
             infeasibility = fitnesses[1] + fitnesses[2];
+            System.out.println("old: fitness: " + old +  " feasible: " + feasible +  " time warp: " + oldFitnesses[1] + " overload: " + oldFitnesses[2]);
             System.out.println("fitness: " + fitness + " old fitness: " + Prefitnesses + " feasible: " + feasible + " cost: " + infeasibility + " time warp: " + fitnesses[1] + " overload: " + fitnesses[2]);
 
 //            System.out.println("all customers exists: " + ABCtests.allCustomersExists(journeys, data));
@@ -88,7 +98,7 @@ public class Swarm {
         upstreamGate.await();
     }
 
-    private void makeOptimalOrderDistribution(List<PeriodSwarm> periodSwarms){
+    private double[] makeOptimalOrderDistribution(List<PeriodSwarm> periodSwarms){
         PeriodSwarm periodSwarm;
         journeys = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
         for (int p = 0 ; p < data.numberOfPeriods ; p++){
@@ -100,7 +110,19 @@ public class Swarm {
                 journeys[p][vt] = journeysEntry;
             }
         }
+        double[] fitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1);
+
         this.orderDistribution = orderAllocationModel.createOptimalOrderDistribution(journeys);
+        for (int p = 0 ; p < data.numberOfPeriods ; p++){
+            periodSwarm = periodSwarms.get(p);
+            ArrayList<Integer>[] giantTourEntry = HelperFunctions.parsePosition(data, p, periodSwarm.globalBestPosition);
+
+            for (int vt = 0 ; vt < giantTourEntry.length ; vt++) {
+                ArrayList<Journey> journeysEntry = AdSplit.adSplitSingular(giantTourEntry[vt], data, orderDistribution, p, vt);
+                journeys[p][vt] = journeysEntry;
+            }
+        }
+        return fitnesses;
     }
 
     private void updateOrderDistributionForColonies(List<PeriodSwarm> periodSwarms){

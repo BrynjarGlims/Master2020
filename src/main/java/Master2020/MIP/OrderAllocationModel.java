@@ -172,7 +172,7 @@ public class OrderAllocationModel {
         for (int d = 0; d < data.numberOfPeriods; d++) {
             for (int vt = 0; vt < data.numberOfVehicleTypes; vt++) {
                 if (journeys[d][vt].isEmpty()) {
-                    break;
+                    continue;
                 }
                 for (Journey journey : journeys[d][vt]){
 

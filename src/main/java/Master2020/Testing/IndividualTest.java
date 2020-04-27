@@ -1,14 +1,12 @@
 package Master2020.Testing;
 
-import Master2020.DataFiles.Customer;
-import Master2020.DataFiles.Data;
-import Master2020.DataFiles.DataReader;
-import Master2020.DataFiles.Parameters;
+import Master2020.DataFiles.*;
 import Master2020.Individual.Individual;
 import Master2020.Individual.Journey;
 import Master2020.Individual.Trip;
 import Master2020.MIP.OrderAllocationModel;
 import Master2020.Population.Population;
+import Master2020.ProductAllocation.OrderDelivery;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Population.OrderDistributionPopulation;
 import Master2020.Individual.AdSplit;
@@ -22,6 +20,30 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 public class IndividualTest {
+
+
+
+    public static boolean testValidOrderDistribution(Data data, OrderDistribution orderDistribution){
+        OrderDelivery orderDelivery;
+        for (Order order : data.orders){
+            orderDelivery = orderDistribution.orderDeliveries[order.orderID];
+            int numOrders = 0;
+            for (int p = 0 ; p < data.numberOfPeriods ; p++){
+                if(orderDelivery.orderPeriods[p] == 1){
+                    numOrders += 1;
+                    if (orderDelivery.orderVolumes[p] < order.minVolume || orderDelivery.orderVolumes[p] > order.maxVolume){
+                        System.out.println("volume invalid, delivered: " +  orderDelivery.orderVolumes[p] + " bounds: " + order.minVolume + " - " + order.maxVolume);
+                        return false;
+                    }
+                }
+            }
+            if (numOrders < order.minFrequency || numOrders > order.maxFrequency){
+                System.out.println("frequency invalid, visits: " + numOrders + " bounds: " + order.minFrequency + " - " + order.maxFrequency);
+                return false;
+            }
+        }
+        return true;
+    }
 
 
     public static boolean testIndividual(Individual individual){
