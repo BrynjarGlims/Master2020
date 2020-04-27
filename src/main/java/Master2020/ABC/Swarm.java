@@ -12,6 +12,7 @@ import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Testing.ABCtests;
 import gurobi.GRBException;
 
+import java.sql.SQLOutput;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CountDownLatch;
 import java.util.ArrayList;
@@ -69,6 +70,7 @@ public class Swarm {
             System.out.println("OD fitness post: " + orderDistribution.getFitness());
             System.out.println("OD post is valid: " + testValidOrderDistribution(data, orderDistribution));
             double Prefitnesses = 0;
+
             for (PeriodSwarm swarm : threads){
                 Prefitnesses += swarm.globalBestFitness;
             }
@@ -110,6 +112,7 @@ public class Swarm {
                 journeys[p][vt] = journeysEntry;
             }
         }
+<<<<<<< HEAD
         double[] fitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1);
 
         this.orderDistribution = orderAllocationModel.createOptimalOrderDistribution(journeys);
@@ -123,6 +126,13 @@ public class Swarm {
             }
         }
         return fitnesses;
+=======
+        System.out.println("Old fitness: " + Arrays.toString(FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution,1)));
+        this.orderDistribution = orderAllocationModel.createOptimalOrderDistribution(journeys);
+        System.out.println("New fitness: " + Arrays.toString( FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution,1)));
+
+
+>>>>>>> 68626c4b9cf5a358ce478f91c48c0bb79475cd8d
     }
 
     private void updateOrderDistributionForColonies(List<PeriodSwarm> periodSwarms){

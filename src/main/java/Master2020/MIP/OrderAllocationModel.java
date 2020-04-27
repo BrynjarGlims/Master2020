@@ -9,10 +9,12 @@ import Master2020.Individual.Journey;
 import Master2020.ProductAllocation.OrderDistribution;
 import gurobi.*;
 import Master2020.Individual.Trip;
+import org.nustaq.kson.KsonStringOutput;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class OrderAllocationModel {
 
@@ -175,7 +177,6 @@ public class OrderAllocationModel {
                     continue;
                 }
                 for (Journey journey : journeys[d][vt]){
-
                     for (Trip trip : journey.trips) {
                         lhsQ = new GRBLinExpr();
                         for (int i : trip.customers) {
