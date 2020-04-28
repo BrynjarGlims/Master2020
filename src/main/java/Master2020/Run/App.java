@@ -442,15 +442,21 @@ public class App {
         }
         */
         //runMIPJBM(Parameters.samples);
-        for (int i  = 0; i < 10; i++) {
+        for (int i  = 0; i < 1; i++) {
+            /*
             Parameters.randomSeedValue = 30+i;
-            //runGA(Parameters.samples);
+            runGA(Parameters.samples);
+            */
+
+            Parameters.randomSeedValue = 32;
+            runMIPJBM(Parameters.samples);
+            /*
             Parameters.randomSeedValue = 30+i;
-            //runMIPJBM(Parameters.samples);
-            Parameters.randomSeedValue = 30+i;
-            //runMIPPFM(Parameters.samples);
+            runMIPPFM(Parameters.samples);
             Parameters.randomSeedValue = 30+i;
             runMIPAFM(Parameters.samples);
+
+             */
         }
 
         /*

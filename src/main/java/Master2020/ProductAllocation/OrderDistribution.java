@@ -61,11 +61,6 @@ public class OrderDistribution {
         setFitness();
     }
 
-    public void makeDistributionFromArcFlowModel(ArcFlowModel afm) throws GRBException {
-        setVolumeAndOrdersFromMIP( afm.uND, afm.uD, afm.qND, afm.qD);
-        setVolumePerPeriod();
-        setFitness();
-    }
 
     public void makeDistributionFromArcFlowModel(Master2020.PR.ArcFlowModel afm) throws GRBException {
         setVolumeAndOrdersFromMIP( afm.u, afm.q, afm.dataMIP);

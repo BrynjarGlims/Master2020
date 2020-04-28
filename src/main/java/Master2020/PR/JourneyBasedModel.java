@@ -73,6 +73,7 @@ public class JourneyBasedModel {
         JourneyGenerator jg  = new JourneyGenerator(dataMIP);
         dataMIP.setJourneyMap(jg.generateAllJourneys());
         this.preProcessTime = (System.currentTimeMillis() - time)/1000;
+        System.out.println("stop");
     }
 
 

@@ -6,6 +6,7 @@ import Master2020.ProductAllocation.OrderDistribution;
 import gurobi.GRB;
 import gurobi.GRBException;
 import Master2020.Individual.Trip;
+import Master2020.Individual.Journey;
 import Master2020.Individual.GiantTour;
 import gurobi.GRBVar;
 
@@ -46,8 +47,6 @@ public class ModelConverter {
     }
 
 
-
-
     //function working on old ArcFlowModel
     public static void initializeIndividualFromArcFlowModel(ArcFlowModel afm) throws GRBException {
         arcFlowModel = afm;
@@ -71,7 +70,7 @@ public class ModelConverter {
         individual.setTripMap(tripMap);
         individual.setTripList(tripList);
         individual.setGiantTour(createGiantTour(giantTour));
-
+        individual.journeyList = generateJourneyListFromTripList(tripList);
     }
 
     private static void initializeGiantTourInIndividualForJBM() throws GRBException {
@@ -83,6 +82,8 @@ public class ModelConverter {
         individual.setTripMap(tripMap);
         individual.setTripList(tripList);
         individual.setGiantTour(createGiantTour(giantTour));
+        individual.journeyList = generateJourneyListFromTripList(tripList);
+
     }
 
     private static void initializeGiantTourInIndividualForPFM() throws GRBException {
@@ -94,7 +95,39 @@ public class ModelConverter {
         individual.setTripMap(tripMap);
         individual.setTripList(tripList);
         individual.setGiantTour(createGiantTour(giantTour));
-        
+        individual.journeyList = generateJourneyListFromTripList(tripList);
+    }
+
+    private static ArrayList<Journey>[][] generateJourneyListFromTripList(ArrayList<Trip>[][] tripList){
+        ArrayList<Journey>[][] journeys =  new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
+        Journey newJourney;
+        for( int p = 0; p < data.numberOfPeriods; p++){
+            for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
+                journeys[p][vt] = new ArrayList<Journey>();
+                if (tripList[p][vt].size() == 0){
+                    continue;
+                }
+                System.out.println("Nå lages en journey");
+                boolean firstTrip = true;
+                newJourney = new Journey(data, tripList[p][vt].get(0).period, tripList[p][vt].get(0).vehicleType, tripList[p][vt].get(0).vehicleID);
+                newJourney.addTrip(tripList[p][vt].get(0));
+                journeys[p][vt].add(newJourney);
+                for (Trip t : tripList[p][vt]){
+                    if (firstTrip){
+                        firstTrip = false;
+                        continue;
+                    }
+                    if (t.vehicleID == journeys[p][vt].get(journeys[p][vt].size()-1).vehicleId){
+                        journeys[p][vt].get(journeys[p][vt].size()-1).addTrip(t);
+                    } else{
+                        newJourney = new Journey(data, t.period, t.vehicleType, t.vehicleID);
+                        newJourney.addTrip(t);
+                        journeys[p][vt].add(newJourney);
+                    }
+                }
+            }
+        }
+        return journeys;
     }
 
 
@@ -147,7 +180,7 @@ public class ModelConverter {
 
         for (int d = 0; d < journeyBasedModel.dataMIP.numPeriods; d++) {
             for (int v = 0; v < journeyBasedModel.dataMIP.numVehicles; v++) {
-                for (Journey r : journeyBasedModel.dataMIP.journeyMap.get(d).get(journeyBasedModel.dataMIP.vehicles[v].vehicleType.type)) {
+                for (Master2020.PR.Journey r : journeyBasedModel.dataMIP.journeyMap.get(d).get(journeyBasedModel.dataMIP.vehicles[v].vehicleType.type)) {
                     if ( Math.round(journeyBasedModel.gamma[d][v][r.journeyId].get(GRB.DoubleAttr.X)) == 1){
                         for(Path path : r.paths){
                             currentTrip = new Trip();

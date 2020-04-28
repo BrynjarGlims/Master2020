@@ -197,8 +197,10 @@ public class TestResults {
     }
 
     public static void main(String[] args){
-        for (int i = 0; i < 10; i++) {
-            Parameters.randomSeedValue = 30 + i;
+
+
+        for (int i = 0; i < 1; i++) {
+            Parameters.randomSeedValue = 32 + i;
             System.out.println("RANDOM SEED VALUE: " + Parameters.randomSeedValue);
             System.out.println("Results from GA:");
             String name = "GA_S" + Parameters.randomSeedValue + "_C4_V4_28_04_2020";
@@ -223,6 +225,8 @@ public class TestResults {
             System.out.println(" ############################ ");
             System.out.println(" ");
         }
+
+
 
     }
 
