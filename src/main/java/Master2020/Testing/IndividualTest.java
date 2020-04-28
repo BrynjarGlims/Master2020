@@ -25,6 +25,7 @@ public class IndividualTest {
 
     public static boolean testValidOrderDistribution(Data data, OrderDistribution orderDistribution){
         OrderDelivery orderDelivery;
+        boolean valid = true;
         for (Order order : data.orders){
             orderDelivery = orderDistribution.orderDeliveries[order.orderID];
             int numOrders = 0;
@@ -32,17 +33,19 @@ public class IndividualTest {
                 if(orderDelivery.orderPeriods[p] == 1){
                     numOrders += 1;
                     if (orderDelivery.orderVolumes[p] < order.minVolume || orderDelivery.orderVolumes[p] > order.maxVolume){
+                        System.out.println("order " + order.orderID + " is dividable: " + order.isDividable);
+                        System.out.println("ordername: " + order.commodityFlow + " customer: " + data.customers[order.customerID].customerName);
                         System.out.println("volume invalid, delivered: " +  orderDelivery.orderVolumes[p] + " bounds: " + order.minVolume + " - " + order.maxVolume);
-                        return false;
+                        valid = false;
                     }
                 }
             }
             if (numOrders < order.minFrequency || numOrders > order.maxFrequency){
                 System.out.println("frequency invalid, visits: " + numOrders + " bounds: " + order.minFrequency + " - " + order.maxFrequency);
-                return false;
+                valid = false;
             }
         }
-        return true;
+        return valid;
     }
 
 

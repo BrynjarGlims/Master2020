@@ -57,7 +57,7 @@ public class OrderDistribution {
 
 
     public void makeDistributionFromOrderAllocationModel(OrderAllocationModel oam ) throws GRBException {
-        setVolumeAndOrdersFromMIP( oam.uND, oam.uD, oam.qND, oam.qD);
+        setVolumeAndOrdersFromMIP(oam.uND, oam.uD, oam.qND, oam.qD);
         setVolumePerPeriod();
         setFitness();
     }
@@ -251,7 +251,7 @@ public class OrderDistribution {
 
     private double[] splitDelivery(Order order) {
         int numSplits = ThreadLocalRandom.current().nextInt(order.minFrequency, order.maxFrequency + 1);
-        double[] volumeSplits = distributeVolume(order, numSplits, 10); //numFractions decide amount of randomness in distribution
+        double[] volumeSplits = distributeVolume(order, numSplits, 100); //numFractions decide amount of randomness in distribution
         int[] deliveryPeriods = getValidDeliveryPeriods(volumeSplits, data.customers[order.customerID]);
 
         for (int i = 0; i < deliveryPeriods.length; i++) {

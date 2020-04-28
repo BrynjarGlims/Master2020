@@ -7,6 +7,7 @@ import Master2020.Genetic.FitnessCalculation;
 import Master2020.Individual.AdSplit;
 import Master2020.Individual.Individual;
 import Master2020.Individual.Journey;
+import Master2020.Individual.Trip;
 import Master2020.MIP.OrderAllocationModel;
 import Master2020.Population.OrderDistributionPopulation;
 import Master2020.ProductAllocation.OrderDistribution;
@@ -26,6 +27,7 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
+import static Master2020.Testing.ABCtests.allCustomersExists;
 import static Master2020.Testing.IndividualTest.testValidOrderDistribution;
 import static java.lang.Thread.sleep;
 
@@ -51,6 +53,7 @@ public class Swarm {
         CyclicBarrier upstreamGate = new CyclicBarrier(data.numberOfPeriods + 1);
         List<PeriodSwarm> threads = makeThreadsAndStart(downstreamGate, upstreamGate);
         System.out.println("RUNNING FOR SAMPLE: " + Parameters.randomSeedValue);
+        System.out.println("initial od valid?: " + testValidOrderDistribution(data, orderDistribution));
 
         for (int i = 0 ; i < Parameters.orderDistributionUpdates ; i++){
             System.out.println("GENERATION: " + i);
@@ -79,12 +82,26 @@ public class Swarm {
             boolean feasible;
             double infeasibility;
 
+            System.out.println("all customers exists: " + allCustomersExists(journeys, data));
+            for (int p = 0 ; p < data.numberOfPeriods ; p++){
+                for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
+                    for (Journey journey : journeys[p][vt]){
+                        for (Trip trip : journey.trips){
+                            System.out.println("tripsize: " + trip.customers.size());
+                        }
+                    }
+                }
+            }
+
             fitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1);
             fitness =  orderDistribution.getFitness();
             for (double f : fitnesses){
                 fitness+= f;
             }
-           feasible = fitnesses[1] == 0 && fitnesses[2] == 0;
+
+
+            System.out.println(testValidOrderDistribution(data, orderDistribution));
+            feasible = fitnesses[1] == 0 && fitnesses[2] == 0;
             infeasibility = fitnesses[1] + fitnesses[2];
             System.out.println("fitness: " + fitness + " old fitness: " + Prefitnesses + " feasible: " + feasible + " cost: " + infeasibility + " time warp: " + fitnesses[1] + " overload: " + fitnesses[2] + " vehicle cost: " + fitnesses[3]);
 
