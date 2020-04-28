@@ -26,7 +26,7 @@ public class JourneyGenerator {
             }
             currentTime = p.earliestStartTime + p.duration;
 
-            HashSet<Path> usedPaths = new HashSet<>();
+            List<Path> usedPaths = new ArrayList<>();
             usedPaths.add(p);
             allJourneys.addAll(createJourneys(usedPaths, sortedPaths, visited, currentTime, period, vehicleType, journeyId));
             usedPaths.remove(p);
@@ -35,7 +35,7 @@ public class JourneyGenerator {
     }
 
 
-    private HashSet<Journey> createJourneys(HashSet<Path> usedPaths, List<Path> sortedPaths, int[] visitedCustomers, double currentTime, int period, VehicleType vehicleType, AtomicInteger journeyId){
+    private HashSet<Journey> createJourneys(List<Path> usedPaths, List<Path> sortedPaths, int[] visitedCustomers, double currentTime, int period, VehicleType vehicleType, AtomicInteger journeyId){
         HashSet<Journey> journeys = new HashSet<>();
         journeys.add(createJourney(usedPaths, period, vehicleType, journeyId));
         currentTime += dataMIP.loadingTime[vehicleType.type];
@@ -83,7 +83,7 @@ public class JourneyGenerator {
         return viablePaths;
     }
 
-    private Journey createJourney(HashSet<Path> visited, int period, VehicleType vehicleType, AtomicInteger journeyId){
+    private Journey createJourney(List<Path> visited, int period, VehicleType vehicleType, AtomicInteger journeyId){
         double duration = 0;
         double cost = 0;
         int numTrips = visited.size();

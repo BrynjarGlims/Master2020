@@ -72,6 +72,7 @@ public class Swarm {
                 old += d;
             }
             updateOrderDistributionForColonies(threads);
+            System.out.println("valid OD: " + testValidOrderDistribution(data, orderDistribution));
             double Prefitnesses = orderDistribution.getFitness();
 
             for (PeriodSwarm swarm : threads){
@@ -82,16 +83,6 @@ public class Swarm {
             boolean feasible;
             double infeasibility;
 
-            System.out.println("all customers exists: " + allCustomersExists(journeys, data));
-            for (int p = 0 ; p < data.numberOfPeriods ; p++){
-                for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
-                    for (Journey journey : journeys[p][vt]){
-                        for (Trip trip : journey.trips){
-                            System.out.println("tripsize: " + trip.customers.size());
-                        }
-                    }
-                }
-            }
 
             fitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1);
             fitness =  orderDistribution.getFitness();
@@ -99,8 +90,6 @@ public class Swarm {
                 fitness+= f;
             }
 
-
-            System.out.println(testValidOrderDistribution(data, orderDistribution));
             feasible = fitnesses[1] == 0 && fitnesses[2] == 0;
             infeasibility = fitnesses[1] + fitnesses[2];
             System.out.println("fitness: " + fitness + " old fitness: " + Prefitnesses + " feasible: " + feasible + " cost: " + infeasibility + " time warp: " + fitnesses[1] + " overload: " + fitnesses[2] + " vehicle cost: " + fitnesses[3]);

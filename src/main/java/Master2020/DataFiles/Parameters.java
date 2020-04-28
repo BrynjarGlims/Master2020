@@ -29,7 +29,7 @@ public class Parameters {
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 4; // A maximum of 75
+    public static int numberOfCustomers = 7; // A maximum of 75
     public static final int numberOfVehicles = 4;
     public static final double distanceCutOffFromDepot = 3.0;
     public static final boolean adjustTimeWindow = true;
@@ -78,7 +78,7 @@ public class Parameters {
     public static final double scalingUnloadingTimeAtCustomerVariable = 0.001;
     public static final double scalingVehicleCapacity = 0.01;
     public static final double indifferenceValue = 0.0001;
-    public static final double scalingVolumeValue = 1.2;
+    public static final double scalingVolumeValue = 1.5;
     public static final double lowerVolumeFlexibility = 0.7;
     public static final double upperVolumeFlexibility = 1.3;
 

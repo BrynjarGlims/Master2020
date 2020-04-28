@@ -558,7 +558,6 @@ public class OrderAllocationModel {
             setObjective();
             activateConstraints();
             optimizeModel();
-            System.out.println("optistatus: " + optimstatus);
             if (optimstatus == 3) {
                 if (Parameters.verbose){
                     System.out.println("No optimal od found");

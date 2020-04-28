@@ -6,6 +6,7 @@ import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Order;
 import Master2020.DataFiles.*;
 import Master2020.MIP.OrderAllocationModel;
+import Master2020.PR.ArcFlowModel;
 import Master2020.PR.DataMIP;
 import Master2020.PR.JourneyBasedModel;
 import Master2020.PR.PathFlowModel;
@@ -61,13 +62,8 @@ public class OrderDistribution {
         setFitness();
     }
 
-    public void makeDistributionFromArcFlowModel(ArcFlowModel afm) throws GRBException {
-        setVolumeAndOrdersFromMIP( afm.uND, afm.uD, afm.qND, afm.qD);
-        setVolumePerPeriod();
-        setFitness();
-    }
 
-    public void makeDistributionFromArcFlowModel(Master2020.PR.ArcFlowModel afm) throws GRBException {
+    public void makeDistributionFromArcFlowModel(ArcFlowModel afm) throws GRBException {
         setVolumeAndOrdersFromMIP( afm.u, afm.q, afm.dataMIP);
         setVolumePerPeriod();
         setFitness();

@@ -442,6 +442,7 @@ public class App {
             runGA(Parameters.samples);
         }
         */
+        //runGA(1);
         runMIPJBM(Parameters.samples);
         /*
         for (int i  = 0; i < 10; i++) {

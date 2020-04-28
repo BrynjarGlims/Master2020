@@ -32,7 +32,7 @@ public class IndividualTest {
             for (int p = 0 ; p < data.numberOfPeriods ; p++){
                 if(orderDelivery.orderPeriods[p] == 1){
                     numOrders += 1;
-                    if (orderDelivery.orderVolumes[p] < order.minVolume || orderDelivery.orderVolumes[p] > order.maxVolume){
+                    if (orderDelivery.orderVolumes[p] < (order.minVolume - 0.0001) || orderDelivery.orderVolumes[p] > (order.maxVolume + 0.0001)){
                         System.out.println("order " + order.orderID + " is dividable: " + order.isDividable);
                         System.out.println("ordername: " + order.commodityFlow + " customer: " + data.customers[order.customerID].customerName);
                         System.out.println("volume invalid, delivered: " +  orderDelivery.orderVolumes[p] + " bounds: " + order.minVolume + " - " + order.maxVolume);
