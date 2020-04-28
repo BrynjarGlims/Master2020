@@ -201,25 +201,27 @@ public class TestResults {
             Parameters.randomSeedValue = 30 + i;
             System.out.println("RANDOM SEED VALUE: " + Parameters.randomSeedValue);
             System.out.println("Results from GA:");
-            String name = "GA_S" + Parameters.randomSeedValue + "_C4_V4_27_04_2020";
+            String name = "GA_S" + Parameters.randomSeedValue + "_C4_V4_28_04_2020";
             String path = "results/results_detailed/" + name;
             evaluateSolution(path, name);
             System.out.println(" ----- ");
             System.out.println("Results from JBM");
-            name = "JBM_S" + Parameters.randomSeedValue + "_C4_V4_27_04_2020";
+            name = "JBM_S" + Parameters.randomSeedValue + "_C4_V4_28_04_2020";
             path = "results/results_detailed/" + name;
             evaluateSolution(path, name);
             System.out.println(" ----- ");
             System.out.println("Results from PFM");
-            name = "PFM_S" + Parameters.randomSeedValue + "_C4_V4_27_04_2020";
+            name = "PFM_S" + Parameters.randomSeedValue + "_C4_V4_28_04_2020";
             path = "results/results_detailed/" + name;
             evaluateSolution(path, name);
             System.out.println(" ----- ");
             System.out.println("Results from AFM");
-            name = "AFM_S" + Parameters.randomSeedValue + "_C4_V4_27_04_2020";
+            name = "AFM_S" + Parameters.randomSeedValue + "_C4_V4_28_04_2020";
             path = "results/results_detailed/" + name;
             evaluateSolution(path, name);
+            System.out.println(" ");
             System.out.println(" ############################ ");
+            System.out.println(" ");
         }
 
     }
