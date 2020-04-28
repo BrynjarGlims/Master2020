@@ -13,11 +13,11 @@ public class TestResults {
     public static Data data;
 
 
-    public static void evaluateSolution(String path){
+    public static void evaluateSolution(String path, String name){
         data = DataReader.loadData();
-        List<String[]> tripData = readCSVFile(path + "/trip.csv");
-        List<String[]> ordersData = readCSVFile(path + "/orders.csv");
-        List<String[]> vehicleData = readCSVFile(path + "/vehicle.csv");
+        List<String[]> tripData = readCSVFile(path + "/" + name + "_trip.csv");
+        List<String[]> ordersData = readCSVFile(path + "/" + name + "_orders.csv");
+        List<String[]> vehicleData = readCSVFile(path + "/" + name + "_vehicle.csv");
 
 
         double travelCost = findObjectiveValuesOfTrip(tripData);
@@ -126,7 +126,6 @@ public class TestResults {
 
         for(int line = 0; line < vehicleData.size(); line++){
             vehicleUseCost += data.vehicleTypes[Integer.parseInt(vehicleData.get(line)[3])].usageCost*Integer.parseInt(vehicleData.get(line)[10]);
-
         }
         return vehicleUseCost;
     }
@@ -198,14 +197,32 @@ public class TestResults {
     }
 
     public static void main(String[] args){
-        System.out.println("Results from GA:");
-        String path = "results/results_detailed/Ga_sol_5_ap";
-        evaluateSolution(path);
-        System.out.println(" ----- ");
-        System.out.println("Results from MIP");
-        path = "results/results_detailed/Mip_sol_1_ap";
-        evaluateSolution(path);
-
+        for (int i = 0; i < 10; i++) {
+            Parameters.randomSeedValue = 30 + i;
+            System.out.println("RANDOM SEED VALUE: " + Parameters.randomSeedValue);
+            System.out.println("Results from GA:");
+            String name = "GA_S" + Parameters.randomSeedValue + "_C4_V4_28_04_2020";
+            String path = "results/results_detailed/" + name;
+            evaluateSolution(path, name);
+            System.out.println(" ----- ");
+            System.out.println("Results from JBM");
+            name = "JBM_S" + Parameters.randomSeedValue + "_C4_V4_28_04_2020";
+            path = "results/results_detailed/" + name;
+            evaluateSolution(path, name);
+            System.out.println(" ----- ");
+            System.out.println("Results from PFM");
+            name = "PFM_S" + Parameters.randomSeedValue + "_C4_V4_28_04_2020";
+            path = "results/results_detailed/" + name;
+            evaluateSolution(path, name);
+            System.out.println(" ----- ");
+            System.out.println("Results from AFM");
+            name = "AFM_S" + Parameters.randomSeedValue + "_C4_V4_28_04_2020";
+            path = "results/results_detailed/" + name;
+            evaluateSolution(path, name);
+            System.out.println(" ");
+            System.out.println(" ############################ ");
+            System.out.println(" ");
+        }
 
     }
 

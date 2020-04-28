@@ -41,15 +41,12 @@ public class Order {
         return Parameters.scalingVolumeValue*volume; //todo: implement rounding to 0.5
     }
 
-    private void setMaxVolume(){
-        this.minVolume = volume/maxFrequency; // TODO: 21/02/2020  : change into something more reasonable
-
+    private void setMinVolume(){
+        this.minVolume = volume/maxFrequency*Parameters.lowerVolumeFlexibility;
     }
 
-    private void setMinVolume(){
-        this.maxVolume = volume/minFrequency;    // TODO: 21/02/2020  : change into something more reasonable
-
-
+    private void setMaxVolume(){
+        this.maxVolume = volume/minFrequency*Parameters.upperVolumeFlexibility;
     }
 
     public void setCustomerDividableOrderID(int customerDividableOrderID) {

@@ -29,8 +29,8 @@ public class Parameters {
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 5; // A maximum of 75
-    public static final int numberOfVehicles = 25;
+    public static int numberOfCustomers = 4; // A maximum of 75
+    public static final int numberOfVehicles = 4;
     public static final double distanceCutOffFromDepot = 3.0;
     public static final boolean adjustTimeWindow = true;
     public static final double adjustTimeWindowReduction = 5;
@@ -79,6 +79,9 @@ public class Parameters {
     public static final double scalingVehicleCapacity = 0.01;
     public static final double indifferenceValue = 0.0001;
     public static final double scalingVolumeValue = 1.2;
+    public static final double lowerVolumeFlexibility = 0.7;
+    public static final double upperVolumeFlexibility = 1.3;
+
 
     //Cost parameters
     public static final double[] overtimeLimitPercentage = {0.19, 0.19, 0.19, 0.19, 0.19, 0.05};
@@ -117,5 +120,5 @@ public class Parameters {
     public static final boolean verboseJourneyBased = false;
     public static final boolean savePlots = false;
     public static final boolean verbose = false;
-    public static final char separator = ';';
+    public static final char separator = ',';
 }

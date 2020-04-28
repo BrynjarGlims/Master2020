@@ -94,6 +94,7 @@ public class ModelConverter {
         individual.setTripMap(tripMap);
         individual.setTripList(tripList);
         individual.setGiantTour(createGiantTour(giantTour));
+        
     }
 
 

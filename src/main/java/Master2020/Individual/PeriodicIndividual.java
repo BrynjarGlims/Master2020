@@ -111,6 +111,12 @@ public class PeriodicIndividual {
         }
     }
 
+    public Individual createStandardIndividualObject(){
+        Individual newIndividual = new Individual(this.data, null, false, -1);
+        newIndividual.journeyList = this.journeys;
+        return newIndividual;
+    }
+
     public int compareTo(PeriodicIndividual periodicIndividual) { // TODO: 04.03.2020 Sort by biased fitness and not fitness
         return this.getFitness() < periodicIndividual.getFitness() ? 1 : -1;
     }

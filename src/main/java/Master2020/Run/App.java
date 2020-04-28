@@ -18,10 +18,6 @@ import Master2020.Testing.IndividualTest;
 import Master2020.Visualization.PlotIndividual;
 import Master2020.Individual.Trip;
 import gurobi.GRBException;
-import org.openjdk.jmh.annotations.Param;
-import scala.xml.PrettyPrinter;
-
-
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.concurrent.ThreadLocalRandom;
@@ -231,7 +227,6 @@ public class App {
             JourneyBasedModel jbm = new JourneyBasedModel(dataMip);
             jbm.runModel(Master2020.DataFiles.Parameters.symmetry);
             Individual bestIndividual = jbm.getIndividual();
-            System.out.println("hei");
             Result result = new Result(bestIndividual, "JBM", jbm.feasible, jbm.optimal);
             try{
                 result.store(jbm.runTime, jbm.MIPGap);
@@ -368,7 +363,23 @@ public class App {
                     periodicPopulation.addPeriodicIndividual(newPeriodicIndividual);
                     newPeriodicIndividual.printDetailedInformation();
                 }
+
+                if (numberOfIterations % Parameters.generationsOfOrderDistributions == 0 & numberOfIterations != 0) {
+                    System.out.println("Perform update of volumes");
+                }
+
             }
+
+
+            if (Parameters.savePlots) {
+                PlotIndividual visualizer = new PlotIndividual(data);
+                visualizer.visualize(bestIndividual);
+            }
+
+            double runTime = (System.currentTimeMillis() - time)/1000;
+            Result res = new Result(population, "GA");
+            res.store(runTime, -1);
+            orderAllocationModel.terminateEnvironment();
 
 
             // // TODO: 22/04/2020  Implement so it works on the best individual of the population
@@ -430,8 +441,27 @@ public class App {
         else {
             runGA(Parameters.samples);
         }
-
-         */
+        */
+        runMIPJBM(Parameters.samples);
+        /*
+        for (int i  = 0; i < 10; i++) {
+            Parameters.randomSeedValue = 30+i;
+            //runGA(Parameters.samples);
+            Parameters.randomSeedValue = 30+i;
+            //runMIPJBM(Parameters.samples);
+            Parameters.randomSeedValue = 30+i;
+            //runMIPPFM(Parameters.samples);
+            Parameters.randomSeedValue = 30+i;
+            runMIPAFM(Parameters.samples);
+        }
+        */
+        /*
+        if (!Parameters.isPeriodic) {
+            System.out.println("######## RUN STANDARD GA #########");
+            runGA(Parameters.samples);
+        } else {
+            System.out.println("######## RUN PERIODIC GA #########");
+>>>>>>> 715d1e3224a9566ec4b2b3b4c4a82a0b4b62f0b5
 
         runMIPJBM(1);
 //        if (!Parameters.isPeriodic) {
@@ -442,6 +472,8 @@ public class App {
 //
 //            runPeriodicGA(Parameters.samples);
 //        }
+
+         */
 
 
 

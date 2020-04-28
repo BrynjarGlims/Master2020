@@ -3,6 +3,7 @@ package Master2020.StoringResults;
 import Master2020.DataFiles.*;
 import Master2020.Genetic.OrderDistributionCrossover;
 import Master2020.Individual.Individual;
+import Master2020.Individual.Journey;
 import Master2020.Population.Population;
 import Master2020.ProductAllocation.OrderDelivery;
 import Master2020.ProductAllocation.OrderDistribution;
@@ -213,21 +214,34 @@ public class Result {
             csvWriter.writeNext(CSV_COLUMNS, false);
         }
         int tripNumber = 1;
+        for (ArrayList<Journey>[] periodJourneys : bestIndividual.journeyList){
+            for (ArrayList<Journey> vehicleJourneys : periodJourneys) {
+                for (Journey journey : vehicleJourneys ){
+                    int tripCounter = 0;
+                    for (Trip t : journey.trips){
+                        tripCounter += 1;
+                        if(t.customers.size() == 0){
+                            System.out.println("Empty trip");
+                            continue;
+                        }
+                        String[] results = {String.valueOf(tripNumber), String.valueOf(tripCounter) , Converter.periodConverter(t.period),String.valueOf(t.vehicleID)
+                                ,data.vehicles[t.vehicleID].vehicleName, String.valueOf(data.vehicleTypes[t.vehicleType].capacity),
+                                Converter.getStartingTimeForTrip(t, data)
+                                ,Converter.calculateTotalTripTime(t, data), Converter.calculateDrivingTime(t, data) ,Converter.formatList(t.customers)
+                                ,Converter.findCustomersFromID((ArrayList) t.customers, data), Converter.findTimeWindowToCustomers((ArrayList) t.customers, data, t.period)};
+                        csvWriter.writeNext(results, false);
+                        tripNumber++;
+
+                    }
+                }
+            }
+        }
+
         for (ArrayList<Trip>[] periodTrips : bestIndividual.tripList ){
             for (ArrayList<Trip> vehicleTypeTrips : periodTrips ){
                 for (Trip t : vehicleTypeTrips){
 
-                    if(t.customers.size() == 0){
-                        System.out.println("Empty trip");
-                        continue;
-                    }
-                    String[] results = {String.valueOf(tripNumber), Converter.getTripNumber(t, bestIndividual) , Converter.periodConverter(t.period),String.valueOf(t.vehicleID)
-                            ,data.vehicles[t.vehicleID].vehicleName, String.valueOf(data.vehicleTypes[t.vehicleType].capacity),
-                            Converter.getStartingTimeForTrip(t, data)
-                            ,Converter.calculateTotalTripTime(t, data), Converter.calculateDrivingTime(t, data) ,Converter.formatList(t.customers)
-                            ,Converter.findCustomersFromID((ArrayList) t.customers, data), Converter.findTimeWindowToCustomers((ArrayList) t.customers, data, t.period)};
-                    csvWriter.writeNext(results, false);
-                    tripNumber++;
+
                 }
             }
         }

@@ -5,7 +5,6 @@ import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Order;
 import Master2020.DataFiles.*;
-import Master2020.MIP.ArcFlowModel;
 import Master2020.MIP.OrderAllocationModel;
 import Master2020.PR.DataMIP;
 import Master2020.PR.JourneyBasedModel;
