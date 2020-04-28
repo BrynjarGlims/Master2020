@@ -43,7 +43,7 @@ public abstract class Bee {
 
 
     protected void updatePosition(double[] newPosition, double[] neighborPosition, boolean employee){
-        int numDimensions = random.nextInt(1, Math.min(numCustomers, Parameters.maxBoundDimensionality + 1));
+        int numDimensions = random.nextInt(1, Math.max( 2, Math.min(numCustomers, Parameters.maxBoundDimensionality + 1)));
         int[] dimensions  = new int[numDimensions];
         for (int d = 0 ; d < numDimensions ; d++){
             dimensions[d] = random.nextInt(0, numCustomers);

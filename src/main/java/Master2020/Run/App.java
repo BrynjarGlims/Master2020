@@ -18,6 +18,8 @@ import Master2020.Testing.IndividualTest;
 import Master2020.Visualization.PlotIndividual;
 import Master2020.Individual.Trip;
 import gurobi.GRBException;
+import org.openjdk.jmh.annotations.Param;
+import scala.xml.PrettyPrinter;
 
 
 import java.io.IOException;
@@ -189,7 +191,6 @@ public class App {
 
     public static void runMIPAFM(int samples){
         for (int i = 0 ; i < samples ; i++){
-            Parameters.randomSeedValue += 1;
             Data data = Master2020.DataFiles.DataReader.loadData();
             DataMIP dataMip = DataConverter.convert(data);
             ArcFlowModel afm = new ArcFlowModel(dataMip);
@@ -201,13 +202,12 @@ public class App {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
+            Parameters.randomSeedValue += 1;
         }
     }
 
     public static void runMIPPFM(int samples){
         for (int i = 0 ; i < samples ; i++){
-            Parameters.randomSeedValue += 1;
             Data data = Master2020.DataFiles.DataReader.loadData();
             DataMIP dataMip = DataConverter.convert(data);
             PathFlowModel pfm = new PathFlowModel(dataMip);
@@ -219,13 +219,13 @@ public class App {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
+            Parameters.randomSeedValue += 1;
         }
     }
 
     public static void runMIPJBM(int samples){
         for (int i = 0 ; i < samples ; i++){
-            Parameters.randomSeedValue += 1;
+            System.out.println("RUNNING FOR SAMPLE: " + Parameters.randomSeedValue);
             Data data = Master2020.DataFiles.DataReader.loadData();
             DataMIP dataMip = DataConverter.convert(data);
             JourneyBasedModel jbm = new JourneyBasedModel(dataMip);
@@ -238,6 +238,7 @@ public class App {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            Parameters.randomSeedValue += 1;
         }
     }
 
@@ -398,6 +399,8 @@ public class App {
             orderAllocationModel.terminateEnvironment();
             
              */
+
+            Parameters.randomSeedValue += 1;
         }
     }
 
@@ -429,14 +432,16 @@ public class App {
         }
 
          */
-        if (!Parameters.isPeriodic) {
-            System.out.println("######## RUN STANDARD GA #########");
-            runGA(Parameters.samples);
-        } else {
-            System.out.println("######## RUN PERIODIC GA #########");
 
-            runPeriodicGA(Parameters.samples);
-        }
+        runMIPJBM(1);
+//        if (!Parameters.isPeriodic) {
+//            System.out.println("######## RUN STANDARD GA #########");
+//            runGA(Parameters.samples);
+//        } else {
+//            System.out.println("######## RUN PERIODIC GA #########");
+//
+//            runPeriodicGA(Parameters.samples);
+//        }
 
 
 

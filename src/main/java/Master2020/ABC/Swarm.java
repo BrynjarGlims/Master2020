@@ -5,13 +5,16 @@ import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.FitnessCalculation;
 import Master2020.Individual.AdSplit;
+import Master2020.Individual.Individual;
 import Master2020.Individual.Journey;
 import Master2020.MIP.OrderAllocationModel;
 import Master2020.Population.OrderDistributionPopulation;
 import Master2020.ProductAllocation.OrderDistribution;
+import Master2020.StoringResults.Result;
 import Master2020.Testing.ABCtests;
 import gurobi.GRBException;
 
+import java.io.IOException;
 import java.sql.SQLOutput;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CountDownLatch;
@@ -42,11 +45,12 @@ public class Swarm {
     }
 
 
-    public void run() throws InterruptedException, BrokenBarrierException {
+    public void run() throws InterruptedException, BrokenBarrierException, IOException {
         //create
         CyclicBarrier downstreamGate = new CyclicBarrier(data.numberOfPeriods + 1);
         CyclicBarrier upstreamGate = new CyclicBarrier(data.numberOfPeriods + 1);
         List<PeriodSwarm> threads = makeThreadsAndStart(downstreamGate, upstreamGate);
+        System.out.println("RUNNING FOR SAMPLE: " + Parameters.randomSeedValue);
 
         for (int i = 0 ; i < Parameters.orderDistributionUpdates ; i++){
             System.out.println("GENERATION: " + i);
@@ -59,17 +63,13 @@ public class Swarm {
             upstreamGate.reset();
 
             //update and find best order distribution
-            System.out.println("OD fitness pre: " + orderDistribution.getFitness());
-            System.out.println("OD pre is valid: " + testValidOrderDistribution(data, orderDistribution));
             double[] oldFitnesses = makeOptimalOrderDistribution(threads);
             double old = 0;
             for (double d : oldFitnesses){
                 old += d;
             }
             updateOrderDistributionForColonies(threads);
-            System.out.println("OD fitness post: " + orderDistribution.getFitness());
-            System.out.println("OD post is valid: " + testValidOrderDistribution(data, orderDistribution));
-            double Prefitnesses = 0;
+            double Prefitnesses = orderDistribution.getFitness();
 
             for (PeriodSwarm swarm : threads){
                 Prefitnesses += swarm.globalBestFitness;
@@ -80,14 +80,13 @@ public class Swarm {
             double infeasibility;
 
             fitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1);
-            fitness =  0; //orderDistribution.getFitness();
+            fitness =  orderDistribution.getFitness();
             for (double f : fitnesses){
                 fitness+= f;
             }
            feasible = fitnesses[1] == 0 && fitnesses[2] == 0;
             infeasibility = fitnesses[1] + fitnesses[2];
-            System.out.println("old: fitness: " + old +  " feasible: " + feasible +  " time warp: " + oldFitnesses[1] + " overload: " + oldFitnesses[2]);
-            System.out.println("fitness: " + fitness + " old fitness: " + Prefitnesses + " feasible: " + feasible + " cost: " + infeasibility + " time warp: " + fitnesses[1] + " overload: " + fitnesses[2]);
+            System.out.println("fitness: " + fitness + " old fitness: " + Prefitnesses + " feasible: " + feasible + " cost: " + infeasibility + " time warp: " + fitnesses[1] + " overload: " + fitnesses[2] + " vehicle cost: " + fitnesses[3]);
 
 //            System.out.println("all customers exists: " + ABCtests.allCustomersExists(journeys, data));
 
@@ -98,6 +97,9 @@ public class Swarm {
         }
         downstreamGate.await();
         upstreamGate.await();
+        Individual individual = HelperFunctions.createIndividual(data, journeys, orderDistribution);
+        Result result = new Result(individual, "ABC");
+        result.store();
     }
 
     private double[] makeOptimalOrderDistribution(List<PeriodSwarm> periodSwarms){
@@ -115,15 +117,6 @@ public class Swarm {
         double[] fitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1);
 
         this.orderDistribution = orderAllocationModel.createOptimalOrderDistribution(journeys);
-        for (int p = 0 ; p < data.numberOfPeriods ; p++){
-            periodSwarm = periodSwarms.get(p);
-            ArrayList<Integer>[] giantTourEntry = HelperFunctions.parsePosition(data, p, periodSwarm.globalBestPosition);
-
-            for (int vt = 0 ; vt < giantTourEntry.length ; vt++) {
-                ArrayList<Journey> journeysEntry = AdSplit.adSplitSingular(giantTourEntry[vt], data, orderDistribution, p, vt);
-                journeys[p][vt] = journeysEntry;
-            }
-        }
         return fitnesses;
 
     }
@@ -146,7 +139,7 @@ public class Swarm {
         return threads;
     }
 
-    public static void main(String[] args) throws InterruptedException, BrokenBarrierException, GRBException {
+    public static void main(String[] args) throws InterruptedException, BrokenBarrierException, GRBException, IOException {
         Data data = DataReader.loadData();
         Swarm swarm = new Swarm(data);
         swarm.run();

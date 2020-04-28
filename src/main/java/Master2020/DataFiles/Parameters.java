@@ -14,7 +14,7 @@ public class Parameters {
     public static final String dataSet = "Trøndelag";
     public static final boolean doRandomSeed = true;
     public static final int samples = 1;
-    public static long randomSeedValue = 1;
+    public static long randomSeedValue = 5;
 
     // Population parameters
     public static final int maximumSubIndividualPopulationSize = 75; //TODO: find reasonable value
@@ -29,7 +29,7 @@ public class Parameters {
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 10; // A maximum of 75
+    public static int numberOfCustomers = 75; // A maximum of 75
     public static final int numberOfVehicles = 25;
     public static final double distanceCutOffFromDepot = 3.0;
     public static final boolean adjustTimeWindow = true;
@@ -48,7 +48,7 @@ public class Parameters {
 
     // ABC specific parameters
     public static final int generationsPerOrderDistribution = 500;
-    public static final int orderDistributionUpdates = 100;
+    public static final int orderDistributionUpdates = 50;
     public static final int numberOfEmployees = 10;
     public static final int numberOfOnlookers = 40;
     public static final int numberOfScoutTrials = 5;
@@ -62,8 +62,8 @@ public class Parameters {
     public static final double globalTrialsCutoff = 1.1; //trials will not increment if solution is within this multiplier of global best
 
     //Penalty parameters for heuristics
-    public static final double initialCapacityPenalty = 1000;  // lambda
-    public static final double initialTimeWarpPenalty = 1000;  // theta
+    public static final double initialCapacityPenalty = 1000000;  // lambda
+    public static final double initialTimeWarpPenalty = 1000000;  // theta
     public static final double initialDrivingCostPenalty = 1; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
     public static final double penaltyFactorForOverFilling = 1.1;
     public static final double penaltyFactorForUnderFilling = 1.5;
@@ -78,7 +78,7 @@ public class Parameters {
     public static final double scalingUnloadingTimeAtCustomerVariable = 0.001;
     public static final double scalingVehicleCapacity = 0.01;
     public static final double indifferenceValue = 0.0001;
-    public static final double scalingVolumeValue = 1.2;
+    public static final double scalingVolumeValue = 50;
 
     //Cost parameters
     public static final double[] overtimeLimitPercentage = {0.19, 0.19, 0.19, 0.19, 0.19, 0.05};
