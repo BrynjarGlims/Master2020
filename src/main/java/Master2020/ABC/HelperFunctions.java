@@ -1,6 +1,11 @@
 package Master2020.ABC;
 
 import Master2020.DataFiles.Data;
+import Master2020.Individual.AdSplit;
+import Master2020.Individual.Individual;
+import Master2020.Individual.Journey;
+import Master2020.Individual.Trip;
+import Master2020.ProductAllocation.OrderDistribution;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,7 +41,15 @@ public class HelperFunctions {
             }
         }
         return customerVisits;
-
-
     }
+
+
+    public static Individual createIndividual(Data data, ArrayList<Journey>[][] journeys, OrderDistribution orderDistribution){
+        Individual individual = new Individual(data);
+        individual.journeyList = journeys;
+        individual.orderDistribution = orderDistribution;
+        individual.setGiantTourFromJourneys();
+        return individual;
+    }
+
 }

@@ -18,9 +18,6 @@ import Master2020.Testing.IndividualTest;
 import Master2020.Visualization.PlotIndividual;
 import Master2020.Individual.Trip;
 import gurobi.GRBException;
-import scala.xml.PrettyPrinter;
-
-
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.concurrent.ThreadLocalRandom;
@@ -201,7 +198,7 @@ public class App {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
+            Parameters.randomSeedValue += 1;
         }
     }
 
@@ -218,12 +215,13 @@ public class App {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
+            Parameters.randomSeedValue += 1;
         }
     }
 
     public static void runMIPJBM(int samples){
         for (int i = 0 ; i < samples ; i++){
+            System.out.println("RUNNING FOR SAMPLE: " + Parameters.randomSeedValue);
             Data data = Master2020.DataFiles.DataReader.loadData();
             DataMIP dataMip = DataConverter.convert(data);
             JourneyBasedModel jbm = new JourneyBasedModel(dataMip);
@@ -235,6 +233,7 @@ public class App {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            Parameters.randomSeedValue += 1;
         }
     }
 
@@ -411,6 +410,8 @@ public class App {
             orderAllocationModel.terminateEnvironment();
             
              */
+
+            Parameters.randomSeedValue += 1;
         }
     }
 
@@ -429,7 +430,7 @@ public class App {
 
 
     public static void main(String[] args) throws Exception {
-        /*
+
         Parameters.numberOfCustomers = Integer.parseInt(args[1]);
         if (args[0].equals("AFM"))
             runMIPAFM(Parameters.samples);
@@ -440,37 +441,15 @@ public class App {
         else {
             runGA(Parameters.samples);
         }
-        */
-        //runMIPJBM(Parameters.samples);
-        for (int i  = 0; i < 1; i++) {
-            /*
-            Parameters.randomSeedValue = 30+i;
-            runGA(Parameters.samples);
-            */
 
-            Parameters.randomSeedValue = 32;
-            runMIPJBM(Parameters.samples);
-            /*
-            Parameters.randomSeedValue = 30+i;
-            runMIPPFM(Parameters.samples);
-            Parameters.randomSeedValue = 30+i;
-            runMIPAFM(Parameters.samples);
 
-             */
-        }
-
-        /*
         if (!Parameters.isPeriodic) {
             System.out.println("######## RUN STANDARD GA #########");
             runGA(Parameters.samples);
         } else {
             System.out.println("######## RUN PERIODIC GA #########");
 
-            runPeriodicGA(Parameters.samples);
         }
-
-         */
-
 
 
 //        double time = System.currentTimeMillis();
@@ -490,6 +469,7 @@ public class App {
 //            }
 //        }
 //        System.out.println("paths: " + paths);
+
 
     }
 

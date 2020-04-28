@@ -164,6 +164,29 @@ public class Individual implements Comparable<Individual> {
         }
     }
 
+    public void setGiantTourFromJourneys(){
+        //updates giantTour chromosome from trips changed in education
+        GiantTour gt = new GiantTour(data, isPeriodic, actualPeriod);
+        for (int period = 0 ; period < this.numberOfPeriods ; period++){
+            for (int vehicleType = 0 ; vehicleType < data.numberOfVehicleTypes ; vehicleType++){
+                setGiantTourFromJourneysPerPeriodVehicleType(period, vehicleType, gt);
+            }
+        }
+        this.giantTour = gt;
+    }
+
+    private void setGiantTourFromJourneysPerPeriodVehicleType(int p, int vt, GiantTour gt) {
+        ArrayList<Integer> giantTourEntry = new ArrayList<>();
+        gt.chromosome[p][vt] = giantTourEntry;
+        for (Journey journey : journeyList[p][vt]) {
+            tripList[p][vt].addAll(journey.trips);
+            for (Trip trip : journey.trips) {
+                giantTourEntry.addAll(trip.customers);
+            }
+        }
+    }
+
+
     public void setGiantTourFromTrips(){
         //updates giantTour chromosome from trips changed in education
         GiantTour gt = new GiantTour(data, isPeriodic, actualPeriod);

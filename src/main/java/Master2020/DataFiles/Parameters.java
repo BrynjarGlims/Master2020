@@ -14,7 +14,7 @@ public class Parameters {
     public static final String dataSet = "Trøndelag";
     public static final boolean doRandomSeed = true;
     public static final int samples = 1;
-    public static long randomSeedValue = 46;
+    public static long randomSeedValue = 5;
 
     // Population parameters
     public static final int maximumSubIndividualPopulationSize = 75; //TODO: find reasonable value
@@ -22,13 +22,14 @@ public class Parameters {
     public static final int initialPopulationSize = 50;
 
     public static final int initialOrderDistributionPopulationSize = 50;
-    public static final int maxNumberIterationsWithoutImprovement = 10;
-    public static final int maxNumberOfGenerations = 50;
+    public static final int maxNumberIterationsWithoutImprovement = 100;
+    public static final int maxNumberOfGenerations = 100;
+
 
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 4; // A maximum of 75
+    public static int numberOfCustomers = 7; // A maximum of 75
     public static final int numberOfVehicles = 4;
     public static final double distanceCutOffFromDepot = 3.0;
     public static final boolean adjustTimeWindow = true;
@@ -43,26 +44,26 @@ public class Parameters {
     public static final double tripOptimizerProbability = 0.3;
     public static final double repairProbability = 0.4;
     public static final double ODMIPProbability = 0.5;
-    public static final double heuristicDominanceValue = 5;
+    public static final double heuristicDominanceValue = 1;
 
     // ABC specific parameters
     public static final int generationsPerOrderDistribution = 500;
     public static final int orderDistributionUpdates = 50;
-    public static final int numberOfEmployees = 5;
-    public static final int numberOfOnlookers = 25;
+    public static final int numberOfEmployees = 10;
+    public static final int numberOfOnlookers = 40;
     public static final int numberOfScoutTrials = 5;
-    public static final int maxNumberOfTrials = 5;
+    public static final int maxNumberOfTrials = 10;
     public static final int maxBoundDimensionality = 4; //max amount of dimensions that can be changed, chosen randomly from 1-this
     public static final double weightNeighborEmployed = 1;
     public static final double weightNeighborOnlooker = 1.5;
     public static final double weightGlobalBest = 0.5;
-    public static final double movementRange = 1; //both positive and negative, but only halv in negative direction
+    public static final double movementRange = 1; //both positive and negative, but only half in negative direction
     public static final double onlookerRandomAdjustment = 0.2; //a random number added when onlooker goes to employers foodsource
     public static final double globalTrialsCutoff = 1.1; //trials will not increment if solution is within this multiplier of global best
 
     //Penalty parameters for heuristics
-    public static final double initialCapacityPenalty = 1000;  // lambda
-    public static final double initialTimeWarpPenalty = 1000;  // theta
+    public static final double initialCapacityPenalty = 1000000;  // lambda
+    public static final double initialTimeWarpPenalty = 1000000;  // theta
     public static final double initialDrivingCostPenalty = 1; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
     public static final double penaltyFactorForOverFilling = 1.1;
     public static final double penaltyFactorForUnderFilling = 1.5;
@@ -77,7 +78,7 @@ public class Parameters {
     public static final double scalingUnloadingTimeAtCustomerVariable = 0.001;
     public static final double scalingVehicleCapacity = 0.01;
     public static final double indifferenceValue = 0.0001;
-    public static final double scalingVolumeValue = 1.2;
+    public static final double scalingVolumeValue = 1.5;
     public static final double lowerVolumeFlexibility = 0.7;
     public static final double upperVolumeFlexibility = 1.3;
 
