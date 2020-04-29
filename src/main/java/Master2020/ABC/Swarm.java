@@ -7,27 +7,17 @@ import Master2020.Genetic.FitnessCalculation;
 import Master2020.Individual.AdSplit;
 import Master2020.Individual.Individual;
 import Master2020.Individual.Journey;
-import Master2020.Individual.Trip;
 import Master2020.MIP.OrderAllocationModel;
-import Master2020.Population.OrderDistributionPopulation;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.StoringResults.Result;
-import Master2020.Testing.ABCtests;
 import gurobi.GRBException;
 
 import java.io.IOException;
-import java.sql.SQLOutput;
 import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CountDownLatch;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.IntStream;
 
-import static Master2020.Testing.ABCtests.allCustomersExists;
 import static Master2020.Testing.IndividualTest.testValidOrderDistribution;
 import static java.lang.Thread.sleep;
 

@@ -13,11 +13,12 @@ import Master2020.Population.PeriodicPopulation;
 import Master2020.Population.Population;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Population.OrderDistributionPopulation;
-import Master2020.StoringResults.Result;
 import Master2020.Testing.IndividualTest;
 import Master2020.Visualization.PlotIndividual;
+import Master2020.StoringResults.Result;
 import Master2020.Individual.Trip;
 import gurobi.GRBException;
+
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.concurrent.ThreadLocalRandom;
@@ -159,9 +160,12 @@ public class App {
     public static void selection(Population population){
 
         // Reduce population size
+        System.out.println("BEFORE:");
+        bestIndividual = population.returnBestIndividual();
+        bestIndividualScore = bestIndividual.getFitness(false);
         population.improvedSurvivorSelection();
         odp.removeNoneUsedOrderDistributions(population);
-        numberOfIterations++;
+        System.out.println("AFTER:");
         bestIndividual = population.returnBestIndividual();
         bestIndividualScore = bestIndividual.getFitness(false);
 
@@ -173,7 +177,6 @@ public class App {
         else{
             population.setIterationsWithoutImprovement(0);
         }
-
 
         Individual bestFeasibleIndividual = population.returnBestIndividual();
         Individual bestInfeasibleIndividual = population.returnBestInfeasibleIndividual();
@@ -293,6 +296,8 @@ public class App {
 
                 System.out.println("Selection..");
                 selection();
+
+                numberOfIterations++;
             }
 
 
@@ -431,25 +436,27 @@ public class App {
 
     public static void main(String[] args) throws Exception {
 
-        Parameters.numberOfCustomers = Integer.parseInt(args[1]);
-        if (args[0].equals("AFM"))
-            runMIPAFM(Parameters.samples);
-        else if (args[0].equals("PFM"))
-            runMIPPFM(Parameters.samples);
-        else if (args[0].equals("JBM"))
-            runMIPJBM(Parameters.samples);
-        else {
-            runGA(Parameters.samples);
-        }
+        runPeriodicGA(Parameters.samples);
 
-
-        if (!Parameters.isPeriodic) {
-            System.out.println("######## RUN STANDARD GA #########");
-            runGA(Parameters.samples);
-        } else {
-            System.out.println("######## RUN PERIODIC GA #########");
-
-        }
+//        Parameters.numberOfCustomers = Integer.parseInt(args[1]);
+//        if (args[0].equals("AFM"))
+//            runMIPAFM(Parameters.samples);
+//        else if (args[0].equals("PFM"))
+//            runMIPPFM(Parameters.samples);
+//        else if (args[0].equals("JBM"))
+//            runMIPJBM(Parameters.samples);
+//        else {
+//            runGA(Parameters.samples);
+//        }
+//
+//
+//        if (!Parameters.isPeriodic) {
+//            System.out.println("######## RUN STANDARD GA #########");
+//            runGA(Parameters.samples);
+//        } else {
+//            System.out.println("######## RUN PERIODIC GA #########");
+//
+//        }
 
 
 //        double time = System.currentTimeMillis();

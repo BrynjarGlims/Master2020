@@ -10,8 +10,8 @@ import Master2020.ProductAllocation.OrderDelivery;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Population.OrderDistributionPopulation;
 import Master2020.Individual.AdSplit;
-import Master2020.StoringResults.Result;
 import gurobi.GRBException;
+import Master2020.StoringResults.Result;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -49,7 +49,7 @@ public class Customer {
                 min = productQuantities[i];
             }
         }
-        return min;
+        return 0; // TODO: 29.04.2020 find reasonable number
     }
 
     public double[] getTimeWindow(int period){
