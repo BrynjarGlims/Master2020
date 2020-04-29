@@ -105,7 +105,7 @@ public class Parameters {
     public static final int upperBoundOvertime = 1000;  // upper bound qO variable
 
     //Periodic parameters
-    public static final boolean isPeriodic = false;
+    public static boolean isPeriodic = false;
     public static final int generationsPerOrderDistributionPeriodic = 5;
     public static final int generationsOfOrderDistributions = 5;
     public static final int newIndividualCombinationsGenerated = 10;

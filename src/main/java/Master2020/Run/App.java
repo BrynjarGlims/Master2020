@@ -322,6 +322,7 @@ public class App {
 
 
     public static void runPeriodicGA(int samples) throws IOException, GRBException {
+        Parameters.isPeriodic = true;
         double time = System.currentTimeMillis();
         for (int i = 0; i < samples; i++) {
             System.out.println("Initialize population..");
