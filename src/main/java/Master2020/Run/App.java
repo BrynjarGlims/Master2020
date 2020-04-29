@@ -431,6 +431,7 @@ public class App {
 
     public static void main(String[] args) throws Exception {
 
+        /*
         Parameters.numberOfCustomers = Integer.parseInt(args[1]);
         if (args[0].equals("AFM"))
             runMIPAFM(Parameters.samples);
@@ -449,8 +450,29 @@ public class App {
         } else {
             System.out.println("######## RUN PERIODIC GA #########");
 
+
         }
 
+         */
+        runPeriodicGA(Parameters.samples);
+
+        /*
+        for (int i = 0; i < 3; i++){
+            //runGA(Parameters.samples);
+            Parameters.randomSeedValue = 30+i;
+            runMIPJBM(Parameters.samples);
+            Parameters.randomSeedValue = 30+i;
+            runMIPAFM(Parameters.samples);
+            Parameters.randomSeedValue = 30+i;
+            runMIPPFM(Parameters.samples);
+        }
+
+         */
+
+        /*
+
+
+         */
 
 //        double time = System.currentTimeMillis();
 //        Data data = Master2020.DataFiles.DataReader.loadData();
