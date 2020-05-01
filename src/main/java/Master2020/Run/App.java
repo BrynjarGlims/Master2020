@@ -433,7 +433,7 @@ public class App {
 
     public static void main(String[] args) throws Exception {
 
-        runPeriodicGA(Parameters.samples);
+        runMIPJBM(Parameters.samples);
 
 //        Parameters.numberOfCustomers = Integer.parseInt(args[1]);
 //        if (args[0].equals("AFM"))

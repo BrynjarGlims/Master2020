@@ -19,7 +19,7 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.DoubleStream;
 
-public class OrderDistribution {
+public class OrderDistribution implements Cloneable {
 
 
     public double[][] orderVolumeDistribution;  //period, customer
@@ -48,7 +48,20 @@ public class OrderDistribution {
         volumePerPeriod = new double[data.numberOfPeriods];
     }
 
-
+    public OrderDistribution clone() throws CloneNotSupportedException {
+        OrderDistribution newOD = new OrderDistribution(data);
+        for (int p = 0 ; p < data.numberOfPeriods ; p++){
+            for (int c = 0 ; c < data.numberOfCustomers ; c++){
+                newOD.orderVolumeDistribution[p][c] = this.orderVolumeDistribution[p][c];
+                newOD.orderIdDistribution[p][c] = (ArrayList<Integer>) this.orderIdDistribution[p][c].clone();
+            }
+        }
+        for (int o = 0 ; o < data.numberOfDeliveries ; o++){
+            newOD.orderDeliveries[o] = orderDeliveries[o].clone();
+        }
+        newOD.volumePerPeriod = this.volumePerPeriod.clone();
+        return newOD;
+    }
 
     public void makeInitialDistribution() {
         distributeDividables();
@@ -244,7 +257,7 @@ public class OrderDistribution {
         }
     }
 
-    private double[] splitDelivery(Order order) {
+    private void splitDelivery(Order order) {
         int numSplits = ThreadLocalRandom.current().nextInt(order.minFrequency, order.maxFrequency + 1);
         double[] volumeSplits = distributeVolume(order, numSplits, 100); //numFractions decide amount of randomness in distribution
         int[] deliveryPeriods = getValidDeliveryPeriods(volumeSplits, data.customers[order.customerID]);
@@ -252,7 +265,6 @@ public class OrderDistribution {
         for (int i = 0; i < deliveryPeriods.length; i++) {
             updateFields(order, deliveryPeriods[i], volumeSplits[i]);
         }
-        return volumeSplits;
     }
 
     private double[] distributeVolume(Order order, int numSplits, int numFractions) {

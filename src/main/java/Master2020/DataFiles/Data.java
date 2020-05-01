@@ -52,8 +52,8 @@ public class Data {
         this.vehicleTypes = vehicleTypes;
         this.initialize();
         this.checkFeasibility();
-
     }
+
 
     private void checkFeasibility(){
         for (Customer customer : customers){

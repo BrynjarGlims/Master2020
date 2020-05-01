@@ -29,8 +29,8 @@ public class Parameters {
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 7; // A maximum of 75
-    public static final int numberOfVehicles = 4;
+    public static int numberOfCustomers = 50; // A maximum of 75
+    public static final int numberOfVehicles = 20;
     public static final double distanceCutOffFromDepot = 3.0;
     public static final boolean adjustTimeWindow = true;
     public static final double adjustTimeWindowReduction = 5;
