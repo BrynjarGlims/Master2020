@@ -19,7 +19,7 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.DoubleStream;
 
-public class OrderDistribution {
+public class OrderDistribution implements Cloneable {
 
 
     private double[][] orderVolumeDistribution;  //period, customer
@@ -49,6 +49,7 @@ public class OrderDistribution {
         volumePerPeriod = new double[data.numberOfPeriods];
     }
 
+
     public double getVolumePerPeriod(int periodID){
         return volumePerPeriod[periodID]*this.orderScalingFactor;
     }
@@ -68,6 +69,20 @@ public class OrderDistribution {
     }
 
 
+    public OrderDistribution clone() throws CloneNotSupportedException {
+        OrderDistribution newOD = new OrderDistribution(data);
+        for (int p = 0 ; p < data.numberOfPeriods ; p++){
+            for (int c = 0 ; c < data.numberOfCustomers ; c++){
+                newOD.orderVolumeDistribution[p][c] = this.orderVolumeDistribution[p][c];
+                newOD.orderIdDistribution[p][c] = (ArrayList<Integer>) this.orderIdDistribution[p][c].clone();
+            }
+        }
+        for (int o = 0 ; o < data.numberOfDeliveries ; o++){
+            newOD.orderDeliveries[o] = orderDeliveries[o].clone();
+        }
+        newOD.volumePerPeriod = this.volumePerPeriod.clone();
+        return newOD;
+    }
 
     public void makeInitialDistribution() {
         makeInitialDistribution(1);
@@ -267,8 +282,13 @@ public class OrderDistribution {
     }
 
     private void distributeDividables() {
-        for (Customer c : data.customers) {
-            for (Order o : c.dividableOrders) {
+        ArrayList<Integer> customerIds = new ArrayList<>();
+        for (int i = 0 ; i < data.numberOfCustomers ; i++){
+            customerIds.add(i);
+        }
+        Collections.shuffle(customerIds);
+        for (int c : customerIds) {
+            for (Order o : data.customers[c].dividableOrders) {
                 splitDelivery(o);
             }
         }
@@ -388,6 +408,16 @@ public class OrderDistribution {
             }
         }
         return out;
+    }
+
+    public double diversityScore(OrderDistribution orderDistribution){
+        double score = 0;
+        for (int p = 0 ; p <  data.numberOfPeriods ; p++){
+            for (int c = 0 ; c < data.numberOfCustomers ; c++){
+                score += Math.abs(orderVolumeDistribution[p][c] - orderDistribution.orderVolumeDistribution[p][c]);
+            }
+        }
+        return score;
     }
 
 

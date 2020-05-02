@@ -14,7 +14,7 @@ public class Parameters {
     public static final String dataSet = "Trøndelag";
     public static final boolean doRandomSeed = true;
     public static final int samples = 1;
-    public static long randomSeedValue = 5;
+    public static long randomSeedValue = 20;
 
     // Population parameters
     public static final int maximumSubIndividualPopulationSize = 300; //TODO: find reasonable value
@@ -45,7 +45,12 @@ public class Parameters {
     public static final double heuristicDominanceValue = 1;
 
     // ABC specific parameters
-    public static final int generationsPerOrderDistribution = 500;
+    public static final boolean runSingular = false;
+    public static final boolean threaded = true;
+    public static final int numberOfSwarms = 5;
+    public static final int orderDistributionCutoff = 1;
+    public static final int swarmIterationsWithoutImprovementLimit = 5;
+    public static final int generationsPerOrderDistribution = 700;
     public static final int orderDistributionUpdates = 50;
     public static final int numberOfEmployees = 10;
     public static final int numberOfOnlookers = 40;
@@ -103,7 +108,8 @@ public class Parameters {
     public static final double MIPSafetyIndifference = 0.01;
 
     //Periodic parameters
-    public static boolean isPeriodic = true;
+
+    public static boolean isPeriodic = false;
     public static final int generationsPerOrderDistributionPeriodic = 5;
     public static final int generationsOfOrderDistributions = 3;
     public static final int newIndividualCombinationsGenerated = 3;

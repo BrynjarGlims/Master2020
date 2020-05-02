@@ -184,12 +184,9 @@ public class App {
     public static void selection(Population population){
 
         // Reduce population size
-        //System.out.println("BEFORE:");
-        bestIndividual = population.returnBestIndividual();
-        bestIndividualScore = bestIndividual.getFitness(false);
+
         population.improvedSurvivorSelection();
         odp.removeNoneUsedOrderDistributions(population);
-        //System.out.println("AFTER:");
         bestIndividual = population.returnBestIndividual();
         bestIndividualScore = bestIndividual.getFitness(false);
 
@@ -346,6 +343,7 @@ public class App {
 
 
     public static void runPeriodicGA(int samples) throws IOException, GRBException {
+        Parameters.isPeriodic = true;
         double time = System.currentTimeMillis();
         for (int i = 0; i < samples; i++) {
             System.out.println("Initialize population..");

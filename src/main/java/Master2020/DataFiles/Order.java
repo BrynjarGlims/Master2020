@@ -36,10 +36,10 @@ public class Order {
 
     }
 
+
     private double adjustVolume(double volume){
         return Parameters.scalingVolumeValue*volume; //todo: implement rounding to 0.5
     }
-
     private void setMinVolume(){
         this.minVolume = volume/maxFrequency*Parameters.lowerVolumeFlexibility;
     }

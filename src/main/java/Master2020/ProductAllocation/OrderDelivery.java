@@ -2,13 +2,13 @@ package Master2020.ProductAllocation;
 
 import Master2020.DataFiles.Order;
 
-public class OrderDelivery { 
+public class OrderDelivery implements Cloneable{
 
     public Order order;
     public double[] orderVolumes;
     public int[] orderPeriods;
     public boolean dividable;
-    private int period;
+    public int period;
 
     public OrderDelivery(int numberOfPeriods, Order order){
         this.dividable = order.isDividable;
@@ -19,6 +19,7 @@ public class OrderDelivery {
     }
 
 
+
     public OrderDelivery(int numberOfPeriods, Order order, int period, double volume) {
         this(numberOfPeriods, order);
         orderPeriods[period] = 1;
@@ -26,6 +27,15 @@ public class OrderDelivery {
         if (!dividable){
             this.period = period;
         }
+    }
+
+    public OrderDelivery clone() throws CloneNotSupportedException {
+        OrderDelivery newOrderDelivery = (OrderDelivery) super.clone();
+//        OrderDelivery newOrderDelivery = new OrderDelivery(orderPeriods.length, order);
+        newOrderDelivery.period = this.period;
+        newOrderDelivery.orderVolumes = this.orderVolumes.clone();
+        newOrderDelivery.orderPeriods = this.orderPeriods.clone();
+        return newOrderDelivery;
     }
 
     public void addDelivery(int period, double volume){
