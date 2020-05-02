@@ -115,7 +115,7 @@ public class Journey {
     private void updateOverload(Trip trip, OrderDistribution orderDistribution){
         double load = 0;
         for (int customer : trip.customers){
-            load += orderDistribution.orderVolumeDistribution[period][customer];
+            load += orderDistribution.getOrderVolumeDistribution(period,customer);
         }
         overLoad += Math.max(0, load - data.vehicleTypes[vehicleType].capacity);
     }

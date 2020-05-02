@@ -1,6 +1,7 @@
 package Master2020.Individual;
 import Master2020.DataFiles.*;
 import Master2020.Genetic.FitnessCalculation;
+import Master2020.Genetic.TripOptimizer;
 import Master2020.Population.Population;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Testing.IndividualTest;
@@ -175,6 +176,18 @@ public class Individual implements Comparable<Individual> {
         this.giantTour = gt;
     }
 
+    public void setTripListFromJourneys(){
+        for (int p = 0; p < this.numberOfPeriods; p++ ){
+            for (int vt  = 0; vt < data.numberOfVehicleTypes; vt++){
+                for (Journey journey : this.journeyList[p][vt]){
+                    for (Trip trip : journey.trips){
+                        this.tripList[p][vt].add(trip);
+                    }
+                }
+            }
+        }
+    }
+
     private void setGiantTourFromJourneysPerPeriodVehicleType(int p, int vt, GiantTour gt) {
         ArrayList<Integer> giantTourEntry = new ArrayList<>();
         gt.chromosome[p][vt] = giantTourEntry;
@@ -310,6 +323,21 @@ public class Individual implements Comparable<Individual> {
         return out;
     }
 
+    public void setTripMapFromTripList(){
+        tripMap = new HashMap< Integer, HashMap<Integer, Trip>>();
+        for (int p = 0; p < numberOfPeriods; p++){
+            this.tripMap.put(p,new HashMap<Integer, Trip>());
+            for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
+                for (Trip trip : this.tripList[p][vt]){
+                    for (int customerID : trip.customers){
+                        this.tripMap.get(p).put(customerID, trip);
+                    }
+                }
+            }
+        }
+    }
+
+
     public void setFitness(double fitness){ //USE WITH CARE. ONLY WHEN SETTING FITNESS FROM Master2020.MIP
         this.fitness = fitness;
     }
@@ -364,7 +392,10 @@ public class Individual implements Comparable<Individual> {
         return individual;
     }
 
-    public int compareTo(Individual individual) { // TODO: 04.03.2020 Sort by biased fitness and not fitness
+    public int compareTo(Individual individual) {
+        if (this.getBiasedFitness() == individual.getBiasedFitness()){ // if tie, make a consistent choice
+            return (this.hashCode() < individual.hashCode()) ? -1 : 1;
+        }
         return this.getBiasedFitness() > individual.getBiasedFitness() ? 1 : -1;
     }
 }

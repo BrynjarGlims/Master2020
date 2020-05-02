@@ -145,7 +145,7 @@ public class GiantTourCrossover {
 
                 if(currentBestTrip == null){
                     Trip newTrip = makeNewTrip(Individual.getDefaultPeriod(p), c);
-                    child.tripList[child.getActualPeriod(p)][newTrip.vehicleType].add(newTrip);
+                    child.tripList[Individual.getDefaultPeriod(p)][newTrip.vehicleType].add(newTrip);
                     currentBestVehicleType = newTrip.vehicleType;
                 }
                 else{

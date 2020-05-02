@@ -17,20 +17,18 @@ public class Parameters {
     public static long randomSeedValue = 5;
 
     // Population parameters
-    public static final int maximumSubIndividualPopulationSize = 75; //TODO: find reasonable value
-    public static final int minimumSubIndividualPopulationSize = 25;
-    public static final int initialPopulationSize = 50;
-
+    public static final int maximumSubIndividualPopulationSize = 300; //TODO: find reasonable value
+    public static final int minimumSubIndividualPopulationSize = 100;
+    public static final int initialPopulationSize = 100;
     public static final int initialOrderDistributionPopulationSize = 50;
     public static final int maxNumberIterationsWithoutImprovement = 100;
     public static final int maxNumberOfGenerations = 100;
 
-
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 4; // A maximum of 75
-    public static final int numberOfVehicles = 4;
+    public static int numberOfCustomers = 25; // A maximum of 75
+    public static final int numberOfVehicles = 10;
     public static final double distanceCutOffFromDepot = 3.0;
     public static final boolean adjustTimeWindow = true;
     public static final double adjustTimeWindowReduction = 5;
@@ -62,8 +60,8 @@ public class Parameters {
     public static final double globalTrialsCutoff = 1.1; //trials will not increment if solution is within this multiplier of global best
 
     //Penalty parameters for heuristics
-    public static final double initialCapacityPenalty = 1000000;  // lambda
-    public static final double initialTimeWarpPenalty = 1000000;  // theta
+    public static final double initialCapacityPenalty = 1000;  // lambda
+    public static final double initialTimeWarpPenalty = 1000;  // theta
     public static final double initialDrivingCostPenalty = 1; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
     public static final double penaltyFactorForOverFilling = 1.1;
     public static final double penaltyFactorForUnderFilling = 1.5;
@@ -81,7 +79,6 @@ public class Parameters {
     public static final double scalingVolumeValue = 1.5;
     public static final double lowerVolumeFlexibility = 0.7;
     public static final double upperVolumeFlexibility = 1.3;
-
 
     //Cost parameters
     public static final double[] overtimeLimitPercentage = {0.19, 0.19, 0.19, 0.19, 0.19, 0.05};
@@ -103,16 +100,19 @@ public class Parameters {
     public static final String instanceName = "testDataFromAsko";
     public static final int upperBoundQuantity = 100;  // upper bound q variable
     public static final int upperBoundOvertime = 1000;  // upper bound qO variable
+    public static final double MIPSafetyIndifference = 0.01;
 
     //Periodic parameters
-    public static final boolean isPeriodic = true;
+    public static boolean isPeriodic = true;
     public static final int generationsPerOrderDistributionPeriodic = 5;
-    public static final int generationsOfOrderDistributions = 5;
-    public static final int newIndividualCombinationsGenerated = 10;
+    public static final int generationsOfOrderDistributions = 3;
+    public static final int newIndividualCombinationsGenerated = 3;
     public static final int minimumPeriodicSubPopulationSize = 20;
     public static final int maksimumPeriodicSubPopulationSize = 50;
-
-
+    public static final double initialOrderDistributionScale = 0.7;
+    public static final double incrementPerOrderDistributionScaling = 0.05;
+    public static final int numberOfGenerationsBetweenODScaling = 5;
+    public static final int numberOfGenerationBeforeODScalingStarts = 25;
 
     // Verbose parameters
     public static final boolean verboseArcFlow = false;

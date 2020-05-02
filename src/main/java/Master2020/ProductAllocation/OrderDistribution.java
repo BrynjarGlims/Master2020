@@ -22,11 +22,12 @@ import java.util.stream.DoubleStream;
 public class OrderDistribution {
 
 
-    public double[][] orderVolumeDistribution;  //period, customer
+    private double[][] orderVolumeDistribution;  //period, customer
     public ArrayList<Integer>[][] orderIdDistribution;   //period, customer -- orderids, tilsvarende order volumes
     public Data data;
     public OrderDelivery[] orderDeliveries;  //orderids, slår opp på orderIdDistribution verdien
-    public double[] volumePerPeriod;
+    private double[] volumePerPeriod;
+    public double orderScalingFactor = 1;
 
     // fitness values
     public double fitness = Double.MAX_VALUE;
@@ -48,12 +49,41 @@ public class OrderDistribution {
         volumePerPeriod = new double[data.numberOfPeriods];
     }
 
+    public double getVolumePerPeriod(int periodID){
+        return volumePerPeriod[periodID]*this.orderScalingFactor;
+    }
+
+    public double getOrderVolumeDistribution(int periodID, int customerID){
+        return orderVolumeDistribution[periodID][customerID]*this.orderScalingFactor;
+    }
+
+    public double[][] getOrderVolumeDistribution(){
+        double[][] tempOrderVolumeDistribution = new double[data.numberOfPeriods][data.numberOfCustomers];
+        for (int p = 0; p < data.numberOfPeriods; p++){
+            for (int c = 0; c < data.numberOfCustomers; c++){
+                tempOrderVolumeDistribution[p][c] = orderVolumeDistribution[p][c]*this.orderScalingFactor;
+            }
+        }
+        return tempOrderVolumeDistribution;
+    }
+
 
 
     public void makeInitialDistribution() {
+        makeInitialDistribution(1);
+    }
+
+    public void setOrderScalingFactor(double orderScalingFactor){
+        this.orderScalingFactor = orderScalingFactor;
+    }
+
+
+    public void makeInitialDistribution(double orderScalingFactor) {
+        this.orderScalingFactor = orderScalingFactor;
         distributeDividables();
         distributeNonDividables();
     }
+
 
 
     public void makeDistributionFromOrderAllocationModel(OrderAllocationModel oam ) throws GRBException {
@@ -244,15 +274,22 @@ public class OrderDistribution {
         }
     }
 
-    private double[] splitDelivery(Order order) {
+    private void splitDelivery(Order order) {
         int numSplits = ThreadLocalRandom.current().nextInt(order.minFrequency, order.maxFrequency + 1);
         double[] volumeSplits = distributeVolume(order, numSplits, 100); //numFractions decide amount of randomness in distribution
+
+        //scaling---
+        //for (int i = 0; i < volumeSplits.length; i++){
+        //    volumeSplits[i] *= orderScalingFactor;
+        //}
+        //-----
+
         int[] deliveryPeriods = getValidDeliveryPeriods(volumeSplits, data.customers[order.customerID]);
 
         for (int i = 0; i < deliveryPeriods.length; i++) {
             updateFields(order, deliveryPeriods[i], volumeSplits[i]);
         }
-        return volumeSplits;
+
     }
 
     private double[] distributeVolume(Order order, int numSplits, int numFractions) {

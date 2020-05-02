@@ -18,6 +18,8 @@ import Master2020.Visualization.PlotIndividual;
 import Master2020.StoringResults.Result;
 import Master2020.Individual.Trip;
 import gurobi.GRBException;
+import Master2020.DataFiles.Parameters;
+import scala.xml.PrettyPrinter;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -37,6 +39,9 @@ public class App {
     public static Individual bestIndividual;
     public static int numberOfIterations;
     public static OrderAllocationModel orderAllocationModel;
+    public static double scalingFactorOrderDistribution;
+    public static int numSuccess;
+    public static int numFailures;
 
 
     public static void initialize() throws GRBException {
@@ -57,11 +62,13 @@ public class App {
 
     public static void initializePeriodic() throws GRBException {
         data = DataReader.loadData();
-        periodicPopulation = new PeriodicPopulation(data);
         odp = new OrderDistributionPopulation(data);
+        periodicPopulation = new PeriodicPopulation(data, odp);
         ODC = new OrderDistributionCrossover(data);
+        scalingFactorOrderDistribution = Parameters.initialOrderDistributionScale;
         odp.initializeOrderDistributionPopulation(periodicPopulation);
         globalOrderDistribution = odp.getRandomOrderDistribution();
+        globalOrderDistribution.setOrderScalingFactor(scalingFactorOrderDistribution);
         periodicPopulation.setOrderDistributionPopulation(odp);
         periodicPopulation.initializePopulation(globalOrderDistribution);
         bestIndividualScore = Double.MAX_VALUE;
@@ -80,11 +87,8 @@ public class App {
         }
     }
 
-    public static Individual PIX(){
-        return PIX(population);
-    }
 
-    public static Individual PIX(Population population){
+    public static Individual PIX(){
         // Select parents
         Individual parent1 = TournamentSelection.performSelection(population);
         Individual parent2 = TournamentSelection.performSelection(population);
@@ -96,6 +100,22 @@ public class App {
             odp.addOrderDistribution(od);
         }
         return GiantTourCrossover.crossOver(parent1, parent2, crossoverOD[0]); // TODO: 02.04.2020 add to a pool?
+    }
+
+    public static Individual PIX(Population population){
+        // Select parents
+        Individual parent1 = TournamentSelection.performSelection(population);
+        Individual parent2 = TournamentSelection.performSelection(population);
+        while (parent1.equals(parent2)){
+            parent2 = TournamentSelection.performSelection(population);
+        }
+        /*OrderDistribution[] crossoverOD = ODC.crossover(parent1.orderDistribution, parent2.orderDistribution); //these will be the same
+        for (OrderDistribution od : crossoverOD) { //todo: EVALUEATE IF THIS IS DECENT
+            odp.addOrderDistribution(od);
+        }
+
+         */
+        return GiantTourCrossover.crossOver(parent1, parent2, globalOrderDistribution); // TODO: 02.04.2020 add to a pool?
     }
 
 
@@ -110,15 +130,19 @@ public class App {
 
     public static void setOptimalOrderDistribution(Individual individual){
         if (ThreadLocalRandom.current().nextDouble() < Parameters.ODMIPProbability){
-            OrderDistribution optimalOD = orderAllocationModel.createOptimalOrderDistribution(individual.journeyList);
-            if (optimalOD.fitness != Double.MAX_VALUE) {  // Distribution found
-                if (individual.infeasibilityCost == 0) {
-                    individual.setOptimalOrderDistribution(optimalOD, true);
-                } else {
-                    individual.setOptimalOrderDistribution(optimalOD, false);
+            OrderDistribution optimalOD;
+            if (orderAllocationModel.createOptimalOrderDistribution(individual.journeyList) == 2){
+                optimalOD = orderAllocationModel.getOrderDistribution();
+                if (optimalOD.fitness != Double.MAX_VALUE) {  // Distribution found
+                    if (individual.infeasibilityCost == 0) {
+                        individual.setOptimalOrderDistribution(optimalOD, true);
+                    } else {
+                        individual.setOptimalOrderDistribution(optimalOD, false);
+                    }
+                    odp.addOrderDistribution(optimalOD);
                 }
-                odp.addOrderDistribution(optimalOD);
             }
+
         }
     }
 
@@ -160,12 +184,12 @@ public class App {
     public static void selection(Population population){
 
         // Reduce population size
-        System.out.println("BEFORE:");
+        //System.out.println("BEFORE:");
         bestIndividual = population.returnBestIndividual();
         bestIndividualScore = bestIndividual.getFitness(false);
         population.improvedSurvivorSelection();
         odp.removeNoneUsedOrderDistributions(population);
-        System.out.println("AFTER:");
+        //System.out.println("AFTER:");
         bestIndividual = population.returnBestIndividual();
         bestIndividualScore = bestIndividual.getFitness(false);
 
@@ -331,11 +355,6 @@ public class App {
             while (periodicPopulation.getIterationsWithoutImprovement() < Parameters.maxNumberIterationsWithoutImprovement &&
                     numberOfIterations < Parameters.maxNumberOfGenerations) {
 
-                // Assign new ODC if needed
-                if (numberOfIterations % Parameters.generationsOfOrderDistributions == 0 & numberOfIterations != 0) {
-                    System.out.println("Assigning new order distribution");
-                    globalOrderDistribution = orderAllocationModel.createOptimalOrderDistribution(periodicPopulation.returnBestIndividual().getJourneys());
-                }
 
                 System.out.println("Start generation: " + numberOfIterations);
 
@@ -354,6 +373,7 @@ public class App {
                         tripOptimizer(newIndividual);
 
                         periodicPopulation.populations[p].addChildToPopulation(newIndividual);
+
                     }
 
                     //System.out.println("Repair..");
@@ -363,63 +383,76 @@ public class App {
                     selection(periodicPopulation.populations[p]);
                 }
                 //System.out.println("Iteration ended");
+
+                /*
                 for (int j = 0; j < Parameters.newIndividualCombinationsGenerated; j++) {
                     PeriodicIndividual newPeriodicIndividual = generatePeriodicIndividual();
                     periodicPopulation.addPeriodicIndividual(newPeriodicIndividual);
-                    newPeriodicIndividual.printDetailedInformation();
+                    //newPeriodicIndividual.printDetailedInformation();
                 }
 
-                if (numberOfIterations % Parameters.generationsOfOrderDistributions == 0 & numberOfIterations != 0) {
-                    System.out.println("Perform update of volumes");
-                }
-
-            }
-
-
-            if (Parameters.savePlots) {
-                PlotIndividual visualizer = new PlotIndividual(data);
-                visualizer.visualize(bestIndividual);
-            }
-
-            double runTime = (System.currentTimeMillis() - time)/1000;
-            Result res = new Result(population, "GA");
-            res.store(runTime, -1);
-            orderAllocationModel.terminateEnvironment();
-
-
-            // // TODO: 22/04/2020  Implement so it works on the best individual of the population
-                /*
-                setOptimalOrderDistribution(newIndividual);
-                if (!Master2020.Testing.IndividualTest.testIndividual(newIndividual)) {
-                    System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: OD OPTIMIZER");
-                }
-                
                  */
+                PeriodicIndividual newPeriodicIndividual = generateGreedyPeriodicIndividual();
+                periodicPopulation.addPeriodicIndividual(newPeriodicIndividual);
+                //newPeriodicIndividual.printDetailedInformation();
 
 
-            
-            /* // TODO: 22/04/2020 FIX 
-            Individual bestIndividual = population.returnBestIndividual();
-            if (!Master2020.Testing.IndividualTest.testIndividual(bestIndividual)) {
-                System.out.println("BEST INDIVIDUAL IS NOT COMPLETE");
+                updateOrderDistributionScalingParameter();
+
+
+
+
+                PeriodicIndividual bestPeriodicIndividual = periodicPopulation.returnBestIndividual();
+                if (numberOfIterations % Parameters.generationsOfOrderDistributions == 0 ||
+                        numberOfIterations == Parameters.maxNumberIterationsWithoutImprovement-1) {
+                    System.out.println("Perform update of volumes");
+                    if (orderAllocationModel.createOptimalOrderDistribution(bestPeriodicIndividual.getJourneys(), scalingFactorOrderDistribution) == 2){
+                        globalOrderDistribution = orderAllocationModel.getOrderDistribution();
+                        odp.addOrderDistribution(globalOrderDistribution);
+                        periodicPopulation.setOrderDistribution(globalOrderDistribution);
+                        bestPeriodicIndividual.setOrderDistribution(globalOrderDistribution);
+                        periodicPopulation.allocateIndividual(bestPeriodicIndividual);
+                        System.out.println("################################## Number of fesasible individuals:" + periodicPopulation.periodicFeasibleIndividualPopulation.size());
+                        System.out.println("-----------------Optimal OD found!");
+                    } else{
+                        System.out.println("----------------No optimal OD found...");
+                    }
+                }
+
+                bestPeriodicIndividual = periodicPopulation.returnBestIndividual();
+                bestPeriodicIndividual.printDetailedInformation();
+                numberOfIterations += 1;
             }
-            System.out.println("Individual feasible: " + bestIndividual.isFeasible());
-            System.out.println("Fitness: " + bestIndividual.getFitness(false));
-            if (Parameters.savePlots) {
-                PlotIndividual visualizer = new PlotIndividual(data);
-                visualizer.visualize(bestIndividual);
-            }
+            PeriodicIndividual bestPeriodicIndividual = periodicPopulation.returnBestIndividual();
+            Individual bestIndividual = bestPeriodicIndividual.createStandardIndividualObject();
+            Result res = new Result(bestIndividual, "PGA" , bestPeriodicIndividual.isFeasible(), false);
             double runTime = (System.currentTimeMillis() - time)/1000;
-            Result res = new Result(population, "GA");
             res.store(runTime, -1);
             orderAllocationModel.terminateEnvironment();
-            
-             */
-
             Parameters.randomSeedValue += 1;
         }
     }
 
+
+    private static PeriodicIndividual generateGreedyPeriodicIndividual(){
+        PeriodicIndividual newPeriodicIndividual = new PeriodicIndividual(data);
+        newPeriodicIndividual.setOrderDistribution(globalOrderDistribution);
+        for (int p = 0; p < data.numberOfPeriods; p++){
+            Individual individual = periodicPopulation.populations[p].returnBestIndividual();
+            newPeriodicIndividual.setPeriodicIndividual(individual, p);
+        }
+        System.out.println("Fitness: " + newPeriodicIndividual.getFitness());
+        return newPeriodicIndividual;
+    }
+
+
+    private static void updateOrderDistributionScalingParameter() {
+        if (numberOfIterations % Parameters.numberOfGenerationsBetweenODScaling == 0 && numberOfIterations > Parameters.numberOfGenerationBeforeODScalingStarts) {
+            scalingFactorOrderDistribution = (scalingFactorOrderDistribution < 1) ? Parameters.incrementPerOrderDistributionScaling + scalingFactorOrderDistribution : 1;
+            globalOrderDistribution.setOrderScalingFactor(scalingFactorOrderDistribution);
+            System.out.println("############# CURRENT ORDER DISTRIBUTION SCALING IS " + scalingFactorOrderDistribution + "################");
+        }
+    }
 
     private static PeriodicIndividual generatePeriodicIndividual(){
         PeriodicIndividual newPeriodicIndividual = new PeriodicIndividual(data);
@@ -437,53 +470,34 @@ public class App {
     public static void main(String[] args) throws Exception {
 
 
-//        runPeriodicGA(Parameters.samples);
-
-//        Parameters.numberOfCustomers = Integer.parseInt(args[1]);
-//        if (args[0].equals("AFM"))
-//            runMIPAFM(Parameters.samples);
-//        else if (args[0].equals("PFM"))
-//            runMIPPFM(Parameters.samples);
-//        else if (args[0].equals("JBM"))
-//            runMIPJBM(Parameters.samples);
-//        else {
-//            runGA(Parameters.samples);
-//        }
-//
-//
-//        if (!Parameters.isPeriodic) {
-//            System.out.println("######## RUN STANDARD GA #########");
-//            runGA(Parameters.samples);
-//        } else {
-//            System.out.println("######## RUN PERIODIC GA #########");
-//
-//        }
-
+        //Parameters.numberOfCustomers = Integer.parseInt(args[1]);
 
         /*
-
+        if (args[0].equals("AFM"))
+            runMIPAFM(Parameters.samples);
+        else if (args[0].equals("PFM"))
+            runMIPPFM(Parameters.samples);
+        else if (args[0].equals("JBM"))
+            runMIPJBM(Parameters.samples);
+        else if (args[0].equals("GA"))
+            runGA(Parameters.samples);
+        else if (args[0].equals("PGA")) {
+            Parameters.isPeriodic = true;
+            runPeriodicGA(Parameters.samples);
+        }
 
          */
+        for (int i = 0; i < 1; i++) {
+            Parameters.randomSeedValue = 20 + i;
+            System.out.println("SEED VALUE: " + Parameters.randomSeedValue );
+            Parameters.isPeriodic = false;
+            Parameters.randomSeedValue = 31 + i;
+            //runGA(Parameters.samples);
 
-//        double time = System.currentTimeMillis();
-//        Data data = Master2020.DataFiles.DataReader.loadData();
-//        DataMIP dataMip = DataConverter.convert(data);
-//        PathGenerator pg = new PathGenerator(dataMip);
-//        JourneyGenerator jg = new JourneyGenerator(dataMip);
-//        dataMip.setPathMap(pg.generateAllPaths());
-//        dataMip.setJourneyMap(jg.generateAllJourneys());
-//        double timePost = System.currentTimeMillis();
-//        double total = (timePost - time)/1000;
-//        System.out.println("time: " + total);
-//        double paths = 0;
-//        for (int p = 0 ; p < dataMip.numPeriods ; p++){
-//            for (int vt = 0 ; vt < dataMip.numVehicleTypes ; vt++){
-//                paths += dataMip.journeyMap.get(p).get(vt).size();
-//            }
-//        }
-//        System.out.println("paths: " + paths);
-
-
+            //runMIPAFM(Parameters.samples);
+            Parameters.randomSeedValue = 31 + i;
+            Parameters.isPeriodic = true;
+            runPeriodicGA(Parameters.samples);
+        }
     }
-
 }

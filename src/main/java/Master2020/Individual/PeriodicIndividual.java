@@ -1,6 +1,7 @@
 package Master2020.Individual;
 
 import Master2020.DataFiles.Data;
+import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.FitnessCalculation;
 import Master2020.Population.PeriodicPopulation;
 import Master2020.ProductAllocation.OrderDistribution;
@@ -90,7 +91,7 @@ public class PeriodicIndividual {
     }
 
     public boolean isFeasible(){
-        return this.infeasibilityCost == 0;
+        return this.timeWarpCost == 0 && this.overLoadCost/Parameters.initialCapacityPenalty <= Parameters.indifferenceValue;
     }
 
     public double getFitness() {
@@ -114,6 +115,11 @@ public class PeriodicIndividual {
     public Individual createStandardIndividualObject(){
         Individual newIndividual = new Individual(this.data, null, false, -1);
         newIndividual.journeyList = this.journeys;
+        newIndividual.orderDistribution = orderDistribution;
+        newIndividual.setGiantTourFromJourneys();
+        newIndividual.setTripListFromJourneys();
+        newIndividual.setTripMapFromTripList();
+        System.out.println("check individual");
         return newIndividual;
     }
 

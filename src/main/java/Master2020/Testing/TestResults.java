@@ -204,7 +204,7 @@ public class TestResults {
     public static void main(String[] args){
 
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 2; i++) {
 
             Parameters.randomSeedValue = 30 + i;
 
@@ -227,7 +227,7 @@ public class TestResults {
             evaluateSolution(path, name);
             System.out.println(" ----- ");
             System.out.println("Results from AFM");
-            name = "AFM_S" + Parameters.randomSeedValue + "_C4_V4_29_04_2020";
+            name = "AFM_S" + Parameters.randomSeedValue + "_C6_V4_29_04_2020";
             path = "results/results_detailed/" + name;
             evaluateSolution(path, name);
             System.out.println(" ");

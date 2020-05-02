@@ -40,6 +40,16 @@ public class Population {
     }
 
 
+    public void updateOrderDistributionsOfAllIndividuals(OrderDistribution orderDistribution){
+        for (Individual individual : feasiblePopulation){
+            individual.orderDistribution =  orderDistribution;
+        }
+        for (Individual individual : infeasiblePopulation){
+            individual.orderDistribution =  orderDistribution;
+        }
+    }
+
+
     public void initializePopulation (OrderDistribution od) {
         for (int i = 0; i < Parameters.initialPopulationSize; i++) {
             Individual individual = new Individual(this.data, this, isPeriodic, actualPeriod);

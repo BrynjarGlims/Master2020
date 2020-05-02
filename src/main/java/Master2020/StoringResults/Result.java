@@ -82,8 +82,9 @@ public class Result {
         createDirectory();
 
         String fileName = getFileName();
-        if (!this.isFeasible && modelName != "GA") {
+        if (!this.isFeasible && (modelName == "PFM" || modelName != "AFM" || modelName != "JBM")) {
             createEmptyResult(fileName);
+            System.out.println("Faend ett er feil");
             System.out.println("Storing complete");
         }
         else{
@@ -320,11 +321,14 @@ public class Result {
                         continue;
                     }
                     else{
+
                         if (!bestIndividual.tripMap.get(period).containsKey(orderDelivery.order.customerID)){
                             System.out.println("-------Wrong delivery-------- Find this message in result.java, storing results");
                             System.out.println("OrderID: " + orderDelivery.order.orderID+  " Period: " + period + " customer: " + orderDelivery.order.customerID + " required visit: " + orderDelivery.orderPeriods[period]);
                             continue;
                         }
+
+
                         vehicleID = bestIndividual.tripMap.get(period).get(orderDelivery.order.customerID).vehicleID;
                         String[] results = {String.valueOf(orderDelivery.order.orderID), Converter.dividableConverter(orderDelivery.dividable),
                                 orderDelivery.order.commodityFlow, formatter.format(orderDelivery.orderVolumes[period]), Converter.periodConverter(period),

@@ -112,7 +112,9 @@ public class Swarm {
         }
         double[] fitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1);
 
-        this.orderDistribution = orderAllocationModel.createOptimalOrderDistribution(journeys);
+        if (orderAllocationModel.createOptimalOrderDistribution(journeys) == 2){
+            this.orderDistribution = orderAllocationModel.getOrderDistribution();
+        }
         return fitnesses;
 
     }
