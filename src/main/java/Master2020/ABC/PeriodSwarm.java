@@ -5,10 +5,8 @@ import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Parameters;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Utils.WeightedRandomSampler;
-import scala.xml.PrettyPrinter;
 
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ThreadLocalRandom;

@@ -250,8 +250,13 @@ public class OrderDistribution implements Cloneable {
     }
 
     private void distributeDividables() {
-        for (Customer c : data.customers) {
-            for (Order o : c.dividableOrders) {
+        ArrayList<Integer> customerIds = new ArrayList<>();
+        for (int i = 0 ; i < data.numberOfCustomers ; i++){
+            customerIds.add(i);
+        }
+        Collections.shuffle(customerIds);
+        for (int c : customerIds) {
+            for (Order o : data.customers[c].dividableOrders) {
                 splitDelivery(o);
             }
         }
@@ -363,6 +368,16 @@ public class OrderDistribution implements Cloneable {
             }
         }
         return out;
+    }
+
+    public double diversityScore(OrderDistribution orderDistribution){
+        double score = 0;
+        for (int p = 0 ; p <  data.numberOfPeriods ; p++){
+            for (int c = 0 ; c < data.numberOfCustomers ; c++){
+                score += Math.abs(orderVolumeDistribution[p][c] - orderDistribution.orderVolumeDistribution[p][c]);
+            }
+        }
+        return score;
     }
 
 
