@@ -204,34 +204,29 @@ public class TestResults {
     public static void main(String[] args){
 
 
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 1; i++) {
 
-            Parameters.randomSeedValue = 30 + i;
+            Parameters.randomSeedValue = 10 + i;
 
             System.out.println("RANDOM SEED VALUE: " + Parameters.randomSeedValue);
-            //System.out.println("Results from GA:");
-
-            String name = "GA_S" + Parameters.randomSeedValue + "_C4_V4_29_04_2020";
+            System.out.println("Results from PGA:");
+            String name = "PGA_S" + Parameters.randomSeedValue + "_C5_V5_04_05_2020";
             String path = "results/results_detailed/" + name;
+            evaluateSolution(path, name);
+            System.out.println(" ----- ");
 
-            //evaluateSolution(path, name);
-            //System.out.println(" ----- ");
-            System.out.println("Results from JBM");
-            name = "JBM_S" + Parameters.randomSeedValue + "_C4_V4_29_04_2020";
-            path = "results/results_detailed/" + name;
-            evaluateSolution(path, name);
-            System.out.println(" ----- ");
-            System.out.println("Results from PFM");
-            name = "PFM_S" + Parameters.randomSeedValue + "_C4_V4_29_04_2020";
-            path = "results/results_detailed/" + name;
-            evaluateSolution(path, name);
-            System.out.println(" ----- ");
+            /*
+            Parameters.randomSeedValue = 10 + i;
             System.out.println("Results from AFM");
-            name = "AFM_S" + Parameters.randomSeedValue + "_C6_V4_29_04_2020";
+            name = "AFM_S" + Parameters.randomSeedValue + "_C5_V5_04_05_2020";
             path = "results/results_detailed/" + name;
             evaluateSolution(path, name);
             System.out.println(" ");
             System.out.println(" ############ ");
+
+             */
+
+
         }
     }
 

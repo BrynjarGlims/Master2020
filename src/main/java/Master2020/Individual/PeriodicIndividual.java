@@ -91,10 +91,16 @@ public class PeriodicIndividual {
     }
 
     public boolean isFeasible(){
+        updateFitness();
         return this.timeWarpCost == 0 && this.overLoadCost/Parameters.initialCapacityPenalty <= Parameters.indifferenceValue;
     }
 
     public double getFitness() {
+        updateFitness();
+        return fitness;
+    }
+
+    public void updateFitness(){
         double[] fitnesses =  FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1 );
         this.travelCost = fitnesses[0];
         this.timeWarpCost = fitnesses[1];
@@ -103,7 +109,6 @@ public class PeriodicIndividual {
         this.infeasibilityCost = fitnesses[1] + fitnesses[2];
         this.orderDistributionCost = orderDistribution.getFitness();
         this.fitness = this.travelCost + this.timeWarpCost + this.overLoadCost + this.vehicleUsageCost + this.orderDistributionCost;
-        return fitness;
     }
 
     public void initializeJourneys(int p){
@@ -114,13 +119,26 @@ public class PeriodicIndividual {
 
     public Individual createStandardIndividualObject(){
         Individual newIndividual = new Individual(this.data, null, false, -1);
+        updateJourneysToPeriodicConfiguration();
         newIndividual.journeyList = this.journeys;
         newIndividual.orderDistribution = orderDistribution;
         newIndividual.setGiantTourFromJourneys();
         newIndividual.setTripListFromJourneys();
         newIndividual.setTripMapFromTripList();
-        System.out.println("check individual");
         return newIndividual;
+    }
+
+    private void updateJourneysToPeriodicConfiguration(){
+        for (int p = 0; p < data.numberOfPeriods; p++){
+            for (int vt = 0; vt < data.numberOfVehicleTypes; vt ++){
+                for (Journey journey : this.journeys[p][vt]){
+                    for (Trip trip : journey.trips){
+                        trip.period = p;
+                    }
+                }
+            }
+        }
+
     }
 
     public int compareTo(PeriodicIndividual periodicIndividual) { // TODO: 04.03.2020 Sort by biased fitness and not fitness

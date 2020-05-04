@@ -73,6 +73,8 @@ public class PeriodicPopulation {
     }
 
 
+
+
     public void setOrderDistributionPopulation(OrderDistributionPopulation odp){
         this.orderDistributionPopulation = odp;
     }
@@ -84,7 +86,31 @@ public class PeriodicPopulation {
         }
     }
 
-    public  void allocateIndividual(PeriodicIndividual periodicIndividual){
+    public void reassignPeriodicIndividuals(){
+        Set<PeriodicIndividual> tempFeasiblePopulation = new HashSet<>();
+        Set<PeriodicIndividual> tempInfeasiblePopulation = new HashSet<>();
+        for (PeriodicIndividual periodicIndividual : periodicFeasibleIndividualPopulation){
+            if (periodicIndividual.isFeasible()){
+                tempFeasiblePopulation.add(periodicIndividual);
+            }
+            else {
+                tempInfeasiblePopulation.add(periodicIndividual);
+            }
+        }
+        for (PeriodicIndividual periodicIndividual : periodicInfeasibleIndividualPopulation){
+            if (periodicIndividual.isFeasible()){
+                tempFeasiblePopulation.add(periodicIndividual);
+            }
+            else {
+                tempInfeasiblePopulation.add(periodicIndividual);
+            }
+        }
+        periodicFeasibleIndividualPopulation = tempFeasiblePopulation;
+        periodicInfeasibleIndividualPopulation = tempInfeasiblePopulation;
+
+    }
+
+    public void allocateIndividual(PeriodicIndividual periodicIndividual){
         if (periodicIndividual.isFeasible()){
             this.periodicInfeasibleIndividualPopulation.remove(periodicIndividual);
             this.periodicFeasibleIndividualPopulation.add(periodicIndividual);

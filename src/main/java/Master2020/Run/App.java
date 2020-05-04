@@ -18,8 +18,6 @@ import Master2020.Visualization.PlotIndividual;
 import Master2020.StoringResults.Result;
 import Master2020.Individual.Trip;
 import gurobi.GRBException;
-import Master2020.DataFiles.Parameters;
-import scala.xml.PrettyPrinter;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -67,6 +65,7 @@ public class App {
         ODC = new OrderDistributionCrossover(data);
         scalingFactorOrderDistribution = Parameters.initialOrderDistributionScale;
         odp.initializeOrderDistributionPopulation(periodicPopulation);
+        odp.setOrderDistributionScalingFactor(scalingFactorOrderDistribution);
         globalOrderDistribution = odp.getRandomOrderDistribution();
         globalOrderDistribution.setOrderScalingFactor(scalingFactorOrderDistribution);
         periodicPopulation.setOrderDistributionPopulation(odp);
@@ -357,7 +356,7 @@ public class App {
                 System.out.println("Start generation: " + numberOfIterations);
 
 
-                System.out.println("Populate..");
+                //System.out.println("Populate..");
                 for (int p = 0; p < data.numberOfPeriods; p++) {
                     population = periodicPopulation.populations[p];
                     //System.out.println(" ####### Start Period " + p + " ########");
@@ -382,52 +381,58 @@ public class App {
                 }
                 //System.out.println("Iteration ended");
 
-                /*
+                /*  Tournament selection style to combine periods. Needs to be evaluated
                 for (int j = 0; j < Parameters.newIndividualCombinationsGenerated; j++) {
                     PeriodicIndividual newPeriodicIndividual = generatePeriodicIndividual();
                     periodicPopulation.addPeriodicIndividual(newPeriodicIndividual);
                     //newPeriodicIndividual.printDetailedInformation();
                 }
-
-                 */
+                */
                 PeriodicIndividual newPeriodicIndividual = generateGreedyPeriodicIndividual();
                 periodicPopulation.addPeriodicIndividual(newPeriodicIndividual);
-                //newPeriodicIndividual.printDetailedInformation();
-
 
                 updateOrderDistributionScalingParameter();
 
-
-
-
                 PeriodicIndividual bestPeriodicIndividual = periodicPopulation.returnBestIndividual();
+                Individual bestIndividual = bestPeriodicIndividual.createStandardIndividualObject();
+                bestIndividual.updateFitness();
+                bestIndividual.printDetailedFitness();
+
                 if (numberOfIterations % Parameters.generationsOfOrderDistributions == 0 ||
                         numberOfIterations == Parameters.maxNumberIterationsWithoutImprovement-1) {
-                    System.out.println("Perform update of volumes");
-                    if (orderAllocationModel.createOptimalOrderDistribution(bestPeriodicIndividual.getJourneys(), scalingFactorOrderDistribution) == 2){
-                        globalOrderDistribution = orderAllocationModel.getOrderDistribution();
-                        odp.addOrderDistribution(globalOrderDistribution);
-                        periodicPopulation.setOrderDistribution(globalOrderDistribution);
-                        bestPeriodicIndividual.setOrderDistribution(globalOrderDistribution);
-                        periodicPopulation.allocateIndividual(bestPeriodicIndividual);
-                        System.out.println("################################## Number of fesasible individuals:" + periodicPopulation.periodicFeasibleIndividualPopulation.size());
-                        System.out.println("-----------------Optimal OD found!");
-                    } else{
-                        System.out.println("----------------No optimal OD found...");
-                    }
+                    createNewOptimalOrderDistribution(bestPeriodicIndividual);
                 }
-
                 bestPeriodicIndividual = periodicPopulation.returnBestIndividual();
-                bestPeriodicIndividual.printDetailedInformation();
+                //bestPeriodicIndividual.printDetailedInformation();
                 numberOfIterations += 1;
             }
+
             PeriodicIndividual bestPeriodicIndividual = periodicPopulation.returnBestIndividual();
             Individual bestIndividual = bestPeriodicIndividual.createStandardIndividualObject();
+            bestIndividual.updateFitness();
+            bestIndividual.printDetailedFitness();
             Result res = new Result(bestIndividual, "PGA" , bestPeriodicIndividual.isFeasible(), false);
             double runTime = (System.currentTimeMillis() - time)/1000;
             res.store(runTime, -1);
             orderAllocationModel.terminateEnvironment();
             Parameters.randomSeedValue += 1;
+        }
+    }
+
+    private static void createNewOptimalOrderDistribution(PeriodicIndividual bestPeriodicIndividual){
+        System.out.println("Perform update of volumes");
+        if (orderAllocationModel.createOptimalOrderDistribution(bestPeriodicIndividual.getJourneys(), scalingFactorOrderDistribution) == 2){
+            globalOrderDistribution = orderAllocationModel.getOrderDistribution();
+            odp.setOfOrderDistributions.add(globalOrderDistribution);
+            odp.addOrderDistribution(globalOrderDistribution);
+            periodicPopulation.setOrderDistribution(globalOrderDistribution);
+            bestPeriodicIndividual.setOrderDistribution(globalOrderDistribution);
+            periodicPopulation.allocateIndividual(bestPeriodicIndividual);
+            periodicPopulation.reassignPeriodicIndividuals();
+            System.out.println("################################## Number of fesasible individuals:" + periodicPopulation.periodicFeasibleIndividualPopulation.size());
+            System.out.println("-----------------Optimal OD found!");
+        } else{
+            System.out.println("----------------No optimal OD found...");
         }
     }
 
@@ -444,10 +449,13 @@ public class App {
     }
 
 
+
+
     private static void updateOrderDistributionScalingParameter() {
         if (numberOfIterations % Parameters.numberOfGenerationsBetweenODScaling == 0 && numberOfIterations > Parameters.numberOfGenerationBeforeODScalingStarts) {
             scalingFactorOrderDistribution = (scalingFactorOrderDistribution < 1) ? Parameters.incrementPerOrderDistributionScaling + scalingFactorOrderDistribution : 1;
             globalOrderDistribution.setOrderScalingFactor(scalingFactorOrderDistribution);
+            odp.setOrderDistributionScalingFactor(scalingFactorOrderDistribution);
             System.out.println("############# CURRENT ORDER DISTRIBUTION SCALING IS " + scalingFactorOrderDistribution + "################");
         }
     }
@@ -469,7 +477,6 @@ public class App {
 
 
         //Parameters.numberOfCustomers = Integer.parseInt(args[1]);
-
         /*
         if (args[0].equals("AFM"))
             runMIPAFM(Parameters.samples);
@@ -486,14 +493,15 @@ public class App {
 
          */
         for (int i = 0; i < 1; i++) {
-            Parameters.randomSeedValue = 20 + i;
+            Parameters.randomSeedValue = 10 + i;
             System.out.println("SEED VALUE: " + Parameters.randomSeedValue );
+            /*
             Parameters.isPeriodic = false;
-            Parameters.randomSeedValue = 31 + i;
+            runMIPAFM(Parameters.samples);
+             */
+            //Parameters.randomSeedValue = 31 + i;
             //runGA(Parameters.samples);
-
-            //runMIPAFM(Parameters.samples);
-            Parameters.randomSeedValue = 31 + i;
+            Parameters.randomSeedValue = 10 + i;
             Parameters.isPeriodic = true;
             runPeriodicGA(Parameters.samples);
         }

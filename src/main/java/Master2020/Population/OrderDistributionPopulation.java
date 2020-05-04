@@ -3,6 +3,7 @@ package Master2020.Population;
 
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
+import Master2020.DataFiles.Order;
 import Master2020.DataFiles.Parameters;
 import Master2020.Individual.Individual;
 import Master2020.ProductAllocation.OrderDistribution;
@@ -23,13 +24,20 @@ public class OrderDistributionPopulation {
     private Population population;
     private PeriodicPopulation periodicPopulation;
     private HashMap<Individual, HashMap<OrderDistribution, Double>> fillingLevelFitness;  //todo: maybe in addition to overTimeAtDepotFitness
-
+    private double orderDistributionScalingFactor = 1;
 
     //private Set<Individual> currentGiantTourPopulation;
 
     public OrderDistributionPopulation(Data data) {
         this.data = data;
         this.setOfOrderDistributions = new HashSet<OrderDistribution>();
+    }
+
+    public void setOrderDistributionScalingFactor(double orderDistributionScalingFactor){
+        this.orderDistributionScalingFactor = orderDistributionScalingFactor;
+        for (OrderDistribution orderDistribution : setOfOrderDistributions){
+            orderDistribution.setOrderScalingFactor(orderDistributionScalingFactor);
+        }
     }
 
     public void initializeOrderDistributionPopulation(Population population) {

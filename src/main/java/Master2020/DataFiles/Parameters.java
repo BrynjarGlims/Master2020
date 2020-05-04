@@ -7,11 +7,10 @@ import java.util.Set;
 public class Parameters {
 
     // File import parameters
-    public static final String customersFilePath = "data/Not_in_use.csv";
-    public static final String ordersFilePath = "data/Orders.csv";
-    public static final String timeWindowsFilePath = "data/Time_windows.csv";
-    public static final String vehicleFilePath = "data/Vehicles.csv";
-    public static final String dataSet = "Trøndelag";
+    public static final String dataSet = "Trondelag";   // Trondelag or VestTele
+    public static final String ordersFilePath = "data/" + dataSet + "/Orders.csv";
+    public static final String timeWindowsFilePath = "data/" + dataSet + "/Time_windows.csv";
+    public static final String vehicleFilePath = "data/" + dataSet + "/Vehicles.csv";
     public static final boolean doRandomSeed = true;
     public static final int samples = 1;
     public static long randomSeedValue = 20;
@@ -22,13 +21,13 @@ public class Parameters {
     public static final int initialPopulationSize = 100;
     public static final int initialOrderDistributionPopulationSize = 50;
     public static final int maxNumberIterationsWithoutImprovement = 100;
-    public static final int maxNumberOfGenerations = 100;
+    public static final int maxNumberOfGenerations = 15;
 
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 25; // A maximum of 75
-    public static final int numberOfVehicles = 10;
+    public static int numberOfCustomers = 5; // A maximum of 75
+    public static final int numberOfVehicles = 5;
     public static final double distanceCutOffFromDepot = 3.0;
     public static final boolean adjustTimeWindow = true;
     public static final double adjustTimeWindowReduction = 5;
@@ -116,9 +115,9 @@ public class Parameters {
     public static final int minimumPeriodicSubPopulationSize = 20;
     public static final int maksimumPeriodicSubPopulationSize = 50;
     public static final double initialOrderDistributionScale = 0.7;
-    public static final double incrementPerOrderDistributionScaling = 0.05;
-    public static final int numberOfGenerationsBetweenODScaling = 5;
-    public static final int numberOfGenerationBeforeODScalingStarts = 25;
+    public static final double incrementPerOrderDistributionScaling = 0.1;
+    public static final int numberOfGenerationsBetweenODScaling = 1;
+    public static final int numberOfGenerationBeforeODScalingStarts = 4;
 
     // Verbose parameters
     public static final boolean verboseArcFlow = false;

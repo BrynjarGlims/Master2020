@@ -334,7 +334,6 @@ public class DataReader {
 
     public static Data loadData(boolean verbose)  {
         // Master function
-
         List<String[]> orderData = DataReader.readCSVFile(Parameters.ordersFilePath);
         List<String[]> timeWindowData = DataReader.readCSVFile(Parameters.timeWindowsFilePath);
         List<String[]> vehiclesData = DataReader.readCSVFile(Parameters.vehicleFilePath);

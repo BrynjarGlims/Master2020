@@ -84,7 +84,7 @@ public class Result {
         String fileName = getFileName();
         if (!this.isFeasible && (modelName == "PFM" || modelName != "AFM" || modelName != "JBM")) {
             createEmptyResult(fileName);
-            System.out.println("Faend ett er feil");
+            System.out.println("Trolig feil....");
             System.out.println("Storing complete");
         }
         else{
