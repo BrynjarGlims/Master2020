@@ -9,6 +9,8 @@ import Master2020.ProductAllocation.OrderDistribution;
 
 
 import java.util.ArrayList;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.*;
 
@@ -26,6 +28,11 @@ public class Population {
     int actualPeriod;
     int numberOfPeriods;
 
+    //threading
+    boolean run = true;
+    public CyclicBarrier downstreamGate;
+    public CyclicBarrier upstreamGate;
+
     public Population(Data data, int actualPeriod) {
         this.data = data;
         this.feasiblePopulation = new HashSet<Individual>();
@@ -38,6 +45,8 @@ public class Population {
     public Population(Data data){
         this(data, -1);   //used if not periodic
     }
+
+
 
 
     public void updateOrderDistributionsOfAllIndividuals(OrderDistribution orderDistribution){
@@ -278,6 +287,26 @@ public class Population {
     public void setOrderDistributionPopulation(OrderDistributionPopulation odp){
         this.orderDistributionPopulation = odp;
     }
+
+    //@Override
+    public void run() {
+        while (run){
+            try {
+                //wait for all threads to be ready
+                downstreamGate.await();
+                //run generations
+                if (run){runGenerations(Parameters.generationsPerOrderDistribution);}
+                //wait for all periods to finish
+                upstreamGate.await();
+
+            } catch (InterruptedException | BrokenBarrierException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+
 
 
     public static void main( String[] args){
