@@ -52,18 +52,20 @@ public class Parameters {
     public static final int numberOfSwarms = 5;
     public static final int orderDistributionCutoff = 1;
     public static final int swarmIterationsWithoutImprovementLimit = 5;
-    public static final int generationsPerOrderDistribution = 700;
+    public static final int generationsPerOrderDistribution = 300;
     public static final int orderDistributionUpdates = 50;
     public static final int numberOfEmployees = 10;
     public static final int numberOfOnlookers = 40;
-    public static final int numberOfScoutTrials = 5;
+    public static final int numberOfScoutTrials = 10;
     public static final int maxNumberOfTrials = 10;
     public static final int maxBoundDimensionality = 4; //max amount of dimensions that can be changed, chosen randomly from 1-this
     public static final double weightNeighborEmployed = 1;
     public static final double weightNeighborOnlooker = 1.5;
-    public static final double weightGlobalBest = 0.5;
+    public static final double weightGlobalBest = 0.8;
     public static final double movementRange = 1; //both positive and negative, but only half in negative direction
     public static final double onlookerRandomAdjustment = 0.2; //a random number added when onlooker goes to employers foodsource
+    public static final int numberOfEnhancements = 1; //number of enhancements that wil happen to onlookers
+    public static final double[] weightsEnhancement = new double[]{0.25, 0.25, 0.25, 0.25}; //probability distribution of enhancements, [nothing, reverse, swap, insert]
     public static final double globalTrialsCutoff = 1.1; //trials will not increment if solution is within this multiplier of global best
 
     //Penalty parameters for heuristics

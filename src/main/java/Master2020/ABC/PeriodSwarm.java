@@ -6,6 +6,9 @@ import Master2020.DataFiles.Parameters;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Utils.WeightedRandomSampler;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
@@ -49,7 +52,6 @@ public class PeriodSwarm extends Thread {
         }
     }
 
-
     public void runGeneration(){
         Bee neighbor;
 
@@ -82,7 +84,6 @@ public class PeriodSwarm extends Thread {
 
     }
 
-
     public Bee getRandomNeighbor(Bee bee){
         Bee neighbor;
         int selected = ThreadLocalRandom.current().nextInt(0, (Parameters.numberOfOnlookers + Parameters.numberOfEmployees));
@@ -97,7 +98,6 @@ public class PeriodSwarm extends Thread {
         }
         return neighbor;
     }
-
 
     @Override
     public void run() {
@@ -117,8 +117,6 @@ public class PeriodSwarm extends Thread {
 
     }
 
-
-
     public void initialize(){
         employees = IntStream.range(0, Parameters.numberOfEmployees).parallel().mapToObj(o -> new Employee(data, period, this)).collect(Collectors.toList());
         onlookers = IntStream.range(0, Parameters.numberOfOnlookers).parallel().mapToObj(o -> new Onlooker(data, period, this)).collect(Collectors.toList());
@@ -132,7 +130,11 @@ public class PeriodSwarm extends Thread {
         OrderDistribution orderDistribution = new OrderDistribution(data);
         orderDistribution.makeInitialDistribution();
         PeriodSwarm periodSwarm = new PeriodSwarm(data, 0, orderDistribution);
-        periodSwarm.runGenerations(10000);
+        Bee bee = periodSwarm.employees.get(0);
+        System.out.println(Arrays.toString(bee.position));
+        for (int i = 0 ; i < 100 ; i++){
 
+            bee.enhance();
+        }
     }
 }

@@ -4,12 +4,10 @@ import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Parameters;
 import Master2020.Population.PeriodicOrderDistributionPopulation;
-import Master2020.ProductAllocation.OrderDistribution;
 import gurobi.GRBException;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.concurrent.BrokenBarrierException;
@@ -133,6 +131,7 @@ public class ABCController {
         for (int s = 0 ; s < Parameters.numberOfSwarms ; s++){
             swarms.get(s).runIteration();
             pod.distributions.set(s, swarms.get(s).orderDistribution);
+            System.out.println(swarms.get(s).storeSolution().getFitness());
         }
         updateOrderDistributionPopulation();
 
