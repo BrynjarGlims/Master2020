@@ -6,26 +6,27 @@ import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.*;
 import Master2020.Individual.Individual;
 import Master2020.Individual.PeriodicIndividual;
+import Master2020.Individual.Trip;
 import Master2020.MIP.DataConverter;
 import Master2020.MIP.OrderAllocationModel;
-import Master2020.PR.*;
+import Master2020.PR.ArcFlowModel;
+import Master2020.PR.DataMIP;
+import Master2020.PR.JourneyBasedModel;
+import Master2020.PR.PathFlowModel;
+import Master2020.Population.OrderDistributionPopulation;
 import Master2020.Population.PeriodicPopulation;
 import Master2020.Population.Population;
 import Master2020.ProductAllocation.OrderDistribution;
-import Master2020.Population.OrderDistributionPopulation;
+import Master2020.StoringResults.Result;
 import Master2020.Testing.IndividualTest;
 import Master2020.Visualization.PlotIndividual;
-import Master2020.StoringResults.Result;
-import Master2020.Individual.Trip;
 import gurobi.GRBException;
 
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class App {
-
-
+public class RunGA {
     public static Data data;
     public static Population population;
     public static PeriodicPopulation periodicPopulation;
@@ -209,58 +210,6 @@ public class App {
 
     }
 
-
-    public static void runMIPAFM(int samples){
-        for (int i = 0 ; i < samples ; i++){
-            Data data = Master2020.DataFiles.DataReader.loadData();
-            DataMIP dataMip = DataConverter.convert(data);
-            ArcFlowModel afm = new ArcFlowModel(dataMip);
-            afm.runModel(Master2020.DataFiles.Parameters.symmetry);
-            Individual bestIndividual = afm.getIndividual();
-            Result result = new Result(bestIndividual, "AFM", afm.feasible, afm.optimal);
-            try{
-                result.store(afm.runTime, afm.MIPGap);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            Parameters.randomSeedValue += 1;
-        }
-    }
-
-    public static void runMIPPFM(int samples){
-        for (int i = 0 ; i < samples ; i++){
-            Data data = Master2020.DataFiles.DataReader.loadData();
-            DataMIP dataMip = DataConverter.convert(data);
-            PathFlowModel pfm = new PathFlowModel(dataMip);
-            pfm.runModel(Master2020.DataFiles.Parameters.symmetry);
-            Individual bestIndividual = pfm.getIndividual();
-            Result result = new Result(bestIndividual, "PFM", pfm.feasible, pfm.optimal);
-            try{
-                result.store(pfm.runTime, pfm.MIPGap);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            Parameters.randomSeedValue += 1;
-        }
-    }
-
-    public static void runMIPJBM(int samples){
-        for (int i = 0 ; i < samples ; i++){
-            System.out.println("RUNNING FOR SAMPLE: " + Parameters.randomSeedValue);
-            Data data = Master2020.DataFiles.DataReader.loadData();
-            DataMIP dataMip = DataConverter.convert(data);
-            JourneyBasedModel jbm = new JourneyBasedModel(dataMip);
-            jbm.runModel(Master2020.DataFiles.Parameters.symmetry);
-            Individual bestIndividual = jbm.getIndividual();
-            Result result = new Result(bestIndividual, "JBM", jbm.feasible, jbm.optimal);
-            try{
-                result.store(jbm.runTime, jbm.MIPGap);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            Parameters.randomSeedValue += 1;
-        }
-    }
 
 
 
@@ -474,40 +423,4 @@ public class App {
         return newPeriodicIndividual;
     }
 
-
-
-    public static void main(String[] args) throws Exception {
-
-
-        //Parameters.numberOfCustomers = Integer.parseInt(args[1]);
-        /*
-        if (args[0].equals("AFM"))
-            runMIPAFM(Parameters.samples);
-        else if (args[0].equals("PFM"))
-            runMIPPFM(Parameters.samples);
-        else if (args[0].equals("JBM"))
-            runMIPJBM(Parameters.samples);
-        else if (args[0].equals("GA"))
-            runGA(Parameters.samples);
-        else if (args[0].equals("PGA")) {
-            Parameters.isPeriodic = true;
-            runPeriodicGA(Parameters.samples);
-        }
-
-         */
-        for (int i = 0; i < 1; i++) {
-            Parameters.randomSeedValue = 20 + i;
-            System.out.println("SEED VALUE: " + Parameters.randomSeedValue );
-            Parameters.isPeriodic = false;
-            runMIPAFM(Parameters.samples);
-            /*
-            //Parameters.randomSeedValue = 31 + i;
-            //runGA(Parameters.samples);
-            Parameters.randomSeedValue = 20 + i;
-            Parameters.isPeriodic = true;
-            runPeriodicGA(Parameters.samples);
-
-             */
-        }
-    }
 }

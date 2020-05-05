@@ -1,13 +1,18 @@
 package Master2020.Population;
 import Master2020.DataFiles.*;
 import Master2020.Genetic.BiasedFitness;
+import Master2020.Genetic.OrderDistributionCrossover;
 import Master2020.Genetic.TournamentSelection;
 import Master2020.Individual.Individual;
 import Master2020.Individual.AdSplit;
+import Master2020.Individual.PeriodicIndividual;
+import Master2020.MIP.OrderAllocationModel;
 import Master2020.ProductAllocation.OrderDistribution;
+import Master2020.StoringResults.Result;
+import gurobi.GRBException;
 
 
-
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
@@ -23,7 +28,6 @@ public class Population {
 
     int iterationsWithoutImprovement = 0;
 
-
     boolean isPeriodic;
     int actualPeriod;
     int numberOfPeriods;
@@ -32,6 +36,22 @@ public class Population {
     boolean run = true;
     public CyclicBarrier downstreamGate;
     public CyclicBarrier upstreamGate;
+
+    public static PeriodicPopulation periodicPopulation;
+    public static OrderDistributionPopulation odp;
+    public static OrderDistributionCrossover ODC;
+    public static OrderDistribution globalOrderDistribution;
+    public static double bestIndividualScore;
+    public static HashSet<Individual> repaired;
+    public static Individual bestIndividual;
+    public static int numberOfIterations;
+    public static OrderAllocationModel orderAllocationModel;
+
+    public static PeriodicIndividual bestPeriodicIndividual;
+
+
+
+
 
     public Population(Data data, int actualPeriod) {
         this.data = data;
@@ -303,9 +323,7 @@ public class Population {
                 e.printStackTrace();
             }
         }
-
     }
-
 
 
 
