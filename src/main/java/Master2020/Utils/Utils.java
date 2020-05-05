@@ -10,6 +10,17 @@ public class Utils {
 
 
 
+    public static Function<List<?>, Function<Integer, Consumer<Integer>>> reverse = list -> int1 -> int2 -> {
+        reverse(list, int1, int2);
+    };
+
+    public static Function<List<?>, Function<Integer, Consumer<Integer>>> insert = list -> int1 -> int2 -> {
+        insert(list, int1, int2);
+    };
+
+    public static Function<List<?>, Function<Integer, Consumer<Integer>>> swap = list -> int1 -> int2 -> {
+        Collections.swap(list, int1, int2);
+    };
 
     public static <E> void insert(List<E> list, int pos1, int pos2){
         E insertElement = list.get(pos1);

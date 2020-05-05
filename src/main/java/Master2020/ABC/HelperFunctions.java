@@ -61,6 +61,7 @@ public class HelperFunctions {
             numVisitsByVehicleType = (int) Arrays.stream(position).filter(c -> c >= finalVt).filter(c -> c < (finalVt + 1)).count();
             positionsPerVehicleType[vt] = new ArrayList<>(Arrays.asList(new Integer[numVisitsByVehicleType]));
             indicesPerVehicleType[vt] = new ArrayList<>(Arrays.asList(new Integer[numVisitsByVehicleType]));
+            customerVisits[vt] = new ArrayList<>(Arrays.asList(new Integer[numVisitsByVehicleType]));
             accumulatedValue += numVisitsByVehicleType;
             accumulatedValues[vt + 1] = accumulatedValue;
         }

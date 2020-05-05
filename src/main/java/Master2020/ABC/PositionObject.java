@@ -13,4 +13,15 @@ public class PositionObject {
         this.parsedIndices = parsedIndices;
         this.parsedPosition = parsedPosition;
     }
+
+
+    public double[] parsePosition(int size){
+        double[] position = new double[size];
+        for (int vt = 0 ; vt < parsedIndices.length ; vt++){
+            for (int i = 0 ; i <  parsedIndices[vt].size() ; i++){
+                position[parsedIndices[vt].get(i)] = parsedPosition[vt].get(i);
+            }
+        }
+        return position;
+    }
 }

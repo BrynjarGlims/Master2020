@@ -8,9 +8,12 @@ import Master2020.Individual.Journey;
 import Master2020.MIP.OrderAllocationModel;
 import Master2020.Population.PeriodicOrderDistributionPopulation;
 import Master2020.ProductAllocation.OrderDistribution;
+import Master2020.Testing.ABCtests;
+import Master2020.Testing.IndividualTest;
 import gurobi.GRBException;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.ArrayList;
 import java.util.List;
@@ -138,6 +141,10 @@ public class Swarm extends Thread{
                 journeys[p][vt] = journeysEntry;
             }
         }
+        System.out.println("all customers exists? " + ABCtests.allCustomersExists(journeys, data));
+        System.out.println("OD valid? " + IndividualTest.testValidOrderDistribution(data, orderDistribution));
+        double[] fitnesses = FitnessCalculation.getIndividualFitness(data, journeys,orderDistribution, 1);
+        System.out.println("overload: " + fitnesses[2]);
 
         if (orderAllocationModel.createOptimalOrderDistribution(journeys) == 2){
             this.orderDistribution = orderAllocationModel.getOrderDistribution();
