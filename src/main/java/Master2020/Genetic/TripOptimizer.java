@@ -8,6 +8,7 @@ import Master2020.Individual.AdSplit;
 import Master2020.DataFiles.Data;
 import Master2020.Population.*;
 import Master2020.ProductAllocation.OrderDistribution;
+import Master2020.Utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +19,7 @@ public class TripOptimizer {
         if (trip.customers.size() > Parameters.tripOptimizerSizeLimit){
             return;
         }
-        List<List<Integer>> permutations = generatePermutations(new ArrayList<>(trip.customers));
+        List<List<Integer>> permutations = Utils.Permutate(new ArrayList<>(trip.customers));
         List<Integer> bestSequence = trip.customers;
         double bestFitness = FitnessCalculation.getTotalJourneyFitness(trip.journey, orderDistribution);;
 
@@ -32,25 +33,6 @@ public class TripOptimizer {
             }
         }
         trip.customers = bestSequence;
-    }
-
-    private static <T> List<List<T>> generatePermutations(List<T> original) {
-        if (original.isEmpty()) {
-            List<List<T>> result = new ArrayList<>();
-            result.add(new ArrayList<>());
-            return result;
-        }
-        T firstElement = original.remove(0);
-        List<List<T>> returnValue = new ArrayList<>();
-        List<List<T>> permutations = generatePermutations(original);
-        for (List<T> smallerPermutated : permutations) {
-            for (int index=0; index <= smallerPermutated.size(); index++) {
-                List<T> temp = new ArrayList<>(smallerPermutated);
-                temp.add(index, firstElement);
-                returnValue.add(temp);
-            }
-        }
-        return returnValue;
     }
 
 
