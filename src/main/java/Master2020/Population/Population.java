@@ -101,6 +101,31 @@ public class Population {
         return bestIndividual;
     }
 
+    public void reassignIndividualsInPopulations(){
+        Set<Individual> tempFeasiblePopulation = new HashSet<>();
+        Set<Individual> tempInfeasiblePopulation = new HashSet<>();
+        for (Individual individual : feasiblePopulation){
+            individual.updateFitness();  //todo: may be deleted.
+            if (individual.isFeasible()){
+                tempFeasiblePopulation.add(individual);
+            }
+            else{
+                tempInfeasiblePopulation.add(individual);
+            }
+        }
+        for (Individual individual : infeasiblePopulation){
+            individual.updateFitness();  //todo: may be deleted.
+            if (individual.isFeasible()){
+                tempFeasiblePopulation.add(individual);
+            }
+            else{
+                tempInfeasiblePopulation.add(individual);
+            }
+        }
+        feasiblePopulation = tempFeasiblePopulation;
+        infeasiblePopulation = tempInfeasiblePopulation;
+    }
+
 
     public Individual returnBestFeasibleIndividual(){
         Individual bestIndividual = null;

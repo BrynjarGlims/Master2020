@@ -206,11 +206,11 @@ public class TestResults {
 
         for (int i = 0; i < 1; i++) {
 
-            Parameters.randomSeedValue = 10 + i;
+            Parameters.randomSeedValue = 20 + i;
 
             System.out.println("RANDOM SEED VALUE: " + Parameters.randomSeedValue);
             System.out.println("Results from PGA:");
-            String name = "PGA_S" + Parameters.randomSeedValue + "_C5_V5_04_05_2020";
+            String name = "PGA_S" + Parameters.randomSeedValue + "_C25_V10_05_05_2020";
             String path = "results/results_detailed/" + name;
             evaluateSolution(path, name);
             System.out.println(" ----- ");

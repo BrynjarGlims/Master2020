@@ -107,7 +107,14 @@ public class PeriodicPopulation {
         }
         periodicFeasibleIndividualPopulation = tempFeasiblePopulation;
         periodicInfeasibleIndividualPopulation = tempInfeasiblePopulation;
+        reassignIndividualsInPopulations();
 
+    }
+
+    private void reassignIndividualsInPopulations(){
+        for (int p = 0; p < data.numberOfPeriods; p++){
+            populations[p].reassignIndividualsInPopulations();
+        }
     }
 
     public void allocateIndividual(PeriodicIndividual periodicIndividual){

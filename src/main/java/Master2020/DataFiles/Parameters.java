@@ -21,13 +21,13 @@ public class Parameters {
     public static final int initialPopulationSize = 100;
     public static final int initialOrderDistributionPopulationSize = 50;
     public static final int maxNumberIterationsWithoutImprovement = 100;
-    public static final int maxNumberOfGenerations = 15;
+    public static final int maxNumberOfGenerations = 100;
 
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 5; // A maximum of 75
-    public static final int numberOfVehicles = 5;
+    public static int numberOfCustomers = 25; // A maximum of 75
+    public static final int numberOfVehicles = 10;
     public static final double distanceCutOffFromDepot = 3.0;
     public static final boolean adjustTimeWindow = true;
     public static final double adjustTimeWindowReduction = 5;
@@ -114,10 +114,10 @@ public class Parameters {
     public static final int newIndividualCombinationsGenerated = 3;
     public static final int minimumPeriodicSubPopulationSize = 20;
     public static final int maksimumPeriodicSubPopulationSize = 50;
-    public static final double initialOrderDistributionScale = 0.7;
-    public static final double incrementPerOrderDistributionScaling = 0.1;
-    public static final int numberOfGenerationsBetweenODScaling = 1;
-    public static final int numberOfGenerationBeforeODScalingStarts = 4;
+    public static final double initialOrderDistributionScale = 1;
+    public static final double incrementPerOrderDistributionScaling = 0.02;
+    public static final int numberOfGenerationsBetweenODScaling = 2;
+    public static final int numberOfGenerationBeforeODScalingStarts = 20;
 
     // Verbose parameters
     public static final boolean verboseArcFlow = false;

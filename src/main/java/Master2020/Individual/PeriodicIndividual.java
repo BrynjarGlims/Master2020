@@ -6,6 +6,7 @@ import Master2020.Genetic.FitnessCalculation;
 import Master2020.Population.PeriodicPopulation;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Testing.IndividualTest;
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import gurobi.GRB;
 import java.util.ArrayList;
 
@@ -40,7 +41,6 @@ public class PeriodicIndividual {
     }
 
     public void setPeriodicIndividual(Individual individual, int p){
-
         this.individuals[p] = individual;
         initializeJourneys(p);
     }
@@ -77,7 +77,9 @@ public class PeriodicIndividual {
         System.out.println("Order allocation cost: " + orderDistributionCost);
         System.out.println("Time warp cost: " + timeWarpCost);
         System.out.println("Over load cost: " + overLoadCost);
+        System.out.println("Order distribution scaling factor " + orderDistribution.orderScalingFactor);
         System.out.println("-------------------------------------");
+
     }
 
 
