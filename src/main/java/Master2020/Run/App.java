@@ -62,7 +62,8 @@ public class App {
     public static void initializePeriodic() throws GRBException {
         data = DataReader.loadData();
         odp = new OrderDistributionPopulation(data);
-        periodicPopulation = new PeriodicPopulation(data, odp);
+        periodicPopulation = new PeriodicPopulation(data);
+        periodicPopulation.initialize(odp);
         ODC = new OrderDistributionCrossover(data);
         scalingFactorOrderDistribution = Parameters.initialOrderDistributionScale;
         odp.initializeOrderDistributionPopulation(periodicPopulation);

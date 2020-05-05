@@ -109,10 +109,10 @@ public class Parameters {
     public static final double MIPSafetyIndifference = 0.01;
 
     //Periodic parameters
-
     public static boolean isPeriodic = false;
+    public static int numberOfPopulations = 5;
     public static final int generationsPerOrderDistributionPeriodic = 5;
-    public static final int generationsOfOrderDistributions = 3;
+    public static final int generationsOfOrderDistributions = 10;
     public static final int newIndividualCombinationsGenerated = 3;
     public static final int minimumPeriodicSubPopulationSize = 20;
     public static final int maksimumPeriodicSubPopulationSize = 50;

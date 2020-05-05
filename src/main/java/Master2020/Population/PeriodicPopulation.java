@@ -9,8 +9,10 @@ import Master2020.ProductAllocation.OrderDistribution;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
 
-public class PeriodicPopulation {
+public class PeriodicPopulation extends Thread {
 
     public Data data;
     public Population[] populations;
@@ -21,9 +23,21 @@ public class PeriodicPopulation {
     public OrderDistribution orderDistribution;
 
 
-    public PeriodicPopulation(Data data, OrderDistributionPopulation odp) {
-        this.orderDistributionPopulation = odp;
+
+    //threading
+    public boolean run;
+    private CyclicBarrier downstreamGate;
+    private CyclicBarrier upstreamGate;
+    private CyclicBarrier masterDownstreamGate;
+    private CyclicBarrier masterUpstreamGate;
+
+
+    public PeriodicPopulation(Data data) {
         this.data = data;
+    }
+
+    public void initialize(OrderDistributionPopulation odp ){
+        this.orderDistributionPopulation = odp;
         this.populations = new Population[data.numberOfPeriods];
         for (int p = 0; p < data.numberOfPeriods; p++){
             this.populations[p] = new Population(data, p);
@@ -32,6 +46,25 @@ public class PeriodicPopulation {
         this.periodicFeasibleIndividualPopulation = new HashSet<PeriodicIndividual>();
         this.periodicInfeasibleIndividualPopulation = new HashSet<PeriodicIndividual>();
     }
+
+    public void initialize(OrderDistribution orderDistribution,  CyclicBarrier masterDownstreamGate, CyclicBarrier masterUpstreamGate ){
+        this.orderDistribution = orderDistribution;
+        this.masterDownstreamGate = masterDownstreamGate;
+        this.masterUpstreamGate = masterUpstreamGate;
+        //downstreamGate = new CyclicBarrier(data.numberOfPeriods + 1);
+        //upstreamGate = new CyclicBarrier(data.numberOfPeriods + 1);
+
+
+        this.populations = new Population[data.numberOfPeriods];
+        for (int p = 0; p < data.numberOfPeriods; p++){
+            this.populations[p] = new Population(data, p);
+            this.populations[p].setOrderDistributionPopulation(this.orderDistributionPopulation);
+        }
+        this.periodicFeasibleIndividualPopulation = new HashSet<PeriodicIndividual>();
+        this.periodicInfeasibleIndividualPopulation = new HashSet<PeriodicIndividual>();
+    }
+
+
 
     public void addPeriodicIndividual(PeriodicIndividual periodicIndividual){
         if (periodicIndividual.isFeasible())
@@ -167,12 +200,45 @@ public class PeriodicPopulation {
         return null;
     }
 
+    public void run(){
+        while (run){
+            try {
+                //wait for all threads to be ready
+                masterDownstreamGate.await();
+                //run generations
+                if (run){runIteration();}
+                //wait for all periods to finish
+                masterUpstreamGate.await();
+
+            } catch (InterruptedException | BrokenBarrierException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void runIteration() throws InterruptedException, BrokenBarrierException {
+        //release all period swarms for
+        downstreamGate.await();
+        downstreamGate.reset();
+
+        //wait for all periods to finish their generations
+        upstreamGate.await();
+        upstreamGate.reset();
+
+        //update and find best order distribution
+        //makeOptimalOrderDistribution(threads);
+        //updateOrderDistributionForColonies(threads, false);
+        //updateFitness();
+
+    }
+
 
 
     public static void main( String[] args){
         Data data = DataReader.loadData();
         OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
-        PeriodicPopulation periodicPopulation = new PeriodicPopulation(data,odp);
+        PeriodicPopulation periodicPopulation = new PeriodicPopulation(data);
+        periodicPopulation.initialize(odp);
 
         odp.initializeOrderDistributionPopulation(periodicPopulation);
         periodicPopulation.initializePopulation(odp.getRandomOrderDistribution());
