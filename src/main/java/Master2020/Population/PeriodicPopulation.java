@@ -226,9 +226,9 @@ public class PeriodicPopulation extends Thread {
         upstreamGate.reset();
 
         //update and find best order distribution
-        makeOptimalOrderDistribution(threads);
-        updateOrderDistributionForColonies(threads, false);
-        updateFitness();
+        //makeOptimalOrderDistribution(threads);
+        //updateOrderDistributionForColonies(threads, false);
+        //updateFitness();
 
     }
 

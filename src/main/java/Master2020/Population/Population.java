@@ -295,7 +295,7 @@ public class Population {
                 //wait for all threads to be ready
                 downstreamGate.await();
                 //run generations
-                if (run){runGenerations(Parameters.generationsPerOrderDistribution);}
+                //if (run){runGenerations(Parameters.generationsPerOrderDistribution);}
                 //wait for all periods to finish
                 upstreamGate.await();
 

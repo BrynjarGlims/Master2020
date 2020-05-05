@@ -67,8 +67,8 @@ public class PGAController {
     }
 
     private void initializeSingular() throws GRBException {
-        swarm = new Swarm(data);
-        swarm.initialize(swarm.orderDistribution);
+        //swarm = new Swarm(data);
+        //swarm.initialize(swarm.orderDistribution);
     }
 
     private void multipleRun() throws InterruptedException, BrokenBarrierException, CloneNotSupportedException, IOException {
@@ -91,7 +91,7 @@ public class PGAController {
             //for (int s = 0 ; s < Parameters.numberOfSwarms ; s++){
             //    swarms.get(s).runIteration();
             //    pod.distributions.set(s, swarms.get(s).orderDistribution);
-            }
+            //}
             updateOrderDistributionPopulation();
 
 
@@ -113,16 +113,19 @@ public class PGAController {
             System.out.println("running generation: " + i);
             runIteration();
         }
+        /*
         for (Swarm swarm : swarms){
             finalSolutions.add(swarm.storeSolution());
             swarm.terminate();
             swarm.run = false;
         }
+
+         */
         downstreamGate.await();
         upstreamGate.await();
 
         Collections.sort(finalSolutions);
-        System.out.println(finalSolutions.get(0).getFitness());
+        //System.out.println(finalSolutions.get(0).getFitness());
     }
 
 
@@ -136,6 +139,7 @@ public class PGAController {
         upstreamGate.await();
         upstreamGate.reset();
 
+        /*
         //update and find best order distribution
         for (int s = 0 ; s < Parameters.numberOfSwarms ; s++){
             swarms.get(s).runIteration();
@@ -143,12 +147,15 @@ public class PGAController {
         }
         updateOrderDistributionPopulation();
 
+         */
+
     }
 
 
 
     private void singularRun() throws BrokenBarrierException, InterruptedException, IOException, CloneNotSupportedException {
         System.out.println("RUNNING SINGULAR ABC");
+        /*
         for (int i = 0 ; i < Parameters.orderDistributionUpdates ; i++){
             System.out.println("running generation: " + i);
             swarm.runIteration();
@@ -156,6 +163,8 @@ public class PGAController {
         ABCSolution solution = swarm.storeSolution();
         swarm.terminate();
         System.out.println(solution.getFitness());
+
+         */
 
     }
 
@@ -171,6 +180,7 @@ public class PGAController {
 
 
     public void updateOrderDistributionPopulation() throws CloneNotSupportedException {
+        /*
         solutions.clear();
         for (Swarm swarm : swarms){
             solutions.add(swarm.storeSolution());
@@ -191,6 +201,8 @@ public class PGAController {
                 swarms.get(i).updateOrderDistribution(pod.diversify(10));
             }
         }
+        
+         */
     }
 
 
@@ -203,6 +215,6 @@ public class PGAController {
     }
 }
 
-}
+
 
 
