@@ -43,6 +43,7 @@ public class Employee extends Bee {
     public void search(Bee neighbor){
         double[] currentPosition = position.clone();
         updatePosition(currentPosition, neighbor.position, true);
+        enhance();
         double newFitness = getFitness(currentPosition);
         updateTrials(newFitness, currentPosition, true);
 

@@ -131,10 +131,6 @@ public class PeriodSwarm extends Thread {
         orderDistribution.makeInitialDistribution();
         PeriodSwarm periodSwarm = new PeriodSwarm(data, 0, orderDistribution);
         Bee bee = periodSwarm.employees.get(0);
-        System.out.println(Arrays.toString(bee.position));
-        for (int i = 0 ; i < 100 ; i++){
-
-            bee.enhance();
-        }
+        bee.enhance();
     }
 }
