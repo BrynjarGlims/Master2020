@@ -2,10 +2,14 @@ package Master2020.Population;
 
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
+import Master2020.DataFiles.Parameters;
 import Master2020.Individual.Individual;
 import Master2020.Individual.PeriodicIndividual;
 import Master2020.ProductAllocation.OrderDistribution;
+import Master2020.StoringResults.Result;
+import gurobi.GRBException;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -24,14 +28,6 @@ public class PeriodicPopulation extends Thread {
 
 
 
-    //threading
-    public boolean run;
-    private CyclicBarrier downstreamGate;
-    private CyclicBarrier upstreamGate;
-    private CyclicBarrier masterDownstreamGate;
-    private CyclicBarrier masterUpstreamGate;
-
-
     public PeriodicPopulation(Data data) {
         this.data = data;
     }
@@ -47,13 +43,8 @@ public class PeriodicPopulation extends Thread {
         this.periodicInfeasibleIndividualPopulation = new HashSet<PeriodicIndividual>();
     }
 
-    public void initialize(OrderDistribution orderDistribution,  CyclicBarrier masterDownstreamGate, CyclicBarrier masterUpstreamGate ){
+    public void initialize(OrderDistribution orderDistribution){
         this.orderDistribution = orderDistribution;
-        this.masterDownstreamGate = masterDownstreamGate;
-        this.masterUpstreamGate = masterUpstreamGate;
-        //downstreamGate = new CyclicBarrier(data.numberOfPeriods + 1);
-        //upstreamGate = new CyclicBarrier(data.numberOfPeriods + 1);
-
 
         this.populations = new Population[data.numberOfPeriods];
         for (int p = 0; p < data.numberOfPeriods; p++){
@@ -231,6 +222,10 @@ public class PeriodicPopulation extends Thread {
         //updateFitness();
 
     }
+
+
+
+
 
 
 

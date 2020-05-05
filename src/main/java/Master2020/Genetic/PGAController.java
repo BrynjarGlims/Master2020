@@ -11,6 +11,7 @@ import Master2020.Individual.Individual;
 import Master2020.Population.PeriodicOrderDistributionPopulation;
 import Master2020.Population.PeriodicPopulation;
 import Master2020.Population.Population;
+import Master2020.Run.GeneticPeriodicAlgorithm;
 import gurobi.GRBException;
 
 import java.io.IOException;
@@ -25,14 +26,12 @@ import java.util.stream.IntStream;
 public class PGAController {
 
     public Data data;
-    public ArrayList<PeriodicPopulation> periodicPopulationArrayList;
+    public ArrayList<GeneticPeriodicAlgorithm> periodicAlgorithmsArrayList;
     public PeriodicOrderDistributionPopulation pod;
     public ArrayList<Individual> solutions;
     public ArrayList<Individual> finalSolutions;
     public CyclicBarrier downstreamGate;
     public CyclicBarrier upstreamGate;
-
-
 
     public PeriodicPopulation periodicPopulation;
     private List<Population> threads;
@@ -57,16 +56,20 @@ public class PGAController {
         upstreamGate = new CyclicBarrier(Parameters.numberOfPopulations + 1);
         solutions = new ArrayList<>();
         finalSolutions = new ArrayList<>();
-        periodicPopulationArrayList = new ArrayList<>();
+        periodicAlgorithmsArrayList = new ArrayList<>();
         pod = new PeriodicOrderDistributionPopulation(data);
         pod.initialize(Parameters.numberOfPopulations);
         for (int i = 0 ; i < Parameters.numberOfPopulations ; i++){
-            PeriodicPopulation p = new PeriodicPopulation(data);
-            p.initialize(pod.distributions.get(i), downstreamGate, upstreamGate);
+            GeneticPeriodicAlgorithm p = new GeneticPeriodicAlgorithm(data);
+            p.initializePeriodic(pod.distributions.get(i), downstreamGate, upstreamGate);
+            if(Parameters.threadedPGA){p.start();}
+            periodicAlgorithmsArrayList.add(p);
         }
     }
 
     private void initializeSingular() throws GRBException {
+        periodicPopulation = new PeriodicPopulation(data);
+        periodicPopulation.initialize(periodicPopulation.orderDistributionPopulation);
         //swarm = new Swarm(data);
         //swarm.initialize(swarm.orderDistribution);
     }
@@ -139,15 +142,15 @@ public class PGAController {
         upstreamGate.await();
         upstreamGate.reset();
 
-        /*
+
         //update and find best order distribution
-        for (int s = 0 ; s < Parameters.numberOfSwarms ; s++){
-            swarms.get(s).runIteration();
-            pod.distributions.set(s, swarms.get(s).orderDistribution);
+        for (int p = 0 ; p < Parameters.numberOfSwarms ; p++){
+            periodicPopulationArrayList.get(p).runIteration();
+            pod.distributions.set(p, periodicPopulationArrayList.get(p).orderDistribution);
         }
         updateOrderDistributionPopulation();
 
-         */
+
 
     }
 
@@ -179,11 +182,13 @@ public class PGAController {
     }
 
 
+
+
     public void updateOrderDistributionPopulation() throws CloneNotSupportedException {
-        /*
+
         solutions.clear();
-        for (Swarm swarm : swarms){
-            solutions.add(swarm.storeSolution());
+        for (PeriodicPopulation periodicPopulation : periodicPopulationArrayList){
+            solutions.add(periodicPopulation.storeSolution());  //todo: implement
         }
         int[] sortedIndices = IntStream.range(0, solutions.size())
                 .boxed()
@@ -192,7 +197,7 @@ public class PGAController {
                 .toArray();
         for (int i = sortedIndices.length - 1 ; i > sortedIndices.length - Parameters.orderDistributionCutoff ; i--){
             pod.distributions.set(sortedIndices[i], pod.diversify(10));
-            swarms.get(sortedIndices[i]).updateOrderDistribution(pod.distributions.get(sortedIndices[i]));
+            periodicPopulationArrayList.get(sortedIndices[i]).updateOrderDistribution(pod.distributions.get(sortedIndices[i]));
         }
         for (int i = 0 ; i < swarms.size() ; i++){
             if (swarms.get(i).iterationsWithoutImprovement > Parameters.swarmIterationsWithoutImprovementLimit){
@@ -202,16 +207,16 @@ public class PGAController {
             }
         }
 
-         */
+
     }
 
 
 
     public static void main(String[] args) throws BrokenBarrierException, InterruptedException, GRBException, IOException, CloneNotSupportedException {
         Data data = DataReader.loadData();
-        ABCController abc = new ABCController(data);
-        abc.initialize();
-        abc.run();
+        PGAController pga = new PGAController(data);
+        pga.initialize();
+        pga.run();
     }
 }
 
