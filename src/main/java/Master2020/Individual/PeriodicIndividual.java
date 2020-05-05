@@ -1,10 +1,12 @@
 package Master2020.Individual;
 
 import Master2020.DataFiles.Data;
+import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.FitnessCalculation;
 import Master2020.Population.PeriodicPopulation;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Testing.IndividualTest;
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import gurobi.GRB;
 import java.util.ArrayList;
 
@@ -39,7 +41,6 @@ public class PeriodicIndividual {
     }
 
     public void setPeriodicIndividual(Individual individual, int p){
-
         this.individuals[p] = individual;
         initializeJourneys(p);
     }
@@ -76,7 +77,9 @@ public class PeriodicIndividual {
         System.out.println("Order allocation cost: " + orderDistributionCost);
         System.out.println("Time warp cost: " + timeWarpCost);
         System.out.println("Over load cost: " + overLoadCost);
+        System.out.println("Order distribution scaling factor " + orderDistribution.orderScalingFactor);
         System.out.println("-------------------------------------");
+
     }
 
 
@@ -90,10 +93,16 @@ public class PeriodicIndividual {
     }
 
     public boolean isFeasible(){
-        return this.infeasibilityCost == 0;
+        updateFitness();
+        return this.timeWarpCost == 0 && this.overLoadCost/Parameters.initialCapacityPenalty <= Parameters.indifferenceValue;
     }
 
     public double getFitness() {
+        updateFitness();
+        return fitness;
+    }
+
+    public void updateFitness(){
         double[] fitnesses =  FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1 );
         this.travelCost = fitnesses[0];
         this.timeWarpCost = fitnesses[1];
@@ -102,7 +111,6 @@ public class PeriodicIndividual {
         this.infeasibilityCost = fitnesses[1] + fitnesses[2];
         this.orderDistributionCost = orderDistribution.getFitness();
         this.fitness = this.travelCost + this.timeWarpCost + this.overLoadCost + this.vehicleUsageCost + this.orderDistributionCost;
-        return fitness;
     }
 
     public void initializeJourneys(int p){
@@ -113,8 +121,26 @@ public class PeriodicIndividual {
 
     public Individual createStandardIndividualObject(){
         Individual newIndividual = new Individual(this.data, null, false, -1);
+        updateJourneysToPeriodicConfiguration();
         newIndividual.journeyList = this.journeys;
+        newIndividual.orderDistribution = orderDistribution;
+        newIndividual.setGiantTourFromJourneys();
+        newIndividual.setTripListFromJourneys();
+        newIndividual.setTripMapFromTripList();
         return newIndividual;
+    }
+
+    private void updateJourneysToPeriodicConfiguration(){
+        for (int p = 0; p < data.numberOfPeriods; p++){
+            for (int vt = 0; vt < data.numberOfVehicleTypes; vt ++){
+                for (Journey journey : this.journeys[p][vt]){
+                    for (Trip trip : journey.trips){
+                        trip.period = p;
+                    }
+                }
+            }
+        }
+
     }
 
     public int compareTo(PeriodicIndividual periodicIndividual) { // TODO: 04.03.2020 Sort by biased fitness and not fitness

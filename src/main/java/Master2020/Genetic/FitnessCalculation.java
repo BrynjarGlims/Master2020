@@ -97,7 +97,7 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
         if (!individual.tripList[p][vt].isEmpty()) {
             for (Trip trip : individual.tripList[p][vt]){
                 for (int customerID : trip.getCustomers()){
-                    tripLoad += orderDistribution.orderVolumeDistribution[p][customerID];
+                    tripLoad += orderDistribution.getOrderVolumeDistribution(p,customerID);
                 }
                 singleChromosomeFitness += calculateJourneyLoadPunishment(tripLoad, vt, individual);
                 tripLoad = 0;
@@ -123,7 +123,7 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
 
     public static double getPeriodicOvertimeFitness (OrderDistribution orderDistribution, int p) {
         double periodicOvertime = 0;
-        periodicOvertime = Math.max(orderDistribution.volumePerPeriod[p] - Data.overtimeLimit[p], 0);
+        periodicOvertime = Math.max(orderDistribution.getVolumePerPeriod(p) - Data.overtimeLimit[p], 0);
         return periodicOvertime*Parameters.overtimeCost[p];
     }
 
@@ -138,8 +138,8 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
 
     private static double overTimeDepot(OrderDistribution orderDistribution){
         double overTime = 0;
-        for (int p = 0 ; p < orderDistribution.volumePerPeriod.length ; p++){
-            overTime += Math.max(0, orderDistribution.volumePerPeriod[p] - Data.overtimeLimit[p])*Parameters.overtimeCost[p];
+        for (int p = 0 ; p < Parameters.numberOfPeriods ; p++){
+            overTime += Math.max(0, orderDistribution.getVolumePerPeriod(p) - Data.overtimeLimit[p])*Parameters.overtimeCost[p];
         }
         return overTime;
     }

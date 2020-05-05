@@ -40,6 +40,8 @@ public class OrderAllocationModel {
     public GRBVar[][][] qD;
     public GRBVar[] qO;
 
+    double scalingFactorOrderDistribution;
+
     public OrderAllocationModel(Data data) throws GRBException {
         env = new GRBEnv(true);
         this.env.start();
@@ -181,14 +183,14 @@ public class OrderAllocationModel {
                         lhsQ = new GRBLinExpr();
                         for (int i : trip.customers) {
                             for (int m = 0; m < data.customers[i].dividableOrders.length; m++) {
-                                lhsQ.addTerm(1.0, qD[d][i][m]);
+                                lhsQ.addTerm(scalingFactorOrderDistribution, qD[d][i][m]);
                             }
                             for (int m = 0; m < data.customers[i].nonDividableOrders.length; m++) {
-                                lhsQ.addTerm(1.0, qND[d][i][m]);
+                                lhsQ.addTerm(scalingFactorOrderDistribution, qND[d][i][m]);
                             }
                         }
                         String constraint_name = String.format("1. - Capacity of a trip with vehicle type %d at period %d. Capacity %f ", vt, d, data.vehicleTypes[vt].capacity);
-                        model.addConstr(lhsQ, GRB.LESS_EQUAL, data.vehicleTypes[vt].capacity, constraint_name);
+                        model.addConstr(lhsQ, GRB.LESS_EQUAL, data.vehicleTypes[vt].capacity - Parameters.MIPSafetyIndifference, constraint_name);
                     }
                 }
             }
@@ -547,10 +549,12 @@ public class OrderAllocationModel {
 
     private void initializeODObject() throws GRBException {
         this.orderDistribution.makeDistributionFromOrderAllocationModel(this);
+        this.orderDistribution.setOrderScalingFactor(scalingFactorOrderDistribution);
     }
 
-    private OrderDistribution createODFromMIP(ArrayList<Journey>[][] journeys) {
+    private int createODFromMIP(ArrayList<Journey>[][] journeys, double scalingFactorOrderDistribution) {
         try {
+            this.scalingFactorOrderDistribution = scalingFactorOrderDistribution;
             this.journeys = journeys;
             this.orderDistribution = new OrderDistribution(data);
             initializeModel();
@@ -569,17 +573,17 @@ public class OrderAllocationModel {
             else{
                 System.out.println("Unkonwn optimization status");
             }
-            return this.orderDistribution;
+            return optimstatus;
 
         } catch (GRBException | FileNotFoundException e) {
             System.out.println("ERROR: " + e);
-            return null;
+            return -1;
         } catch (Error e) {
             System.out.println(e);
-            return null;
+            return -1;
         } catch (IOException e) {
             System.out.println("File directory wrong" + e);
-            return null;
+            return -1;
         }
     }
 
@@ -592,11 +596,17 @@ public class OrderAllocationModel {
         }
     }
 
-
+    public OrderDistribution getOrderDistribution() {
+        return orderDistribution;
+    }
 
     //MASTER FUNCTION
-    public OrderDistribution createOptimalOrderDistribution(ArrayList<Journey>[][] journeys){
-        return this.createODFromMIP(journeys);
+
+    public int createOptimalOrderDistribution(ArrayList<Journey>[][] journeys, double scalingFactorOrderDistribution){
+        return this.createODFromMIP(journeys, scalingFactorOrderDistribution);
+    }
+    public int createOptimalOrderDistribution(ArrayList<Journey>[][] journeys){
+        return createOptimalOrderDistribution(journeys, 1);
     }
 
     public static void main(String[] args) throws GRBException {
@@ -607,11 +617,6 @@ public class OrderAllocationModel {
         individual.setOrderDistribution(orderDistribution);
         individual.giantTour.initializeGiantTour();
         OrderAllocationModel oam = new OrderAllocationModel(data);
-        OrderDistribution od = oam.createOptimalOrderDistribution(individual.journeyList);
-        System.out.println(od);
-
-
-
     }
 
 

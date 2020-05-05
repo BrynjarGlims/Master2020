@@ -40,6 +40,16 @@ public class Population {
     }
 
 
+    public void updateOrderDistributionsOfAllIndividuals(OrderDistribution orderDistribution){
+        for (Individual individual : feasiblePopulation){
+            individual.orderDistribution =  orderDistribution;
+        }
+        for (Individual individual : infeasiblePopulation){
+            individual.orderDistribution =  orderDistribution;
+        }
+    }
+
+
     public void initializePopulation (OrderDistribution od) {
         for (int i = 0; i < Parameters.initialPopulationSize; i++) {
             Individual individual = new Individual(this.data, this, isPeriodic, actualPeriod);
@@ -89,6 +99,31 @@ public class Population {
             }
         }
         return bestIndividual;
+    }
+
+    public void reassignIndividualsInPopulations(){
+        Set<Individual> tempFeasiblePopulation = new HashSet<>();
+        Set<Individual> tempInfeasiblePopulation = new HashSet<>();
+        for (Individual individual : feasiblePopulation){
+            individual.updateFitness();  //todo: may be deleted.
+            if (individual.isFeasible()){
+                tempFeasiblePopulation.add(individual);
+            }
+            else{
+                tempInfeasiblePopulation.add(individual);
+            }
+        }
+        for (Individual individual : infeasiblePopulation){
+            individual.updateFitness();  //todo: may be deleted.
+            if (individual.isFeasible()){
+                tempFeasiblePopulation.add(individual);
+            }
+            else{
+                tempInfeasiblePopulation.add(individual);
+            }
+        }
+        feasiblePopulation = tempFeasiblePopulation;
+        infeasiblePopulation = tempInfeasiblePopulation;
     }
 
 

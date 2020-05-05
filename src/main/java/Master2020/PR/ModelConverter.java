@@ -107,7 +107,6 @@ public class ModelConverter {
                 if (tripList[p][vt].size() == 0){
                     continue;
                 }
-                System.out.println("Nå lages en journey");
                 boolean firstTrip = true;
                 newJourney = new Journey(data, tripList[p][vt].get(0).period, tripList[p][vt].get(0).vehicleType, tripList[p][vt].get(0).vehicleID);
                 newJourney.addTrip(tripList[p][vt].get(0));

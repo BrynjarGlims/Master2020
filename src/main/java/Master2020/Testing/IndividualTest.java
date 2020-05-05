@@ -146,7 +146,7 @@ public class IndividualTest {
 
                 }
             }
-            overtimeDepotCost += Parameters.overtimeCost[p]* Math.max(0, individual.orderDistribution.volumePerPeriod[p]-Data.overtimeLimit[p]);
+            overtimeDepotCost += Parameters.overtimeCost[p]* Math.max(0, individual.orderDistribution.getVolumePerPeriod(p)-Data.overtimeLimit[p]);
         }
         objective = vehicleUseCost + travelCost + overtimeDepotCost;
         System.out.println("Travelcost: " +travelCost);
@@ -243,8 +243,6 @@ public class IndividualTest {
         individual.orderDistribution = firstOD;
         AdSplit.adSplitPlural(individual);
         OrderAllocationModel orderAllocationModel = new OrderAllocationModel(data);
-
-        OrderDistribution optimalOD = orderAllocationModel.createOptimalOrderDistribution(individual.journeyList);
         AdSplit.adSplitPlural(individual);
         System.out.println(individual.getFitness(true));
         individual.printDetailedFitness();

@@ -138,7 +138,14 @@ public class Swarm extends Thread{
                 journeys[p][vt] = journeysEntry;
             }
         }
-        this.orderDistribution = orderAllocationModel.createOptimalOrderDistribution(journeys);
+
+        if (orderAllocationModel.createOptimalOrderDistribution(journeys) == 2){
+            this.orderDistribution = orderAllocationModel.getOrderDistribution();
+        }
+        else{
+            System.out.println("Did not find any Optimal OD");
+        }
+
     }
 
     private void updateOrderDistributionForColonies(List<PeriodSwarm> periodSwarms, boolean newOD){

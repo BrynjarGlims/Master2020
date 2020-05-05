@@ -21,15 +21,16 @@ public class PeriodicPopulation {
     public OrderDistribution orderDistribution;
 
 
-    public PeriodicPopulation(Data data) {
+    public PeriodicPopulation(Data data, OrderDistributionPopulation odp) {
+        this.orderDistributionPopulation = odp;
         this.data = data;
         this.populations = new Population[data.numberOfPeriods];
         for (int p = 0; p < data.numberOfPeriods; p++){
             this.populations[p] = new Population(data, p);
+            this.populations[p].setOrderDistributionPopulation(this.orderDistributionPopulation);
         }
         this.periodicFeasibleIndividualPopulation = new HashSet<PeriodicIndividual>();
         this.periodicInfeasibleIndividualPopulation = new HashSet<PeriodicIndividual>();
-
     }
 
     public void addPeriodicIndividual(PeriodicIndividual periodicIndividual){
@@ -72,10 +73,60 @@ public class PeriodicPopulation {
     }
 
 
+
+
     public void setOrderDistributionPopulation(OrderDistributionPopulation odp){
         this.orderDistributionPopulation = odp;
     }
 
+    public void setOrderDistribution(OrderDistribution orderDistribution) {
+        this.orderDistribution = orderDistribution;
+        for (Population population : populations){
+            population.updateOrderDistributionsOfAllIndividuals(orderDistribution);
+        }
+    }
+
+    public void reassignPeriodicIndividuals(){
+        Set<PeriodicIndividual> tempFeasiblePopulation = new HashSet<>();
+        Set<PeriodicIndividual> tempInfeasiblePopulation = new HashSet<>();
+        for (PeriodicIndividual periodicIndividual : periodicFeasibleIndividualPopulation){
+            if (periodicIndividual.isFeasible()){
+                tempFeasiblePopulation.add(periodicIndividual);
+            }
+            else {
+                tempInfeasiblePopulation.add(periodicIndividual);
+            }
+        }
+        for (PeriodicIndividual periodicIndividual : periodicInfeasibleIndividualPopulation){
+            if (periodicIndividual.isFeasible()){
+                tempFeasiblePopulation.add(periodicIndividual);
+            }
+            else {
+                tempInfeasiblePopulation.add(periodicIndividual);
+            }
+        }
+        periodicFeasibleIndividualPopulation = tempFeasiblePopulation;
+        periodicInfeasibleIndividualPopulation = tempInfeasiblePopulation;
+        reassignIndividualsInPopulations();
+
+    }
+
+    private void reassignIndividualsInPopulations(){
+        for (int p = 0; p < data.numberOfPeriods; p++){
+            populations[p].reassignIndividualsInPopulations();
+        }
+    }
+
+    public void allocateIndividual(PeriodicIndividual periodicIndividual){
+        if (periodicIndividual.isFeasible()){
+            this.periodicInfeasibleIndividualPopulation.remove(periodicIndividual);
+            this.periodicFeasibleIndividualPopulation.add(periodicIndividual);
+        }
+        else{
+            this.periodicInfeasibleIndividualPopulation.add(periodicIndividual);
+            this.periodicFeasibleIndividualPopulation.remove(periodicIndividual);
+        }
+    }
 
     public void initializePopulations (OrderDistribution od) {
         for (int p = 0; p < data.numberOfPeriods; p++){
@@ -87,19 +138,19 @@ public class PeriodicPopulation {
     public PeriodicIndividual returnBestIndividual(){
         PeriodicIndividual bestIndividual = null;
         double fitnessScore = Double.MAX_VALUE;
-        for (PeriodicIndividual individual : periodicFeasibleIndividualPopulation){
-            if (individual.getFitness() < fitnessScore){
-                bestIndividual = individual;
-                fitnessScore = individual.getFitness();
+        for (PeriodicIndividual periodicIndividual : periodicFeasibleIndividualPopulation){
+            if (periodicIndividual.getFitness() < fitnessScore){
+                bestIndividual = periodicIndividual;
+                fitnessScore = periodicIndividual.getFitness();
             }
         }
         if (bestIndividual != null){
             return bestIndividual;
         }
-        for (PeriodicIndividual individual : periodicInfeasibleIndividualPopulation){
-            if (individual.getFitness() < fitnessScore){
-                bestIndividual = individual;
-                fitnessScore = individual.getFitness();
+        for (PeriodicIndividual periodicIndividual : periodicInfeasibleIndividualPopulation){
+            if (periodicIndividual.getFitness() < fitnessScore){
+                bestIndividual = periodicIndividual;
+                fitnessScore = periodicIndividual.getFitness();
             }
         }
         return bestIndividual;
@@ -120,8 +171,9 @@ public class PeriodicPopulation {
 
     public static void main( String[] args){
         Data data = DataReader.loadData();
-        PeriodicPopulation periodicPopulation = new PeriodicPopulation(data);
         OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
+        PeriodicPopulation periodicPopulation = new PeriodicPopulation(data,odp);
+
         odp.initializeOrderDistributionPopulation(periodicPopulation);
         periodicPopulation.initializePopulation(odp.getRandomOrderDistribution());
         System.out.println("hei");

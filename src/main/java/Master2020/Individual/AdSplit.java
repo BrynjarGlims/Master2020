@@ -34,8 +34,6 @@ public class AdSplit {
 
     public static void adSplitSingular (Individual individual, int p, int vt, double penaltyMultiplier){
         if (individual.giantTour.chromosome[Individual.getDefaultPeriod(p)][vt].size() == 0) {
-            individual.bestLabels[Individual.getDefaultPeriod(p)][vt] = new Label(individual.data,
-                    0, individual.getOrderDistribution().orderVolumeDistribution, p, vt);
             individual.journeyList[Individual.getDefaultPeriod(p)][vt] = new ArrayList<Journey>();
             individual.tripList[Individual.getDefaultPeriod(p)][vt] = new ArrayList<Trip>();
         }
@@ -179,7 +177,7 @@ public class AdSplit {
                     routeTimeWarp += Math.max(0, (currentTime + data.distanceMatrix[customerSequence.get(j)][customerSequence.get(0)]
                             + data.customers[customerSequence.get(j)].totalUnloadingTime) - Parameters.maxJourneyDuration);
                     tempDistanceCost += 2*data.distanceMatrix[customerSequence.get(0)][customerSequence.get(j)];
-                    loadSum = orderDistribution.orderVolumeDistribution[p][customerSequence.get(j)];
+                    loadSum = orderDistribution.getOrderVolumeDistribution(p,customerSequence.get(j));
                     currentCost = routeTimeWarp*Parameters.initialTimeWarpPenalty
                             + Parameters.initialCapacityPenalty*(Math.max(0, loadSum-data.vehicleTypes[vt].capacity));
                     currentCost = currentCost * penaltyMultiplier + Parameters.initialDrivingCostPenalty * tempDistanceCost;
@@ -205,7 +203,7 @@ public class AdSplit {
                         }
 
 
-                        loadSum += orderDistribution.orderVolumeDistribution[p][customerSequence.get(counter)];
+                        loadSum += orderDistribution.getOrderVolumeDistribution(p,customerSequence.get(counter));
 
                         //add time warp costs if depot is reached too late
                         if (counter == j) {
@@ -258,7 +256,7 @@ public class AdSplit {
     private static Label labelingAlgorithm(ArrayList<ArrayList<Integer>> matrixOfTrips, Data data, OrderDistribution orderDistribution, int p, int vt, ArrayList<ArrayList<Integer>> listOfTrips, double penaltyMultiplier) {
 
         int tripNumber = 0;
-        LabelPool currentLabelPool = new LabelPool(data, listOfTrips, tripNumber, orderDistribution.orderVolumeDistribution);
+        LabelPool currentLabelPool = new LabelPool(data, listOfTrips, tripNumber, orderDistribution.getOrderVolumeDistribution());
         LabelPool nextLabelPool;
 
         while(tripNumber < listOfTrips.size()) {
@@ -266,7 +264,7 @@ public class AdSplit {
                 currentLabelPool.generateFirstLabel(data.numberOfVehiclesInVehicleType[vt], p, vt, penaltyMultiplier);
                 tripNumber++;
             } else {
-                nextLabelPool = new LabelPool(data, listOfTrips, tripNumber, orderDistribution.orderVolumeDistribution);
+                nextLabelPool = new LabelPool(data, listOfTrips, tripNumber, orderDistribution.getOrderVolumeDistribution());
                 nextLabelPool.generateAndRemoveDominatedLabels(currentLabelPool, penaltyMultiplier);
                 currentLabelPool = nextLabelPool;
                 tripNumber++;

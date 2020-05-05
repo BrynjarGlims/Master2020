@@ -115,6 +115,11 @@ public class TestResults {
                     }
                 }
             }
+            if (0 < volumeOfTrip - data.vehicles[Integer.parseInt(tripData.get(line)[3])].vehicleType.capacity){
+                System.out.println("Line " + line + " incurres overload of " + Double.toString(volumeOfTrip - data.vehicles[Integer.parseInt(tripData.get(line)[3])].vehicleType.capacity));
+                System.out.println("On day: " + tripData.get(line)[2]  + " on tripnumber " + tripData.get(line)[1]  );
+
+            }
             overloadInfeasibility += Math.max(0, volumeOfTrip - data.vehicles[Integer.parseInt(tripData.get(line)[3])].vehicleType.capacity) * Parameters.initialCapacityPenalty;
         }
 
@@ -200,36 +205,30 @@ public class TestResults {
 
 
         for (int i = 0; i < 1; i++) {
-            Parameters.randomSeedValue = 32 + i;
+
+            Parameters.randomSeedValue = 20 + i;
+
             System.out.println("RANDOM SEED VALUE: " + Parameters.randomSeedValue);
-            System.out.println("Results from GA:");
-            String name = "GA_S" + Parameters.randomSeedValue + "_C4_V4_28_04_2020";
+            System.out.println("Results from PGA:");
+            String name = "PGA_S" + Parameters.randomSeedValue + "_C25_V10_05_05_2020";
             String path = "results/results_detailed/" + name;
             evaluateSolution(path, name);
             System.out.println(" ----- ");
-            System.out.println("Results from JBM");
-            name = "JBM_S" + Parameters.randomSeedValue + "_C4_V4_28_04_2020";
-            path = "results/results_detailed/" + name;
-            evaluateSolution(path, name);
-            System.out.println(" ----- ");
-            System.out.println("Results from PFM");
-            name = "PFM_S" + Parameters.randomSeedValue + "_C4_V4_28_04_2020";
-            path = "results/results_detailed/" + name;
-            evaluateSolution(path, name);
-            System.out.println(" ----- ");
+
+            /*
+            Parameters.randomSeedValue = 10 + i;
             System.out.println("Results from AFM");
-            name = "AFM_S" + Parameters.randomSeedValue + "_C4_V4_28_04_2020";
+            name = "AFM_S" + Parameters.randomSeedValue + "_C5_V5_04_05_2020";
             path = "results/results_detailed/" + name;
             evaluateSolution(path, name);
             System.out.println(" ");
-            System.out.println(" ############################ ");
-            System.out.println(" ");
+            System.out.println(" ############ ");
+
+             */
+
+
         }
-
-
-
     }
-
 
 
 }

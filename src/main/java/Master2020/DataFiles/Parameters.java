@@ -7,24 +7,21 @@ import java.util.Set;
 public class Parameters {
 
     // File import parameters
-    public static final String customersFilePath = "data/Not_in_use.csv";
-    public static final String ordersFilePath = "data/Orders.csv";
-    public static final String timeWindowsFilePath = "data/Time_windows.csv";
-    public static final String vehicleFilePath = "data/Vehicles.csv";
-    public static final String dataSet = "Trøndelag";
+    public static final String dataSet = "Trondelag";   // Trondelag or VestTele
+    public static final String ordersFilePath = "data/" + dataSet + "/Orders.csv";
+    public static final String timeWindowsFilePath = "data/" + dataSet + "/Time_windows.csv";
+    public static final String vehicleFilePath = "data/" + dataSet + "/Vehicles.csv";
     public static final boolean doRandomSeed = true;
     public static final int samples = 1;
     public static long randomSeedValue = 20;
 
     // Population parameters
-    public static final int maximumSubIndividualPopulationSize = 75; //TODO: find reasonable value
-    public static final int minimumSubIndividualPopulationSize = 25;
-    public static final int initialPopulationSize = 50;
-
+    public static final int maximumSubIndividualPopulationSize = 300; //TODO: find reasonable value
+    public static final int minimumSubIndividualPopulationSize = 100;
+    public static final int initialPopulationSize = 100;
     public static final int initialOrderDistributionPopulationSize = 50;
     public static final int maxNumberIterationsWithoutImprovement = 100;
     public static final int maxNumberOfGenerations = 100;
-
 
     // Loading data parameters
     public static final int numberOfPeriods = 6;
@@ -69,8 +66,8 @@ public class Parameters {
     public static final double globalTrialsCutoff = 1.1; //trials will not increment if solution is within this multiplier of global best
 
     //Penalty parameters for heuristics
-    public static final double initialCapacityPenalty = 1000000;  // lambda
-    public static final double initialTimeWarpPenalty = 1000000;  // theta
+    public static final double initialCapacityPenalty = 1000;  // lambda
+    public static final double initialTimeWarpPenalty = 1000;  // theta
     public static final double initialDrivingCostPenalty = 1; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
     public static final double penaltyFactorForOverFilling = 1.1;
     public static final double penaltyFactorForUnderFilling = 1.5;
@@ -88,7 +85,6 @@ public class Parameters {
     public static final double scalingVolumeValue = 1.5;
     public static final double lowerVolumeFlexibility = 0.7;
     public static final double upperVolumeFlexibility = 1.3;
-
 
     //Cost parameters
     public static final double[] overtimeLimitPercentage = {0.19, 0.19, 0.19, 0.19, 0.19, 0.05};
@@ -110,16 +106,20 @@ public class Parameters {
     public static final String instanceName = "testDataFromAsko";
     public static final int upperBoundQuantity = 100;  // upper bound q variable
     public static final int upperBoundOvertime = 1000;  // upper bound qO variable
+    public static final double MIPSafetyIndifference = 0.01;
 
     //Periodic parameters
+
     public static boolean isPeriodic = false;
     public static final int generationsPerOrderDistributionPeriodic = 5;
-    public static final int generationsOfOrderDistributions = 5;
-    public static final int newIndividualCombinationsGenerated = 10;
+    public static final int generationsOfOrderDistributions = 3;
+    public static final int newIndividualCombinationsGenerated = 3;
     public static final int minimumPeriodicSubPopulationSize = 20;
     public static final int maksimumPeriodicSubPopulationSize = 50;
-
-
+    public static final double initialOrderDistributionScale = 1;
+    public static final double incrementPerOrderDistributionScaling = 0.02;
+    public static final int numberOfGenerationsBetweenODScaling = 2;
+    public static final int numberOfGenerationBeforeODScalingStarts = 20;
 
     // Verbose parameters
     public static final boolean verboseArcFlow = false;
