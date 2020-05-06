@@ -157,8 +157,8 @@ public class PeriodicIndividual {
 
     }
 
-    public int compareTo(PeriodicIndividual periodicIndividual) { // TODO: 04.03.2020 Sort by biased fitness and not fitness
-        return this.getFitness() < periodicIndividual.getFitness() ? 1 : -1;
+    public int compareTo(PeriodicIndividual periodicIndividual) {
+        return this.getFitness() < periodicIndividual.getFitness() ? 1 : -1; // TODO: 04.03.2020 Sort by biased fitness and not fitness
     }
 
 
