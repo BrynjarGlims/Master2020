@@ -33,6 +33,7 @@ public class Swarm extends Thread{
     private List<PeriodSwarm> threads;
     private double fitness;
     public double iterationsWithoutImprovement;
+    public int minimumIterations;
     public boolean run;
 
     public Swarm(Data data) throws GRBException {
@@ -47,6 +48,7 @@ public class Swarm extends Thread{
         this.masterDownstreamGate = masterDownstreamGate;
         this.masterUpstreamGate = masterUpstreamGate;
         this.run = true;
+        minimumIterations = 0;
     }
 
     public void initialize(OrderDistribution orderDistribution){

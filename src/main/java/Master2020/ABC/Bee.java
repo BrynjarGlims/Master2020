@@ -91,16 +91,21 @@ public abstract class Bee {
             while (count < Parameters.numberOfEnhancements){
                 foundBetterSolution = false;
                 int action = enhancementsSampler.nextIndex();
-                if (action == 1){
+                if (action == 0){
                     foundBetterSolution = operation(po, vt, Utils.reverse);
                 }
-                else if (action == 2){
+                else if (action == 1){
                     foundBetterSolution = operation(po, vt, Utils.swap);
                 }
-                else if (action == 3){
+                else if (action == 2){
                     foundBetterSolution = operation(po, vt, Utils.insert);
                 }
                 count = foundBetterSolution ? 0 : count + 1;
+                for (double d : enhancementsSampler.weights){
+                    if(d < 0){
+                        System.out.println(Arrays.toString(enhancementsSampler.weights));
+                    }
+                }
             }
         }
         this.position = po.parsePosition(numCustomers);
