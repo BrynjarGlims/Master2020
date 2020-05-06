@@ -498,16 +498,16 @@ public class App {
         for (int i = 0; i < 1; i++) {
             Parameters.randomSeedValue = 20 + i;
             System.out.println("SEED VALUE: " + Parameters.randomSeedValue );
-            Parameters.isPeriodic = false;
-            runMIPAFM(Parameters.samples);
-            /*
+            //Parameters.isPeriodic = false;
+            //runMIPAFM(Parameters.samples);
+
             //Parameters.randomSeedValue = 31 + i;
             //runGA(Parameters.samples);
             Parameters.randomSeedValue = 20 + i;
             Parameters.isPeriodic = true;
             runPeriodicGA(Parameters.samples);
 
-             */
+
         }
     }
 }
