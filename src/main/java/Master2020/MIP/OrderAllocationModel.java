@@ -569,7 +569,8 @@ public class OrderAllocationModel {
             }
             else if (optimstatus == 2){
                 initializeODObject();
-                printVolumeOfTrips();
+                if (Parameters.verboseODValidity)
+                    printVolumeOfTrips();
                 checkIfValidOD();
             }
             else{
