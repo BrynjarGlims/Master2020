@@ -131,7 +131,7 @@ public class ABCController {
         for (int s = 0 ; s < Parameters.numberOfSwarms ; s++){
             swarms.get(s).runIteration();
             pod.distributions.set(s, swarms.get(s).orderDistribution);
-            System.out.println(swarms.get(s).storeSolution().getFitness());
+            System.out.println("swarm " + s + " fitness: "+ swarms.get(s).storeSolution().getFitness());
         }
         updateOrderDistributionPopulation();
 
@@ -174,7 +174,8 @@ public class ABCController {
                 .mapToInt(i -> i)
                 .toArray();
         for (int i = sortedIndices.length - 1 ; i > sortedIndices.length - Parameters.orderDistributionCutoff ; i--){
-            if (swarms.get(i).minimumIterations < Parameters.minimumIterations){
+            if (swarms.get(sortedIndices[i]).minimumIterations > Parameters.minimumIterations){
+                System.out.println("changing od: " + sortedIndices[i]);
                 pod.distributions.set(sortedIndices[i], pod.diversify(10));
                 swarms.get(sortedIndices[i]).updateOrderDistribution(pod.distributions.get(sortedIndices[i]));
                 swarms.get(sortedIndices[i]).minimumIterations = 0;
