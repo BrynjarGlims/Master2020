@@ -107,14 +107,14 @@ public class Parameters {
     public static final String instanceName = "testDataFromAsko";
     public static final int upperBoundQuantity = 100;  // upper bound q variable
     public static final int upperBoundOvertime = 1000;  // upper bound qO variable
-    public static final double MIPSafetyIndifference = 0.01;
+    public static final double MIPSafetyIndifference = 0.00;
 
     //Periodic parameters
     public static boolean isPeriodic = false;
     public static final boolean threadedPGA = true;
     public static int numberOfPeriodicRuns = 5;
     public static final int generationsPerOrderDistributionPeriodic = 5;
-    public static final int generationsOfOrderDistributions = 10;
+    public static final int generationsOfOrderDistributions = 3;
     public static final int newIndividualCombinationsGenerated = 3;
     public static final int minimumPeriodicSubPopulationSize = 20;
     public static final int maksimumPeriodicSubPopulationSize = 50;

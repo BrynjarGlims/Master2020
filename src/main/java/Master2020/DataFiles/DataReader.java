@@ -202,8 +202,9 @@ public class DataReader {
         int vehicleCounter = 0;
 
         for (int line = 0; line < vehiclesData.size(); line++){
-            //error check
-            if (vehiclesData.get(line)[18].equals("") || Integer.parseInt(vehiclesData.get(line)[24]) < 10000){
+            //error check  //todo: explain what it removes vehiclesData.get(line)[18].equals("")
+            if ( Double.parseDouble(vehiclesData.get(line)[24]) < 10000 &&
+            Integer.parseInt(vehiclesData.get(line)[23]) >= 3000){
 
                 //current capacity
                 String tempCapacity = vehiclesData.get(line)[24];
