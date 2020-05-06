@@ -1,20 +1,15 @@
-package Master2020.Population;
+package Master2020.PGA;
 
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
-import Master2020.DataFiles.Parameters;
 import Master2020.Individual.Individual;
-import Master2020.Individual.PeriodicIndividual;
+import Master2020.Population.OrderDistributionPopulation;
+import Master2020.Population.Population;
 import Master2020.ProductAllocation.OrderDistribution;
-import Master2020.StoringResults.Result;
-import gurobi.GRBException;
 
-import java.io.IOException;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
 
 public class PeriodicPopulation extends Thread {
 
@@ -190,42 +185,6 @@ public class PeriodicPopulation extends Thread {
         // todo: implement
         return null;
     }
-
-    public void run(){
-        while (run){
-            try {
-                //wait for all threads to be ready
-                masterDownstreamGate.await();
-                //run generations
-                if (run){runIteration();}
-                //wait for all periods to finish
-                masterUpstreamGate.await();
-
-            } catch (InterruptedException | BrokenBarrierException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void runIteration() throws InterruptedException, BrokenBarrierException {
-        //release all period swarms for
-        downstreamGate.await();
-        downstreamGate.reset();
-
-        //wait for all periods to finish their generations
-        upstreamGate.await();
-        upstreamGate.reset();
-
-        //update and find best order distribution
-        //makeOptimalOrderDistribution(threads);
-        //updateOrderDistributionForColonies(threads, false);
-        //updateFitness();
-
-    }
-
-
-
-
 
 
 

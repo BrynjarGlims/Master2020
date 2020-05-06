@@ -1,13 +1,13 @@
-package Master2020.Individual;
+package Master2020.PGA;
 
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.FitnessCalculation;
-import Master2020.Population.PeriodicPopulation;
+import Master2020.Individual.Individual;
+import Master2020.Individual.Journey;
+import Master2020.Individual.Trip;
 import Master2020.ProductAllocation.OrderDistribution;
-import Master2020.Testing.IndividualTest;
-import com.fasterxml.jackson.annotation.JsonIgnoreType;
-import gurobi.GRB;
+
 import java.util.ArrayList;
 
 public class PeriodicIndividual {
@@ -128,6 +128,19 @@ public class PeriodicIndividual {
         newIndividual.setTripListFromJourneys();
         newIndividual.setTripMapFromTripList();
         return newIndividual;
+    }
+
+    public PGASolution createPGASolution(){
+        Individual newIndividual = new Individual(this.data, null, false, -1);
+        updateJourneysToPeriodicConfiguration();
+        newIndividual.journeyList = this.journeys;
+        newIndividual.orderDistribution = orderDistribution;
+        newIndividual.setGiantTourFromJourneys();
+        newIndividual.setTripListFromJourneys();
+        newIndividual.setTripMapFromTripList();
+        PGASolution pgaSolution = new PGASolution(journeys, orderDistribution);
+        pgaSolution.setIndividual(newIndividual);
+        return pgaSolution;
     }
 
     private void updateJourneysToPeriodicConfiguration(){

@@ -5,14 +5,12 @@ import Master2020.Genetic.OrderDistributionCrossover;
 import Master2020.Genetic.TournamentSelection;
 import Master2020.Individual.Individual;
 import Master2020.Individual.AdSplit;
-import Master2020.Individual.PeriodicIndividual;
+import Master2020.PGA.PeriodicIndividual;
 import Master2020.MIP.OrderAllocationModel;
+import Master2020.PGA.PeriodicPopulation;
 import Master2020.ProductAllocation.OrderDistribution;
-import Master2020.StoringResults.Result;
-import gurobi.GRBException;
 
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;

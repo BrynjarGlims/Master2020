@@ -111,7 +111,7 @@ public class Parameters {
     //Periodic parameters
     public static boolean isPeriodic = false;
     public static final boolean threadedPGA = true;
-    public static int numberOfPopulations = 5;
+    public static int numberOfPeriodicRuns = 5;
     public static final int generationsPerOrderDistributionPeriodic = 5;
     public static final int generationsOfOrderDistributions = 10;
     public static final int newIndividualCombinationsGenerated = 3;

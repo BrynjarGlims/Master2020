@@ -1,70 +1,62 @@
-package Master2020.Run;
+package Master2020.PGA;
 
 import Master2020.DataFiles.Data;
-import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.*;
 import Master2020.Individual.Individual;
-import Master2020.Individual.PeriodicIndividual;
 import Master2020.Individual.Trip;
-import Master2020.MIP.DataConverter;
 import Master2020.MIP.OrderAllocationModel;
-import Master2020.PR.ArcFlowModel;
-import Master2020.PR.DataMIP;
-import Master2020.PR.JourneyBasedModel;
-import Master2020.PR.PathFlowModel;
 import Master2020.Population.OrderDistributionPopulation;
-import Master2020.Population.PeriodicPopulation;
 import Master2020.Population.Population;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.StoringResults.Result;
-import Master2020.Testing.IndividualTest;
-import Master2020.Visualization.PlotIndividual;
 import gurobi.GRBException;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class RunGA {
+public class GeneticPeriodicAlgorithm extends Thread{
     public static Data data;
     public static Population population;
     public static PeriodicPopulation periodicPopulation;
     public static OrderDistributionPopulation odp;
     public static OrderDistributionCrossover ODC;
     public static OrderDistribution globalOrderDistribution;
-    public static double bestIndividualScore;
     public static HashSet<Individual> repaired;
-    public static Individual bestIndividual;
-    public static int numberOfIterations;
     public static OrderAllocationModel orderAllocationModel;
-    public static double scalingFactorOrderDistribution;
     public static PeriodicIndividual bestPeriodicIndividual;
+    public static Individual bestIndividual;
 
 
-    public static void initialize() throws GRBException {
-        data = DataReader.loadData();
-        population = new Population(data);
-        odp = new OrderDistributionPopulation(data);
-        ODC = new OrderDistributionCrossover(data);
-        odp.initializeOrderDistributionPopulation(population);
-        globalOrderDistribution = odp.getRandomOrderDistribution();
-        population.setOrderDistributionPopulation(odp);
-        population.initializePopulation(globalOrderDistribution);
-        bestIndividualScore = Double.MAX_VALUE;
-        BiasedFitness.setBiasedFitnessScore(population);
-        orderAllocationModel = new OrderAllocationModel(data);
-        repaired = new HashSet<>();
-        numberOfIterations = 0;
+
+    public static double scalingFactorOrderDistribution;
+    public static double bestIndividualScore;
+    public static int numberOfIterations = 0;
+    public static int iterationsWithoutImprovement = 0;
+
+    //threading
+    public boolean run;
+    private CyclicBarrier downstreamGate;
+    private CyclicBarrier upstreamGate;
+    private CyclicBarrier masterDownstreamGate;
+    private CyclicBarrier masterUpstreamGate;
+
+    public GeneticPeriodicAlgorithm(Data data){
+        this.data = data;
     }
 
-    public static void initializePeriodic() throws GRBException {
-        data = DataReader.loadData();
-        odp = new OrderDistributionPopulation(data);
-        periodicPopulation = new PeriodicPopulation(data);
-        periodicPopulation.initialize(odp);
-        ODC = new OrderDistributionCrossover(data);
+
+    public void initializePeriodic(OrderDistribution od, CyclicBarrier downstreamGate, CyclicBarrier upstreamGate) throws GRBException {
+        this.downstreamGate = downstreamGate;
+        this.upstreamGate = upstreamGate;
+        //todo: find out what to do with the population. Probably remove
         scalingFactorOrderDistribution = Parameters.initialOrderDistributionScale;
+        globalOrderDistribution = od;
+        periodicPopulation = new PeriodicPopulation(data);
+        periodicPopulation.initialize(od);
+        ODC = new OrderDistributionCrossover(data);
         odp.initializeOrderDistributionPopulation(periodicPopulation);
         odp.setOrderDistributionScalingFactor(scalingFactorOrderDistribution);
         globalOrderDistribution = odp.getRandomOrderDistribution();
@@ -79,27 +71,14 @@ public class RunGA {
     }
 
 
-    private static void findBestOrderDistribution(){
-        //Find best OD for the distribution
-        odp.calculateFillingLevelFitnessScoresPlural();
-        for (Individual individual : population.getTotalPopulation()){
-            individual.testNewOrderDistribution(odp.getBestOrderDistribution(individual)); // // TODO: 24/03/2020 Rejects converting from feasible to infeasible
-        }
+    public void updateOrderDistribution(OrderDistribution orderDistribution){
+        this.globalOrderDistribution = orderDistribution;
+        //todo: reset the entire algorithm!
+        numberOfIterations = 0;
     }
 
-
-    public static Individual PIX(){
-        // Select parents
-        Individual parent1 = TournamentSelection.performSelection(population);
-        Individual parent2 = TournamentSelection.performSelection(population);
-        while (parent1.equals(parent2)){
-            parent2 = TournamentSelection.performSelection(population);
-        }
-        OrderDistribution[] crossoverOD = ODC.crossover(parent1.orderDistribution, parent2.orderDistribution); //these will be the same
-        for (OrderDistribution od : crossoverOD) { //todo: EVALUEATE IF THIS IS DECENT
-            odp.addOrderDistribution(od);
-        }
-        return GiantTourCrossover.crossOver(parent1, parent2, crossoverOD[0]); // TODO: 02.04.2020 add to a pool?
+    public static OrderDistribution getGlobalOrderDistribution() {
+        return globalOrderDistribution;
     }
 
     public static Individual PIX(Population population){
@@ -109,16 +88,9 @@ public class RunGA {
         while (parent1.equals(parent2)){
             parent2 = TournamentSelection.performSelection(population);
         }
-        /*OrderDistribution[] crossoverOD = ODC.crossover(parent1.orderDistribution, parent2.orderDistribution); //these will be the same
-        for (OrderDistribution od : crossoverOD) { //todo: EVALUEATE IF THIS IS DECENT
-            odp.addOrderDistribution(od);
-        }
 
-         */
-        return GiantTourCrossover.crossOver(parent1, parent2, globalOrderDistribution); // TODO: 02.04.2020 add to a pool?
+        return GiantTourCrossover.crossOver(parent1, parent2, globalOrderDistribution);
     }
-
-
 
 
     public static void educate(Individual individual){
@@ -128,23 +100,6 @@ public class RunGA {
     }
 
 
-    public static void setOptimalOrderDistribution(Individual individual){
-        if (ThreadLocalRandom.current().nextDouble() < Parameters.ODMIPProbability){
-            OrderDistribution optimalOD;
-            if (orderAllocationModel.createOptimalOrderDistribution(individual.journeyList) == 2){
-                optimalOD = orderAllocationModel.getOrderDistribution();
-                if (optimalOD.fitness != Double.MAX_VALUE) {  // Distribution found
-                    if (individual.infeasibilityCost == 0) {
-                        individual.setOptimalOrderDistribution(optimalOD, true);
-                    } else {
-                        individual.setOptimalOrderDistribution(optimalOD, false);
-                    }
-                    odp.addOrderDistribution(optimalOD);
-                }
-            }
-
-        }
-    }
 
     public static void tripOptimizer(Individual individual){
         for (int p = 0 ; p < individual.numberOfPeriods ; p++){
@@ -214,121 +169,26 @@ public class RunGA {
 
 
 
-    public static void runGA(int samples) throws IOException, GRBException {
-        double time = System.currentTimeMillis();
-        for (int i = 0 ; i < samples ; i++) {
-            System.out.println("Initialize population..");
-            initialize();
-
-            while ((population.getIterationsWithoutImprovement() < Parameters.maxNumberIterationsWithoutImprovement &&
-                    numberOfIterations < Parameters.maxNumberOfGenerations)) {
-                System.out.println("Start generation: " + numberOfIterations);
-
-                //Find best OD for the distribution
-                System.out.println("Assign best OD..");
-                findBestOrderDistribution();
-
-                //Generate new population
-                for (Individual individual : population.infeasiblePopulation) {
-                    if (!Master2020.Testing.IndividualTest.testIndividual(individual)) {
-                        System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: PRIOR");
-                    }
-                }
-
-                System.out.println("Populate..");
-                while (population.infeasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize &&
-                        population.feasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize) {
-                    Individual newIndividual = PIX();
-                    if (!Master2020.Testing.IndividualTest.testIndividual(newIndividual)) {
-                        System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: PIX");
-                    }
-                    educate(newIndividual);
-                    if (!Master2020.Testing.IndividualTest.testIndividual(newIndividual)) {
-                        System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: EDUCATE");
-                    }
-                    setOptimalOrderDistribution(newIndividual);
-                    if (!Master2020.Testing.IndividualTest.testIndividual(newIndividual)) {
-                        System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: OD OPTIMIZER");
-                    }
-                    tripOptimizer(newIndividual);
-                    if (!Master2020.Testing.IndividualTest.testIndividual(newIndividual)) {
-                        System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: TRIP OPTIMIZER");
-                    }
-                    population.addChildToPopulation(newIndividual);
-
-
-                }
-                for (Individual individual : population.getTotalPopulation()) {
-                    IndividualTest.checkIfIndividualIsComplete(individual);
-                }
-
-                System.out.println("Repair..");
-                repair();
-
-                System.out.println("Selection..");
-                selection();
-
-                numberOfIterations++;
-            }
 
 
 
-            Individual bestIndividual = population.returnBestIndividual();
-            if (!Master2020.Testing.IndividualTest.testIndividual(bestIndividual)) {
-                System.out.println("BEST INDIVIDUAL IS NOT COMPLETE");
-            }
-            System.out.println("Individual feasible: " + bestIndividual.isFeasible());
-            System.out.println("Fitness: " + bestIndividual.getFitness(false));
-            if (Parameters.savePlots) {
-                PlotIndividual visualizer = new PlotIndividual(data);
-                visualizer.visualize(bestIndividual);
-            }
-            double runTime = (System.currentTimeMillis() - time)/1000;
-            Result res = new Result(population, "GA");
-            res.store(runTime, -1);
-            orderAllocationModel.terminateEnvironment();
-        }
-    }
 
-
-
-    public static void runPeriodicGA(int samples) throws IOException, GRBException {
+    public static void runIteration() throws IOException, GRBException {
+        int samples = Parameters.samples;
         Parameters.isPeriodic = true;
         double time = System.currentTimeMillis();
         for (int i = 0; i < samples; i++) {
             System.out.println("Initialize population..");
-            initializePeriodic();
             System.out.println("Initialization completed");
 
             while (periodicPopulation.getIterationsWithoutImprovement() < Parameters.maxNumberIterationsWithoutImprovement &&
                     numberOfIterations < Parameters.maxNumberOfGenerations) {
-
-
                 System.out.println("Start generation: " + numberOfIterations);
-
 
                 //System.out.println("Populate..");
                 for (int p = 0; p < data.numberOfPeriods; p++) {
                     population = periodicPopulation.populations[p];
-                    //System.out.println(" ####### Start Period " + p + " ########");
-                    while (periodicPopulation.populations[p].infeasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize &&
-                            periodicPopulation.populations[p].feasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize) {
 
-                        Individual newIndividual = PIX(periodicPopulation.populations[p]);
-
-                        educate(newIndividual);
-
-                        tripOptimizer(newIndividual);
-
-                        periodicPopulation.populations[p].addChildToPopulation(newIndividual);
-
-                    }
-
-                    //System.out.println("Repair..");
-                    repair(periodicPopulation.populations[p]);
-
-                    //System.out.println("Selection..");
-                    selection(periodicPopulation.populations[p]);
                 }
                 //System.out.println("Iteration ended");
 
@@ -351,10 +211,8 @@ public class RunGA {
                 numberOfIterations += 1;
             }
 
-            bestPeriodicIndividual = periodicPopulation.returnBestIndividual();
-            Individual bestIndividual = bestPeriodicIndividual.createStandardIndividualObject();
-            bestIndividual.updateFitness();
-            bestIndividual.printDetailedFitness();
+
+
             Result res = new Result(bestIndividual, "PGA" , bestPeriodicIndividual.isFeasible(), false);
             double runTime = (System.currentTimeMillis() - time)/1000;
             res.store(runTime, -1);
@@ -421,6 +279,39 @@ public class RunGA {
         }
         System.out.println("Fitness: " + newPeriodicIndividual.getFitness());
         return newPeriodicIndividual;
+    }
+
+
+    public PGASolution storeSolution(){
+        bestPeriodicIndividual = periodicPopulation.returnBestIndividual();
+        PGASolution pgaSolution = bestPeriodicIndividual.createPGASolution();
+        pgaSolution.individual.updateFitness();
+        pgaSolution.individual.printDetailedFitness();
+        return pgaSolution;
+    }
+
+
+    public static void main(String[] args) throws Exception {
+
+
+        //Parameters.numberOfCustomers = Integer.parseInt(args[1]);
+        /*
+        if (args[0].equals("AFM"))
+            runMIPAFM(Parameters.samples);
+        else if (args[0].equals("PFM"))
+            runMIPPFM(Parameters.samples);
+        else if (args[0].equals("JBM"))
+            runMIPJBM(Parameters.samples);
+        else if (args[0].equals("GA"))
+            runGA(Parameters.samples);
+        else if (args[0].equals("PGA")) {
+            Parameters.isPeriodic = true;
+            runPeriodicGA(Parameters.samples);
+        }
+
+         */
+
+
     }
 
 }
