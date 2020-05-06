@@ -106,7 +106,8 @@ public class Parameters {
     public static final String instanceName = "testDataFromAsko";
     public static final int upperBoundQuantity = 100;  // upper bound q variable
     public static final int upperBoundOvertime = 1000;  // upper bound qO variable
-    public static final double MIPSafetyIndifference = 0.00;
+    public static final double MIPSafetyIndifference = 0.001;
+    public static final boolean verboseODValidity = false;
 
     //Periodic parameters
     public static boolean isPeriodic = false;
