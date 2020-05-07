@@ -26,7 +26,7 @@ public class Parameters {
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 25; // A maximum of 75
+    public static int numberOfCustomers = 10; // A maximum of 75
     public static final int numberOfVehicles = 20;
     public static final double distanceCutOffFromDepot = 3.0;
     public static final boolean adjustTimeWindow = true;
@@ -51,7 +51,7 @@ public class Parameters {
     public static final int orderDistributionCutoff = 2;
     public static final int swarmIterationsWithoutImprovementLimit = 5;
     public static final int generationsPerOrderDistribution = 400;
-    public static final int orderDistributionUpdates = 50;
+    public static final int orderDistributionUpdates = 5;
     public static final int numberOfEmployees = 10;
     public static final int numberOfOnlookers = 40;
     public static final int numberOfScoutTrials = 10;
@@ -62,7 +62,7 @@ public class Parameters {
     public static final double weightGlobalBest = 0.8;
     public static final double movementRange = 1; //both positive and negative, but only half in negative direction
     public static final double onlookerRandomAdjustment = 0.2; //a random number added when onlooker goes to employers foodsource
-    public static final int numberOfEnhancements = 3; //number of enhancements that wil happen to onlookers
+    public static final int numberOfEnhancements = 5; //number of enhancements that wil happen to onlookers
     public static final double[] weightsEnhancement = new double[]{33, 33, 34}; //probability distribution of enhancements, [reverse, swap, insert]
     public static final double globalTrialsCutoff = 1.1; //trials will not increment if solution is within this multiplier of global best
 
