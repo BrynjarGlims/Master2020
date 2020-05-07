@@ -16,9 +16,9 @@ public class Parameters {
     public static long randomSeedValue = 2;
 
     // Population parameters
-    public static final int maximumSubIndividualPopulationSize = 300; //TODO: find reasonable value
-    public static final int minimumSubIndividualPopulationSize = 100;
-    public static final int initialPopulationSize = 100;
+    public static final int maximumSubIndividualPopulationSize = 100; //TODO: find reasonable value
+    public static final int minimumSubIndividualPopulationSize = 50;
+    public static final int initialPopulationSize = 50;
     public static final int initialOrderDistributionPopulationSize = 50;
     public static final int maxNumberIterationsWithoutImprovement = 100;
     public static final int maxNumberOfGenerations = 100;
@@ -114,9 +114,9 @@ public class Parameters {
     //Periodic parameters
     public static boolean isPeriodic = false;
     public static final boolean threadedPGA = true;
-    public static int numberOfPeriodicRuns = 5;
+    public static int numberOfPeriodicRuns = 2;
     public static final int generationsPerOrderDistributionPeriodic = 5;
-    public static final int generationsOfOrderDistributions = 3;
+    public static final int generationsOfOrderDistributions = 10;
     public static final int newIndividualCombinationsGenerated = 3;
     public static final int minimumPeriodicSubPopulationSize = 20;
     public static final int maksimumPeriodicSubPopulationSize = 50;

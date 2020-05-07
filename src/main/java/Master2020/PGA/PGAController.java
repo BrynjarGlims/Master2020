@@ -3,7 +3,6 @@ package Master2020.PGA;
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Parameters;
-import Master2020.Individual.Individual;
 import Master2020.Population.PeriodicOrderDistributionPopulation;
 import Master2020.Population.Population;
 import gurobi.GRBException;
@@ -26,9 +25,7 @@ public class PGAController {
     public ArrayList<PGASolution> finalSolutions;
     public CyclicBarrier downstreamGate;
     public CyclicBarrier upstreamGate;
-
-    public PeriodicPopulation periodicPopulation;
-    private List<Population> threads;
+    public GeneticPeriodicAlgorithm periodicAlgorithm;
 
 
 
@@ -55,17 +52,16 @@ public class PGAController {
         pod.initialize(Parameters.numberOfPeriodicRuns);
         for (int i = 0; i < Parameters.numberOfPeriodicRuns; i++){
             GeneticPeriodicAlgorithm p = new GeneticPeriodicAlgorithm(data);
-            p.initializePeriodic(pod.distributions.get(i), downstreamGate, upstreamGate);
+            p.initialize(pod.distributions.get(i), downstreamGate, upstreamGate);
             if(Parameters.threadedPGA){p.start();}
             periodicAlgorithmsArrayList.add(p);
         }
     }
 
     private void initializeSingular() throws GRBException {
-        periodicPopulation = new PeriodicPopulation(data);
-        periodicPopulation.initialize(periodicPopulation.orderDistributionPopulation);
-        //swarm = new Swarm(data);
-        //swarm.initialize(swarm.orderDistribution);
+        periodicAlgorithm = new GeneticPeriodicAlgorithm(data);
+        periodicAlgorithm.initialize(periodicAlgorithm.orderDistribution);
+
     }
 
     private void multipleRun() throws InterruptedException, BrokenBarrierException, CloneNotSupportedException, IOException, GRBException {
@@ -140,7 +136,7 @@ public class PGAController {
         //update and find best order distribution
         for (int p = 0; p < Parameters.numberOfPeriodicRuns; p++){
             periodicAlgorithmsArrayList.get(p).runIteration();
-            pod.distributions.set(p, periodicAlgorithmsArrayList.get(p).getGlobalOrderDistribution());
+            pod.distributions.set(p, periodicAlgorithmsArrayList.get(p).getOrderDistribution());
         }
         updateOrderDistributionPopulation();
 
