@@ -69,7 +69,7 @@ public class App {
         globalOrderDistribution = odp.getRandomOrderDistribution();
         globalOrderDistribution.setOrderScalingFactor(scalingFactorOrderDistribution);
         periodicPopulation.setOrderDistributionPopulation(odp);
-        periodicPopulation.initializePopulation(globalOrderDistribution);
+        periodicPopulation.initialize(globalOrderDistribution);
         bestIndividualScore = Double.MAX_VALUE;
         BiasedFitness.setBiasedFitnessScore(periodicPopulation);
         orderAllocationModel = new OrderAllocationModel(data);

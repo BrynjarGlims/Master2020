@@ -45,6 +45,8 @@ public class PeriodicPopulation extends Thread {
         for (int p = 0; p < data.numberOfPeriods; p++){
             this.populations[p] = new Population(data, p);
             this.populations[p].setOrderDistributionPopulation(this.orderDistributionPopulation);
+            this.populations[p].initializePopulation(orderDistribution);  //added
+
         }
         this.periodicFeasibleIndividualPopulation = new HashSet<PeriodicIndividual>();
         this.periodicInfeasibleIndividualPopulation = new HashSet<PeriodicIndividual>();
@@ -60,12 +62,7 @@ public class PeriodicPopulation extends Thread {
         }
     }
 
-    public void initializePopulation(OrderDistribution orderDistribution){
-        this.orderDistribution = orderDistribution;
-        for (int p = 0; p < data.numberOfPeriods; p++) {
-            this.populations[p].initializePopulation(orderDistribution);
-        }
-    }
+
 
     public void setIterationsWithoutImprovement(int iterations){
         this.iterationsWithoutImprovement = iterations;
@@ -195,7 +192,6 @@ public class PeriodicPopulation extends Thread {
         periodicPopulation.initialize(odp);
 
         odp.initializeOrderDistributionPopulation(periodicPopulation);
-        periodicPopulation.initializePopulation(odp.getRandomOrderDistribution());
         System.out.println("hei");
     }
 }

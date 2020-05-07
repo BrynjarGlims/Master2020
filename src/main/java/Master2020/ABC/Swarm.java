@@ -141,6 +141,7 @@ public class Swarm extends Thread{
                 journeys[p][vt] = journeysEntry;
             }
         }
+
         System.out.println("all customers exists? " + ABCtests.allCustomersExists(journeys, data));
         System.out.println("OD valid? " + IndividualTest.testValidOrderDistribution(data, orderDistribution));
         double[] fitnesses = FitnessCalculation.getIndividualFitness(data, journeys,orderDistribution, 1);
