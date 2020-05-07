@@ -33,6 +33,7 @@ public class Swarm extends Thread{
     private List<PeriodSwarm> threads;
     private double fitness;
     public double iterationsWithoutImprovement;
+    public int minimumIterations;
     public boolean run;
 
     public Swarm(Data data) throws GRBException {
@@ -47,6 +48,7 @@ public class Swarm extends Thread{
         this.masterDownstreamGate = masterDownstreamGate;
         this.masterUpstreamGate = masterUpstreamGate;
         this.run = true;
+        minimumIterations = 0;
     }
 
     public void initialize(OrderDistribution orderDistribution){
@@ -146,8 +148,6 @@ public class Swarm extends Thread{
         System.out.println("OD valid? " + IndividualTest.testValidOrderDistribution(data, orderDistribution));
         double[] fitnesses = FitnessCalculation.getIndividualFitness(data, journeys,orderDistribution, 1);
         System.out.println("overload: " + fitnesses[2]);
-
-        System.out.println("Check journeys");
         if (orderAllocationModel.createOptimalOrderDistribution(journeys, 1) == 2){
             System.out.println("FOUND OPTIMAL OD!!! Ja vi elsker dette landet, som det stiger frem.");
             this.orderDistribution = orderAllocationModel.getOrderDistribution();
