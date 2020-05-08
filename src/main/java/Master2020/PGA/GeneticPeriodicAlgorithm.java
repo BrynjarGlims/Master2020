@@ -128,7 +128,8 @@ public class GeneticPeriodicAlgorithm extends Thread{
         periodicPopulation.addPeriodicIndividual(generateGreedyPeriodicIndividual());
         makeOptimalOrderDistribution(threads);
         updateFitness();
-        updateOrderDistribution();
+        // this is completely wrong
+        //updateOrderDistribution();
 
 
 
@@ -155,15 +156,17 @@ public class GeneticPeriodicAlgorithm extends Thread{
         periodicPopulation.initialize(orderDistribution);
         numberOfIterations = 0;
         iterationsWithoutImprovement = 0;
+        repaired = new HashSet<>();
+        fitness = Double.MAX_VALUE;
+        BiasedFitness.setBiasedFitnessScore(periodicPopulation);
+
+
         for (int p = 0; p < data.numberOfPeriods; p++) {
             threads.get(p).setPopulation(periodicPopulation.populations[p]);
             threads.get(p).resetCounters();
-
         }
-        BiasedFitness.setBiasedFitnessScore(periodicPopulation);
-        repaired = new HashSet<>();
-        fitness = Double.MAX_VALUE;
-        numberOfIterations = 0;
+
+
     }
 
 

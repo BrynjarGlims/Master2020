@@ -112,29 +112,13 @@ public class GeneticAlgorithm extends Thread {
         // Reduce population size
 
         population.improvedSurvivorSelection();
-        currentBestIndividual = population.returnBestIndividual();
-        fitnessForPeriod = currentBestIndividual.getFitness(false);
 
-
-        // Check if it has improved for early termination
-        if (fitnessForPeriod <= currentBestIndividual.getFitness(false)){
-            iterationsWithoutImprovement += 1;
-        }
-        else{
-            population.setIterationsWithoutImprovement(0);
-        }
-
-        Individual bestFeasibleIndividual = population.returnBestIndividual();
-        Individual bestInfeasibleIndividual = population.returnBestInfeasibleIndividual();
-        if (!Parameters.isPeriodic){
-            bestFeasibleIndividual.printDetailedFitness();
-            bestInfeasibleIndividual.printDetailedFitness();
-        }
 
     }
 
 
     public void runGeneration() {
+        System.out.println("Start generation");
         while (population.infeasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize &&
                 population.feasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize) {
             Individual newIndividual = PIX(population);
@@ -146,6 +130,11 @@ public class GeneticAlgorithm extends Thread {
 
         selection(population);
 
+        updateStatus();
+        System.out.println("Generation done");
+    }
+
+    public void updateStatus(){
         currentBestIndividual = population.returnBestIndividual();
         if (currentBestIndividual.getFitness(false) < fitnessForPeriod && currentBestIndividual.isFeasible()){
             fitnessForPeriod = currentBestIndividual.getFitness(false);
@@ -155,8 +144,6 @@ public class GeneticAlgorithm extends Thread {
             iterationsWithoutImprovement += 1;
         }
         this.numberOfIterations += 1;
-
-
     }
 
 

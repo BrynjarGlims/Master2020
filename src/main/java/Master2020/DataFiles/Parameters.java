@@ -17,7 +17,7 @@ public class Parameters {
 
 
     // Population parameters
-    public static final int maximumSubIndividualPopulationSize = 100; //TODO: find reasonable value
+    public static final int maximumSubIndividualPopulationSize = 200; //TODO: find reasonable value
     public static final int minimumSubIndividualPopulationSize = 50;
     public static final int initialPopulationSize = 50;
     public static final int initialOrderDistributionPopulationSize = 50;
