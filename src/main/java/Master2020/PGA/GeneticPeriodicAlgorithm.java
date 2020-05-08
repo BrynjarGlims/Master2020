@@ -1,5 +1,6 @@
 package Master2020.PGA;
 
+import Master2020.ABC.PeriodSwarm;
 import Master2020.ABC.Swarm;
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
@@ -31,13 +32,8 @@ public class GeneticPeriodicAlgorithm extends Thread{
     public PeriodicIndividual bestPeriodicIndividual;
     public Individual bestIndividual;
     public List<GeneticAlgorithm> threads;
-
-
     public ArrayList<Journey>[][] journeys;
     public OrderDistribution orderDistribution;
-
-
-
 
     public double scalingFactorOrderDistribution = Parameters.initialOrderDistributionScale;
     public double fitness;
@@ -82,7 +78,7 @@ public class GeneticPeriodicAlgorithm extends Thread{
     }
 
 
-    public void initialize(OrderDistribution od, CyclicBarrier masterDownstreamGate, CyclicBarrier masterUpstreamGate) throws GRBException {
+    public void initialize(OrderDistribution orderDistribution, CyclicBarrier masterDownstreamGate, CyclicBarrier masterUpstreamGate) throws GRBException {
         this.initialize(orderDistribution);
 
         //threading
@@ -97,8 +93,6 @@ public class GeneticPeriodicAlgorithm extends Thread{
 
     public void updateOrderDistribution(OrderDistribution orderDistribution){
         this.orderDistribution = orderDistribution;
-        //todo: reset the entire algorithm!
-        numberOfIterations = 0;
     }
 
     public OrderDistribution getOrderDistribution() {
@@ -119,6 +113,8 @@ public class GeneticPeriodicAlgorithm extends Thread{
         return threads;
     }
 
+
+
     public void runIteration() throws BrokenBarrierException, InterruptedException {
 
         downstreamGate.await();
@@ -129,10 +125,10 @@ public class GeneticPeriodicAlgorithm extends Thread{
         upstreamGate.reset();
 
         System.out.println("Updating order distribution");
-
+        periodicPopulation.addPeriodicIndividual(generateGreedyPeriodicIndividual());
         makeOptimalOrderDistribution(threads);
         updateFitness();
-        updateOrderDistributionsForPopulations(false);
+        updateOrderDistribution();
 
 
 
@@ -154,12 +150,35 @@ public class GeneticPeriodicAlgorithm extends Thread{
 
     }
 
-    private void updateOrderDistributionsForPopulations(boolean newOD){
+    public void resetPeriodicPopulation() {
+        periodicPopulation = new PeriodicPopulation(data);
+        periodicPopulation.initialize(orderDistribution);
+        numberOfIterations = 0;
+        iterationsWithoutImprovement = 0;
+        for (int p = 0; p < data.numberOfPeriods; p++) {
+            threads.get(p).setPopulation(periodicPopulation.populations[p]);
+            threads.get(p).resetCounters();
+
+        }
+        BiasedFitness.setBiasedFitnessScore(periodicPopulation);
+        repaired = new HashSet<>();
+        fitness = Double.MAX_VALUE;
+        numberOfIterations = 0;
+    }
+
+
+    private void updateOrderDistribution(){
         periodicPopulation.orderDistribution = this.orderDistribution;
+        updateOrderDistributionForPopulations(true);
+        iterationsWithoutImprovement = 0;
+    }
+
+    private void updateOrderDistributionForPopulations(boolean newOD){
         for (GeneticAlgorithm algorithm : threads){
             algorithm.orderDistribution = this.orderDistribution;
             algorithm.population.updateOrderDistributionsOfAllIndividuals(this.orderDistribution);
             if (newOD){
+                //algorithm.resetGeneration;
                 algorithm.fitnessForPeriod = Double.MAX_VALUE;
             }
         }
@@ -200,6 +219,19 @@ public class GeneticPeriodicAlgorithm extends Thread{
             iterationsWithoutImprovement++;
         }
         this.fitness = fitness;
+    }
+
+    public void terminate() throws BrokenBarrierException, InterruptedException, CloneNotSupportedException, IOException {
+        //terminate threads
+        for (GeneticAlgorithm algorithm : threads){
+            algorithm.run = false;
+        }
+        downstreamGate.await();
+        upstreamGate.await();
+//        ABCSolution solution = storeSolution();
+//        Individual individual = HelperFunctions.createIndividual(data, journeys, orderDistribution);
+//        Result result = new Result(individual, "ABC");
+//        result.store();
     }
 
     private void makeOptimalOrderDistribution(List<GeneticAlgorithm> geneticAlgorithms){
@@ -295,12 +327,11 @@ public class GeneticPeriodicAlgorithm extends Thread{
 
 
 
-
     public PGASolution storeSolution(){
         bestPeriodicIndividual = periodicPopulation.returnBestIndividual();
         PGASolution pgaSolution = bestPeriodicIndividual.createPGASolution();
         pgaSolution.individual.updateFitness();
-        pgaSolution.individual.printDetailedFitness();
+        //pgaSolution.individual.printDetailedFitness();
         return pgaSolution;
     }
 

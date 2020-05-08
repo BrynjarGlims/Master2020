@@ -20,8 +20,8 @@ public class Parameters {
     public static final int minimumSubIndividualPopulationSize = 50;
     public static final int initialPopulationSize = 50;
     public static final int initialOrderDistributionPopulationSize = 50;
-    public static final int maxNumberIterationsWithoutImprovement = 100;
-    public static final int maxNumberOfGenerations = 100;
+    public static final int maxNumberIterationsWithoutImprovement = 20;
+    public static final int maxNumberOfGenerations = 20;
 
     // Loading data parameters
     public static final int numberOfPeriods = 6;
@@ -112,12 +112,12 @@ public class Parameters {
     //Periodic parameters
     public static boolean isPeriodic = false;
     public static final boolean threadedPGA = true;
-    public static int numberOfPeriodicRuns = 2;
-    public static final int generationsPerOrderDistributionPeriodic = 5;
+    public static int numberOfPeriodicParallels = 1;
+    public static final boolean runSingularGA = false;
+    public static final boolean threadedGA = true;
+    public static final int generationsPerOrderDistributionPeriodic = 10;
     public static final int generationsOfOrderDistributions = 10;
-    public static final int newIndividualCombinationsGenerated = 3;
-    public static final int minimumPeriodicSubPopulationSize = 20;
-    public static final int maksimumPeriodicSubPopulationSize = 50;
+    public static final int orderDistributionUpdatesGA = 50;
     public static final double initialOrderDistributionScale = 1;
     public static final double incrementPerOrderDistributionScaling = 0.02;
     public static final int numberOfGenerationsBetweenODScaling = 2;

@@ -147,7 +147,6 @@ public class Swarm extends Thread{
         double[] fitnesses = FitnessCalculation.getIndividualFitness(data, journeys,orderDistribution, 1);
         System.out.println("overload: " + fitnesses[2]);
 
-        System.out.println("Check journeys");
         if (orderAllocationModel.createOptimalOrderDistribution(journeys, 1) == 2){
             System.out.println("FOUND OPTIMAL OD!!! Ja vi elsker dette landet, som det stiger frem.");
             this.orderDistribution = orderAllocationModel.getOrderDistribution();

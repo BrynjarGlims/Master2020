@@ -102,6 +102,11 @@ public class GeneticAlgorithm extends Thread {
         population.feasiblePopulation.addAll(repaired);
     }
 
+    public void resetCounters(){
+        numberOfIterations = 0;
+        iterationsWithoutImprovement = 0;
+    }
+
     public void selection(Population population){
 
         // Reduce population size
@@ -130,24 +135,16 @@ public class GeneticAlgorithm extends Thread {
 
 
     public void runGeneration() {
-        System.out.println("Iteration: " + this.numberOfIterations);
         while (population.infeasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize &&
                 population.feasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize) {
-            if (this.numberOfIterations >= 1){
-                System.out.println("fes");
-            }
-
             Individual newIndividual = PIX(population);
             educate(newIndividual);
             tripOptimizer(newIndividual);
+            population.addChildToPopulation(newIndividual);
         }
-        System.out.println("Repair..");
         repair(population);
 
-        System.out.println("Selection..");
         selection(population);
-        System.out.println(population.infeasiblePopulation.size());
-        System.out.println(population.feasiblePopulation.size());
 
         currentBestIndividual = population.returnBestIndividual();
         if (currentBestIndividual.getFitness(false) < fitnessForPeriod && currentBestIndividual.isFeasible()){
@@ -169,12 +166,9 @@ public class GeneticAlgorithm extends Thread {
             try {
                 //wait for all threads to be ready
                 downstreamGate.await();
-                System.out.println("Went past downStreamGate");
-
                 //run generations
                 if (run){runGenerations(Parameters.generationsPerOrderDistributionPeriodic);}
                 //wait for all periods to finish
-                System.out.println("Waiting at upstream gate");
                 upstreamGate.await();
 
             } catch (InterruptedException | BrokenBarrierException e) {
@@ -189,6 +183,8 @@ public class GeneticAlgorithm extends Thread {
 
     public void runGenerations(int generations) {
         for (int i = 0 ; i < generations ; i++){
+            if (iterationsWithoutImprovement > Parameters.maxNumberIterationsWithoutImprovement)
+                break;
             runGeneration();
         }
     }
