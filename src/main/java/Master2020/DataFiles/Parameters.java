@@ -13,7 +13,8 @@ public class Parameters {
     public static final String vehicleFilePath = "data/" + dataSet + "/Vehicles.csv";
     public static final boolean doRandomSeed = true;
     public static final int samples = 1;
-    public static long randomSeedValue = 20;
+    public static long randomSeedValue = 10;
+
 
     // Population parameters
     public static final int maximumSubIndividualPopulationSize = 100; //TODO: find reasonable value
@@ -47,11 +48,11 @@ public class Parameters {
     public static final boolean runSingular = false;
     public static final boolean threaded = true;
     public static final int numberOfSwarms = 5;
-    public static final int minimumIterations = 3;
+    public static final int minimumIterations = 15;
     public static final int orderDistributionCutoff = 2;
     public static final int swarmIterationsWithoutImprovementLimit = 5;
-    public static final int generationsPerOrderDistribution = 400;
-    public static final int orderDistributionUpdates = 5;
+    public static final int generationsPerOrderDistribution = 300;
+    public static final int orderDistributionUpdates = 50;
     public static final int numberOfEmployees = 10;
     public static final int numberOfOnlookers = 40;
     public static final int numberOfScoutTrials = 10;
@@ -62,12 +63,12 @@ public class Parameters {
     public static final double weightGlobalBest = 0.8;
     public static final double movementRange = 1; //both positive and negative, but only half in negative direction
     public static final double onlookerRandomAdjustment = 0.2; //a random number added when onlooker goes to employers foodsource
-    public static final int numberOfEnhancements = 5; //number of enhancements that wil happen to onlookers
+    public static final int numberOfEnhancements = 0; //number of enhancements that wil happen to onlookers
     public static final double[] weightsEnhancement = new double[]{33, 33, 34}; //probability distribution of enhancements, [reverse, swap, insert]
     public static final double globalTrialsCutoff = 1.1; //trials will not increment if solution is within this multiplier of global best
 
     //Penalty parameters for heuristics
-    public static final double initialCapacityPenalty = 1000000;  // lambda
+    public static final double initialCapacityPenalty = 1000;  // lambda
     public static final double initialTimeWarpPenalty = 1000;  // theta
     public static final double initialDrivingCostPenalty = 1; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
     public static final double penaltyFactorForOverFilling = 1.1;
@@ -131,5 +132,5 @@ public class Parameters {
     public static final boolean verboseJourneyBased = false;
     public static final boolean savePlots = false;
     public static final boolean verbose = false;
-    public static final char separator = ',';
+    public static final char separator = ';';
 }
