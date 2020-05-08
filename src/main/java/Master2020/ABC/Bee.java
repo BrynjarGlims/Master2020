@@ -91,13 +91,13 @@ public abstract class Bee {
             while (count < Parameters.numberOfEnhancements){
                 foundBetterSolution = false;
                 int action = enhancementsSampler.nextIndex();
-                if (action == 1){
+                if (action == 0){
                     foundBetterSolution = operation(po, vt, Utils.reverse);
                 }
-                else if (action == 2){
+                else if (action == 1){
                     foundBetterSolution = operation(po, vt, Utils.swap);
                 }
-                else if (action == 3){
+                else if (action == 2){
                     foundBetterSolution = operation(po, vt, Utils.insert);
                 }
                 count = foundBetterSolution ? 0 : count + 1;
@@ -113,18 +113,12 @@ public abstract class Bee {
         if (parsedIndices.size() > 1){
             int[] positions = getPositions(parsedIndices);
             ArrayList<Journey> oldJourneys = AdSplit.adSplitSingular(customerVisits, data, colony.orderDistribution, period, vt);
-            double oldFitness = 0;
-            for (Journey journey : oldJourneys){
-                oldFitness += FitnessCalculation.getTotalJourneyFitness(journey, colony.orderDistribution);
-            }
+            double oldFitness = FitnessCalculation.getTotatPeriodVehicleTypeFitness(oldJourneys, colony.orderDistribution, 1);
             //update
             function.apply(customerVisits).apply(positions[0]).accept(positions[1]);
             //evaluate
             ArrayList<Journey> newJourneys = AdSplit.adSplitSingular(customerVisits, data, colony.orderDistribution, period, vt);
-            double newFitness = 0;
-            for (Journey journey : newJourneys){
-                newFitness += FitnessCalculation.getTotalJourneyFitness(journey, colony.orderDistribution);
-            }
+            double newFitness = FitnessCalculation.getTotatPeriodVehicleTypeFitness(newJourneys, colony.orderDistribution, 1);
             if (newFitness < oldFitness){
                 //update other structures
                 function.apply(parsedIndices).apply(positions[0]).accept(positions[1]);

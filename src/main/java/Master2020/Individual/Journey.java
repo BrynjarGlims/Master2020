@@ -68,7 +68,7 @@ public class Journey {
             updateOverload(trip, orderDistribution);
         }
         double travelCost = travelDistance*data.vehicleTypes[vehicleType].travelCost;
-        double timeWarpCost = timeWarp* Parameters.initialTimeWarpPenalty;
+        double timeWarpCost = timeWarp* Parameters.initialTimeWarpPenalty*penaltyMultiplier;
         double overLoadCost = overLoad*Parameters.penaltyFactorForOverFilling*penaltyMultiplier;
         return new double[]{travelCost, timeWarpCost, overLoadCost, vehicleCost};
     }
