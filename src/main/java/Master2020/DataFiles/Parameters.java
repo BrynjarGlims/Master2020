@@ -13,7 +13,7 @@ public class Parameters {
     public static final String vehicleFilePath = "data/" + dataSet + "/Vehicles.csv";
     public static final boolean doRandomSeed = true;
     public static final int samples = 1;
-    public static long randomSeedValue = 2;
+    public static long randomSeedValue = 20;
 
     // Population parameters
     public static final int maximumSubIndividualPopulationSize = 100; //TODO: find reasonable value
@@ -21,13 +21,13 @@ public class Parameters {
     public static final int initialPopulationSize = 50;
     public static final int initialOrderDistributionPopulationSize = 50;
     public static final int maxNumberIterationsWithoutImprovement = 20;
-    public static final int maxNumberOfGenerations = 20;
+    public static final int maxNumberOfGenerations = 10;
 
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 10; // A maximum of 75
-    public static final int numberOfVehicles = 20;
+    public static int numberOfCustomers = 30; // A maximum of 75
+    public static final int numberOfVehicles = 10;
     public static final double distanceCutOffFromDepot = 3.0;
     public static final boolean adjustTimeWindow = true;
     public static final double adjustTimeWindowReduction = 5;
