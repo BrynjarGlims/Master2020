@@ -26,8 +26,8 @@ public class Parameters {
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 30; // A maximum of 75
-    public static final int numberOfVehicles = 10;
+    public static int numberOfCustomers = 75; // A maximum of 75
+    public static final int numberOfVehicles = 25;
     public static final double distanceCutOffFromDepot = 3.0;
     public static final boolean adjustTimeWindow = true;
     public static final double adjustTimeWindowReduction = 5;
@@ -67,8 +67,8 @@ public class Parameters {
     public static final double globalTrialsCutoff = 1.1; //trials will not increment if solution is within this multiplier of global best
 
     //Penalty parameters for heuristics
-    public static final double initialCapacityPenalty = 1000;  // lambda
-    public static final double initialTimeWarpPenalty = 1000;  // theta
+    public static final double initialCapacityPenalty = 10000;  // lambda
+    public static final double initialTimeWarpPenalty = 10000;  // theta
     public static final double initialDrivingCostPenalty = 1; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
     public static final double penaltyFactorForOverFilling = 1.1;
     public static final double penaltyFactorForUnderFilling = 1.5;
