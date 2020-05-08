@@ -21,13 +21,13 @@ public class Parameters {
     public static final int minimumSubIndividualPopulationSize = 50;
     public static final int initialPopulationSize = 50;
     public static final int initialOrderDistributionPopulationSize = 50;
-    public static final int maxNumberIterationsWithoutImprovement = 20;
-    public static final int maxNumberOfGenerations = 10;
+    public static final int maxNumberIterationsWithoutImprovement = 3;
+    public static final int maxNumberOfGenerations = 25;
 
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 30; // A maximum of 75
+    public static int numberOfCustomers = 30;        //A maximum of 75
     public static final int numberOfVehicles = 10;
     public static final double distanceCutOffFromDepot = 3.0;
     public static final boolean adjustTimeWindow = true;
@@ -115,12 +115,13 @@ public class Parameters {
     //Periodic parameters
     public static boolean isPeriodic = false;
     public static final boolean threadedPGA = true;
-    public static int numberOfPeriodicParallels = 1;
+    public static int numberOfPeriodicParallels = 5;
     public static final boolean runSingularGA = false;
     public static final boolean threadedGA = true;
-    public static final int generationsPerOrderDistributionPeriodic = 10;
-    public static final int generationsOfOrderDistributions = 10;
-    public static final int orderDistributionUpdatesGA = 50;
+    public static final double diversifiedODProbability = 0.5;
+    public static final int generationsPerOrderDistributionPeriodic = 50;
+    public static final int minimumUpdatesPerOrderDistributions = 4;
+    public static final int orderDistributionUpdatesGA = 50;        // this / minimumUpdatesPerOrderDistributions = number of unique order distributions
     public static final double initialOrderDistributionScale = 1;
     public static final double incrementPerOrderDistributionScaling = 0.02;
     public static final int numberOfGenerationsBetweenODScaling = 2;
