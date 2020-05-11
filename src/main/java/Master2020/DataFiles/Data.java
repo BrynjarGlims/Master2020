@@ -1,11 +1,14 @@
 package Master2020.DataFiles;
 
 
+import Master2020.Utils.DistanceMatrixBuilder;
+import Master2020.Utils.Utils;
 import gurobi.GRBVar;
 import org.apache.commons.math3.linear.IllConditionedOperatorException;
 import org.numenta.nupic.util.ArrayUtils;
 import scala.xml.PrettyPrinter;
 
+import java.io.IOException;
 import java.lang.*;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -63,6 +66,7 @@ public class Data {
                             distanceMatrix[numberOfCustomers][customer.customerID] > Parameters.maxJourneyDuration) {
                         System.out.println("Customer " + customer.customerID + " is infeasible in period " + p + " (late arrival)");
                         infeasibleCustomers += 1;
+                        System.out.println(customer.customerName);
                         throw new IllegalArgumentException("Customer " + customer.customerID + " is infeasible in period " + p + " (late arrival) TWS: " + customer.timeWindow[p][0] + ", WTE: " + customer.timeWindow[p][1] + " Distance: " + distanceMatrix[numberOfCustomers][customer.customerID] + " Unloading: " + customer.totalUnloadingTime);
                     } else if (distanceMatrix[numberOfCustomers][customer.customerID] > customer.timeWindow[p][1]) {
                         System.out.println("Customer " + customer.customerID + " is infeasible in period " + p + " (early arrival)");
@@ -75,7 +79,7 @@ public class Data {
         }
     }
 
-    private void initialize(){
+    private void initialize() {
         this.setVehiclesInVehicleType();
         this.setTargetVolume();
         this.setDistanceMatrix();
@@ -168,7 +172,21 @@ public class Data {
 
     }
 
-    private void setDistanceMatrix() {
+    private void setDistanceMatrix(){
+        if (Parameters.euclidianDistance){
+            distanceMatrix  =  setDistanceMatrixEuclidian();
+        }
+        else{
+            try{
+                distanceMatrix  = DistanceMatrixBuilder.createDistanceMatrix(this, Parameters.distancePath);
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private double[][] setDistanceMatrixEuclidian() {
         distanceMatrix = new double[numberOfNodes][numberOfNodes];
         for (int i = 0; i < numberOfNodes; i++){
             for (int j = 0; j < numberOfNodes; j++){
@@ -190,6 +208,7 @@ public class Data {
                 }
             }
         }
+        return distanceMatrix;
     }
 
     private double euclideanDistance( double fromCustomerXCor, double formCustomerYCor,

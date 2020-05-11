@@ -7,6 +7,7 @@ import java.util.Set;
 public class Parameters {
 
     // File import parameters
+
     public static final String dataSet1 = "Trondelag_test";   // Trondelag or VestTele
     public static final String dataSet2 = "VestTele";   // Trondelag or VestTele
     public static final String ordersFilePath1 = "data/" + dataSet1 + "/Orders.txt";
@@ -15,9 +16,10 @@ public class Parameters {
     public static final String ordersFilePath2 = "data/" + dataSet2 + "/Orders.txt";
     public static final String timeWindowsFilePath2 = "data/" + dataSet2 + "/Time_windows.txt";
     public static final String vehicleFilePath2 = "data/" + dataSet2 + "/Vehicles.txt";
+    public static final String distancePath = "Google_Trondelag";
 
 
-    public static final boolean useLargeDataset = true;
+    public static final boolean useLargeDataset = false;
     public static final boolean doRandomSeed = true;
     public static final int samples = 1;
     public static long randomSeedValue = 10;
@@ -34,9 +36,9 @@ public class Parameters {
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 30;        //A maximum of 75
+    public static int numberOfCustomers = 70;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
     public static final int numberOfVehicles = 10;
-    public static final double distanceCutOffFromDepot = 3.0;
+    public static final double distanceCutOffFromDepot = 3.0;   //default 3
     public static final boolean adjustTimeWindow = true;
     public static final double adjustTimeWindowReduction = 5;
     public static final double adjustTimeWindowLimit = 9.5;
@@ -74,21 +76,24 @@ public class Parameters {
     public static final double[] weightsEnhancement = new double[]{33, 33, 34}; //probability distribution of enhancements, [reverse, swap, insert]
     public static final double globalTrialsCutoff = 1.1; //trials will not increment if solution is within this multiplier of global best
 
+
+
     //Penalty parameters for heuristics
-    public static final double initialCapacityPenalty = 1000;  // lambda
-    public static final double initialTimeWarpPenalty = 1000;  // theta
+    public static final double initialCapacityPenalty = 10000;  // lambda
+    public static final double initialTimeWarpPenalty = 10000;  // theta
     public static final double initialDrivingCostPenalty = 1; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
     public static final double penaltyFactorForOverFilling = 1.1;
     public static final double penaltyFactorForUnderFilling = 1.5;
 
     // Scaling parameters
+    public static final boolean euclidianDistance = false;
     public static final double scalingDistanceParameter = 2.0; //set to 2.2
     public static final double timeShift = 6;
-    public static final double maxJourneyDuration = 10; //changed to journey duration
+    public static final double maxJourneyDuration = 11; //changed to journey duration
     public static final double loadingTimeAtDepotConstant = 0.03;
     public static final double loadingTimeAtDepotVariable = 0.001;
-    public static final double scalingUnloadingTimeAtCustomerConstant = 0.03;
-    public static final double scalingUnloadingTimeAtCustomerVariable = 0.001;
+    public static final double scalingUnloadingTimeAtCustomerConstant = 0.02;
+    public static final double scalingUnloadingTimeAtCustomerVariable = 0.5;
     public static final double scalingVehicleCapacity = 0.01;
     public static final double indifferenceValue = 0.0001;
     public static final double scalingVolumeValue = 1.5;
@@ -133,6 +138,10 @@ public class Parameters {
     public static final double incrementPerOrderDistributionScaling = 0.02;
     public static final int numberOfGenerationsBetweenODScaling = 2;
     public static final int numberOfGenerationBeforeODScalingStarts = 20;
+
+    // Joureny Combination Model parameters
+    public static final int individualsPerPeriod = 100;
+
 
     // Verbose parameters
     public static final boolean verboseArcFlow = false;
