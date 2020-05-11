@@ -19,7 +19,7 @@ public class Parameters {
     public static final String distancePath = "Google_Trondelag";
 
 
-    public static final boolean useLargeDataset = true;
+    public static final boolean useLargeDataset = false;
     public static final boolean doRandomSeed = true;
     public static final int samples = 1;
     public static long randomSeedValue = 10;
