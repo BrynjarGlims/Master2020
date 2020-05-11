@@ -17,10 +17,7 @@ import org.json.simple.parser.ParseException;
 
 
 import javax.annotation.processing.Filer;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,68 +36,80 @@ public class DistanceMatrixBuilder {
         return coordinates;
     }
 
-    private static JSONObject createJSON(Data data){
-        JSONObject obj = new JSONObject();
-        JSONArray row;
-        for (int i = 0 ; i < data.numberOfNodes ; i++){
-            row = new JSONArray();
-            for (double d : data.distanceMatrix[i]){
-                row.add(d);
+
+    private static HashMap<String, HashMap<String, Double>> createHashMap(Data data){
+        HashMap<String, HashMap<String, Double>> outMap = new HashMap<>();
+        for (int from = 0 ; from < data.numberOfCustomers ; from++){
+            HashMap<String, Double> internalMap = new HashMap<>();
+            outMap.put(data.customers[from].customerName, internalMap);
+            for (int to = 0 ; to < data.numberOfCustomers ; to++){
+                internalMap.put(data.customers[to].customerName, data.distanceMatrix[from][to]);
             }
-            row.get(0);
-            obj.put(i, row);
+            internalMap.put("Depot", data.distanceMatrix[from][data.numberOfCustomers]);
         }
-        return obj;
+        return outMap;
     }
 
-    private static void writeJSON(JSONObject obj, String path) throws IOException {
-        FileWriter fileWriter = new FileWriter(path);
-        fileWriter.write(obj.toJSONString());
-        fileWriter.close();
+    private static void saveDistanceMap(Data data, String name) throws IOException {
+        HashMap<String, HashMap<String, Double>> map = createHashMap(data);
+        String path = System.getProperty("user.dir") + "\\data\\Distances\\" + name + ".ser";
+        FileOutputStream fileOutputStream = new FileOutputStream(path);
+        ObjectOutputStream out = new ObjectOutputStream(fileOutputStream);
+        out.writeObject(map);
+        out.close();
+        fileOutputStream.close();
     }
 
-    public static JSONObject readJSON(String path) throws IOException, ParseException {
-        JSONParser parser = new JSONParser();
-        FileReader reader = new FileReader(path);
-        JSONObject obj = (JSONObject) parser.parse(reader);
-        reader.close();
-        return obj;
+    private static HashMap<String, HashMap<String, Double>> loadDistanceMap(String name) throws IOException, ClassNotFoundException {
+        String path = System.getProperty("user.dir") + "\\data\\Distances\\" + name + ".ser";
+        FileInputStream fileIn = new FileInputStream(path);
+        ObjectInputStream in = new ObjectInputStream(fileIn);
+        HashMap<String, HashMap<String, Double>> map = (HashMap<String, HashMap<String, Double>>) in.readObject();
+        in.close();
+        fileIn.close();
+        return map;
     }
 
-    public static void main(String[] args) throws InterruptedException, ApiException, IOException, ParseException {
-
-        Data data = DataReader.loadData();
+    private static HashMap<String, HashMap<String, Double>> GoogleDistancesMap(Data data) throws InterruptedException, ApiException, IOException {
         LatLng[] coordinates = getCoordinates(data);
-        System.out.println(coordinates[1]);
-        JSONObject obj = createJSON(data);
-        System.out.println(obj.get(1));
-        String path = System.getProperty("user.dir") + "\\data\\Distances\\DistanceMatrix.json";
 
-        //writeJSON(obj, path);
-        JSONObject readobj = readJSON(path);
-        System.out.println(readobj.get("1").getClass());
-        for (Object s : (JSONArray) readobj.get("1")){
-            System.out.println(s);
-        }
+        GeoApiContext context = new GeoApiContext.Builder()
+                .apiKey(System.getenv("GOOGLE_API_KEY"))
+                .build();
+        DistanceMatrixApiRequest req = DistanceMatrixApi.newRequest(context);
 
-//        GeoApiContext context = new GeoApiContext.Builder()
-//                .apiKey(System.getenv("GOOGLE_API_KEY"))
-//                .build();
-//        DistanceMatrixApiRequest req = DistanceMatrixApi.newRequest(context);
+
+        DistanceMatrix result = req.origins(coordinates)
+                .destinations(coordinates)
+                .mode(TravelMode.DRIVING)
+                .language("en-US")
+                .await();
+
+        String distApart = result.rows[1].elements[0].distance.humanReadable;
+        long meters = result.rows[1].elements[0].distance.inMeters;
+        System.out.println("dist km: " + distApart);
+        System.out.println("dist meters: " + meters);
+        context.shutdown();
+
+    }
+
+
+    public static void main(String[] args) throws InterruptedException, ApiException, IOException, ParseException, ClassNotFoundException {
 //
-//        LatLng[] coordinates1 = new LatLng[]{new LatLng(data.customers[0].yCoordinate, data.customers[0].xCoordinate),new LatLng(data.customers[2].yCoordinate, data.customers[2].xCoordinate)};
+        Data data = DataReader.loadData();
+//        HashMap<String, HashMap<String, Double>> map = createHashMap(data);
+        String path = System.getProperty("user.dir") + "\\data\\Distances\\distanceMap.ser";
+//        FileOutputStream fileOutputStream = new FileOutputStream(path);
+//        ObjectOutputStream out = new ObjectOutputStream(fileOutputStream);
+//        out.writeObject(map);
+//        out.close();
+//        fileOutputStream.close();
+
+        FileInputStream fileIn = new FileInputStream(path);
+        ObjectInputStream in = new ObjectInputStream(fileIn);
+        HashMap<String, HashMap<String, Double>> map = (HashMap<String, HashMap<String, Double>>) in.readObject();
+        System.out.println(map.get(data.customers[0].customerName).get("Depot"));
 //
-//        DistanceMatrix result = req.origins(coordinates1)
-//                .destinations(new LatLng(data.customers[1].yCoordinate, data.customers[1].xCoordinate))
-//                .mode(TravelMode.DRIVING)
-//                .language("en-US")
-//                .await();
-//
-//        String distApart = result.rows[1].elements[0].distance.humanReadable;
-//        long meters = result.rows[1].elements[0].distance.inMeters;
-//        System.out.println("dist km: " + distApart);
-//        System.out.println("dist meters: " + meters);
-//        context.shutdown();
 //
 
     }
