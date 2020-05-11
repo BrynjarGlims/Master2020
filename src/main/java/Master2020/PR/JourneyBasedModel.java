@@ -197,7 +197,7 @@ public class JourneyBasedModel {
         }
     }
 
-    public void constraint68() throws GRBException {
+    public void journeyUse() throws GRBException {
         // Constraint 5.68
         // if a journey is used, then the vehicle corresponding to that journey is considered used
         for (int d = 0; d < dataMIP.numPeriods; d++) {
@@ -213,7 +213,7 @@ public class JourneyBasedModel {
         }
     }
 
-    public void constraint69() throws GRBException {
+    public void allowableVisits() throws GRBException {
         // Constraint 5.69
         // Allowable visits to customer on spesific day
         for (int d = 0; d < dataMIP.numPeriods; d++) {
@@ -236,7 +236,7 @@ public class JourneyBasedModel {
 
     }
 
-    public void constraint70() throws GRBException {
+    public void capacityConstraint() throws GRBException {
         // Constraint 5.70
         //Capacity constraint on each delivery
         for (int d = 0; d < dataMIP.numPeriods; d++) {
@@ -539,9 +539,9 @@ public class JourneyBasedModel {
     public void activateConstraints(String symmetry) throws GRBException {
         // -------- Add constraints -------------
 
-        constraint68();
-        constraint69();
-        constraint70();
+        journeyUse();
+        allowableVisits();
+        capacityConstraint();
         constraint71();
         constraint72();
 
@@ -781,7 +781,7 @@ public class JourneyBasedModel {
         }
     }
 
-    public void runModel(String symmetry) {
+    public void runModel( String symmetry) {
         try {
             double time = System.currentTimeMillis();
             this.symmetry = symmetry;
