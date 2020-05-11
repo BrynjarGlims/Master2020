@@ -80,10 +80,10 @@ public class DataReader {
             productList.add(new Order(productID, customerID,
                     Double.parseDouble(productData.get(line)[11]),
                     checkSplitAttribute(productData.get(line)[4], line),
-                    productData.get(line)[5],
+                    productData.get(line)[3],
+                    Integer.parseInt(productData.get(line)[6]),
                     Integer.parseInt(productData.get(line)[7]),
-                    Integer.parseInt(productData.get(line)[8]),
-                    Integer.parseInt(productData.get(line)[9])));
+                    Integer.parseInt(productData.get(line)[8])));
             productID++;
         }
         return convertCustomerList(customerList);
@@ -187,10 +187,10 @@ public class DataReader {
     }
 
     private static double[] getCustomLoadingTime(){
-        double fixedLoadingTime = 0.5;
-        double variableLoadingTime = 0.01;
-        double fixedUnloadingTime = 0.4;
-        double variableUnloadingTime = 0.02;
+        double fixedLoadingTime = 5;
+        double variableLoadingTime = 0.04;
+        double fixedUnloadingTime = 10;
+        double variableUnloadingTime = 0.04;
         double[] loadingTimes = {fixedLoadingTime,variableLoadingTime,fixedUnloadingTime,variableUnloadingTime};
         return loadingTimes;
     }
@@ -354,12 +354,15 @@ public class DataReader {
         List<Integer> indexes = new ArrayList<Integer>() ;
         for (int i = 0; i < customers.length; i++){
             if (customers[i].numberOfNonDividableOrders > customers[i].numberOfVisitPeriods ){
-                System.out.println(" too many number of visit days");
+                //System.out.println(" too many number of visit days");
                 indexes.add(i);
             }
             else if (distanceFromDepot(customers[i], depot) > Parameters.distanceCutOffFromDepot){
+                /*
                 System.out.println(distanceFromDepot(customers[i], depot));
                 System.out.println("too far to drive");
+
+                 */
                 indexes.add(i);
             }
 
@@ -441,8 +444,6 @@ public class DataReader {
         }
 
 
-
-        System.out.println("stop");
         Depot depot;
         Customer[] customers;
         Vehicle[] vehicles;
@@ -450,10 +451,8 @@ public class DataReader {
             depot = setCustomDepot();
             customers = parseOrdersFileDataSpecial(orderData);
             customers = parseTimeWindowFileDataSpecial(customers, timeWindowData);
-            System.out.println("stop");
             customers = removeInvalidCustomers(customers, depot);
             vehicles = parseVehicleFileDataToVehicle(vehiclesData);
-            System.out.println("stop");
         }
         else{
             depot = parseVehicleFileDataToDepot(vehiclesData);
@@ -462,8 +461,6 @@ public class DataReader {
             customers = removeInvalidCustomers(customers, depot);
             vehicles = parseVehicleFileDataToVehicle(vehiclesData);
         }
-
-
 
         Customer[] customersSubset;
         Vehicle[] vehiclesSubset;
@@ -551,5 +548,4 @@ public class DataReader {
         Data data = loadData();
         System.out.println(data.customers.length);
     }
-
 }
