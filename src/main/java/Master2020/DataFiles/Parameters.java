@@ -7,10 +7,17 @@ import java.util.Set;
 public class Parameters {
 
     // File import parameters
-    public static final String dataSet = "Trondelag";   // Trondelag or VestTele
-    public static final String ordersFilePath = "data/" + dataSet + "/Orders.csv";
-    public static final String timeWindowsFilePath = "data/" + dataSet + "/Time_windows.csv";
-    public static final String vehicleFilePath = "data/" + dataSet + "/Vehicles.csv";
+    public static final String dataSet1 = "Trondelag_test";   // Trondelag or VestTele
+    public static final String dataSet2 = "VestTele";   // Trondelag or VestTele
+    public static final String ordersFilePath1 = "data/" + dataSet1 + "/Orders.txt";
+    public static final String timeWindowsFilePath1 = "data/" + dataSet1 + "/Time_windows.txt";
+    public static final String vehicleFilePath1 = "data/" + dataSet1 + "/Vehicles.txt";
+    public static final String ordersFilePath2 = "data/" + dataSet2 + "/Orders.txt";
+    public static final String timeWindowsFilePath2 = "data/" + dataSet2 + "/Time_windows.txt";
+    public static final String vehicleFilePath2 = "data/" + dataSet2 + "/Vehicles.txt";
+
+
+    public static final boolean useLargeDataset = true;
     public static final boolean doRandomSeed = true;
     public static final int samples = 1;
     public static long randomSeedValue = 10;
