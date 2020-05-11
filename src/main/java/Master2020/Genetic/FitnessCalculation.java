@@ -24,23 +24,43 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
         double[] fitnesses;
         for (int p = 0 ; p < journeys.length ; p++){
             for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
-                for (Journey journey : journeys[p][vt]){
-                    if (journey == null){
-                        System.out.println("journey is null");
-                        continue;
-                    }
-                    if (journey.trips.size() == 0){
-                        System.out.println("No trips in journey");
-                    }
-                    fitnesses = getJourneyFitness(journey, orderDistribution, penaltyMultiplier);
-                    travelCost += fitnesses[0];
-                    timeWarpCost += fitnesses[1];
-                    overloadCost += fitnesses[2];
-                    vehicleUsageCost += fitnesses[3];
+                fitnesses = getIndividualFitnessPeriodVehicleType(journeys[p][vt], orderDistribution, penaltyMultiplier);
+                travelCost += fitnesses[0];
+                timeWarpCost += fitnesses[1];
+                overloadCost += fitnesses[2];
+                vehicleUsageCost += fitnesses[3];
                 }
             }
-        }
         return new double[]{travelCost,timeWarpCost,overloadCost,vehicleUsageCost};
+    }
+
+    public static double getTotatPeriodVehicleTypeFitness(ArrayList<Journey> journeys, OrderDistribution orderDistribution, double penaltyMultiplier){
+        double[] fitnesses = getIndividualFitnessPeriodVehicleType(journeys, orderDistribution, penaltyMultiplier);
+        double fitness = 0;
+        for (double f : fitnesses){
+            fitness += f;
+        }
+        return fitness;
+    }
+
+
+    public static double[] getIndividualFitnessPeriodVehicleType(ArrayList<Journey> journeys, OrderDistribution orderDistribution, double penaltyMultiplier){
+        double[] fitnesses = new double[4];
+        double[] tempFitness = null;
+        for (Journey journey : journeys){
+            if (journey == null){
+                System.out.println("journey is null");
+                continue;
+            }
+            if (journey.trips.size() == 0){
+                System.out.println("No trips in journey");
+            }
+            tempFitness = getJourneyFitness(journey, orderDistribution, penaltyMultiplier);
+            for (int i = 0 ; i < fitnesses.length ; i++){
+                fitnesses[i] += tempFitness[i];
+            }
+        }
+        return fitnesses;
     }
 
 

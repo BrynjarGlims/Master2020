@@ -569,6 +569,9 @@ public class OrderAllocationModel {
             }
             else if (optimstatus == 2){
                 initializeODObject();
+                if (Parameters.verboseODValidity)
+                    printVolumeOfTrips();
+                checkIfValidOD();
             }
             else{
                 System.out.println("Unkonwn optimization status");
@@ -594,6 +597,68 @@ public class OrderAllocationModel {
         } catch (GRBException e) {
             e.printStackTrace();
         }
+    }
+
+    private void printVolumeOfTrips() throws GRBException {
+        for (int p = 0; p < data.numberOfPeriods; p++) {
+            for (int vt = 0; vt < data.numberOfVehicleTypes; vt++) {
+                if (journeys[p][vt].isEmpty()) {
+                    continue;
+                }
+                for (Journey journey : journeys[p][vt]){
+                    for (Trip trip : journey.trips) {
+                        double volumeOfTrip = 0;
+                        for (int i : trip.customers) {
+                            for (int m = 0; m < data.customers[i].dividableOrders.length; m++) {
+                                volumeOfTrip +=  qD[p][i][m].get(GRB.DoubleAttr.X);
+                            }
+                            for (int m = 0; m < data.customers[i].nonDividableOrders.length; m++) {
+                                volumeOfTrip +=  qND[p][i][m].get(GRB.DoubleAttr.X);;
+                            }
+                        }
+                        System.out.println(" ----------------------- ");
+                        System.out.println("Trip period: " + p + " vehicle type " + vt);
+                        System.out.println("Volume is " + volumeOfTrip + " on a vehicle with capacity " + data.vehicleTypes[vt].capacity);
+                        if (volumeOfTrip >= data.vehicleTypes[vt].capacity){
+                            System.out.println("######### THIS IS PROBLEMATIC ##########");
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void checkIfValidOD(){
+        for (int p = 0; p < data.numberOfPeriods; p++){
+            for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
+                for (Journey journey : journeys[p][vt]){
+                    for (Trip trip : journey.trips){
+                        double volumeOfTrip = 0;
+                        for (int customerID : trip.customers){
+                            volumeOfTrip += this.orderDistribution.getOrderVolumeDistribution(p,customerID);
+                        }
+                        if (volumeOfTrip > data.vehicleTypes[vt].capacity){
+                            System.out.println(" ---------------------");
+                            System.out.println(" ---------------------");
+                            System.out.println(" ---------------------");
+                            System.out.println(" ---------------------");
+                            System.out.println("OVERLOAD");
+                            System.out.println("Period "+ p + " vehicle type: "+ vt);
+                            System.out.println("Volume is " + volumeOfTrip + " on a vehicle with capacity " + data.vehicleTypes[vt].capacity);
+                            System.out.println(" ---------------------");
+                            System.out.println(" ---------------------");
+                            System.out.println(" ---------------------");
+                            System.out.println(" ---------------------");
+                            System.out.println(" ---------------------");
+
+
+                            throw new IllegalArgumentException();
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
     public OrderDistribution getOrderDistribution() {

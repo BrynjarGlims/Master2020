@@ -33,6 +33,7 @@ public class Swarm extends Thread{
     private List<PeriodSwarm> threads;
     private double fitness;
     public double iterationsWithoutImprovement;
+    public int minimumIterations;
     public boolean run;
 
     public Swarm(Data data) throws GRBException {
@@ -47,6 +48,7 @@ public class Swarm extends Thread{
         this.masterDownstreamGate = masterDownstreamGate;
         this.masterUpstreamGate = masterUpstreamGate;
         this.run = true;
+        minimumIterations = 0;
     }
 
     public void initialize(OrderDistribution orderDistribution){
@@ -122,9 +124,7 @@ public class Swarm extends Thread{
         downstreamGate.await();
         upstreamGate.await();
 //        ABCSolution solution = storeSolution();
-//        Individual individual = HelperFunctions.createIndividual(data, journeys, orderDistribution);
-//        Result result = new Result(individual, "ABC");
-//        result.store();
+
     }
 
 
@@ -141,16 +141,19 @@ public class Swarm extends Thread{
                 journeys[p][vt] = journeysEntry;
             }
         }
+
+
         System.out.println("all customers exists? " + ABCtests.allCustomersExists(journeys, data));
         System.out.println("OD valid? " + IndividualTest.testValidOrderDistribution(data, orderDistribution));
         double[] fitnesses = FitnessCalculation.getIndividualFitness(data, journeys,orderDistribution, 1);
         System.out.println("overload: " + fitnesses[2]);
 
-        if (orderAllocationModel.createOptimalOrderDistribution(journeys) == 2){
+
+        if (orderAllocationModel.createOptimalOrderDistribution(journeys, 1) == 2){
             this.orderDistribution = orderAllocationModel.getOrderDistribution();
         }
         else{
-            System.out.println("Did not find any Optimal OD");
+            System.out.println("no optimal OD found");
         }
 
     }
@@ -159,7 +162,7 @@ public class Swarm extends Thread{
         for (PeriodSwarm periodSwarm : periodSwarms){
             periodSwarm.orderDistribution = this.orderDistribution;
             if (newOD){
-                periodSwarm.globalBestFitness = Double.MAX_VALUE;
+                periodSwarm.initialize();
             }
         }
     }

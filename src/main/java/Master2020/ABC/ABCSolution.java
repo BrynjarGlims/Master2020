@@ -2,9 +2,12 @@ package Master2020.ABC;
 
 import Master2020.DataFiles.Data;
 import Master2020.Genetic.FitnessCalculation;
+import Master2020.Individual.Individual;
 import Master2020.Individual.Journey;
+import Master2020.StoringResults.Result;
 import Master2020.ProductAllocation.OrderDistribution;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class ABCSolution implements Comparable<ABCSolution>{
@@ -13,6 +16,9 @@ public class ABCSolution implements Comparable<ABCSolution>{
     public double[][] positions;
     public OrderDistribution orderDistribution;
     public ArrayList<Journey>[][] journeys;
+    public boolean feasible;
+    public double fitness;
+    public double infeasibilityCost;
     public Data data;
 
 
@@ -29,6 +35,9 @@ public class ABCSolution implements Comparable<ABCSolution>{
         for (int d = 0 ; d < thisFitnesses.length ; d++){
             fitness += thisFitnesses[d];
         }
+        feasible = thisFitnesses[1] == 0 && thisFitnesses[2] == 0;
+        this.fitness = fitness;
+        this.infeasibilityCost = thisFitnesses[1] + thisFitnesses[2];
         return fitness;
     }
 
@@ -50,5 +59,12 @@ public class ABCSolution implements Comparable<ABCSolution>{
             return 1;
         }
         return 0;
+    }
+
+    public void writeSolution() throws IOException {
+        Individual individual = HelperFunctions.createIndividual(data, journeys, orderDistribution);
+        Result result = new Result(individual, "ABC");
+        result.store();
+
     }
 }

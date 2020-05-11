@@ -10,6 +10,7 @@ import Master2020.ProductAllocation.OrderDistribution;
 import com.opencsv.CSVWriter;
 import Master2020.Population.OrderDistributionPopulation;
 import Master2020.Individual.Trip;
+import scala.xml.PrettyPrinter;
 
 import java.io.File;
 import java.io.IOException;
@@ -363,7 +364,8 @@ public class Result {
         //Add parameters
         String[] results = {"Seed value", String.valueOf(Parameters.randomSeedValue)};
         csvWriter.writeNext(results, false);
-        results = new String[]{"Dataset:", Parameters.dataSet};
+        String dataSet = Parameters.useLargeDataset ? Parameters.dataSet2 : Parameters.dataSet1;
+        results = new String[]{"Dataset:", dataSet};
         csvWriter.writeNext(results, false);
 
         results = new String[]{"Population Parameters:", "---------"};

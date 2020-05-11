@@ -5,14 +5,12 @@ import Master2020.Genetic.OrderDistributionCrossover;
 import Master2020.Genetic.TournamentSelection;
 import Master2020.Individual.Individual;
 import Master2020.Individual.AdSplit;
-import Master2020.Individual.PeriodicIndividual;
+import Master2020.PGA.PeriodicIndividual;
 import Master2020.MIP.OrderAllocationModel;
+import Master2020.PGA.PeriodicPopulation;
 import Master2020.ProductAllocation.OrderDistribution;
-import Master2020.StoringResults.Result;
-import gurobi.GRBException;
 
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
@@ -32,11 +30,6 @@ public class Population {
     int actualPeriod;
     int numberOfPeriods;
 
-    //threading
-    boolean run = true;
-    public CyclicBarrier downstreamGate;
-    public CyclicBarrier upstreamGate;
-
     public static PeriodicPopulation periodicPopulation;
     public static OrderDistributionPopulation odp;
     public static OrderDistributionCrossover ODC;
@@ -46,10 +39,7 @@ public class Population {
     public static Individual bestIndividual;
     public static int numberOfIterations;
     public static OrderAllocationModel orderAllocationModel;
-
     public static PeriodicIndividual bestPeriodicIndividual;
-
-
 
 
 
@@ -306,23 +296,6 @@ public class Population {
 
     public void setOrderDistributionPopulation(OrderDistributionPopulation odp){
         this.orderDistributionPopulation = odp;
-    }
-
-    //@Override
-    public void run() {
-        while (run){
-            try {
-                //wait for all threads to be ready
-                downstreamGate.await();
-                //run generations
-                //if (run){runGenerations(Parameters.generationsPerOrderDistribution);}
-                //wait for all periods to finish
-                upstreamGate.await();
-
-            } catch (InterruptedException | BrokenBarrierException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
 

@@ -4,6 +4,7 @@ import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Parameters;
 import Master2020.Population.PeriodicOrderDistributionPopulation;
+import Master2020.ProductAllocation.OrderDistribution;
 import gurobi.GRBException;
 
 import java.io.IOException;
@@ -114,6 +115,7 @@ public class ABCController {
 
         Collections.sort(finalSolutions);
         System.out.println(finalSolutions.get(0).getFitness());
+        finalSolutions.get(0).writeSolution();
     }
 
 
@@ -128,10 +130,12 @@ public class ABCController {
         upstreamGate.reset();
 
         //update and find best order distribution
+        ABCSolution  solution;
         for (int s = 0 ; s < Parameters.numberOfSwarms ; s++){
             swarms.get(s).runIteration();
             pod.distributions.set(s, swarms.get(s).orderDistribution);
-            System.out.println(swarms.get(s).storeSolution().getFitness());
+            solution = swarms.get(s).storeSolution();
+            System.out.println("swarm " + s + " fitness: "+ solution.getFitness() + " feasible: " + solution.feasible + " infeasibility cost: " + solution.infeasibilityCost);
         }
         updateOrderDistributionPopulation();
 
@@ -165,6 +169,7 @@ public class ABCController {
     public void updateOrderDistributionPopulation() throws CloneNotSupportedException {
         solutions.clear();
         for (Swarm swarm : swarms){
+            swarm.minimumIterations++;
             solutions.add(swarm.storeSolution());
         }
         int[] sortedIndices = IntStream.range(0, solutions.size())
@@ -173,14 +178,26 @@ public class ABCController {
                 .mapToInt(i -> i)
                 .toArray();
         for (int i = sortedIndices.length - 1 ; i > sortedIndices.length - Parameters.orderDistributionCutoff ; i--){
-            pod.distributions.set(sortedIndices[i], pod.diversify(10));
-            swarms.get(sortedIndices[i]).updateOrderDistribution(pod.distributions.get(sortedIndices[i]));
+            if (swarms.get(sortedIndices[i]).minimumIterations > Parameters.minimumIterations){
+                System.out.println("changing od: " + sortedIndices[i]);
+
+//                //random OD:
+//                OrderDistribution newOD = new OrderDistribution(data);
+//                newOD.makeInitialDistribution();
+//                pod.distributions.set(sortedIndices[i], newOD);
+
+                //diversified new OD:
+                pod.distributions.set(sortedIndices[i], pod.diversify(10));
+                swarms.get(sortedIndices[i]).updateOrderDistribution(pod.distributions.get(sortedIndices[i]));
+                swarms.get(sortedIndices[i]).minimumIterations = 0;
+            }
         }
         for (int i = 0 ; i < swarms.size() ; i++){
             if (swarms.get(i).iterationsWithoutImprovement > Parameters.swarmIterationsWithoutImprovementLimit){
                 System.out.println("MAX ITERATIONS HIT");
                 finalSolutions.add(swarms.get(i).storeSolution());
-                swarms.get(i).updateOrderDistribution(pod.diversify(10));
+                pod.distributions.set(i, pod.diversify(10));
+                swarms.get(i).updateOrderDistribution(pod.distributions.get(i));
             }
         }
     }
@@ -192,8 +209,8 @@ public class ABCController {
         ABCController abc = new ABCController(data);
         abc.initialize();
         abc.run();
-        }
     }
+}
 
 
 

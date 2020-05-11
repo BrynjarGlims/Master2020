@@ -1,24 +1,16 @@
-package Master2020.Genetic;
+package Master2020.PGA;
 
-import Master2020.ABC.ABCController;
-import Master2020.ABC.ABCSolution;
-import Master2020.ABC.PeriodSwarm;
-import Master2020.ABC.Swarm;
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Parameters;
-import Master2020.Individual.Individual;
 import Master2020.Population.PeriodicOrderDistributionPopulation;
-import Master2020.Population.PeriodicPopulation;
-import Master2020.Population.Population;
-import Master2020.Run.GeneticPeriodicAlgorithm;
+import Master2020.ProductAllocation.OrderDistribution;
 import gurobi.GRBException;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.stream.IntStream;
@@ -28,13 +20,11 @@ public class PGAController {
     public Data data;
     public ArrayList<GeneticPeriodicAlgorithm> periodicAlgorithmsArrayList;
     public PeriodicOrderDistributionPopulation pod;
-    public ArrayList<Individual> solutions;
-    public ArrayList<Individual> finalSolutions;
+    public ArrayList<PGASolution> solutions;
+    public ArrayList<PGASolution> finalSolutions;
     public CyclicBarrier downstreamGate;
     public CyclicBarrier upstreamGate;
-
-    public PeriodicPopulation periodicPopulation;
-    private List<Population> threads;
+    public GeneticPeriodicAlgorithm periodicAlgorithm;
 
 
 
@@ -52,30 +42,29 @@ public class PGAController {
     }
 
     private void initializeMultiple() throws GRBException {
-        downstreamGate = new CyclicBarrier(Parameters.numberOfPopulations + 1);
-        upstreamGate = new CyclicBarrier(Parameters.numberOfPopulations + 1);
+        downstreamGate = new CyclicBarrier(Parameters.numberOfPeriodicParallels + 1);
+        upstreamGate = new CyclicBarrier(Parameters.numberOfPeriodicParallels + 1);
         solutions = new ArrayList<>();
         finalSolutions = new ArrayList<>();
         periodicAlgorithmsArrayList = new ArrayList<>();
         pod = new PeriodicOrderDistributionPopulation(data);
-        pod.initialize(Parameters.numberOfPopulations);
-        for (int i = 0 ; i < Parameters.numberOfPopulations ; i++){
+        pod.initialize(Parameters.numberOfPeriodicParallels);
+        for (int i = 0; i < Parameters.numberOfPeriodicParallels; i++){
             GeneticPeriodicAlgorithm p = new GeneticPeriodicAlgorithm(data);
-            p.initializePeriodic(pod.distributions.get(i), downstreamGate, upstreamGate);
+            p.initialize(pod.distributions.get(i), downstreamGate, upstreamGate);
             if(Parameters.threadedPGA){p.start();}
             periodicAlgorithmsArrayList.add(p);
         }
     }
 
     private void initializeSingular() throws GRBException {
-        periodicPopulation = new PeriodicPopulation(data);
-        periodicPopulation.initialize(periodicPopulation.orderDistributionPopulation);
-        //swarm = new Swarm(data);
-        //swarm.initialize(swarm.orderDistribution);
+        periodicAlgorithm = new GeneticPeriodicAlgorithm(data);
+        periodicAlgorithm.initialize(periodicAlgorithm.orderDistribution);
+
     }
 
-    private void multipleRun() throws InterruptedException, BrokenBarrierException, CloneNotSupportedException, IOException {
-        if (Parameters.threaded){
+    private void multipleRun() throws InterruptedException, BrokenBarrierException, CloneNotSupportedException, IOException, GRBException {
+        if (Parameters.threadedGA){
             multipleRunThreaded();
         }
         else{
@@ -90,7 +79,7 @@ public class PGAController {
         // TODO: 01.05.2020 converged solutions stored somewhere else?
 
         for (int i = 0 ; i < Parameters.orderDistributionUpdates ; i++){
-            System.out.println("running generation: " + i);
+            System.out.println("Running generation: " + i);
             //for (int s = 0 ; s < Parameters.numberOfSwarms ; s++){
             //    swarms.get(s).runIteration();
             //    pod.distributions.set(s, swarms.get(s).orderDistribution);
@@ -99,31 +88,31 @@ public class PGAController {
 
 
         }
-        /*
-        for (Swarm swarm : swarms){
-            finalSolutions.add(swarm.storeSolution());
-            swarm.terminate();
+
+        for (GeneticPeriodicAlgorithm algorithm : periodicAlgorithmsArrayList){
+            finalSolutions.add(algorithm.storeSolution(true));
+            algorithm.terminate();
         }
 
-         */
-        //Collections.sort(finalSolutions);
-        //System.out.println(finalSolutions.get(0).getFitness());
+
+        Collections.sort(finalSolutions);
+        System.out.println(finalSolutions.get(0).getFitness());
     }
 
-    private void multipleRunThreaded() throws BrokenBarrierException, InterruptedException, CloneNotSupportedException, IOException {
+    private void multipleRunThreaded() throws BrokenBarrierException, InterruptedException, CloneNotSupportedException, IOException, GRBException {
 
-        for (int i = 0 ; i < Parameters.orderDistributionUpdates ; i++){
-            System.out.println("running generation: " + i);
+        for (int i = 0 ; i < Parameters.orderDistributionUpdatesGA ; i++){
+            System.out.println("Running generation: " + i);
             runIteration();
         }
-        /*
-        for (Swarm swarm : swarms){
-            finalSolutions.add(swarm.storeSolution());
-            swarm.terminate();
-            swarm.run = false;
+
+        for (GeneticPeriodicAlgorithm algorithm : periodicAlgorithmsArrayList){
+            finalSolutions.add(algorithm.storeSolution(true));
+            algorithm.terminate();
+            algorithm.run = false;
         }
 
-         */
+
         downstreamGate.await();
         upstreamGate.await();
 
@@ -133,7 +122,7 @@ public class PGAController {
 
 
 
-    private void runIteration() throws BrokenBarrierException, InterruptedException, CloneNotSupportedException {
+    private void runIteration() throws BrokenBarrierException, InterruptedException, CloneNotSupportedException, IOException, GRBException {
         //release all period swarms for
         downstreamGate.await();
         downstreamGate.reset();
@@ -142,13 +131,14 @@ public class PGAController {
         upstreamGate.await();
         upstreamGate.reset();
 
-
         //update and find best order distribution
-        for (int p = 0 ; p < Parameters.numberOfSwarms ; p++){
-            periodicPopulationArrayList.get(p).runIteration();
-            pod.distributions.set(p, periodicPopulationArrayList.get(p).orderDistribution);
+        for (int p = 0; p < Parameters.numberOfPeriodicParallels; p++){
+            periodicAlgorithmsArrayList.get(p).runIteration();
+            solutions.add(periodicAlgorithmsArrayList.get(p).storeSolution());  //store solution : to implement
+            pod.distributions.set(p, periodicAlgorithmsArrayList.get(p).getOrderDistribution());
         }
         updateOrderDistributionPopulation();
+
 
 
 
@@ -172,8 +162,8 @@ public class PGAController {
     }
 
 
-    public void run() throws BrokenBarrierException, InterruptedException, IOException, CloneNotSupportedException {
-        if (Parameters.runSingular){
+    public void run() throws BrokenBarrierException, InterruptedException, IOException, CloneNotSupportedException, GRBException {
+        if (Parameters.runSingularGA){
             singularRun();
         }
         else {
@@ -184,11 +174,12 @@ public class PGAController {
 
 
 
+
     public void updateOrderDistributionPopulation() throws CloneNotSupportedException {
 
         solutions.clear();
-        for (PeriodicPopulation periodicPopulation : periodicPopulationArrayList){
-            solutions.add(periodicPopulation.storeSolution());  //todo: implement
+        for (GeneticPeriodicAlgorithm gpa : periodicAlgorithmsArrayList){
+            solutions.add(gpa.storeSolution());  //todo: implement
         }
         int[] sortedIndices = IntStream.range(0, solutions.size())
                 .boxed()
@@ -197,13 +188,17 @@ public class PGAController {
                 .toArray();
         for (int i = sortedIndices.length - 1 ; i > sortedIndices.length - Parameters.orderDistributionCutoff ; i--){
             pod.distributions.set(sortedIndices[i], pod.diversify(10));
-            periodicPopulationArrayList.get(sortedIndices[i]).updateOrderDistribution(pod.distributions.get(sortedIndices[i]));
+            periodicAlgorithmsArrayList.get(sortedIndices[i]).updateOrderDistribution(pod.distributions.get(sortedIndices[i]));
         }
-        for (int i = 0 ; i < swarms.size() ; i++){
-            if (swarms.get(i).iterationsWithoutImprovement > Parameters.swarmIterationsWithoutImprovementLimit){
-                System.out.println("MAX ITERATIONS HIT");
-                finalSolutions.add(swarms.get(i).storeSolution());
-                swarms.get(i).updateOrderDistribution(pod.diversify(10));
+        for (int i = 0 ; i < periodicAlgorithmsArrayList.size() ; i++){
+            if (periodicAlgorithmsArrayList.get(i).iterationsWithSameOd > Parameters.minimumUpdatesPerOrderDistributions){
+                System.out.println("MAX ITERATIONS HIT - RESET POPULATION AND ASSIGN NEW OD");
+                finalSolutions.add(periodicAlgorithmsArrayList.get(i).storeSolution());
+                OrderDistribution od = (Math.random() < Parameters.diversifiedODProbability) ? pod.diversify(10) : new OrderDistribution(data);
+                periodicAlgorithmsArrayList.get(i).updateOrderDistribution(od);
+                periodicAlgorithmsArrayList.get(i).resetPeriodicPopulation();
+
+
             }
         }
 

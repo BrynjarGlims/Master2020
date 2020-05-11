@@ -2,7 +2,7 @@ package Master2020.Genetic;
 
 import Master2020.DataFiles.Parameters;
 import Master2020.Individual.Individual;
-import Master2020.Population.PeriodicPopulation;
+import Master2020.PGA.PeriodicPopulation;
 import Master2020.Population.Population;
 import Master2020.DataFiles.Data;
 

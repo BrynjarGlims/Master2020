@@ -5,11 +5,11 @@ import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.*;
 import Master2020.Individual.Individual;
-import Master2020.Individual.PeriodicIndividual;
+import Master2020.PGA.PeriodicIndividual;
 import Master2020.MIP.DataConverter;
 import Master2020.MIP.OrderAllocationModel;
 import Master2020.PR.*;
-import Master2020.Population.PeriodicPopulation;
+import Master2020.PGA.PeriodicPopulation;
 import Master2020.Population.Population;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Population.OrderDistributionPopulation;
@@ -69,7 +69,7 @@ public class App {
         globalOrderDistribution = odp.getRandomOrderDistribution();
         globalOrderDistribution.setOrderScalingFactor(scalingFactorOrderDistribution);
         periodicPopulation.setOrderDistributionPopulation(odp);
-        periodicPopulation.initializePopulation(globalOrderDistribution);
+        periodicPopulation.initialize(globalOrderDistribution);
         bestIndividualScore = Double.MAX_VALUE;
         BiasedFitness.setBiasedFitnessScore(periodicPopulation);
         orderAllocationModel = new OrderAllocationModel(data);
@@ -390,7 +390,7 @@ public class App {
 
 
 
-                if (numberOfIterations % Parameters.generationsOfOrderDistributions == 0 ||
+                if (numberOfIterations % Parameters.minimumUpdatesPerOrderDistributions == 0 ||
                         numberOfIterations == Parameters.maxNumberIterationsWithoutImprovement-1) {
                     createNewOptimalOrderDistribution(bestPeriodicIndividual);
                 }
@@ -495,19 +495,18 @@ public class App {
         }
 
          */
-        for (int i = 0; i < 1; i++) {
-            Parameters.randomSeedValue = 20 + i;
-            System.out.println("SEED VALUE: " + Parameters.randomSeedValue );
-            Parameters.isPeriodic = false;
-            runMIPAFM(Parameters.samples);
-            /*
-            //Parameters.randomSeedValue = 31 + i;
-            //runGA(Parameters.samples);
-            Parameters.randomSeedValue = 20 + i;
-            Parameters.isPeriodic = true;
-            runPeriodicGA(Parameters.samples);
 
-             */
-        }
+        System.out.println("SEED VALUE: " + Parameters.randomSeedValue );
+        //Parameters.isPeriodic = false;
+        //runMIPAFM(Parameters.samples);
+
+        //Parameters.randomSeedValue = 31 + i;
+        //runGA(Parameters.samples);
+
+        Parameters.isPeriodic = true;
+        runPeriodicGA(Parameters.samples);
+
+
+
     }
 }

@@ -6,7 +6,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class WeightedRandomSampler {
 
-    private double[] weights;
+    public double[] weights;
+    private double increment;
     private ThreadLocalRandom random = ThreadLocalRandom.current();
 
     public WeightedRandomSampler(double[] weights) {
@@ -15,6 +16,7 @@ public class WeightedRandomSampler {
             accumulated[0] += d;
             return accumulated[0];
         }).toArray();
+        increment = 1.0/(weights.length -1);
     }
 
     public int nextIndex() {
@@ -24,14 +26,11 @@ public class WeightedRandomSampler {
         return i;
     }
 
+
     public static void main(String[] args) {
-        double[] weights = new double[]{20, 10, 40, 30};
+        double[] weights = new double[]{20, 10, 20, 30, 15, 5};
         WeightedRandomSampler ws = new WeightedRandomSampler(weights);
-        int[] counts = new int[4];
-        for (int i = 0; i < 1000000; i++) {
-            counts[ws.nextIndex()] += 1;
-        }
-        System.out.println(Arrays.toString(counts));
+
     }
 }
 

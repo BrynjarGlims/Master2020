@@ -3,9 +3,9 @@ package Master2020.Population;
 
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
-import Master2020.DataFiles.Order;
 import Master2020.DataFiles.Parameters;
 import Master2020.Individual.Individual;
+import Master2020.PGA.PeriodicPopulation;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Genetic.FitnessCalculation;
 

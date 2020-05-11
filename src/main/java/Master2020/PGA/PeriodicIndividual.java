@@ -1,13 +1,13 @@
-package Master2020.Individual;
+package Master2020.PGA;
 
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.FitnessCalculation;
-import Master2020.Population.PeriodicPopulation;
+import Master2020.Individual.Individual;
+import Master2020.Individual.Journey;
+import Master2020.Individual.Trip;
 import Master2020.ProductAllocation.OrderDistribution;
-import Master2020.Testing.IndividualTest;
-import com.fasterxml.jackson.annotation.JsonIgnoreType;
-import gurobi.GRB;
+
 import java.util.ArrayList;
 
 public class PeriodicIndividual {
@@ -130,6 +130,20 @@ public class PeriodicIndividual {
         return newIndividual;
     }
 
+    public PGASolution createPGASolution(){
+        Individual newIndividual = new Individual(this.data, null, false, -1);
+        updateJourneysToPeriodicConfiguration();
+        newIndividual.journeyList = this.journeys;
+        newIndividual.orderDistribution = orderDistribution;
+        newIndividual.setGiantTourFromJourneys();
+        newIndividual.setTripListFromJourneys();
+        newIndividual.setTripMapFromTripList();
+        PGASolution pgaSolution = new PGASolution(data);
+        pgaSolution.initialize(journeys, orderDistribution);
+        pgaSolution.setIndividual(newIndividual);
+        return pgaSolution;
+    }
+
     private void updateJourneysToPeriodicConfiguration(){
         for (int p = 0; p < data.numberOfPeriods; p++){
             for (int vt = 0; vt < data.numberOfVehicleTypes; vt ++){
@@ -143,8 +157,8 @@ public class PeriodicIndividual {
 
     }
 
-    public int compareTo(PeriodicIndividual periodicIndividual) { // TODO: 04.03.2020 Sort by biased fitness and not fitness
-        return this.getFitness() < periodicIndividual.getFitness() ? 1 : -1;
+    public int compareTo(PeriodicIndividual periodicIndividual) {
+        return this.getFitness() < periodicIndividual.getFitness() ? 1 : -1; // TODO: 04.03.2020 Sort by biased fitness and not fitness
     }
 
 

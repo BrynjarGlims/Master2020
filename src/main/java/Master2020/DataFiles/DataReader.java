@@ -6,7 +6,6 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.*;
 import java.util.Arrays;
 import java.util.List;
@@ -27,7 +26,7 @@ public class DataReader {
                     firstLine = false;
                     continue;
                 }
-                content.add(line.split(";"));
+                content.add(line.split("\t"));
             }
         } catch (FileNotFoundException e) {
             System.out.println("File not found exception in readCSVFile");
@@ -38,7 +37,7 @@ public class DataReader {
         return content;
     }
 
-    private static Customer[] parseOrdersFileData(List<String[]> productData){
+    private static Customer[] parseOrdersFileDataOrdinary(List<String[]> productData){
         List<Customer> customerList = new ArrayList<Customer>();
         List<Order> productList = new ArrayList<Order>();
         int customerID = 0;
@@ -56,6 +55,33 @@ public class DataReader {
             productList.add(new Order(productID, customerID,
                     Double.parseDouble(productData.get(line)[12]),
                     checkSplitAttribute(productData.get(line)[6], line),
+                    productData.get(line)[3],
+                    Integer.parseInt(productData.get(line)[6]),
+                    Integer.parseInt(productData.get(line)[7]),
+                    Integer.parseInt(productData.get(line)[8])));
+            productID++;
+        }
+        return convertCustomerList(customerList);
+    }
+
+    private static Customer[] parseOrdersFileDataSpecial(List<String[]> productData){
+        List<Customer> customerList = new ArrayList<Customer>();
+        List<Order> productList = new ArrayList<Order>();
+        int customerID = 0;
+        int productID = 0;
+
+        for(int line = 0; line < productData.size(); line++){
+            if (line != 0){
+                if (!productData.get(line-1)[0].equals(productData.get(line)[0]) || line == (productData.size()-1)) {
+                    customerList.add(new Customer(customerID, Integer.parseInt(productData.get(line-1)[0]), productData.get(line-1)[1]));
+                    customerList.get(customerID).setOrders(convertProductList(productList));
+                    productList = new ArrayList<>();
+                    customerID++;
+                }
+            }
+            productList.add(new Order(productID, customerID,
+                    Double.parseDouble(productData.get(line)[11]),
+                    checkSplitAttribute(productData.get(line)[4], line),
                     productData.get(line)[5],
                     Integer.parseInt(productData.get(line)[7]),
                     Integer.parseInt(productData.get(line)[8]),
@@ -114,11 +140,43 @@ public class DataReader {
         return customers;
     }
 
+    private static Customer[] parseTimeWindowFileDataSpecial(Customer[] customers, List<String[]> timeWindowData){
+        int customerCount = 0;
+        double[][] timeWindow = new double[6][2];
+
+        for (int line = 0; line < timeWindowData.size(); line++){
+            if (line != 0 && !timeWindowData.get(line-1)[0].equals(timeWindowData.get(line)[0]) || line == timeWindowData.size()-1) {
+                if(customers[customerCount].customerNumber != Integer.parseInt(timeWindowData.get(line-1)[0])) {
+                    //System.out.println("Missing customer on line: " + (line+2));
+                    continue;
+                }
+                customers[customerCount].setTimeWindow(timeWindow);
+                customers[customerCount].setCoordinates(getCoordinates(timeWindowData,line-1, true), true);
+                customers[customerCount].setLoadingTimes(getCustomLoadingTime());
+                timeWindow = new double[6][2];
+                customerCount++;
+            }
+            timeWindow = setTimeWindowsSpecial(timeWindow, timeWindowData, line);
+        }
+        return customers;
+    }
+
     private static double[] getCoordinates(List<String[]> timeWindowData, int line){
-        double x_coordinate = Double.parseDouble(timeWindowData.get(line)[7]);
-        double y_coordinate = Double.parseDouble(timeWindowData.get(line)[8]);
-        double[] coordinates = {x_coordinate, y_coordinate};
-        return coordinates;
+        return getCoordinates( timeWindowData,  line, false);
+    }
+
+    private static double[] getCoordinates(List<String[]> timeWindowData, int line, boolean special){
+        double x_coordinate;
+        double y_coordinate;
+        if (special){
+            x_coordinate = Double.parseDouble(timeWindowData.get(line)[18]);
+            y_coordinate = Double.parseDouble(timeWindowData.get(line)[19]);
+        } else {
+            x_coordinate = Double.parseDouble(timeWindowData.get(line)[7]);
+            y_coordinate = Double.parseDouble(timeWindowData.get(line)[8]);
+        }
+            double[] coordinates = {x_coordinate, y_coordinate};
+            return coordinates;
     }
 
     private static double[] getLoadingTime(List<String[]> timeWindowData, int line){
@@ -129,6 +187,38 @@ public class DataReader {
         double[] loadingTimes = {fixedLoadingTime,variableLoadingTime,fixedUnloadingTime,variableUnloadingTime};
         return loadingTimes;
     }
+
+    private static double[] getCustomLoadingTime(){
+        double fixedLoadingTime = 0.5;
+        double variableLoadingTime = 0.01;
+        double fixedUnloadingTime = 0.4;
+        double variableUnloadingTime = 0.02;
+        double[] loadingTimes = {fixedLoadingTime,variableLoadingTime,fixedUnloadingTime,variableUnloadingTime};
+        return loadingTimes;
+    }
+
+    private static double[][] setTimeWindowsSpecial (double[][] timeWindows, List<String[]> timeWindowData, int line){
+        int p = Integer.parseInt(timeWindowData.get(line)[5]) - 1;
+        if (timeWindows[p][0] == 0) {
+            timeWindows[p][0] = convertTimeToDouble(timeWindowData.get(line)[6]);
+            timeWindows[p][1] = convertTimeToDouble(timeWindowData.get(line)[8]);
+            if (Parameters.adjustTimeWindow){
+                if ((timeWindows[p][0] > Parameters.adjustTimeWindowLimit) || (timeWindows[p][1] > Parameters.adjustTimeWindowLimit)){
+                    timeWindows[p][0] -= Parameters.adjustTimeWindowReduction;
+                    timeWindows[p][1] -= Parameters.adjustTimeWindowReduction;
+                    if (timeWindows[p][0] < 0){
+                        timeWindows[p][0] = 0;
+                    }
+                    if (timeWindows[p][1] < 0){
+                        timeWindows[p][1] = 0;
+                    }
+                }
+            }
+        }
+
+        return timeWindows;
+    }
+
 
     private static double[][] setTimeWindows (double[][] timeWindows, List<String[]> timeWindowData, int line){
 
@@ -202,8 +292,9 @@ public class DataReader {
         int vehicleCounter = 0;
 
         for (int line = 0; line < vehiclesData.size(); line++){
-            //error check
-            if (vehiclesData.get(line)[18].equals("") || Integer.parseInt(vehiclesData.get(line)[24]) < 10000){
+            //error check  //todo: explain what it removes vehiclesData.get(line)[18].equals("")
+            if ( Double.parseDouble(vehiclesData.get(line)[24]) < 10000 &&
+            Integer.parseInt(vehiclesData.get(line)[23]) >= 3000){
 
                 //current capacity
                 String tempCapacity = vehiclesData.get(line)[24];
@@ -265,9 +356,12 @@ public class DataReader {
         List<Integer> indexes = new ArrayList<Integer>() ;
         for (int i = 0; i < customers.length; i++){
             if (customers[i].numberOfNonDividableOrders > customers[i].numberOfVisitPeriods ){
+                System.out.println(" too many number of visit days");
                 indexes.add(i);
             }
             else if (distanceFromDepot(customers[i], depot) > Parameters.distanceCutOffFromDepot){
+                System.out.println(distanceFromDepot(customers[i], depot));
+                System.out.println("too far to drive");
                 indexes.add(i);
             }
 
@@ -334,15 +428,54 @@ public class DataReader {
 
     public static Data loadData(boolean verbose)  {
         // Master function
-        List<String[]> orderData = DataReader.readCSVFile(Parameters.ordersFilePath);
-        List<String[]> timeWindowData = DataReader.readCSVFile(Parameters.timeWindowsFilePath);
-        List<String[]> vehiclesData = DataReader.readCSVFile(Parameters.vehicleFilePath);
+        List<String[]> orderData;
+        List<String[]> timeWindowData;
+        List<String[]> vehiclesData;
+        if (Parameters.useLargeDataset){
+            orderData = DataReader.readCSVFile(Parameters.ordersFilePath2);
+            timeWindowData = DataReader.readCSVFile(Parameters.timeWindowsFilePath2);
+            vehiclesData = DataReader.readCSVFile(Parameters.vehicleFilePath2);
+        }
+        else{
+            orderData = DataReader.readCSVFile(Parameters.ordersFilePath1);
+            timeWindowData = DataReader.readCSVFile(Parameters.timeWindowsFilePath1);
+            vehiclesData = DataReader.readCSVFile(Parameters.vehicleFilePath1);
+        }
+        List<String[]> orderDataTrondelag = DataReader.readCSVFile(Parameters.ordersFilePath1);
+        List<String[]> timeWindowDataTrondelag = DataReader.readCSVFile(Parameters.timeWindowsFilePath1);
+        List<String[]> vehiclesDataTrondelag = DataReader.readCSVFile(Parameters.vehicleFilePath1);
 
-        Depot depot = parseVehicleFileDataToDepot(vehiclesData);
-        Customer[] customers = parseOrdersFileData(orderData);
-        customers = parseTimeWindowFileData(customers, timeWindowData);
-        customers = removeInvalidCustomers(customers, depot);
-        Vehicle[] vehicles = parseVehicleFileDataToVehicle(vehiclesData);
+        System.out.println(Arrays.toString(orderData.get(0)));
+        System.out.println(Arrays.toString(orderDataTrondelag.get(0)));
+        System.out.println(Arrays.toString(timeWindowData.get(0)));
+        System.out.println(Arrays.toString(timeWindowDataTrondelag.get(0)));
+        System.out.println(Arrays.toString(vehiclesData.get(0)));
+        System.out.println(Arrays.toString(vehiclesDataTrondelag.get(0)));
+
+
+
+        System.out.println("stop");
+        Depot depot;
+        Customer[] customers;
+        Vehicle[] vehicles;
+        if (Parameters.useLargeDataset){
+            depot = setCustomDepot();
+            customers = parseOrdersFileDataSpecial(orderData);
+            customers = parseTimeWindowFileDataSpecial(customers, timeWindowData);
+            System.out.println("stop");
+            customers = removeInvalidCustomers(customers, depot);
+            vehicles = parseVehicleFileDataToVehicle(vehiclesData);
+            System.out.println("stop");
+        }
+        else{
+            depot = parseVehicleFileDataToDepot(vehiclesData);
+            customers = parseOrdersFileDataOrdinary(orderData);
+            customers = parseTimeWindowFileData(customers, timeWindowData);
+            customers = removeInvalidCustomers(customers, depot);
+            vehicles = parseVehicleFileDataToVehicle(vehiclesData);
+        }
+
+
 
         Customer[] customersSubset;
         Vehicle[] vehiclesSubset;
@@ -389,6 +522,13 @@ public class DataReader {
         }
         return newCustomers;
     }
+
+    private static Depot setCustomDepot(){
+        double xCoordinate = 10.0747022851127;
+        double yCoordinate = 59.05655053185615;
+        return new Depot(xCoordinate, yCoordinate);
+    }
+
 
     private static Vehicle[] getRandomSeedFromVehicles(Vehicle[] vehicles){
         Random generator = new Random(Parameters.randomSeedValue);
