@@ -7,6 +7,7 @@ import java.util.Set;
 public class Parameters {
 
     // File import parameters
+
     public static final String dataSet1 = "Trondelag_test";   // Trondelag or VestTele
     public static final String dataSet2 = "VestTele";   // Trondelag or VestTele
     public static final String ordersFilePath1 = "data/" + dataSet1 + "/Orders.txt";
@@ -15,6 +16,7 @@ public class Parameters {
     public static final String ordersFilePath2 = "data/" + dataSet2 + "/Orders.txt";
     public static final String timeWindowsFilePath2 = "data/" + dataSet2 + "/Time_windows.txt";
     public static final String vehicleFilePath2 = "data/" + dataSet2 + "/Vehicles.txt";
+    public static final String distancePath = "Google_Trondelag";
 
 
     public static final boolean useLargeDataset = true;
@@ -77,16 +79,17 @@ public class Parameters {
 
 
     //Penalty parameters for heuristics
-    public static final double initialCapacityPenalty = 1000;  // lambda
-    public static final double initialTimeWarpPenalty = 1000;  // theta
+    public static final double initialCapacityPenalty = 10000;  // lambda
+    public static final double initialTimeWarpPenalty = 10000;  // theta
     public static final double initialDrivingCostPenalty = 1; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
     public static final double penaltyFactorForOverFilling = 1.1;
     public static final double penaltyFactorForUnderFilling = 1.5;
 
     // Scaling parameters
+    public static final boolean euclidianDistance = false;
     public static final double scalingDistanceParameter = 2.0; //set to 2.2
     public static final double timeShift = 6;
-    public static final double maxJourneyDuration = 10; //changed to journey duration
+    public static final double maxJourneyDuration = 11; //changed to journey duration
     public static final double loadingTimeAtDepotConstant = 0.03;
     public static final double loadingTimeAtDepotVariable = 0.001;
     public static final double scalingUnloadingTimeAtCustomerConstant = 0.02;
