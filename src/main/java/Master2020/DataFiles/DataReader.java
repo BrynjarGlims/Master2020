@@ -1,7 +1,5 @@
 package Master2020.DataFiles;
 
-import scala.xml.PrettyPrinter;
-
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -56,9 +54,9 @@ public class DataReader {
                     Double.parseDouble(productData.get(line)[12]),
                     checkSplitAttribute(productData.get(line)[6], line),
                     productData.get(line)[3],
-                    Integer.parseInt(productData.get(line)[6]),
                     Integer.parseInt(productData.get(line)[7]),
-                    Integer.parseInt(productData.get(line)[8])));
+                    Integer.parseInt(productData.get(line)[8]),
+                    Integer.parseInt(productData.get(line)[9])));
             productID++;
         }
         return convertCustomerList(customerList);
@@ -169,8 +167,8 @@ public class DataReader {
         double x_coordinate;
         double y_coordinate;
         if (special){
-            x_coordinate = Double.parseDouble(timeWindowData.get(line)[18]);
-            y_coordinate = Double.parseDouble(timeWindowData.get(line)[19]);
+            x_coordinate = Double.parseDouble(timeWindowData.get(line)[19]);
+            y_coordinate = Double.parseDouble(timeWindowData.get(line)[18]);
         } else {
             x_coordinate = Double.parseDouble(timeWindowData.get(line)[7]);
             y_coordinate = Double.parseDouble(timeWindowData.get(line)[8]);
@@ -431,7 +429,7 @@ public class DataReader {
         List<String[]> orderData;
         List<String[]> timeWindowData;
         List<String[]> vehiclesData;
-        if (Parameters.useLargeDataset){
+        if (Parameters.useVestTeleDataset){
             orderData = DataReader.readCSVFile(Parameters.ordersFilePath2);
             timeWindowData = DataReader.readCSVFile(Parameters.timeWindowsFilePath2);
             vehiclesData = DataReader.readCSVFile(Parameters.vehicleFilePath2);
@@ -441,16 +439,6 @@ public class DataReader {
             timeWindowData = DataReader.readCSVFile(Parameters.timeWindowsFilePath1);
             vehiclesData = DataReader.readCSVFile(Parameters.vehicleFilePath1);
         }
-        List<String[]> orderDataTrondelag = DataReader.readCSVFile(Parameters.ordersFilePath1);
-        List<String[]> timeWindowDataTrondelag = DataReader.readCSVFile(Parameters.timeWindowsFilePath1);
-        List<String[]> vehiclesDataTrondelag = DataReader.readCSVFile(Parameters.vehicleFilePath1);
-
-        System.out.println(Arrays.toString(orderData.get(0)));
-        System.out.println(Arrays.toString(orderDataTrondelag.get(0)));
-        System.out.println(Arrays.toString(timeWindowData.get(0)));
-        System.out.println(Arrays.toString(timeWindowDataTrondelag.get(0)));
-        System.out.println(Arrays.toString(vehiclesData.get(0)));
-        System.out.println(Arrays.toString(vehiclesDataTrondelag.get(0)));
 
 
 
@@ -458,7 +446,7 @@ public class DataReader {
         Depot depot;
         Customer[] customers;
         Vehicle[] vehicles;
-        if (Parameters.useLargeDataset){
+        if (Parameters.useVestTeleDataset){
             depot = setCustomDepot();
             customers = parseOrdersFileDataSpecial(orderData);
             customers = parseTimeWindowFileDataSpecial(customers, timeWindowData);
@@ -561,7 +549,7 @@ public class DataReader {
 
     public static void main(String[] args){
         Data data = loadData();
-        System.out.println("test");
+        System.out.println(data.customers.length);
     }
 
 }
