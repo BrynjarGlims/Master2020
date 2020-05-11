@@ -26,8 +26,6 @@ public class GeneticAlgorithm extends Thread {
     public HashSet<Individual> repaired;
     public int numberOfIterations;
     public int iterationsWithoutImprovement;
-    public OrderAllocationModel orderAllocationModel;
-    public boolean isPeriodic = Parameters.isPeriodic;
     public Individual currentBestIndividual;
 
     //threads
@@ -53,7 +51,7 @@ public class GeneticAlgorithm extends Thread {
         numberOfIterations = 0;
         this.downstreamGate = downstreamGate;
         this.upstreamGate = upstreamGate;
-        System.out.println("Initialization completed");
+        //System.out.println("Initialization completed");
     }
 
     public void setPopulation(Population population) {
@@ -102,53 +100,39 @@ public class GeneticAlgorithm extends Thread {
         population.feasiblePopulation.addAll(repaired);
     }
 
+    public void resetCounters(){
+        numberOfIterations = 0;
+        iterationsWithoutImprovement = 0;
+    }
+
     public void selection(Population population){
 
         // Reduce population size
 
         population.improvedSurvivorSelection();
-        currentBestIndividual = population.returnBestIndividual();
-        fitnessForPeriod = currentBestIndividual.getFitness(false);
 
-
-        // Check if it has improved for early termination
-        if (fitnessForPeriod <= currentBestIndividual.getFitness(false)){
-            iterationsWithoutImprovement += 1;
-        }
-        else{
-            population.setIterationsWithoutImprovement(0);
-        }
-
-        Individual bestFeasibleIndividual = population.returnBestIndividual();
-        Individual bestInfeasibleIndividual = population.returnBestInfeasibleIndividual();
-        if (!Parameters.isPeriodic){
-            bestFeasibleIndividual.printDetailedFitness();
-            bestInfeasibleIndividual.printDetailedFitness();
-        }
 
     }
 
 
     public void runGeneration() {
-        System.out.println("Iteration: " + this.numberOfIterations);
+        //System.out.println("Start generation");
         while (population.infeasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize &&
                 population.feasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize) {
-            if (this.numberOfIterations >= 1){
-                System.out.println("fes");
-            }
-
             Individual newIndividual = PIX(population);
             educate(newIndividual);
             tripOptimizer(newIndividual);
+            population.addChildToPopulation(newIndividual);
         }
-        System.out.println("Repair..");
         repair(population);
 
-        System.out.println("Selection..");
         selection(population);
-        System.out.println(population.infeasiblePopulation.size());
-        System.out.println(population.feasiblePopulation.size());
 
+        updateSystemParameters();
+        //System.out.println("Generation done");
+    }
+
+    public void updateSystemParameters(){
         currentBestIndividual = population.returnBestIndividual();
         if (currentBestIndividual.getFitness(false) < fitnessForPeriod && currentBestIndividual.isFeasible()){
             fitnessForPeriod = currentBestIndividual.getFitness(false);
@@ -158,8 +142,6 @@ public class GeneticAlgorithm extends Thread {
             iterationsWithoutImprovement += 1;
         }
         this.numberOfIterations += 1;
-
-
     }
 
 
@@ -169,12 +151,9 @@ public class GeneticAlgorithm extends Thread {
             try {
                 //wait for all threads to be ready
                 downstreamGate.await();
-                System.out.println("Went past downStreamGate");
-
                 //run generations
                 if (run){runGenerations(Parameters.generationsPerOrderDistributionPeriodic);}
                 //wait for all periods to finish
-                System.out.println("Waiting at upstream gate");
                 upstreamGate.await();
 
             } catch (InterruptedException | BrokenBarrierException e) {
@@ -189,6 +168,8 @@ public class GeneticAlgorithm extends Thread {
 
     public void runGenerations(int generations) {
         for (int i = 0 ; i < generations ; i++){
+            if (iterationsWithoutImprovement > Parameters.maxNumberIterationsWithoutImprovement)
+                break;
             runGeneration();
         }
     }

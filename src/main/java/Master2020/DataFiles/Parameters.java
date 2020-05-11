@@ -7,28 +7,37 @@ import java.util.Set;
 public class Parameters {
 
     // File import parameters
-    public static final String dataSet = "Trondelag";   // Trondelag or VestTele
-    public static final String ordersFilePath = "data/" + dataSet + "/Orders.csv";
-    public static final String timeWindowsFilePath = "data/" + dataSet + "/Time_windows.csv";
-    public static final String vehicleFilePath = "data/" + dataSet + "/Vehicles.csv";
+
+    public static final String dataSet1 = "Trondelag_test";   // Trondelag or VestTele
+    public static final String dataSet2 = "VestTele";   // Trondelag or VestTele
+    public static final String ordersFilePath1 = "data/" + dataSet1 + "/Orders.txt";
+    public static final String timeWindowsFilePath1 = "data/" + dataSet1 + "/Time_windows.txt";
+    public static final String vehicleFilePath1 = "data/" + dataSet1 + "/Vehicles.txt";
+    public static final String ordersFilePath2 = "data/" + dataSet2 + "/Orders.txt";
+    public static final String timeWindowsFilePath2 = "data/" + dataSet2 + "/Time_windows.txt";
+    public static final String vehicleFilePath2 = "data/" + dataSet2 + "/Vehicles.txt";
     public static final String distancePath = "Google_Trondelag";
+
+
+    public static final boolean useLargeDataset = true;
     public static final boolean doRandomSeed = true;
     public static final int samples = 1;
     public static long randomSeedValue = 10;
 
+
     // Population parameters
-    public static final int maximumSubIndividualPopulationSize = 100; //TODO: find reasonable value
+    public static final int maximumSubIndividualPopulationSize = 200; //TODO: find reasonable value
     public static final int minimumSubIndividualPopulationSize = 50;
     public static final int initialPopulationSize = 50;
     public static final int initialOrderDistributionPopulationSize = 50;
-    public static final int maxNumberIterationsWithoutImprovement = 100;
-    public static final int maxNumberOfGenerations = 100;
+    public static final int maxNumberIterationsWithoutImprovement = 3;
+    public static final int maxNumberOfGenerations = 25;
 
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 75; // A maximum of 75
-    public static final int numberOfVehicles = 25;
+    public static int numberOfCustomers = 30;        //A maximum of 75
+    public static final int numberOfVehicles = 10;
     public static final double distanceCutOffFromDepot = 3.0;
     public static final boolean adjustTimeWindow = true;
     public static final double adjustTimeWindowReduction = 5;
@@ -116,12 +125,13 @@ public class Parameters {
     //Periodic parameters
     public static boolean isPeriodic = false;
     public static final boolean threadedPGA = true;
-    public static int numberOfPeriodicRuns = 2;
-    public static final int generationsPerOrderDistributionPeriodic = 5;
-    public static final int generationsOfOrderDistributions = 10;
-    public static final int newIndividualCombinationsGenerated = 3;
-    public static final int minimumPeriodicSubPopulationSize = 20;
-    public static final int maksimumPeriodicSubPopulationSize = 50;
+    public static int numberOfPeriodicParallels = 5;
+    public static final boolean runSingularGA = false;
+    public static final boolean threadedGA = true;
+    public static final double diversifiedODProbability = 0.5;
+    public static final int generationsPerOrderDistributionPeriodic = 50;
+    public static final int minimumUpdatesPerOrderDistributions = 4;
+    public static final int orderDistributionUpdatesGA = 50;        // this / minimumUpdatesPerOrderDistributions = number of unique order distributions
     public static final double initialOrderDistributionScale = 1;
     public static final double incrementPerOrderDistributionScaling = 0.02;
     public static final int numberOfGenerationsBetweenODScaling = 2;

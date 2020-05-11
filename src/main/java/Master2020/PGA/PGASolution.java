@@ -29,6 +29,15 @@ public class PGASolution implements Comparable<PGASolution> {
         this.journeys = journeys;
     }
 
+    public double getFitness(){
+        double[] thisFitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1);
+        double fitness = 0;
+        for (int d = 0 ; d < thisFitnesses.length ; d++){
+            fitness += thisFitnesses[d];
+        }
+        return fitness;
+    }
+
     public void setIndividual(Individual individual){
         this.individual = individual;
     }

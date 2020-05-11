@@ -90,7 +90,7 @@ public class DistanceMatrixBuilder {
     }
 
     public static double[][] createDistanceMatrix(Data data, String name) throws IOException, ClassNotFoundException {
-        HashMap<Integer, HashMap<Integer, Long>> distanceMap = loadDistanceMap("Google_Trondelag");
+        HashMap<Integer, HashMap<Integer, Long>> distanceMap = loadDistanceMap(name);
         double[][] distanceMatrix = new double[data.numberOfNodes][data.numberOfNodes];
         for  (int from = 0 ; from < data.numberOfCustomers ; from++){
             for (int to = 0 ; to < data.numberOfCustomers ; to++){

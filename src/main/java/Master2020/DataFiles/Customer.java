@@ -94,11 +94,15 @@ public class Customer {
             }
         }
     }
-
     public void setCoordinates(double[] coordinates){
+        setCoordinates(coordinates, false);
+    }
+
+    public void setCoordinates(double[] coordinates, boolean special){
         this.xCoordinate = coordinates[0];
         this.yCoordinate = coordinates[1];
     }
+
 
     public void setLoadingTimes(double[] loadingTimes){
         this.fixedLoadingTime = loadingTimes[0];
