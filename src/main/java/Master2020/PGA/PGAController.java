@@ -194,8 +194,8 @@ public class PGAController {
             if (periodicAlgorithmsArrayList.get(i).iterationsWithSameOd > Parameters.minimumUpdatesPerOrderDistributions){
                 System.out.println("MAX ITERATIONS HIT - RESET POPULATION AND ASSIGN NEW OD");
                 finalSolutions.add(periodicAlgorithmsArrayList.get(i).storeSolution());
-                OrderDistribution od = (Math.random() < Parameters.diversifiedODProbability) ? pod.diversify(10) : new OrderDistribution(data);
-                periodicAlgorithmsArrayList.get(i).updateOrderDistribution();
+                OrderDistribution od = (Math.random() < Parameters.diversifiedODProbability) ? pod.diversify(10) : new OrderDistribution(data); //todo :initialize..,.
+                periodicAlgorithmsArrayList.get(i).updateOrderDistribution(od);
                 periodicAlgorithmsArrayList.get(i).resetPeriodicPopulation();
 
 

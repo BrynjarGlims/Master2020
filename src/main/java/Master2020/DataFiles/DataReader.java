@@ -56,9 +56,9 @@ public class DataReader {
                     Double.parseDouble(productData.get(line)[12]),
                     checkSplitAttribute(productData.get(line)[6], line),
                     productData.get(line)[3],
-                    Integer.parseInt(productData.get(line)[6]),
                     Integer.parseInt(productData.get(line)[7]),
-                    Integer.parseInt(productData.get(line)[8])));
+                    Integer.parseInt(productData.get(line)[8]),
+                    Integer.parseInt(productData.get(line)[9])));
             productID++;
         }
         return convertCustomerList(customerList);
@@ -82,10 +82,10 @@ public class DataReader {
             productList.add(new Order(productID, customerID,
                     Double.parseDouble(productData.get(line)[11]),
                     checkSplitAttribute(productData.get(line)[4], line),
-                    productData.get(line)[5],
+                    productData.get(line)[3],
+                    Integer.parseInt(productData.get(line)[6]),
                     Integer.parseInt(productData.get(line)[7]),
-                    Integer.parseInt(productData.get(line)[8]),
-                    Integer.parseInt(productData.get(line)[9])));
+                    Integer.parseInt(productData.get(line)[8])));
             productID++;
         }
         return convertCustomerList(customerList);
@@ -169,8 +169,8 @@ public class DataReader {
         double x_coordinate;
         double y_coordinate;
         if (special){
-            x_coordinate = Double.parseDouble(timeWindowData.get(line)[18]);
-            y_coordinate = Double.parseDouble(timeWindowData.get(line)[19]);
+            x_coordinate = Double.parseDouble(timeWindowData.get(line)[19]);
+            y_coordinate = Double.parseDouble(timeWindowData.get(line)[18]);
         } else {
             x_coordinate = Double.parseDouble(timeWindowData.get(line)[7]);
             y_coordinate = Double.parseDouble(timeWindowData.get(line)[8]);
@@ -189,10 +189,10 @@ public class DataReader {
     }
 
     private static double[] getCustomLoadingTime(){
-        double fixedLoadingTime = 0.5;
-        double variableLoadingTime = 0.01;
-        double fixedUnloadingTime = 0.4;
-        double variableUnloadingTime = 0.02;
+        double fixedLoadingTime = 5;
+        double variableLoadingTime = 0.04;
+        double fixedUnloadingTime = 10;
+        double variableUnloadingTime = 0.04;
         double[] loadingTimes = {fixedLoadingTime,variableLoadingTime,fixedUnloadingTime,variableUnloadingTime};
         return loadingTimes;
     }
@@ -372,6 +372,11 @@ public class DataReader {
     }
 
     private static double distanceFromDepot(Customer customer, Depot depot){
+        System.out.println("X cust " + customer.xCoordinate);
+        System.out.println("Y cust " + customer.yCoordinate);
+        System.out.println("X dep " + depot.xCoordinate);
+        System.out.println("Y dep " + depot.yCoordinate);
+
         return Math.sqrt(Math.pow(customer.xCoordinate - depot.xCoordinate, 2)
                 + Math.pow(customer.yCoordinate - depot.yCoordinate, 2)) * Parameters.scalingDistanceParameter;
     }
@@ -563,5 +568,4 @@ public class DataReader {
         Data data = loadData();
         System.out.println("test");
     }
-
 }
