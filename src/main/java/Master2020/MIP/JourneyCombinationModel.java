@@ -216,13 +216,18 @@ public class JourneyCombinationModel {
                 for (int v = 0; v < dataMIP.numVehicles; v++) {
                     for (Master2020.Individual.Journey r : journeys[d][v]) {
                         for (Master2020.Individual.Trip t : r.trips) {
-                            System.out.println("In progress");
+                            for (int c : t.customers)
+                            if (c == dataMIP.customers[i].customerID){
+                                System.out.println("DEbug");
+                            }
                             /*
                             if (c.customerID == i) {
                                 lhs.addTerm(1, gamma[d][v][r.journeyId]);
                             }
 
                              */
+
+
                         }
                     }
                 }

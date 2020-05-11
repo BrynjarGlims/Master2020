@@ -17,8 +17,7 @@ public class Parameters {
     public static final String timeWindowsFilePath2 = "data/" + dataSet2 + "/Time_windows.txt";
     public static final String vehicleFilePath2 = "data/" + dataSet2 + "/Vehicles.txt";
     public static final String distancePath = "Google_VestTele";
-
-
+    
     public static final boolean useVestTeleDataset = true;
     public static final boolean doRandomSeed = true;
     public static final int samples = 1;
@@ -36,7 +35,7 @@ public class Parameters {
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 118;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
+    public static int numberOfCustomers = 70;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
     public static final int numberOfVehicles = 10;
     public static final double distanceCutOffFromDepot = 3.0;   //default 3
     public static final boolean adjustTimeWindow = true;
