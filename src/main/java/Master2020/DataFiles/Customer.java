@@ -110,7 +110,7 @@ public class Customer {
         this.fixedUnloadingTime = loadingTimes[2];
         this.variableUnloadingTime = loadingTimes[3];
         this.totalUnloadingTime = fixedUnloadingTime*Parameters.scalingUnloadingTimeAtCustomerConstant +
-                variableUnloadingTime*Parameters.scalingUnloadingTimeAtCustomerVariable;
+                variableUnloadingTime*numberOfOrders*Parameters.scalingUnloadingTimeAtCustomerVariable;
     }
 
     public String toString(){

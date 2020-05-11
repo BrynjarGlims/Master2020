@@ -7,10 +7,12 @@ import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Order;
 import Master2020.DataFiles.Parameters;
+import Master2020.Genetic.FitnessCalculation;
 import Master2020.Genetic.OrderDistributionCrossover;
 import Master2020.Population.Population;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Population.OrderDistributionPopulation;
+import org.apache.commons.math.genetics.Fitness;
 
 public class Journey {
 
@@ -22,7 +24,14 @@ public class Journey {
     public List<Trip> trips;
     public double vehicleCost;
 
+
     public double journeyCost;
+
+    private double currentTime;
+    private double travelDistance;
+    private double timeWarp;
+    private double overLoad;
+    private double travelCost;
 
     public Journey(Data data, int period, int vehicleType, int vehicleId){
         this.data = data;
@@ -39,10 +48,13 @@ public class Journey {
 
     }
 
-    private double currentTime;
-    private double travelDistance;
-    private double timeWarp;
-    private double overLoad;
+    public double getFitnessWithVehicleCost(OrderDistribution orderDistribution){
+        updateFitness(orderDistribution);
+        return travelCost + data.vehicleTypes[vehicleType].usageCost;
+    }
+
+
+
 
     public double[] updateFitness(OrderDistribution orderDistribution){
         return updateFitness(orderDistribution, 1);
@@ -67,7 +79,7 @@ public class Journey {
             updateTimes(trip);
             updateOverload(trip, orderDistribution);
         }
-        double travelCost = travelDistance*data.vehicleTypes[vehicleType].travelCost;
+        travelCost = travelDistance*data.vehicleTypes[vehicleType].travelCost;
         double timeWarpCost = timeWarp* Parameters.initialTimeWarpPenalty*penaltyMultiplier;
         double overLoadCost = overLoad*Parameters.penaltyFactorForOverFilling*penaltyMultiplier;
         return new double[]{travelCost, timeWarpCost, overLoadCost, vehicleCost};
