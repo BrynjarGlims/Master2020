@@ -11,6 +11,7 @@ public class Parameters {
     public static final String ordersFilePath = "data/" + dataSet + "/Orders.csv";
     public static final String timeWindowsFilePath = "data/" + dataSet + "/Time_windows.csv";
     public static final String vehicleFilePath = "data/" + dataSet + "/Vehicles.csv";
+    public static final String distancePath = "Google_Trondelag";
     public static final boolean doRandomSeed = true;
     public static final int samples = 1;
     public static long randomSeedValue = 10;
@@ -74,9 +75,10 @@ public class Parameters {
     public static final double penaltyFactorForUnderFilling = 1.5;
 
     // Scaling parameters
+    public static final boolean euclidianDistance = false;
     public static final double scalingDistanceParameter = 2.0; //set to 2.2
     public static final double timeShift = 6;
-    public static final double maxJourneyDuration = 10; //changed to journey duration
+    public static final double maxJourneyDuration = 11; //changed to journey duration
     public static final double loadingTimeAtDepotConstant = 0.03;
     public static final double loadingTimeAtDepotVariable = 0.001;
     public static final double scalingUnloadingTimeAtCustomerConstant = 0.03;
