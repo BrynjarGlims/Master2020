@@ -21,7 +21,7 @@ public class DistanceMatrixBuilder {
         coordinates[data.customers.length + 1] = new LatLng(data.depot.yCoordinate, data.depot.xCoordinate);
         return coordinates;
     }
-    
+
     private static void saveDistanceMap(Data data, String name) throws IOException, ApiException, InterruptedException {
         HashMap<Integer, HashMap<Integer, Long>> map = GoogleDistancesMap(data);
         String path = System.getProperty("user.dir") + "\\data\\Distances\\" + name + ".ser";
