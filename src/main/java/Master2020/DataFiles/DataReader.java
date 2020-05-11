@@ -356,12 +356,15 @@ public class DataReader {
         List<Integer> indexes = new ArrayList<Integer>() ;
         for (int i = 0; i < customers.length; i++){
             if (customers[i].numberOfNonDividableOrders > customers[i].numberOfVisitPeriods ){
-                System.out.println(" too many number of visit days");
+                //System.out.println(" too many number of visit days");
                 indexes.add(i);
             }
             else if (distanceFromDepot(customers[i], depot) > Parameters.distanceCutOffFromDepot){
+                /*
                 System.out.println(distanceFromDepot(customers[i], depot));
                 System.out.println("too far to drive");
+
+                 */
                 indexes.add(i);
             }
 
@@ -372,11 +375,6 @@ public class DataReader {
     }
 
     private static double distanceFromDepot(Customer customer, Depot depot){
-        System.out.println("X cust " + customer.xCoordinate);
-        System.out.println("Y cust " + customer.yCoordinate);
-        System.out.println("X dep " + depot.xCoordinate);
-        System.out.println("Y dep " + depot.yCoordinate);
-
         return Math.sqrt(Math.pow(customer.xCoordinate - depot.xCoordinate, 2)
                 + Math.pow(customer.yCoordinate - depot.yCoordinate, 2)) * Parameters.scalingDistanceParameter;
     }
@@ -446,20 +444,7 @@ public class DataReader {
             timeWindowData = DataReader.readCSVFile(Parameters.timeWindowsFilePath1);
             vehiclesData = DataReader.readCSVFile(Parameters.vehicleFilePath1);
         }
-        List<String[]> orderDataTrondelag = DataReader.readCSVFile(Parameters.ordersFilePath1);
-        List<String[]> timeWindowDataTrondelag = DataReader.readCSVFile(Parameters.timeWindowsFilePath1);
-        List<String[]> vehiclesDataTrondelag = DataReader.readCSVFile(Parameters.vehicleFilePath1);
 
-        System.out.println(Arrays.toString(orderData.get(0)));
-        System.out.println(Arrays.toString(orderDataTrondelag.get(0)));
-        System.out.println(Arrays.toString(timeWindowData.get(0)));
-        System.out.println(Arrays.toString(timeWindowDataTrondelag.get(0)));
-        System.out.println(Arrays.toString(vehiclesData.get(0)));
-        System.out.println(Arrays.toString(vehiclesDataTrondelag.get(0)));
-
-
-
-        System.out.println("stop");
         Depot depot;
         Customer[] customers;
         Vehicle[] vehicles;
@@ -467,10 +452,8 @@ public class DataReader {
             depot = setCustomDepot();
             customers = parseOrdersFileDataSpecial(orderData);
             customers = parseTimeWindowFileDataSpecial(customers, timeWindowData);
-            System.out.println("stop");
             customers = removeInvalidCustomers(customers, depot);
             vehicles = parseVehicleFileDataToVehicle(vehiclesData);
-            System.out.println("stop");
         }
         else{
             depot = parseVehicleFileDataToDepot(vehiclesData);
@@ -479,8 +462,6 @@ public class DataReader {
             customers = removeInvalidCustomers(customers, depot);
             vehicles = parseVehicleFileDataToVehicle(vehiclesData);
         }
-
-
 
         Customer[] customersSubset;
         Vehicle[] vehiclesSubset;
