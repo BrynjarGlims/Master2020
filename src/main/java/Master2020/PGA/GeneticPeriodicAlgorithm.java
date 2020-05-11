@@ -1,7 +1,5 @@
 package Master2020.PGA;
 
-import Master2020.ABC.PeriodSwarm;
-import Master2020.ABC.Swarm;
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Parameters;
@@ -39,6 +37,7 @@ public class GeneticPeriodicAlgorithm extends Thread{
     public double fitness;
     public int numberOfIterations = 0;
     public int iterationsWithoutImprovement = 0;
+    public int iterationsWithSameOd = 0;
 
     //threading
     public boolean run;
@@ -66,7 +65,7 @@ public class GeneticPeriodicAlgorithm extends Thread{
         fitness = Double.MAX_VALUE;
         numberOfIterations = 0;
         iterationsWithoutImprovement = 0;
-        iterationsWithoutImprovement = 0;
+        iterationsWithSameOd = 0;
 
 
         //threading
@@ -91,9 +90,7 @@ public class GeneticPeriodicAlgorithm extends Thread{
 
 
 
-    public void updateOrderDistribution(OrderDistribution orderDistribution){
-        this.orderDistribution = orderDistribution;
-    }
+
 
     public OrderDistribution getOrderDistribution() {
         return this.orderDistribution;
@@ -124,30 +121,13 @@ public class GeneticPeriodicAlgorithm extends Thread{
         upstreamGate.await();
         upstreamGate.reset();
 
-        System.out.println("Updating order distribution");
+        //System.out.println("Updating order distribution");
         periodicPopulation.addPeriodicIndividual(generateGreedyPeriodicIndividual());
-        makeOptimalOrderDistribution(threads);
+        makeOptimalOrderDistribution(threads ,false);
+        updateOrderDistributionForPopulations(orderDistribution, false);
         updateFitness();
-        // this is completely wrong
-        //updateOrderDistribution();
 
 
-
-
-        /*
-        PeriodicIndividual newPeriodicIndividual = generateGreedyPeriodicIndividual();
-        periodicPopulation.addPeriodicIndividual(newPeriodicIndividual);
-        PeriodicIndividual bestPeriodicIndividual = periodicPopulation.returnBestIndividual();
-
-        if (bestPeriodicIndividual.isFeasible() && bestPeriodicIndividual.fitness < fitness){
-            iterationsWithoutImprovement = 0;
-        }else{
-            iterationsWithoutImprovement += 1;
-        }
-
-         */
-
-        //Result res = new Result(bestIndividual, "PGA" , bestPeriodicIndividual.isFeasible(), false);
 
     }
 
@@ -156,6 +136,7 @@ public class GeneticPeriodicAlgorithm extends Thread{
         periodicPopulation.initialize(orderDistribution);
         numberOfIterations = 0;
         iterationsWithoutImprovement = 0;
+        iterationsWithSameOd = 0;
         repaired = new HashSet<>();
         fitness = Double.MAX_VALUE;
         BiasedFitness.setBiasedFitnessScore(periodicPopulation);
@@ -169,20 +150,20 @@ public class GeneticPeriodicAlgorithm extends Thread{
 
     }
 
-
-    private void updateOrderDistribution(){
-        periodicPopulation.orderDistribution = this.orderDistribution;
-        updateOrderDistributionForPopulations(true);
+    public void updateOrderDistribution(OrderDistribution orderDistribution){
+        this.orderDistribution = orderDistribution;
+        periodicPopulation.orderDistribution = orderDistribution;
+        updateOrderDistributionForPopulations(orderDistribution, true);
         iterationsWithoutImprovement = 0;
     }
 
-    private void updateOrderDistributionForPopulations(boolean newOD){
+    private void updateOrderDistributionForPopulations(OrderDistribution orderDistribution, boolean newOD){
         for (GeneticAlgorithm algorithm : threads){
-            algorithm.orderDistribution = this.orderDistribution;
+            algorithm.orderDistribution = orderDistribution;
             algorithm.population.updateOrderDistributionsOfAllIndividuals(this.orderDistribution);
+            algorithm.population.reassignIndividualsInPopulations();
             if (newOD){
-                //algorithm.resetGeneration;
-                algorithm.fitnessForPeriod = Double.MAX_VALUE;
+                resetPeriodicPopulation();
             }
         }
     }
@@ -237,45 +218,35 @@ public class GeneticPeriodicAlgorithm extends Thread{
 //        result.store();
     }
 
-    private void makeOptimalOrderDistribution(List<GeneticAlgorithm> geneticAlgorithms){
-
-
+    private void makeOptimalOrderDistribution(List<GeneticAlgorithm> geneticAlgorithm, boolean newOD){
         journeys = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
+        boolean allFeasibleJourneys = true;
         for (int p = 0 ; p < data.numberOfPeriods ; p++){
             Individual individual = periodicPopulation.populations[p].returnBestIndividual();
+            if(!individual.isFeasible())
+                allFeasibleJourneys = false;
             for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++) {
                 journeys[p][vt] = individual.journeyList[0][vt];
+
             }
         }
 
-        System.out.println("all customers exists? " + ABCtests.allCustomersExists(journeys, data));
-        System.out.println("OD valid? " + IndividualTest.testValidOrderDistribution(data, orderDistribution));
-        double[] fitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1);
-        System.out.println("overload: " + fitnesses[2]);
-
-        if (orderAllocationModel.createOptimalOrderDistribution(journeys, 1) == 2){
-            System.out.println("FOUND OPTIMAL OD!!! Ja vi elsker dette landet, som det stiger frem.");
+        boolean verbose = false;
+        if (verbose) {
+            System.out.println("all customers exists? " + ABCtests.allCustomersExists(journeys, data));
+            System.out.println("OD valid? " + IndividualTest.testValidOrderDistribution(data, orderDistribution));
+            double[] fitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1);
+            System.out.println("overload: " + fitnesses[2]);
+        }
+        if (orderAllocationModel.createOptimalOrderDistribution(journeys, 1) == 2 && allFeasibleJourneys){
+            //System.out.println("FOUND OPTIMAL OD!!! Ja vi elsker dette landet, som det stiger frem.");
             this.orderDistribution = orderAllocationModel.getOrderDistribution();
         }
         else{
             System.out.println("Did not find any Optimal OD");
         }
+        iterationsWithSameOd += 1;
 
-    }
-
-    private void createNewOptimalOrderDistribution(PeriodicIndividual bestPeriodicIndividual){
-        System.out.println("Perform update of volumes");
-        if (orderAllocationModel.createOptimalOrderDistribution(bestPeriodicIndividual.getJourneys(), scalingFactorOrderDistribution) == 2){
-            orderDistribution = orderAllocationModel.getOrderDistribution();
-            periodicPopulation.setOrderDistribution(orderDistribution);
-            bestPeriodicIndividual.setOrderDistribution(orderDistribution);
-            periodicPopulation.allocateIndividual(bestPeriodicIndividual);
-            periodicPopulation.reassignPeriodicIndividuals();
-            System.out.println("################################## Number of fesasible individuals:" + periodicPopulation.periodicFeasibleIndividualPopulation.size());
-            System.out.println("-----------------Optimal OD found!");
-        } else{
-            System.out.println("----------------No optimal OD found...");
-        }
     }
 
 
@@ -293,7 +264,7 @@ public class GeneticPeriodicAlgorithm extends Thread{
             }
             newPeriodicIndividual.setPeriodicIndividual(individual, p);
         }
-        System.out.println("Fitness: " + newPeriodicIndividual.getFitness());
+        System.out.println("Fitness: " + newPeriodicIndividual.getFitness() + " is feasible " + newPeriodicIndividual.isFeasible() + " order distribution " + orderDistribution.hashCode());
         return newPeriodicIndividual;
     }
 
@@ -313,6 +284,14 @@ public class GeneticPeriodicAlgorithm extends Thread{
         }
     }
 
+    //todo: not in use
+    public void runIterations() throws BrokenBarrierException, InterruptedException {
+        for (int i = 0; i < Parameters.minimumUpdatesPerOrderDistributions; i++){
+            System.out.println("Start iteration: " + i);
+            runIteration();
+        }
+    }
+
 
 
 
@@ -328,13 +307,16 @@ public class GeneticPeriodicAlgorithm extends Thread{
         }
     }
 
-
-
     public PGASolution storeSolution(){
+        return storeSolution(false);
+    }
+
+    public PGASolution storeSolution(boolean verbose ){
         bestPeriodicIndividual = periodicPopulation.returnBestIndividual();
         PGASolution pgaSolution = bestPeriodicIndividual.createPGASolution();
         pgaSolution.individual.updateFitness();
-        //pgaSolution.individual.printDetailedFitness();
+        if (verbose)
+            pgaSolution.individual.printDetailedFitness();
         return pgaSolution;
     }
 

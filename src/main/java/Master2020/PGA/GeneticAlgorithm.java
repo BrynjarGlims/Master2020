@@ -26,8 +26,6 @@ public class GeneticAlgorithm extends Thread {
     public HashSet<Individual> repaired;
     public int numberOfIterations;
     public int iterationsWithoutImprovement;
-    public OrderAllocationModel orderAllocationModel;
-    public boolean isPeriodic = Parameters.isPeriodic;
     public Individual currentBestIndividual;
 
     //threads
@@ -53,7 +51,7 @@ public class GeneticAlgorithm extends Thread {
         numberOfIterations = 0;
         this.downstreamGate = downstreamGate;
         this.upstreamGate = upstreamGate;
-        System.out.println("Initialization completed");
+        //System.out.println("Initialization completed");
     }
 
     public void setPopulation(Population population) {
@@ -118,7 +116,7 @@ public class GeneticAlgorithm extends Thread {
 
 
     public void runGeneration() {
-        System.out.println("Start generation");
+        //System.out.println("Start generation");
         while (population.infeasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize &&
                 population.feasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize) {
             Individual newIndividual = PIX(population);
@@ -130,11 +128,11 @@ public class GeneticAlgorithm extends Thread {
 
         selection(population);
 
-        updateStatus();
-        System.out.println("Generation done");
+        updateSystemParameters();
+        //System.out.println("Generation done");
     }
 
-    public void updateStatus(){
+    public void updateSystemParameters(){
         currentBestIndividual = population.returnBestIndividual();
         if (currentBestIndividual.getFitness(false) < fitnessForPeriod && currentBestIndividual.isFeasible()){
             fitnessForPeriod = currentBestIndividual.getFitness(false);

@@ -390,7 +390,7 @@ public class App {
 
 
 
-                if (numberOfIterations % Parameters.generationsOfOrderDistributions == 0 ||
+                if (numberOfIterations % Parameters.minimumUpdatesPerOrderDistributions == 0 ||
                         numberOfIterations == Parameters.maxNumberIterationsWithoutImprovement-1) {
                     createNewOptimalOrderDistribution(bestPeriodicIndividual);
                 }
