@@ -202,7 +202,6 @@ public class Population {
 
 
 
-
     public void setIterationsWithoutImprovement(int iterations){
         this.iterationsWithoutImprovement = iterations;
     }

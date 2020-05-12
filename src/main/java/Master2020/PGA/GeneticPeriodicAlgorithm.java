@@ -6,6 +6,8 @@ import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.*;
 import Master2020.Individual.Individual;
 import Master2020.Individual.Journey;
+import Master2020.MIP.DataConverter;
+import Master2020.MIP.JourneyCombinationModel;
 import Master2020.MIP.OrderAllocationModel;
 import Master2020.Population.PeriodicOrderDistributionPopulation;
 import Master2020.Population.Population;
@@ -27,6 +29,7 @@ public class GeneticPeriodicAlgorithm extends Thread{
     public PeriodicPopulation periodicPopulation;
     public HashSet<Individual> repaired;
     public OrderAllocationModel orderAllocationModel;
+    public JourneyCombinationModel journeyCombinationModel;
     public PeriodicIndividual bestPeriodicIndividual;
     public Individual bestIndividual;
     public List<GeneticAlgorithm> threads;
@@ -49,6 +52,7 @@ public class GeneticPeriodicAlgorithm extends Thread{
     public GeneticPeriodicAlgorithm(Data data) throws GRBException {
         this.data = data;
         orderAllocationModel = new OrderAllocationModel(data);
+        journeyCombinationModel = new JourneyCombinationModel(DataConverter.convert(data));
         orderDistribution = new OrderDistribution(data);
         orderDistribution.makeInitialDistribution();
     }
@@ -60,7 +64,6 @@ public class GeneticPeriodicAlgorithm extends Thread{
         periodicPopulation = new PeriodicPopulation(data);
         periodicPopulation.initialize(orderDistribution);
         BiasedFitness.setBiasedFitnessScore(periodicPopulation);
-        orderAllocationModel = new OrderAllocationModel(data);
         repaired = new HashSet<>();
         fitness = Double.MAX_VALUE;
         numberOfIterations = 0;
@@ -110,6 +113,16 @@ public class GeneticPeriodicAlgorithm extends Thread{
         return threads;
     }
 
+    public ArrayList<Journey>[][] createJourneysToJCM(){
+        ArrayList<Journey>[][] journeys = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
+        for (int p = 0; p < data.numberOfPeriods; p++){
+            journeys[p] = threads.get(p).getBestJourenysFromIndividuals();
+        }
+        return journeys;
+    }
+
+
+
 
 
     public void runIteration() throws BrokenBarrierException, InterruptedException {
@@ -123,11 +136,36 @@ public class GeneticPeriodicAlgorithm extends Thread{
 
         //System.out.println("Updating order distribution");
         periodicPopulation.addPeriodicIndividual(generateGreedyPeriodicIndividual());
-        makeOptimalOrderDistribution(threads ,false);
+        if (Parameters.useJCM){
+            createOrderDistributionFromJCM(threads, false);
+        }
+        else{
+            makeOptimalOrderDistribution(threads ,false);
+        }
+
         updateOrderDistributionForPopulations(orderDistribution, false);
         updateFitness();
+    }
 
+    private void createOrderDistributionFromJCM(List<GeneticAlgorithm> geneticAlgorithm, boolean newOD){
+        ArrayList<Journey>[][] journeys = createJourneysToJCM();
 
+        boolean verbose = false;
+        if (verbose) {
+            System.out.println("all customers exists? " + ABCtests.allCustomersExists(journeys, data));
+            System.out.println("OD valid? " + IndividualTest.testValidOrderDistribution(data, orderDistribution));
+            double[] fitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1);
+            System.out.println("overload: " + fitnesses[2]);
+        }
+
+        if (journeyCombinationModel.runModel(journeys) == 2){
+            //System.out.println("FOUND OPTIMAL OD!!! Ja vi elsker dette landet, som det stiger frem.");
+            this.orderDistribution = orderAllocationModel.getOrderDistribution();
+        }
+        else{
+            System.out.println("Did not find any Optimal OD");
+        }
+        iterationsWithSameOd += 1;
 
     }
 
@@ -274,7 +312,7 @@ public class GeneticPeriodicAlgorithm extends Thread{
                 //wait for all threads to be ready
                 masterDownstreamGate.await();
                 //run generations
-                if (run){runIteration();}
+                if (run){runIterations();}
                 //wait for all periods to finish
                 masterUpstreamGate.await();
 

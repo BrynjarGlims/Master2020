@@ -6,10 +6,7 @@ import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Order;
 import Master2020.DataFiles.*;
 import Master2020.MIP.OrderAllocationModel;
-import Master2020.PR.ArcFlowModel;
-import Master2020.PR.DataMIP;
-import Master2020.PR.JourneyBasedModel;
-import Master2020.PR.PathFlowModel;
+import Master2020.PR.*;
 import gurobi.GRB;
 import gurobi.GRBException;
 import gurobi.GRBVar;
@@ -119,6 +116,13 @@ public class OrderDistribution implements Cloneable {
         setVolumePerPeriod();
         setFitness();
     }
+
+    public void makeDistributionFromModel(GRBVar[][][] u , GRBVar[][][][][] q, DataMIP dataMIP) throws GRBException {
+        setVolumeAndOrdersFromMIP( u, q, dataMIP);
+        setVolumePerPeriod();
+        setFitness();
+    }
+
 
     public void makeDistributionFromPathFlowModel(PathFlowModel pfm) throws GRBException {
         setVolumeAndOrdersFromMIP( pfm.u, pfm.q, pfm.dataMIP);

@@ -2,6 +2,7 @@ package Master2020.PR;
 
 import Master2020.DataFiles.Data;
 import Master2020.Individual.Individual;
+import Master2020.MIP.JourneyCombinationModel;
 import Master2020.ProductAllocation.OrderDistribution;
 import gurobi.GRB;
 import gurobi.GRBException;
@@ -21,8 +22,36 @@ public class ModelConverter {
     private static ArcFlowModel arcFlowModel;
     private static JourneyBasedModel journeyBasedModel;
     private static PathFlowModel pathFlowModel;
+    private static JourneyCombinationModel journeyCombinationModel;
     private static Data data;
+    private static DataMIP dataMIP;
+    private static Model generalModel;
 
+
+
+    public static void initializeIndividualFromModel(Model model) throws GRBException {
+        generalModel = model;
+        data = model.dataMIP.newData;
+        dataMIP = model.dataMIP;
+        orderDistribution = model.getOrderDistribution();
+        orderDistribution.makeDistributionFromModel(model.u, model.q, model.dataMIP);
+        individual = model.getIndividual();
+        //set giant tour chromosome and support strucutres in new individual
+        initializeGiantTourInIndividualForJCM(model.getJourneys());
+
+        individual.setOrderDistribution(orderDistribution);
+    }
+
+    public static void initializeIndividualFromJourneyCombinationModel(JourneyCombinationModel jcm) throws GRBException {
+        journeyCombinationModel = jcm;
+        data = journeyBasedModel.dataMIP.newData;
+        orderDistribution = jcm.getOrderDistribution();
+        orderDistribution.makeDistributionFromJourneyBasedModel(journeyBasedModel);
+        individual = jcm.getIndividual();
+        //set giant tour chromosome and support strucutres in new individual
+        initializeGiantTourInIndividualForJBM();
+        individual.setOrderDistribution(orderDistribution);
+    }
 
     public static void initializeIndividualFromJourneyBasedModel(JourneyBasedModel jbm) throws GRBException {
         journeyBasedModel = jbm;
@@ -73,6 +102,18 @@ public class ModelConverter {
         individual.journeyList = generateJourneyListFromTripList(tripList);
     }
 
+    private static void initializeGiantTourInIndividualForJCM(ArrayList<Master2020.Individual.Journey>[][] journeys) throws GRBException {
+        ArrayList<Trip>[][] tripList = initializeTripList();
+        updateTripListJCM(tripList, journeys);
+        ArrayList<Integer>[][] giantTour = initializeGiantTourChromosome();
+        updateGiantTourChromosome(giantTour,tripList);
+        HashMap<Integer, HashMap<Integer, Trip>> tripMap = getTripMap(tripList);
+        individual.setTripMap(tripMap);
+        individual.setTripList(tripList);
+        individual.setGiantTour(createGiantTour(giantTour));
+        individual.journeyList = generateJourneyListFromTripList(tripList);
+    }
+
     private static void initializeGiantTourInIndividualForJBM() throws GRBException {
         ArrayList<Trip>[][] tripList = initializeTripList();
         updateTripListJBM(tripList);
@@ -83,7 +124,6 @@ public class ModelConverter {
         individual.setTripList(tripList);
         individual.setGiantTour(createGiantTour(giantTour));
         individual.journeyList = generateJourneyListFromTripList(tripList);
-
     }
 
     private static void initializeGiantTourInIndividualForPFM() throws GRBException {
@@ -167,6 +207,20 @@ public class ModelConverter {
                 for (Trip trip : tripList[p][vt]) {
                     for (int customer : trip.getCustomers()) {
                         giantTour[p][vt].add(customer);
+                    }
+                }
+            }
+        }
+    }
+
+    private static void updateTripListJCM(ArrayList<Trip>[][] tripList, ArrayList<Master2020.Individual.Journey>[][] journeys) throws GRBException {
+        for (int d = 0; d < journeyBasedModel.dataMIP.numPeriods; d++) {
+            for (int v = 0; v < journeyBasedModel.dataMIP.numVehicles; v++) {
+                for (int j = 0; j < journeys[d][v].size(); j++) {
+                    if (Math.round(journeyBasedModel.gamma[d][v][j].get(GRB.DoubleAttr.X)) == 1){
+                        for(Trip t : journeys[d][v].get(j).trips){
+                            tripList[d][data.vehicles[v].vehicleType.vehicleTypeID].add(t);
+                        }
                     }
                 }
             }

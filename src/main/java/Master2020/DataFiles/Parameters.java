@@ -8,7 +8,7 @@ public class Parameters {
 
     // File import parameters
 
-    public static final String dataSet1 = "Trondelag_test";   // Trondelag or VestTele
+    public static final String dataSet1 = "Trondelag";   // Trondelag or VestTele
     public static final String dataSet2 = "VestTele";   // Trondelag or VestTele
     public static final String ordersFilePath1 = "data/" + dataSet1 + "/Orders.txt";
     public static final String timeWindowsFilePath1 = "data/" + dataSet1 + "/Time_windows.txt";
@@ -18,7 +18,7 @@ public class Parameters {
     public static final String vehicleFilePath2 = "data/" + dataSet2 + "/Vehicles.txt";
     public static final String distancePathVestTele = "Google_VestTele";
     public static final String distancePathTrondelag = "Google_Trondelag";
-    
+
     public static final boolean useVestTeleDataset = false;
     public static final boolean doRandomSeed = true;
     public static final int samples = 1;
@@ -140,8 +140,11 @@ public class Parameters {
     public static final int numberOfGenerationsBetweenODScaling = 2;
     public static final int numberOfGenerationBeforeODScalingStarts = 20;
 
-    // Joureny Combination Model parameters
-    public static final int individualsPerPeriod = 100;
+    // Journey Combination Model parameters
+    public static final boolean useJCM = true;
+    public static final int numberOfIndividualJourneysInMIPPerPeriod = 10;
+    public static final String symmetryOFJCM = "none";
+
 
 
     // Verbose parameters
