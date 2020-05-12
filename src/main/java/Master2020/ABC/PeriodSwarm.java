@@ -9,6 +9,7 @@ import Master2020.Utils.WeightedRandomSampler;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
@@ -28,6 +29,10 @@ public class PeriodSwarm extends Thread {
     public double globalBestFitness;
     public double[] globalBestPosition;
     public boolean run = true;
+
+    public ArrayList<PeriodSolution> solutions;
+
+    private int counter;
 
 
     public PeriodSwarm(Data data, int period, OrderDistribution orderDistribution, CyclicBarrier downstreamGate, CyclicBarrier upstreamGate){
@@ -75,6 +80,9 @@ public class PeriodSwarm extends Thread {
             employee.updateToBestPosition();
         }
 
+        //update and trim the solution list
+        updateSolutionSet();
+
         //scoute stage:
         for (Employee employee : employees){
             if (employee.trials > Parameters.maxNumberOfTrials){
@@ -117,11 +125,27 @@ public class PeriodSwarm extends Thread {
 
     }
 
+    private void updateSolutionSet(){
+        if (counter % 10 == 0){
+            for (Employee employee : employees){
+                solutions.add(new PeriodSolution(data, period, employee.position, orderDistribution));
+            }
+            Collections.sort(solutions);
+            if (solutions.size() > Parameters.numberOfStoredSolutionsPerPeriod){
+                solutions.subList(Parameters.numberOfStoredSolutionsPerPeriod, solutions.size()).clear();
+            }
+            counter = 0;
+        }
+        counter++;
+    }
+
     public void initialize(){
         employees = IntStream.range(0, Parameters.numberOfEmployees).parallel().mapToObj(o -> new Employee(data, period, this)).collect(Collectors.toList());
         onlookers = IntStream.range(0, Parameters.numberOfOnlookers).parallel().mapToObj(o -> new Onlooker(data, period, this)).collect(Collectors.toList());
         globalBestFitness = Double.MAX_VALUE;
         globalBestPosition = employees.get(0).position;
+        solutions = new ArrayList<>();
+        counter = 0;
     }
 
 
@@ -130,9 +154,8 @@ public class PeriodSwarm extends Thread {
         OrderDistribution orderDistribution = new OrderDistribution(data);
         orderDistribution.makeInitialDistribution();
         PeriodSwarm periodSwarm = new PeriodSwarm(data, 0, orderDistribution);
-        Bee bee = periodSwarm.employees.get(0);
-        for (int i = 0 ; i < 1000 ; i++){
-            bee.enhance();
-        }
+        periodSwarm.runGenerations(1000);
+        System.out.println(periodSwarm.solutions);
+
     }
 }

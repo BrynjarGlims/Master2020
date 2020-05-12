@@ -179,6 +179,23 @@ public class Swarm extends Thread{
         return threads;
     }
 
+    public ArrayList<Journey>[][] getJourneys(){
+        ArrayList<Journey>[][] journeys = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
+        for (int p = 0 ; p < data.numberOfPeriods ; p++){
+            for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
+                journeys[p][vt] = new ArrayList<>();
+            }
+        }
+        for (PeriodSwarm periodSwarm : threads){
+            for (PeriodSolution solution : periodSwarm.solutions){
+                for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
+                    journeys[periodSwarm.period][vt].addAll(solution.journeys[vt]);
+                }
+            }
+        }
+    return journeys;
+    }
+
     public ABCSolution storeSolution() throws CloneNotSupportedException {
         double[][] positions = new double[threads.size()][];
         for (PeriodSwarm ps : threads){

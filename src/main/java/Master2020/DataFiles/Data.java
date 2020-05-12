@@ -178,7 +178,7 @@ public class Data {
         }
         else{
             try{
-                distanceMatrix  = DistanceMatrixBuilder.createDistanceMatrix(this, Parameters.distancePath);
+                distanceMatrix  = DistanceMatrixBuilder.createDistanceMatrix(this, Parameters.useVestTeleDataset ? Parameters.distancePathVestTele : Parameters.distancePathTrondelag);
             }
             catch (Exception e){
                 e.printStackTrace();
