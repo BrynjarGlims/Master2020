@@ -10,6 +10,7 @@ import com.google.maps.GeoApiContext;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.*;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 
@@ -117,11 +118,20 @@ public class DistanceMatrixBuilder {
     }
 
     public static void main(String[] args) throws InterruptedException, ApiException, IOException, ClassNotFoundException {
-        Data data = DataReader.loadData();
-//        saveDistanceMap(data, Parameters.distancePath);
-        HashMap<Integer, HashMap<Integer, Long>> map = DistanceMatrixBuilder.loadDistanceMap(Parameters.distancePath);
-        System.out.println(map.get(data.customers[0].customerNumber).get(data.customers[1].customerNumber));
-        createDistanceMatrix(data, Parameters.distancePath);
+//        Data data = DataReader.loadData();
+////        saveDistanceMap(data, Parameters.distancePath);
+//        HashMap<Integer, HashMap<Integer, Long>> map = DistanceMatrixBuilder.loadDistanceMap(Parameters.distancePath);
+//        System.out.println(map.get(data.customers[0].customerNumber).get(data.customers[1].customerNumber));
+//        createDistanceMatrix(data, Parameters.distancePath);
+
+
+        ArrayList<Integer> test = new ArrayList<>();
+        test.add(1);
+        test.add(2);
+        test.add(3);
+        test.add(4);
+        test.subList(5,test.size()).clear();
+        System.out.println(test);
 
 
     }

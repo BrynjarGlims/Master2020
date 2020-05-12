@@ -3,6 +3,7 @@ package Master2020.ABC;
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Parameters;
+import Master2020.Individual.Journey;
 import Master2020.Population.PeriodicOrderDistributionPopulation;
 import Master2020.ProductAllocation.OrderDistribution;
 import gurobi.GRBException;
@@ -112,7 +113,7 @@ public class ABCController {
         }
         downstreamGate.await();
         upstreamGate.await();
-
+        ArrayList<Journey>[][] journeys = getJourneys();
         Collections.sort(finalSolutions);
         System.out.println(finalSolutions.get(0).getFitness());
         finalSolutions.get(0).writeSolution();
@@ -200,6 +201,25 @@ public class ABCController {
                 swarms.get(i).updateOrderDistribution(pod.distributions.get(i));
             }
         }
+    }
+
+    public ArrayList<Journey>[][] getJourneys(){
+        ArrayList<Journey>[][] journeys = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
+        for (int p = 0 ; p < data.numberOfPeriods ; p++){
+            for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
+                journeys[p][vt] = new ArrayList<>();
+            }
+        }
+        ArrayList<Journey>[][] swarmJourneys;
+        for (Swarm swarm : swarms){
+            swarmJourneys = swarm.getJourneys();
+            for (int p = 0 ; p < data.numberOfPeriods ; p++){
+                for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
+                    journeys[p][vt].addAll(swarmJourneys[p][vt]);
+                }
+            }
+        }
+        return journeys;
     }
 
 

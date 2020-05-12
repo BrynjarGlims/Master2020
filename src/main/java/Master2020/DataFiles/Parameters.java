@@ -16,7 +16,8 @@ public class Parameters {
     public static final String ordersFilePath2 = "data/" + dataSet2 + "/Orders.txt";
     public static final String timeWindowsFilePath2 = "data/" + dataSet2 + "/Time_windows.txt";
     public static final String vehicleFilePath2 = "data/" + dataSet2 + "/Vehicles.txt";
-    public static final String distancePath = "Google_VestTele";
+    public static final String distancePathVestTele = "Google_VestTele";
+    public static final String distancePathTrondelag = "Google_Trondelag";
     
     public static final boolean useVestTeleDataset = true;
     public static final boolean doRandomSeed = true;
@@ -53,6 +54,7 @@ public class Parameters {
     public static final double heuristicDominanceValue = 1;
 
     // ABC specific parameters
+    public static final int numberOfStoredSolutionsPerPeriod = 10;
     public static final boolean runSingular = false;
     public static final boolean threaded = true;
     public static final int numberOfSwarms = 5;
@@ -60,7 +62,7 @@ public class Parameters {
     public static final int orderDistributionCutoff = 2;
     public static final int swarmIterationsWithoutImprovementLimit = 5;
     public static final int generationsPerOrderDistribution = 300;
-    public static final int orderDistributionUpdates = 50;
+    public static final int orderDistributionUpdates = 5;
     public static final int numberOfEmployees = 10;
     public static final int numberOfOnlookers = 40;
     public static final int numberOfScoutTrials = 10;
@@ -71,7 +73,7 @@ public class Parameters {
     public static final double weightGlobalBest = 0.8;
     public static final double movementRange = 1; //both positive and negative, but only half in negative direction
     public static final double onlookerRandomAdjustment = 0.2; //a random number added when onlooker goes to employers foodsource
-    public static final int numberOfEnhancements = 0; //number of enhancements that wil happen to onlookers
+    public static final int numberOfEnhancements = 0; //number of enhancements for employees
     public static final double[] weightsEnhancement = new double[]{33, 33, 34}; //probability distribution of enhancements, [reverse, swap, insert]
     public static final double globalTrialsCutoff = 1.1; //trials will not increment if solution is within this multiplier of global best
 
