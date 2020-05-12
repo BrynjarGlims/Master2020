@@ -499,7 +499,7 @@ public class DataReader {
                 number = generator.nextInt(Parameters.numberOfCustomers);
                 number = number % customers.length;
                 iterations ++;
-                if (iterations > 200){
+                if (iterations > 500){
                     throw new IllegalArgumentException("Too many customers selected");
                 }
             }
