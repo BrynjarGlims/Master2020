@@ -10,7 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class ArcFlowModel {
+public class ArcFlowModel extends Model {
 
 
     public GRBEnv env;
@@ -59,7 +59,7 @@ public class ArcFlowModel {
     public ArrayList<ArrayList<ArrayList<ArrayList<Integer>>>> pathsUsed; // TODO: 23.11.2019 Remove
 
     public ArcFlowModel(DataMIP dataMIP){
-        this.dataMIP = dataMIP;
+        super(dataMIP);
     }
 
     public void initializeModel() throws GRBException, FileNotFoundException {

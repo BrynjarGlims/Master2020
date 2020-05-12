@@ -4,12 +4,15 @@ import Master2020.DataFiles.Data;
 import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.*;
 import Master2020.Individual.Individual;
+import Master2020.Individual.Journey;
 import Master2020.Individual.Trip;
 import Master2020.MIP.OrderAllocationModel;
 import Master2020.Population.Population;
 import Master2020.ProductAllocation.OrderDistribution;
 import gurobi.GRBException;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
@@ -72,6 +75,24 @@ public class GeneticAlgorithm extends Thread {
         if (ThreadLocalRandom.current().nextDouble() < Parameters.educationProbability){
             Education.improveRoutes(individual, individual.orderDistribution);
         }
+    }
+
+    public ArrayList<Journey>[] getBestJourenysFromIndividuals(){
+        ArrayList<Journey>[] tempJourneyList = new ArrayList[data.numberOfVehicleTypes];
+        for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
+            tempJourneyList[vt] = new ArrayList<Journey>();
+        }
+        ArrayList<Individual> potentialIndividuals = new ArrayList<>(population.feasiblePopulation);
+        if (Parameters.numberOfIndividualJourneysInMIPPerPeriod > potentialIndividuals.size())
+            System.out.println("not enough individuals for this period " + period);
+        Collections.sort(potentialIndividuals);
+        for (int i = 0; i < Parameters.numberOfIndividualJourneysInMIPPerPeriod; i++){
+            Individual individual = potentialIndividuals.get(i);
+            for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
+                tempJourneyList[vt].addAll(individual.journeyList[0][vt]);
+            }
+        }
+        return tempJourneyList;
     }
 
     public void tripOptimizer(Individual individual){

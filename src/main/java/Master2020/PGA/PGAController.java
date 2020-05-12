@@ -68,11 +68,11 @@ public class PGAController {
             multipleRunThreaded();
         }
         else{
-            multipleRunSingleThread();
+            //multipleRunSingleThread();
         }
     }
 
-
+/*
     private void multipleRunSingleThread() throws InterruptedException, BrokenBarrierException, CloneNotSupportedException, IOException {
         System.out.println("RUNNING MULTIPLE ABC");
         // TODO: 01.05.2020 diversify, run, scale down, diversify
@@ -99,6 +99,8 @@ public class PGAController {
         System.out.println(finalSolutions.get(0).getFitness());
     }
 
+
+ */
     private void multipleRunThreaded() throws BrokenBarrierException, InterruptedException, CloneNotSupportedException, IOException, GRBException {
 
         for (int i = 0 ; i < Parameters.orderDistributionUpdatesGA ; i++){
