@@ -494,9 +494,14 @@ public class DataReader {
         for (int i = 0; i < Parameters.numberOfCustomers; i++){
             int number = generator.nextInt(customers.length);
             number = number % customers.length;
+            int iterations = 0;
             while (usedNumbers.contains(number)){
                 number = generator.nextInt(Parameters.numberOfCustomers);
                 number = number % customers.length;
+                iterations ++;
+                if (iterations > 200){
+                    throw new IllegalArgumentException("Too many customers selected");
+                }
             }
             newCustomers[customerCounter] = customers[number];
             newCustomers[customerCounter].setCustomerID(customerCounter);

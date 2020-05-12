@@ -19,7 +19,7 @@ public class Parameters {
     public static final String distancePathVestTele = "Google_VestTele";
     public static final String distancePathTrondelag = "Google_Trondelag";
 
-    public static final boolean useVestTeleDataset = true;
+    public static final boolean useVestTeleDataset = false;
     public static final boolean doRandomSeed = true;
     public static final int samples = 1;
     public static long randomSeedValue = 10;
