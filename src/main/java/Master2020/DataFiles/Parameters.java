@@ -7,7 +7,6 @@ import java.util.Set;
 public class Parameters {
 
     // File import parameters
-
     public static final String dataSet1 = "Trondelag_test";   // Trondelag or VestTele
     public static final String dataSet2 = "VestTele";   // Trondelag or VestTele
     public static final String ordersFilePath1 = "data/" + dataSet1 + "/Orders.txt";
