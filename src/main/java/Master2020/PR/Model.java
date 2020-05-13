@@ -21,10 +21,7 @@ abstract public class Model {
         this.dataMIP = dataMIP;
     }
 
-    public ArrayList<Master2020.Individual.Journey>[][] getJourneys(){
-        return journeys;
-    }
-
+    public abstract ArrayList<Master2020.Individual.Journey>[][] getJourneys();
     public abstract Individual getIndividual();
     public abstract OrderDistribution getOrderDistribution();
 }

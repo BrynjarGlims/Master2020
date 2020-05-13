@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 
-public class PathFlowModel extends Model{
+public class PathFlowModel{
 
     public String modelName = "PathFlowModel";
 
@@ -57,7 +57,7 @@ public class PathFlowModel extends Model{
     public ArrayList<ArrayList<ArrayList<ArrayList<Integer>>>> pathsUsed = null ;
 
     public PathFlowModel(DataMIP dataMIP){
-        super(dataMIP);
+        this.dataMIP = dataMIP;
     }
 
     public void initializeModel() throws GRBException, FileNotFoundException {

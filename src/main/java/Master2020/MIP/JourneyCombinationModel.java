@@ -1,6 +1,7 @@
 package Master2020.MIP;
 
 import Master2020.DataFiles.Data;
+import Master2020.DataFiles.Order;
 import Master2020.DataFiles.Parameters;
 import Master2020.Individual.Individual;
 import Master2020.Individual.Trip;
@@ -54,21 +55,24 @@ public class JourneyCombinationModel extends Model{
     public GRBVar[][][] gamma;
     public GRBVar[][][] u;
     public GRBVar[][][][][] q;
-    public GRBVar[][] k;
     public GRBVar[] qO;
     public ArrayList<Master2020.Individual.Journey>[][] journeys;   //period, vehicleType
 
 
     public JourneyCombinationModel(DataMIP dataMIP) throws GRBException {
         super(dataMIP);
+        this.dataMIP = dataMIP;
         env = new GRBEnv(true);
         this.env.set("logFile",  "JourneyBasedModel.log");
         this.env.start();
     }
 
+    @Override
+    public ArrayList<Master2020.Individual.Journey>[][] getJourneys() {
+        return journeys;
+    }
 
     public void initializeModel() throws GRBException, FileNotFoundException {
-
         this.model = new GRBModel(env);
         model.set(GRB.StringAttr.ModelName, "JourneyCombinationModel");
         this.pg = new PathGenerator(dataMIP);
@@ -81,8 +85,6 @@ public class JourneyCombinationModel extends Model{
 
     public void initializeParameters() throws GRBException {
         this.gamma = new GRBVar[dataMIP.numPeriods][dataMIP.numVehicles][];
-
-        this.k = new GRBVar[dataMIP.numPeriods][dataMIP.numVehicles];
         this.u = new GRBVar[dataMIP.numPeriods][dataMIP.numCustomers][];
         for (int p = 0; p < dataMIP.numPeriods; p++){
             for (int c = 0; c < dataMIP.numCustomers; c++){
@@ -112,15 +114,6 @@ public class JourneyCombinationModel extends Model{
                 }
             }
         }
-
-        for (int p = 0; p < dataMIP.numPeriods; p++){
-            for (int v = 0; v < dataMIP.numVehicles; v++) {
-                String variable_name = String.format("v[%d]", v);
-                k[p][v] = model.addVar(0.0, 1.0, dataMIP.costVehicle[v], GRB.BINARY, variable_name);
-            }
-        }
-
-
 
 
         for (int i = 0; i < dataMIP.numCustomers; i++) {
@@ -176,6 +169,21 @@ public class JourneyCombinationModel extends Model{
                 }
                 String constraint_name = String.format("5.70 -Max number of vehicles to be used for period %d and vt %d", d, vt);
                 model.addConstr(lhs, GRB.LESS_EQUAL, dataMIP.vehicleTypes[vt].vehicles.length, constraint_name);
+            }
+        }
+    }
+
+    public void useOfVehicles() throws GRBException {
+        // Constraint 5.68
+        // if a journey is used, then the vehicle corresponding to that journey is considered used
+        for (int d = 0; d < dataMIP.numPeriods; d++) {
+            for (int v = 0; v < dataMIP.numVehicles; v++){
+                GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
+                for (int r = 0; r < journeys[d][dataMIP.vehicles[v].vehicleType.type].size(); r++) {
+                    lhs.addTerm(1, gamma[d][v][r]);
+                }
+                String constraint_name = String.format("5.70 -Max number of vehicles to be used for period %d and v %d", d, v);
+                model.addConstr(lhs, GRB.LESS_EQUAL, 1, constraint_name);
             }
         }
     }
@@ -503,6 +511,7 @@ public class JourneyCombinationModel extends Model{
         // -------- Add constraints -------------
 
         //useOfVehiclesForEachCapacity();
+        useOfVehicles();
         allowableVisits();
         capacityOfJourney();
         constraint71();
@@ -603,22 +612,10 @@ public class JourneyCombinationModel extends Model{
                 }
             }
         }
-        System.out.println("   ");
-        System.out.println("   ");
-
-        // Create k variables: vehicle v is used in the planning period
-        System.out.println("Print of k-variables: If a vehicle is used in the planing period");
-        for (int p = 0; p < dataMIP.numPeriods; p++){
-            for (int v = 0; v < dataMIP.numVehicles; v++) {
-                if (Math.round(k[p][v].get(GRB.DoubleAttr.X)) == 1) {
-
-                    System.out.println("Vehicle " + v + " is used in the planning period with capacity: "  + dataMIP.vehicleCapacity[v]);
-                }
-            }
-        }
 
         System.out.println("   ");
         System.out.println("   ");
+
 
         // Create u variables: if a product is delivered to customer m
         System.out.println("Print of u-variables: If a product m is delivered to customer i");
@@ -633,6 +630,7 @@ public class JourneyCombinationModel extends Model{
                 }
             }
         }
+
         System.out.println("   ");
         System.out.println("   ");
 
@@ -675,9 +673,10 @@ public class JourneyCombinationModel extends Model{
 
 
 
-    public double runModel(ArrayList<Master2020.Individual.Journey>[][] journeys) {
+    public double runModel(ArrayList<Master2020.Individual.Journey>[][] journeys, OrderDistribution globalOrderDistribution) {
         try {
             double time = System.currentTimeMillis();
+            this.globalOrderDistribution = globalOrderDistribution;
             this.journeys = journeys;
             this.symmetry = Parameters.symmetryOFJCM;
             initializeModel();
@@ -736,6 +735,26 @@ public class JourneyCombinationModel extends Model{
 
     public Individual getIndividual(){
         return individual;
+    }
+
+    public ArrayList<Master2020.Individual.Journey>[][] getOptimalJourneys() throws Exception {
+        if (optimstatus != 2)
+            throw new Exception("Model not optimized");
+        ArrayList<Master2020.Individual.Journey>[][] optimalJourneys = new ArrayList[dataMIP.numPeriods][dataMIP.numVehicleTypes];
+        for (int p = 0; p < dataMIP.numPeriods; p++){
+            for (int vt = 0; vt < dataMIP.numVehicleTypes; vt++){
+                optimalJourneys[p][vt] = new ArrayList<Master2020.Individual.Journey>();
+            }
+            for (int v = 0; v < dataMIP.numVehicles; v++){
+                for (int j = 0; j < journeys[p][dataMIP.vehicles[v].vehicleType.type].size(); j++){
+                    if (Math.round(gamma[p][v][j].get(GRB.DoubleAttr.X)) == 1){
+                        optimalJourneys[p][dataMIP.vehicles[v].vehicleType.type].add(journeys[p][dataMIP.vehicles[v].vehicleType.type].get(j));
+                    }
+                }
+
+            }
+        }
+        return optimalJourneys;
     }
 
     public void createIndividualAndOrderDistributionObject() throws GRBException {

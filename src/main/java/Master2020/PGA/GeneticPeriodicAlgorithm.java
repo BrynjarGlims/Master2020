@@ -116,7 +116,7 @@ public class GeneticPeriodicAlgorithm extends Thread{
     public ArrayList<Journey>[][] createJourneysToJCM(){
         ArrayList<Journey>[][] journeys = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
         for (int p = 0; p < data.numberOfPeriods; p++){
-            journeys[p] = threads.get(p).getBestJourenysFromIndividuals();
+            journeys[p] = threads.get(p).getBestJourneysFromIndividuals();
         }
         return journeys;
     }
@@ -125,7 +125,7 @@ public class GeneticPeriodicAlgorithm extends Thread{
 
 
 
-    public void runIteration() throws BrokenBarrierException, InterruptedException {
+    public void runIteration() throws Exception {
 
         downstreamGate.await();
         downstreamGate.reset();
@@ -137,30 +137,48 @@ public class GeneticPeriodicAlgorithm extends Thread{
         //System.out.println("Updating order distribution");
         periodicPopulation.addPeriodicIndividual(generateGreedyPeriodicIndividual());
         if (Parameters.useJCM){
+            setJourneyFromBestIndividuals();
             createOrderDistributionFromJCM(threads, false);
         }
         else{
             makeOptimalOrderDistribution(threads ,false);
         }
-
         updateOrderDistributionForPopulations(orderDistribution, false);
         updateFitness();
+        System.out.println("Current fitness: " + fitness);
     }
 
-    private void createOrderDistributionFromJCM(List<GeneticAlgorithm> geneticAlgorithm, boolean newOD){
-        ArrayList<Journey>[][] journeys = createJourneysToJCM();
+    private boolean setJourneyFromBestIndividuals() {
+        journeys = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
+        boolean allFeasibleJourneys = true;
+        for (int p = 0; p < data.numberOfPeriods; p++) {
+            Individual individual = periodicPopulation.populations[p].returnBestIndividual();
+            if (!individual.isFeasible())
+                allFeasibleJourneys = false;
+            for (int vt = 0; vt < data.numberOfVehicleTypes; vt++) {
+                journeys[p][vt] = individual.journeyList[0][vt];
+
+            }
+        }
+        return allFeasibleJourneys;
+    }
+
+    private void createOrderDistributionFromJCM(List<GeneticAlgorithm> geneticAlgorithm, boolean newOD) throws Exception {
+        ArrayList<Journey>[][] arrayOfJourneys = createJourneysToJCM();
 
         boolean verbose = false;
         if (verbose) {
-            System.out.println("all customers exists? " + ABCtests.allCustomersExists(journeys, data));
+            System.out.println("all customers exists? " + ABCtests.allCustomersExists(arrayOfJourneys, data));
             System.out.println("OD valid? " + IndividualTest.testValidOrderDistribution(data, orderDistribution));
-            double[] fitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1);
+            double[] fitnesses = FitnessCalculation.getIndividualFitness(data, arrayOfJourneys, orderDistribution, 1);
             System.out.println("overload: " + fitnesses[2]);
         }
 
-        if (journeyCombinationModel.runModel(journeys) == 2){
-            //System.out.println("FOUND OPTIMAL OD!!! Ja vi elsker dette landet, som det stiger frem.");
-            this.orderDistribution = orderAllocationModel.getOrderDistribution();
+        if (journeyCombinationModel.runModel(arrayOfJourneys, orderDistribution) == 2){
+            System.out.println("FOUND OPTIMAL OD!!! Ja vi elsker dette landet, som det stiger frem.");
+            this.orderDistribution = journeyCombinationModel.getOrderDistribution();
+            this.journeys = journeyCombinationModel.getOptimalJourneys();
+
         }
         else{
             System.out.println("Did not find any Optimal OD");
@@ -257,19 +275,9 @@ public class GeneticPeriodicAlgorithm extends Thread{
     }
 
     private void makeOptimalOrderDistribution(List<GeneticAlgorithm> geneticAlgorithm, boolean newOD){
-        journeys = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
-        boolean allFeasibleJourneys = true;
-        for (int p = 0 ; p < data.numberOfPeriods ; p++){
-            Individual individual = periodicPopulation.populations[p].returnBestIndividual();
-            if(!individual.isFeasible())
-                allFeasibleJourneys = false;
-            for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++) {
-                journeys[p][vt] = individual.journeyList[0][vt];
-
-            }
-        }
-
+        boolean allFeasibleJourneys = setJourneyFromBestIndividuals();
         boolean verbose = false;
+
         if (verbose) {
             System.out.println("all customers exists? " + ABCtests.allCustomersExists(journeys, data));
             System.out.println("OD valid? " + IndividualTest.testValidOrderDistribution(data, orderDistribution));
@@ -318,12 +326,14 @@ public class GeneticPeriodicAlgorithm extends Thread{
 
             } catch (InterruptedException | BrokenBarrierException e) {
                 e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
 
     //todo: not in use
-    public void runIterations() throws BrokenBarrierException, InterruptedException {
+    public void runIterations() throws Exception {
         for (int i = 0; i < Parameters.minimumUpdatesPerOrderDistributions; i++){
             System.out.println("Start iteration: " + i);
             runIteration();
@@ -358,7 +368,7 @@ public class GeneticPeriodicAlgorithm extends Thread{
         return pgaSolution;
     }
 
-    public static void main(String[] args) throws InterruptedException, BrokenBarrierException, GRBException, IOException, CloneNotSupportedException {
+    public static void main(String[] args) throws Exception {
         Data data = DataReader.loadData();
         GeneticPeriodicAlgorithm periodicAlgorithm = new GeneticPeriodicAlgorithm(data);
         OrderDistribution od = new OrderDistribution(data);

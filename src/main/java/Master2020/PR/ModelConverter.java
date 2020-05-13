@@ -9,7 +9,6 @@ import gurobi.GRBException;
 import Master2020.Individual.Trip;
 import Master2020.Individual.Journey;
 import Master2020.Individual.GiantTour;
-import gurobi.GRBVar;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,16 +24,16 @@ public class ModelConverter {
     private static JourneyCombinationModel journeyCombinationModel;
     private static Data data;
     private static DataMIP dataMIP;
-    private static Model generalModel;
+    private static JourneyCombinationModel jcm;
 
 
 
-    public static void initializeIndividualFromModel(Model model) throws GRBException {
-        generalModel = model;
+    public static void initializeIndividualFromModel(JourneyCombinationModel model) throws GRBException {
+        jcm = model;
         data = model.dataMIP.newData;
         dataMIP = model.dataMIP;
         orderDistribution = model.getOrderDistribution();
-        orderDistribution.makeDistributionFromModel(model.u, model.q, model.dataMIP);
+        orderDistribution.makeDistributionFromModel(jcm.u, jcm.q, jcm.dataMIP);
         individual = model.getIndividual();
         //set giant tour chromosome and support strucutres in new individual
         initializeGiantTourInIndividualForJCM(model.getJourneys());
@@ -214,11 +213,11 @@ public class ModelConverter {
     }
 
     private static void updateTripListJCM(ArrayList<Trip>[][] tripList, ArrayList<Master2020.Individual.Journey>[][] journeys) throws GRBException {
-        for (int d = 0; d < journeyBasedModel.dataMIP.numPeriods; d++) {
-            for (int v = 0; v < journeyBasedModel.dataMIP.numVehicles; v++) {
-                for (int j = 0; j < journeys[d][v].size(); j++) {
-                    if (Math.round(journeyBasedModel.gamma[d][v][j].get(GRB.DoubleAttr.X)) == 1){
-                        for(Trip t : journeys[d][v].get(j).trips){
+        for (int d = 0; d < dataMIP.numPeriods; d++) {
+            for (int v = 0; v < dataMIP.numVehicles; v++) {
+                for (int j = 0; j < journeys[d][data.vehicles[v].vehicleType.vehicleTypeID].size(); j++) {
+                    if (Math.round(jcm.gamma[d][v][j].get(GRB.DoubleAttr.X)) == 1){
+                        for(Trip t : journeys[d][data.vehicles[v].vehicleType.vehicleTypeID].get(j).trips){
                             tripList[d][data.vehicles[v].vehicleType.vehicleTypeID].add(t);
                         }
                     }
