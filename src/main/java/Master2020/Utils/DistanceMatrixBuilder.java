@@ -125,13 +125,8 @@ public class DistanceMatrixBuilder {
 //        createDistanceMatrix(data, Parameters.distancePath);
 
 
-        ArrayList<Integer> test = new ArrayList<>();
-        test.add(1);
-        test.add(2);
-        test.add(3);
-        test.add(4);
-        test.subList(5,test.size()).clear();
-        System.out.println(test);
+        int x = (int) Math.round(0.3 * 11);
+        System.out.println(x);
 
 
     }

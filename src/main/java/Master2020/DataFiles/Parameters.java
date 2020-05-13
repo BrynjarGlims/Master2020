@@ -42,7 +42,7 @@ public class Parameters {
     public static final double adjustTimeWindowLimit = 9.5;
 
     // GA specific parameters
-    public static final int nearestNeighbors = 5; //Neighborhood size for each customer
+    public static final int nearestNeighbors = (int) Math.round(0.4 * numberOfCustomers);; //Neighborhood size for each customer
     public static final int educationTabooSize = 2;
     public static final int tripOptimizerSizeLimit = 7;
     public static final double educationProbability = 0.5;
