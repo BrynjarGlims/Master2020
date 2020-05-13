@@ -63,7 +63,7 @@ public class PGAController {
 
     }
 
-    private void multipleRun() throws InterruptedException, BrokenBarrierException, CloneNotSupportedException, IOException, GRBException {
+    private void multipleRun() throws Exception {
         if (Parameters.threadedGA){
             multipleRunThreaded();
         }
@@ -101,7 +101,7 @@ public class PGAController {
 
 
  */
-    private void multipleRunThreaded() throws BrokenBarrierException, InterruptedException, CloneNotSupportedException, IOException, GRBException {
+    private void multipleRunThreaded() throws Exception {
 
         for (int i = 0 ; i < Parameters.orderDistributionUpdatesGA ; i++){
             System.out.println("Running generation: " + i);
@@ -124,7 +124,7 @@ public class PGAController {
 
 
 
-    private void runIteration() throws BrokenBarrierException, InterruptedException, CloneNotSupportedException, IOException, GRBException {
+    private void runIteration() throws Exception {
         //release all period swarms for
         downstreamGate.await();
         downstreamGate.reset();
@@ -164,7 +164,7 @@ public class PGAController {
     }
 
 
-    public void run() throws BrokenBarrierException, InterruptedException, IOException, CloneNotSupportedException, GRBException {
+    public void run() throws Exception {
         if (Parameters.runSingularGA){
             singularRun();
         }
@@ -196,7 +196,15 @@ public class PGAController {
             if (periodicAlgorithmsArrayList.get(i).iterationsWithSameOd > Parameters.minimumUpdatesPerOrderDistributions){
                 System.out.println("MAX ITERATIONS HIT - RESET POPULATION AND ASSIGN NEW OD");
                 finalSolutions.add(periodicAlgorithmsArrayList.get(i).storeSolution());
-                OrderDistribution od = (Math.random() < Parameters.diversifiedODProbability) ? pod.diversify(10) : new OrderDistribution(data); //todo :initialize..,.
+                OrderDistribution od;
+                if ((Math.random() < Parameters.diversifiedODProbability)) {
+                    od = pod.diversify(10);
+                }
+                else{
+                    od = new OrderDistribution(data);
+                    od.makeInitialDistribution();
+                }
+
                 //initialize if new od
                 periodicAlgorithmsArrayList.get(i).updateOrderDistribution(od);
                 periodicAlgorithmsArrayList.get(i).resetPeriodicPopulation();
@@ -210,7 +218,7 @@ public class PGAController {
 
 
 
-    public static void main(String[] args) throws BrokenBarrierException, InterruptedException, GRBException, IOException, CloneNotSupportedException {
+    public static void main(String[] args) throws Exception {
         Data data = DataReader.loadData();
         PGAController pga = new PGAController(data);
         pga.initialize();

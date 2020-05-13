@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 
-public class JourneyBasedModel extends Model {
+public class JourneyBasedModel {
 
     public GRBEnv env;
     public GRBModel model;
@@ -57,7 +57,7 @@ public class JourneyBasedModel extends Model {
 
 
     public JourneyBasedModel(DataMIP dataMIP){
-        super(dataMIP);
+        this.dataMIP = dataMIP;
     }
 
 

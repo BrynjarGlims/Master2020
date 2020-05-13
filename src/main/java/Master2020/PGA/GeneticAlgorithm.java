@@ -77,7 +77,7 @@ public class GeneticAlgorithm extends Thread {
         }
     }
 
-    public ArrayList<Journey>[] getBestJourenysFromIndividuals(){
+    public ArrayList<Journey>[] getBestJourneysFromIndividuals(){
         ArrayList<Journey>[] tempJourneyList = new ArrayList[data.numberOfVehicleTypes];
         for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
             tempJourneyList[vt] = new ArrayList<Journey>();
@@ -86,7 +86,7 @@ public class GeneticAlgorithm extends Thread {
         if (Parameters.numberOfIndividualJourneysInMIPPerPeriod > potentialIndividuals.size())
             System.out.println("not enough individuals for this period " + period);
         Collections.sort(potentialIndividuals);
-        for (int i = 0; i < Parameters.numberOfIndividualJourneysInMIPPerPeriod; i++){
+        for (int i = 0; i < Math.min(Parameters.numberOfIndividualJourneysInMIPPerPeriod, potentialIndividuals.size()); i++){
             Individual individual = potentialIndividuals.get(i);
             for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
                 tempJourneyList[vt].addAll(individual.journeyList[0][vt]);
@@ -144,6 +144,7 @@ public class GeneticAlgorithm extends Thread {
             educate(newIndividual);
             tripOptimizer(newIndividual);
             population.addChildToPopulation(newIndividual);
+            System.out.println("new individual in period " + period);
         }
         repair(population);
 
