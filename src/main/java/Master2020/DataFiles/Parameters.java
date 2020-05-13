@@ -64,8 +64,8 @@ public class Parameters {
     public static final int generationsPerOrderDistribution = 300;
     public static final int orderDistributionUpdates = 5;
     public static final int numberOfEmployees = 10;
-    public static final int numberOfOnlookers = 40;
-    public static final int numberOfScoutTrials = 10;
+    public static final int numberOfOnlookers = 4 * numberOfEmployees;
+    public static final int numberOfScoutTrials = 25;
     public static final int maxNumberOfTrials = 10;
     public static final int maxBoundDimensionality = 4; //max amount of dimensions that can be changed, chosen randomly from 1-this
     public static final double weightNeighborEmployed = 1;
