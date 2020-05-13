@@ -120,9 +120,9 @@ public class Result {
                     "Customers", "Vehicles", "isFeasible", "isOptimal", "MIPGap"};
             csvWriter.writeNext(CSV_COLUMNS, false);
         }
-
+        //todo: change to print other values
         String[] results = {fileName, "-", modelName, String.valueOf(this.runTime), date_formatter.format(new Date()),  String.valueOf(Parameters.randomSeedValue),
-                String.valueOf(Parameters.maximumSubIndividualPopulationSize),String.valueOf(Parameters.maxNumberOfGenerations), String.valueOf(Parameters.numberOfCustomers)
+                String.valueOf(Parameters.populationSize),String.valueOf(Parameters.maxNumberOfGenerations), String.valueOf(Parameters.numberOfCustomers)
                 , String.valueOf(Parameters.numberOfVehicles), "FALSE", "FALSE", "-100%"};
         csvWriter.writeNext(results, false);
         csvWriter.close();
@@ -367,11 +367,11 @@ public class Result {
 
         results = new String[]{"Population Parameters:", "---------"};
         csvWriter.writeNext(results, false);
-        results = new String[]{"Maximum sub population size", String.valueOf(Parameters.maximumSubIndividualPopulationSize)};
+        results = new String[]{"Initial population size", String.valueOf(Parameters.populationSize)};
         csvWriter.writeNext(results, false);
-        results = new String[]{"Minimum sub population size", String.valueOf(Parameters.minimumSubIndividualPopulationSize)};
+        results = new String[]{"New Individuals Each Generation", String.valueOf(Parameters.numberOfIndividualsGeneratedEachGeneration)};
         csvWriter.writeNext(results, false);
-        results = new String[]{"Initial population size", String.valueOf(Parameters.initialPopulationSize)};
+        results = new String[]{"Fraction of elite individuals", String.valueOf(Parameters.fractionEliteIndividuals)};
         csvWriter.writeNext(results, false);
         results = new String[]{"Initial OD population size", String.valueOf(Parameters.initialOrderDistributionPopulationSize)};
         csvWriter.writeNext(results, false);
@@ -515,7 +515,7 @@ public class Result {
 
 
         String[] results = {fileName, String.format("%.4f",bestIndividual.getFitness(false)), modelName, String.valueOf(this.runTime), date_formatter.format(new Date()), String.valueOf(Parameters.randomSeedValue),
-                String.valueOf(Parameters.maximumSubIndividualPopulationSize),String.valueOf(Parameters.maxNumberOfGenerations), String.valueOf(Parameters.numberOfCustomers)
+                String.valueOf(Parameters.populationSize),String.valueOf(Parameters.maxNumberOfGenerations), String.valueOf(Parameters.numberOfCustomers)
                 , String.valueOf(Parameters.numberOfVehicles), String.valueOf(this.isFeasible), String.valueOf(this.isOptimal), String.valueOf(Math.round(this.MIPGap*1000000)/10000) + "%"};
         csvWriter.writeNext(results, false);
         csvWriter.close();
@@ -549,7 +549,7 @@ public class Result {
 
 
         String[] results = {fileName, String.format("%.4f",bestIndividual.getFitness(false)), modelName, String.valueOf(this.runTime), date_formatter.format(new Date()), String.valueOf(Parameters.randomSeedValue),
-                String.valueOf(Parameters.maximumSubIndividualPopulationSize),String.valueOf(Parameters.maxNumberOfGenerations), String.valueOf(Parameters.numberOfCustomers)
+                String.valueOf(Parameters.populationSize),String.valueOf(Parameters.maxNumberOfGenerations), String.valueOf(Parameters.numberOfCustomers)
                 , String.valueOf(Parameters.numberOfVehicles), String.valueOf(this.isFeasible), String.valueOf(this.isOptimal), String.valueOf(Math.round(this.MIPGap*1000000)/10000) + "%"};
         csvWriter.writeNext(results, false);
         csvWriter.close();

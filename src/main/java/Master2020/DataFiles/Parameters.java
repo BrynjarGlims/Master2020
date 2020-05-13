@@ -17,24 +17,25 @@ public class Parameters {
     public static final String vehicleFilePath2 = "data/" + dataSet2 + "/Vehicles.txt";
     public static final String distancePathVestTele = "Google_VestTele";
     public static final String distancePathTrondelag = "Google_Trondelag";
-    public static final boolean useVestTeleDataset = false;
+    public static final boolean useVestTeleDataset = true;
     public static final boolean doRandomSeed = true;
     public static final int samples = 1;
-    public static long randomSeedValue = 10;
-
+    public static long randomSeedValue = 75;
 
     // Population parameters
-    public static final int maximumSubIndividualPopulationSize = 200; //TODO: find reasonable value
-    public static final int minimumSubIndividualPopulationSize = 50;
-    public static final int initialPopulationSize = 50;
+    public static final int populationSize = 50;    //my
     public static final int initialOrderDistributionPopulationSize = 50;
     public static final int maxNumberIterationsWithoutImprovement = 3;
     public static final int maxNumberOfGenerations = 25;
+    public static final int numberOfIndividualsGeneratedEachGeneration = 100;    //lambda
+    public static final double fractionEliteIndividuals = 0.4;     //el
+    public static final double fractionOfFeasibleIndividualsFromAdsplit = 0.5;
+    public static final int frequencyOfPenaltyUpdates = 100;
 
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 30;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
+    public static int numberOfCustomers = 118;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
     public static final int numberOfVehicles = 10;
     public static final double distanceCutOffFromDepot = 3.0;   //default 3
     public static final boolean adjustTimeWindow = true;
@@ -78,8 +79,8 @@ public class Parameters {
 
 
     //Penalty parameters for heuristics - Tunable
-    public static final double initialCapacityPenalty = 10000;  // lambda
-    public static final double initialTimeWarpPenalty = 10000;  // theta
+    public static double initialCapacityPenalty = 10000;  // lambda
+    public static double initialTimeWarpPenalty = 10000;  // theta
     public static final double initialDrivingCostPenalty = 1; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
     public static final double penaltyFactorForOverFilling = 1.1;
     public static final double penaltyFactorForUnderFilling = 1.5;

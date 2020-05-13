@@ -1,7 +1,6 @@
 package Master2020.Individual;
 import Master2020.DataFiles.*;
 import Master2020.Genetic.FitnessCalculation;
-import Master2020.Genetic.TripOptimizer;
 import Master2020.Population.Population;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Testing.IndividualTest;
@@ -295,10 +294,10 @@ public class Individual implements Comparable<Individual> {
     public void calculateBiasedFitness(){
         double diversityScaling;
         if (this.isFeasible()){
-            diversityScaling = 1.0 - ((double) Parameters.minimumSubIndividualPopulationSize/ (double) this.population.feasiblePopulation.size());
+            diversityScaling = 1.0 - ((double) Parameters.populationSize*Parameters.fractionEliteIndividuals / (double) this.population.feasiblePopulation.size());
         }
         else{
-            diversityScaling = 1.0 - ((double) Parameters.minimumSubIndividualPopulationSize/ (double) this.population.infeasiblePopulation.size());
+            diversityScaling = 1.0 - ((double) Parameters.populationSize*Parameters.fractionEliteIndividuals/ (double) this.population.infeasiblePopulation.size());
         }
         biasedFitness = (double) fitnessRank + (diversityScaling * (double) diversityRank);
     }

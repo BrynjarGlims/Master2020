@@ -25,23 +25,14 @@ public class BiasedFitness {
 
 
     private static void calculateSimplePopulationDiversity(Population population){
-        if (population.feasiblePopulation.size() > Parameters.minimumSubIndividualPopulationSize){
-            calculateDiversityForPopulation(population.feasiblePopulation);
-        }
-        if (population.infeasiblePopulation.size() > Parameters.minimumSubIndividualPopulationSize){
-            calculateDiversityForPopulation(population.infeasiblePopulation);
-        }
-
+        calculateDiversityForPopulation(population.feasiblePopulation);
+        calculateDiversityForPopulation(population.infeasiblePopulation);
     }
 
 
     private static void calculateFitnessAndDiversityRank(Population population){
-        if (population.feasiblePopulation.size() > Parameters.minimumSubIndividualPopulationSize ){
-            calculateFitnessAndDiversityRankForSubPopulation(population.feasiblePopulation);
-        }
-        if (population.infeasiblePopulation.size() > Parameters.minimumSubIndividualPopulationSize){
-            calculateFitnessAndDiversityRankForSubPopulation(population.infeasiblePopulation);
-        }
+        calculateFitnessAndDiversityRankForSubPopulation(population.feasiblePopulation);
+        calculateFitnessAndDiversityRankForSubPopulation(population.infeasiblePopulation);
     }
 
 

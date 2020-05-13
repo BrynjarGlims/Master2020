@@ -131,15 +131,12 @@ public class GeneticAlgorithm extends Thread {
         // Reduce population size
 
         population.improvedSurvivorSelection();
-
-
     }
 
 
     public void runGeneration() {
         //System.out.println("Start generation");
-        while (population.infeasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize &&
-                population.feasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize) {
+        for (int j = 0; j < Parameters.numberOfIndividualsGeneratedEachGeneration; j++) {
             Individual newIndividual = PIX(population);
             educate(newIndividual);
             tripOptimizer(newIndividual);
