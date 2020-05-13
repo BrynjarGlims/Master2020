@@ -7,7 +7,6 @@ import java.util.Set;
 public class Parameters {
 
     // File import parameters
-
     public static final String dataSet1 = "Trondelag";   // Trondelag or VestTele
     public static final String dataSet2 = "VestTele";   // Trondelag or VestTele
     public static final String ordersFilePath1 = "data/" + dataSet1 + "/Orders.txt";
@@ -18,7 +17,6 @@ public class Parameters {
     public static final String vehicleFilePath2 = "data/" + dataSet2 + "/Vehicles.txt";
     public static final String distancePathVestTele = "Google_VestTele";
     public static final String distancePathTrondelag = "Google_Trondelag";
-
     public static final boolean useVestTeleDataset = false;
     public static final boolean doRandomSeed = true;
     public static final int samples = 1;
@@ -79,14 +77,14 @@ public class Parameters {
 
 
 
-    //Penalty parameters for heuristics
+    //Penalty parameters for heuristics - Tunable
     public static final double initialCapacityPenalty = 10000;  // lambda
     public static final double initialTimeWarpPenalty = 10000;  // theta
     public static final double initialDrivingCostPenalty = 1; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
     public static final double penaltyFactorForOverFilling = 1.1;
     public static final double penaltyFactorForUnderFilling = 1.5;
 
-    // Scaling parameters
+    // Scaling and cost parameters - Not tunable
     public static final boolean euclidianDistance = true;
     public static final double scalingDistanceParameter = 2.0; //set to 2.2
     public static final double timeShift = 6;
@@ -100,20 +98,18 @@ public class Parameters {
     public static final double scalingVolumeValue = 1.5;
     public static final double lowerVolumeFlexibility = 0.7;
     public static final double upperVolumeFlexibility = 1.3;
-
-    //Cost parameters
     public static final double[] overtimeLimitPercentage = {0.19, 0.19, 0.19, 0.19, 0.19, 0.05};
     public static final double[] overtimeCost = {100, 100, 100, 100, 100, 100};
     public static final double scalingDrivingCost = 25;  // // TODO: 03/04/2020 Not sure if implemented correctly 
 
-    //Tournament selection parameters
-    public static final int nearestNeighborsDiversity = 5;  // Neighbours from calculating diversity
+    //Tournament selection parameters - Probably tunable
+    public static final int nearestNeighborsDiversity = 5;  // Neighbours from calculating diversity ... change!!!
     public static final int diversityCalculationInterval = 100;
     public static final double bestIndividualProbability = 0.6;
     public static final int tournamentSize = 5;  // 2 or larger, size = 2 --> binary tournament selection
     public static final boolean binarySelection = true;  // if true, bestIndProp must be much larger than 0.5
 
-    //GUROBI parameters
+    //GUROBI parameters - Not tunable
     public static final String symmetry =  "trips";      // // none, car, trips, customers, cost, duration
     public static final double modelTimeLimit = 36000;
     public static final double modelMipGap = 0.001;
@@ -126,19 +122,22 @@ public class Parameters {
 
 
     //Periodic parameters
-    public static boolean isPeriodic = false;
+    public static boolean isPeriodic = false;  // should be set to true, but has default value false
     public static final boolean threadedPGA = true;
     public static int numberOfPeriodicParallels =  1;
-    public static final boolean runSingularGA = false;
-    public static final boolean threadedGA = true;
-    public static final double diversifiedODProbability = 0.5;
+    public static final boolean runSingularGA = false;  //do not change
+    public static final boolean threadedGA = true;      //do not change
+    public static final double diversifiedODProbability = 0.5;    //remove, move to controller
     public static final int generationsPerOrderDistributionPeriodic = 100;
     public static final int minimumUpdatesPerOrderDistributions = 4;
     public static final int orderDistributionUpdatesGA = 50;        // this / minimumUpdatesPerOrderDistributions = number of unique order distributions
+    //......
     public static final double initialOrderDistributionScale = 1;
     public static final double incrementPerOrderDistributionScaling = 0.02;
     public static final int numberOfGenerationsBetweenODScaling = 2;
     public static final int numberOfGenerationBeforeODScalingStarts = 20;
+    //......
+
 
     // Journey Combination Model parameters
     public static final boolean useJCM = true;
