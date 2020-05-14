@@ -287,8 +287,7 @@ public class App {
                 }
 
                 System.out.println("Populate..");
-                while (population.infeasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize &&
-                        population.feasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize) {
+                for (int j = 0; j < Parameters.numberOfIndividualsGeneratedEachGeneration; j++) {
                     Individual newIndividual = PIX();
                     if (!Master2020.Testing.IndividualTest.testIndividual(newIndividual)) {
                         System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: PIX");
@@ -306,7 +305,6 @@ public class App {
                         System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: TRIP OPTIMIZER");
                     }
                     population.addChildToPopulation(newIndividual);
-
 
                 }
                 for (Individual individual : population.getTotalPopulation()) {
@@ -362,8 +360,7 @@ public class App {
                 for (int p = 0; p < data.numberOfPeriods; p++) {
                     population = periodicPopulation.populations[p];
                     //System.out.println(" ####### Start Period " + p + " ########");
-                    while (periodicPopulation.populations[p].infeasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize &&
-                            periodicPopulation.populations[p].feasiblePopulation.size() < Parameters.maximumSubIndividualPopulationSize) {
+                    for(int j = 0; j < Parameters.numberOfIndividualsGeneratedEachGeneration; j++) {
 
                         Individual newIndividual = PIX(periodicPopulation.populations[p]);
 
@@ -497,14 +494,15 @@ public class App {
          */
 
         System.out.println("SEED VALUE: " + Parameters.randomSeedValue );
+        runGA(Parameters.samples);
         //Parameters.isPeriodic = false;
         //runMIPAFM(Parameters.samples);
 
         //Parameters.randomSeedValue = 31 + i;
         //runGA(Parameters.samples);
 
-        Parameters.isPeriodic = true;
-        runPeriodicGA(Parameters.samples);
+        //Parameters.isPeriodic = true;
+        //runPeriodicGA(Parameters.samples);
 
 
 

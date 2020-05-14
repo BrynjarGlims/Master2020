@@ -12,8 +12,6 @@ import Master2020.ProductAllocation.OrderDistribution;
 
 
 import java.util.ArrayList;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.*;
 
@@ -70,7 +68,7 @@ public class Population {
 
 
     public void initializePopulation (OrderDistribution od) {
-        for (int i = 0; i < Parameters.initialPopulationSize; i++) {
+        for (int i = 0; i < Parameters.populationSize; i++) {
             Individual individual = new Individual(this.data, this, isPeriodic, actualPeriod);
             individual.initializeIndividual(od);
             AdSplit.adSplitPlural(individual);
@@ -219,8 +217,8 @@ public class Population {
     }
 
     public void improvedSurvivorSelection(){
-        int feasibleIndividualsToRemove = this.feasiblePopulation.size() - Parameters.minimumSubIndividualPopulationSize;
-        int infeasibleIndividualsToRemove = this.infeasiblePopulation.size() - Parameters.minimumSubIndividualPopulationSize;
+        int feasibleIndividualsToRemove = (int) (this.feasiblePopulation.size()- Parameters.populationSize);
+        int infeasibleIndividualsToRemove = (int) (this.infeasiblePopulation.size() - Parameters.populationSize);
         for (int i = 0; i < feasibleIndividualsToRemove; i++){
             if ( i % Parameters.diversityCalculationInterval == 0) {
                 BiasedFitness.setBiasedFitnessScoreForFeasibleIndividuals(this);
@@ -252,7 +250,7 @@ public class Population {
 
 
     private void reduceFeasiblePopulation(){
-        int numberOfIndividualsToRemove = feasiblePopulation.size() - Parameters.minimumSubIndividualPopulationSize;
+        int numberOfIndividualsToRemove = feasiblePopulation.size() - Parameters.populationSize;
         ArrayList<Individual> worstIndividuals = new ArrayList<Individual>();
         for (Individual individual : feasiblePopulation){
             if ( individual.isSurvivor){
@@ -271,7 +269,7 @@ public class Population {
     }
 
     private void reduceInfeasiblePopulation(){
-        int numberOfIndividualsToRemove = infeasiblePopulation.size() - Parameters.minimumSubIndividualPopulationSize;
+        int numberOfIndividualsToRemove = infeasiblePopulation.size() - Parameters.populationSize;
         if (numberOfIndividualsToRemove < 0)
             return;
         ArrayList<Individual> worstIndividuals = new ArrayList<Individual>();
