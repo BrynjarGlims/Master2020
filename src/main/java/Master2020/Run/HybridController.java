@@ -58,7 +58,7 @@ public class HybridController {
             algorithms.add(s);
         }
     }
-    private void run() throws Exception {
+    public void run() throws Exception {
 
         for (int i = 0 ; i < Parameters.orderDistributionUpdates ; i++){
             System.out.println("running generation: " + i);

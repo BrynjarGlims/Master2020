@@ -1,8 +1,8 @@
 package Master2020.DataFiles;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import scala.Int;
+
+import java.util.*;
 
 public class Parameters {
 
@@ -20,6 +20,7 @@ public class Parameters {
     public static final boolean useVestTeleDataset = true;
     public static final boolean doRandomSeed = true;
     public static final int samples = 1;
+    public static List<Integer> seeds = Arrays.asList(1,2,3,4,5);
     public static long randomSeedValue = 57;
 
 
