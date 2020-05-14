@@ -5,12 +5,12 @@ public class PenaltyControl {
 
     Data data;
     double iteration;
-    double numOverload;
-    double numTimeWarp;
+    double numOverLoadFeasible;
+    double numTimeWarpFeasible;
     double indifferenceValue = 0.05;
     double increase = 1.25;
     double decrease = 0.8;
-    boolean verbose = false;
+    boolean verbose = true;
 
     public double timeWarpPenalty;
     public double overLoadPenalty;
@@ -24,8 +24,8 @@ public class PenaltyControl {
 
     public void adjust(boolean hasTimeWarp, boolean hasOverLoad) {
         iteration += 1;
-        numTimeWarp += hasTimeWarp ? 1 : 0;
-        numOverload += hasOverLoad ? 1 : 0;
+        numTimeWarpFeasible += hasTimeWarp ? 0 : 1;
+        numOverLoadFeasible += hasOverLoad ? 0 : 1;
         if (iteration >= Parameters.frequencyOfPenaltyUpdates) {
             updatePenalties();
             reset();
@@ -40,18 +40,18 @@ public class PenaltyControl {
     }
 
     public void updateTimeWarpPenalties(){
-        double feasibleFraction = 1 - (numTimeWarp/ iteration);
+        double feasibleFraction = numTimeWarpFeasible/ iteration;
         if (verbose)
             System.out.println(feasibleFraction);
         if (feasibleFraction > Parameters.fractionOfFeasibleIndividualsFromAdsplit + indifferenceValue){
-            this.timeWarpPenalty *= increase;
-            if (verbose)
-                System.out.println("Increase timewarp: " + this.timeWarpPenalty);
-        }
-        else if( feasibleFraction < Parameters.fractionOfFeasibleIndividualsFromAdsplit - indifferenceValue){
             this.timeWarpPenalty *= decrease;
             if (verbose)
                 System.out.println("Decrease timewarp: " + this.timeWarpPenalty);
+        }
+        else if( feasibleFraction < Parameters.fractionOfFeasibleIndividualsFromAdsplit - indifferenceValue){
+            this.timeWarpPenalty *= increase;
+            if (verbose)
+                System.out.println("Increase timewarp: " + this.timeWarpPenalty);
         }
         else {
             if (verbose)
@@ -61,18 +61,19 @@ public class PenaltyControl {
     }
 
     public void updateOverLoadPenalties(){
-        double feasibleFraction = 1 - (numOverload/ iteration);
+        double feasibleFraction = numOverLoadFeasible / iteration;
         if (verbose)
             System.out.println(feasibleFraction);
         if (feasibleFraction > Parameters.fractionOfFeasibleIndividualsFromAdsplit + indifferenceValue){
-            this.overLoadPenalty *= increase;
-            if (verbose)
-                System.out.println("Increase overload: " + this.overLoadPenalty);
-        }
-        else if (feasibleFraction < Parameters.fractionOfFeasibleIndividualsFromAdsplit - indifferenceValue){
             this.overLoadPenalty *= decrease;
             if (verbose)
                 System.out.println("Decrease overload: " + this.overLoadPenalty );
+        }
+        else if (feasibleFraction < Parameters.fractionOfFeasibleIndividualsFromAdsplit - indifferenceValue){
+            this.overLoadPenalty *= increase;
+            if (verbose)
+                System.out.println("Increase overload: " + this.overLoadPenalty);
+
         }
         else {
             if (verbose)
@@ -82,8 +83,8 @@ public class PenaltyControl {
 
     public void reset(){
         iteration = 0;
-        numOverload = 0;
-        numTimeWarp = 0;
+        numOverLoadFeasible = 0;
+        numTimeWarpFeasible = 0;
 
     }
 

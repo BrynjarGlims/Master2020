@@ -2,6 +2,7 @@ package Master2020.ABC;
 
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.Parameters;
+import Master2020.Genetic.PenaltyControl;
 import Master2020.ProductAllocation.OrderDistribution;
 
 import java.util.HashMap;
@@ -13,8 +14,8 @@ public class Employee extends Bee {
     public int trials;
 
 
-    public Employee(Data data, int period, PeriodSwarm colony) {
-        super(data, period, colony);
+    public Employee(Data data, int period, PeriodSwarm colony, PenaltyControl penaltyControl) {
+        super(data, period, colony, penaltyControl);
         onlookerFitnesses = new HashMap<>();
         scout();
     }

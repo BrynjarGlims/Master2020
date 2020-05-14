@@ -46,7 +46,7 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
         return new double[]{travelCost,timeWarpCost,overloadCost,vehicleUsageCost};
     }
 
-    public static double getTotatPeriodVehicleTypeFitness(ArrayList<Journey> journeys, OrderDistribution orderDistribution, double penaltyMultiplier){
+    public static double getTotalPeriodVehicleTypeFitness(ArrayList<Journey> journeys, OrderDistribution orderDistribution, double penaltyMultiplier){
         double[] fitnesses = getIndividualFitnessPeriodVehicleType(journeys, orderDistribution, penaltyMultiplier);
         double fitness = 0;
         for (double f : fitnesses){

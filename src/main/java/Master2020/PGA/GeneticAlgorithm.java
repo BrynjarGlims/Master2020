@@ -1,11 +1,13 @@
 package Master2020.PGA;
 
 import Master2020.DataFiles.Data;
+import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.*;
 import Master2020.Individual.Individual;
 import Master2020.Individual.Journey;
 import Master2020.Individual.Trip;
+import Master2020.Population.PeriodicOrderDistributionPopulation;
 import Master2020.Population.Population;
 import Master2020.ProductAllocation.OrderDistribution;
 import gurobi.GRBException;
@@ -31,10 +33,6 @@ public class GeneticAlgorithm extends Thread {
     public Individual currentBestIndividual;
     public PenaltyControl penaltyControl;
 
-    public double timeWarpPenalty;
-    public double overLoadPenalty;
-
-
 
     //threads
     public CyclicBarrier downstreamGate;
@@ -53,7 +51,7 @@ public class GeneticAlgorithm extends Thread {
         this.period = period;
         this.orderDistribution = orderDistribution;
         this.penaltyControl = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
-        population.initializePopulation(this.orderDistribution);
+        population.initializePopulation(this.orderDistribution, penaltyControl.timeWarpPenalty, penaltyControl.overLoadPenalty);
         fitnessForPeriod = Double.MAX_VALUE;
         BiasedFitness.setBiasedFitnessScore(population);
         repaired = new HashSet<>();
@@ -79,7 +77,7 @@ public class GeneticAlgorithm extends Thread {
 
     public void educate(Individual individual){
         if (ThreadLocalRandom.current().nextDouble() < Parameters.educationProbability){
-            Education.improveRoutes(individual, individual.orderDistribution);
+            Education.improveRoutes(individual, individual.orderDistribution, penaltyControl.timeWarpPenalty, penaltyControl.overLoadPenalty);
         }
     }
 
@@ -118,7 +116,7 @@ public class GeneticAlgorithm extends Thread {
         repaired.clear();
         for (Individual infeasibleIndividual : population.infeasiblePopulation){
             if (ThreadLocalRandom.current().nextDouble() < Parameters.repairProbability){
-                if (Repair.repair(infeasibleIndividual, infeasibleIndividual.orderDistribution)){
+                if (Repair.repair(infeasibleIndividual, infeasibleIndividual.orderDistribution, penaltyControl)){
                     repaired.add(infeasibleIndividual);
                 }
             }
@@ -188,7 +186,6 @@ public class GeneticAlgorithm extends Thread {
 
 
 
-
     public void runGenerations(int generations) {
         resetCounters();
         printPopulationStats();
@@ -206,5 +203,7 @@ public class GeneticAlgorithm extends Thread {
         System.out.println(" Number of feasible individuals: " + population.feasiblePopulation.size());
         System.out.println(" Number of infeasible individuals: " + population.infeasiblePopulation.size());
     }
+
+
 
 }

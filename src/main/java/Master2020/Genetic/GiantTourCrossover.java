@@ -40,7 +40,7 @@ public class GiantTourCrossover {
         combined.addAll(sets[2]);
         inheritParent2(parent2, child, combined, visitedCustomers);
         bestInsertion(child, orderDistribution, findMissingCustomers(visitedCustomers, child), timeWarpPenalty, overLoadPenalty);
-        AdSplit.adSplitPlural(child);
+        AdSplit.adSplitPlural(child, timeWarpPenalty, overLoadPenalty);
         child.updateFitness();
         return child;
     }
@@ -119,7 +119,7 @@ public class GiantTourCrossover {
         int currentBestVehicleType = -1;
         Trip currentBestTrip;
         int currentBestIndex = -1;
-        AdSplit.adSplitPlural(child);
+        AdSplit.adSplitPlural(child, timeWarpPenalty, overLoadPenalty);
         for (int p : missingCustomers.keySet()){
             for (int c : missingCustomers.get(p)){
                 currentBestTrip = null;
@@ -246,13 +246,13 @@ public class GiantTourCrossover {
         od1.makeInitialDistribution();
         Individual individual1 = new Individual(data);
         individual1.initializeIndividual(od1);
-        AdSplit.adSplitPlural(individual1);
+        AdSplit.adSplitPlural(individual1, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
 
         OrderDistribution od2 = new OrderDistribution(data);
         od2.makeInitialDistribution();
         Individual individual2 = new Individual(data);
         individual2.initializeIndividual(od1);
-        AdSplit.adSplitPlural(individual2);
+        AdSplit.adSplitPlural(individual2, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
 
 
 

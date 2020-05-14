@@ -15,11 +15,11 @@ public class Education {
     public static OrderDistribution orderDistribution;
     public static double penaltyMultiplier;
 
-    public static void improveRoutes(Individual individual, OrderDistribution od) {
-        improveRoutes(individual, od, 1);
+    public static void improveRoutes(Individual individual, OrderDistribution od, double timeWarpPenalty, double overLoadPenalty) {
+        improveRoutes(individual, od, 1, timeWarpPenalty, overLoadPenalty );
     }
 
-    public static void improveRoutes(Individual individual, OrderDistribution od, double pm) {
+    public static void improveRoutes(Individual individual, OrderDistribution od, double pm, double timeWarpPenalty, double overLoadPenalty) {
         data = individual.data;
         orderDistribution = od;
         penaltyMultiplier = pm;
@@ -148,7 +148,7 @@ public class Education {
             System.out.println("total totalImprovements in Education: " + totalImprovements);
         }
         individual.setGiantTourFromTrips();
-        AdSplit.adSplitPlural(individual, penaltyMultiplier);
+        AdSplit.adSplitPlural(individual, penaltyMultiplier, timeWarpPenalty, overLoadPenalty);
     }
 
 
@@ -553,11 +553,11 @@ public class Education {
         odp.initializeOrderDistributionPopulation(population);
         OrderDistribution firstOD = odp.getRandomOrderDistribution();
         population.setOrderDistributionPopulation(odp);
-        population.initializePopulation(firstOD);
+        population.initializePopulation(firstOD, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
 
         for (int i = 0; i < 1; i++) {
             Individual individual = population.getRandomIndividual();
-            Education.improveRoutes(individual, individual.orderDistribution);
+            Education.improveRoutes(individual, individual.orderDistribution, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
 
         }
     }

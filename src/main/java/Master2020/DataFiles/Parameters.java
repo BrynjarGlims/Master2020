@@ -30,14 +30,14 @@ public class Parameters {
     public static final int maxNumberOfGenerations = 100;
     public static final int numberOfIndividualsGeneratedEachGeneration = 100;    //lambda
     public static final double fractionEliteIndividuals = 0.4;     //el
-    public static final double fractionOfFeasibleIndividualsFromAdsplit = 0.5;
+    public static final double fractionOfFeasibleIndividualsFromAdsplit = 0.9;
     public static final int frequencyOfPenaltyUpdates = 50;
 
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 20;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
-    public static final int numberOfVehicles = 10;
+    public static int numberOfCustomers = 10;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
+    public static final int numberOfVehicles = 40;
 
     public static final double distanceCutOffFromDepot = 3.0;   //default 3
     public static final boolean adjustTimeWindow = true;
@@ -55,8 +55,8 @@ public class Parameters {
     public static final double heuristicDominanceValue = 1;
 
     // Periodic Parameters
-    public static final int numberOfAlgorithms = 5;
-    public static final int numberOfPGA = 0;
+    public static final int numberOfAlgorithms = 1;
+    public static final int numberOfPGA = 1;
     public static final int numberOfABC = numberOfAlgorithms - numberOfPGA;
     public static final int minimumIterations = 15;
 

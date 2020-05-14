@@ -2,6 +2,7 @@ package Master2020.ABC;
 
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
+import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.FitnessCalculation;
 import Master2020.Individual.AdSplit;
 import Master2020.Individual.Journey;
@@ -135,7 +136,7 @@ public class PeriodicABC extends Thread implements PeriodicAlgorithm {
             ArrayList<Integer>[] giantTourEntry = HelperFunctions.parsePosition(data, p, periodSwarm.globalBestPosition);
 
             for (int vt = 0 ; vt < giantTourEntry.length ; vt++) {
-                ArrayList<Journey> journeysEntry = AdSplit.adSplitSingular(giantTourEntry[vt], data, orderDistribution, p, vt);
+                ArrayList<Journey> journeysEntry = AdSplit.adSplitSingular(giantTourEntry[vt], data, orderDistribution, p, vt, periodSwarm.penaltyControl.timeWarpPenalty, periodSwarm.penaltyControl.overLoadPenalty);
                 journeys[p][vt] = journeysEntry;
             }
         }

@@ -29,7 +29,6 @@ public class PeriodSwarm extends Thread {
     public double[] globalBestPosition;
     public boolean run = true;
 
-
     public PenaltyControl penaltyControl;
     public ArrayList<ABCPeriodSolution> solutions;
 
@@ -50,6 +49,7 @@ public class PeriodSwarm extends Thread {
         this.data = data;
         this.period = period;
         this.orderDistribution = orderDistribution;
+        this.penaltyControl = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
         initialize();
     }
 
@@ -66,6 +66,7 @@ public class PeriodSwarm extends Thread {
         for (Employee employee : employees){
             neighbor = getRandomNeighbor(employee);
             employee.search(neighbor);
+            //add update of penaltyControl
         }
         double[] fitnesses = employees.stream().mapToDouble(o -> 1/o.fitness).toArray();
         WeightedRandomSampler weightedRandomSampler = new WeightedRandomSampler(fitnesses);
@@ -142,8 +143,8 @@ public class PeriodSwarm extends Thread {
     }
 
     public void initialize(){
-        employees = IntStream.range(0, Parameters.numberOfEmployees).parallel().mapToObj(o -> new Employee(data, period, this)).collect(Collectors.toList());
-        onlookers = IntStream.range(0, Parameters.numberOfOnlookers).parallel().mapToObj(o -> new Onlooker(data, period, this)).collect(Collectors.toList());
+        employees = IntStream.range(0, Parameters.numberOfEmployees).parallel().mapToObj(o -> new Employee(data, period, this, penaltyControl)).collect(Collectors.toList());
+        onlookers = IntStream.range(0, Parameters.numberOfOnlookers).parallel().mapToObj(o -> new Onlooker(data, period, this, penaltyControl)).collect(Collectors.toList());
         globalBestFitness = Double.MAX_VALUE;
         globalBestPosition = employees.get(0).position;
         solutions = new ArrayList<>();

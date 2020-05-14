@@ -241,9 +241,9 @@ public class IndividualTest {
         odp.initializeOrderDistributionPopulation(population);
         OrderDistribution firstOD = odp.getRandomOrderDistribution();
         individual.orderDistribution = firstOD;
-        AdSplit.adSplitPlural(individual);
+        AdSplit.adSplitPlural(individual,  Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
         OrderAllocationModel orderAllocationModel = new OrderAllocationModel(data);
-        AdSplit.adSplitPlural(individual);
+        AdSplit.adSplitPlural(individual, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
         System.out.println(individual.getFitness(true));
         individual.printDetailedFitness();
         System.out.println("Done");

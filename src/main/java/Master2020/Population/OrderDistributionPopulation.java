@@ -130,7 +130,7 @@ public class OrderDistributionPopulation {
         Data data = DataReader.loadData();
         Population population = new Population(data);
         OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
-        population.initializePopulation(odp.getRandomOrderDistribution());
+        population.initializePopulation(odp.getRandomOrderDistribution(), Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
         odp.initializeOrderDistributionPopulation(population);
 
     }

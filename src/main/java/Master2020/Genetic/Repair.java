@@ -13,12 +13,12 @@ import java.util.Arrays;
 public class Repair {
 
 
-    public static boolean repair(Individual individual, OrderDistribution orderDistribution){
+    public static boolean repair(Individual individual, OrderDistribution orderDistribution, PenaltyControl penaltyControl){
         int i;
         for (i = 1 ; i < 4 ; i++){
             double penaltyMultiplier = Math.pow(10,i);
-            AdSplit.adSplitPlural(individual, penaltyMultiplier);
-            Education.improveRoutes(individual, orderDistribution, penaltyMultiplier);
+            AdSplit.adSplitPlural(individual, penaltyMultiplier, penaltyControl.timeWarpPenalty, penaltyControl.overLoadPenalty);
+            Education.improveRoutes(individual, orderDistribution, penaltyMultiplier, penaltyControl.timeWarpPenalty, penaltyControl.overLoadPenalty);
             individual.updateFitness();
             if (individual.isFeasible()){
                 return true;

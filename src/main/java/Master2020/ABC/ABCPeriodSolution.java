@@ -1,6 +1,7 @@
 package Master2020.ABC;
 
 import Master2020.DataFiles.Data;
+import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.FitnessCalculation;
 import Master2020.Individual.AdSplit;
 import Master2020.Individual.Journey;
@@ -17,10 +18,15 @@ public class ABCPeriodSolution implements Comparable<ABCPeriodSolution>{
     public Data data;
     public double fitness;
 
+    public double timeWarpPenalty;
+    public double overLoadPenalty;
+
     public ABCPeriodSolution(Data data, int period, double[] position, OrderDistribution orderDistribution){
         this.position = position;
         this.period = period;
         this.data = data;
+        this.timeWarpPenalty = Parameters.initialTimeWarpPenalty;
+        this.overLoadPenalty = Parameters.initialOverLoadPenalty;
         createJourneysAndFitness(orderDistribution);
     }
 
@@ -31,7 +37,7 @@ public class ABCPeriodSolution implements Comparable<ABCPeriodSolution>{
         double[] fitnesses;
         for (int vt = 0 ; vt < giantTourEntry.length ; vt++){
             allJourneys[vt] = new ArrayList<>();
-            ArrayList<Journey> journeys = AdSplit.adSplitSingular(giantTourEntry[vt], data, orderDistribution, period, vt);
+            ArrayList<Journey> journeys = AdSplit.adSplitSingular(giantTourEntry[vt], data, orderDistribution, period, vt, timeWarpPenalty, overLoadPenalty);
             for (Journey journey : journeys){
                 fitnesses = FitnessCalculation.getJourneyFitness(journey, orderDistribution, 1);
                 fitness += fitnesses[0] + fitnesses[1] + fitnesses[2] + fitnesses[3];

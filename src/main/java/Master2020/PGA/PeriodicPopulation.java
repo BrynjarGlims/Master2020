@@ -2,6 +2,7 @@ package Master2020.PGA;
 
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
+import Master2020.DataFiles.Parameters;
 import Master2020.Individual.Individual;
 import Master2020.Population.OrderDistributionPopulation;
 import Master2020.Population.Population;
@@ -45,7 +46,7 @@ public class PeriodicPopulation extends Thread {
         for (int p = 0; p < data.numberOfPeriods; p++){
             this.populations[p] = new Population(data, p);
             this.populations[p].setOrderDistributionPopulation(this.orderDistributionPopulation);
-            this.populations[p].initializePopulation(orderDistribution);  //added
+            this.populations[p].initializePopulation(orderDistribution, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);  //added
 
         }
         this.periodicFeasibleIndividualPopulation = new HashSet<PeriodicIndividual>();
@@ -146,7 +147,7 @@ public class PeriodicPopulation extends Thread {
 
     public void initializePopulations (OrderDistribution od) {
         for (int p = 0; p < data.numberOfPeriods; p++){
-            this.populations[p].initializePopulation(od);
+            this.populations[p].initializePopulation(od, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
         }
     }
 

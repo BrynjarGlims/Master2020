@@ -152,15 +152,15 @@ public class Journey {
         odp.initializeOrderDistributionPopulation(population);
         OrderDistribution firstOD = odp.getRandomOrderDistribution();
         population.setOrderDistributionPopulation(odp);
-        population.initializePopulation(firstOD);
+        population.initializePopulation(firstOD, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
         Individual individual = population.getRandomIndividual();
-        AdSplit.adSplitPlural(individual);
+        AdSplit.adSplitPlural(individual, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
         Individual parent1 = population.getRandomIndividual();
         Individual parent2 = population.getRandomIndividual();
         System.out.println(parent1.getFitness(true));
         Individual child = Master2020.Genetic.GiantTourCrossover.crossOver(parent1, parent2, parent1.orderDistribution, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
         System.out.println(child.getFitness(true));
-        Master2020.Genetic.Education.improveRoutes(child, child.orderDistribution);
+        Master2020.Genetic.Education.improveRoutes(child, child.orderDistribution, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
         System.out.println(child.getFitness(true));
     }
 

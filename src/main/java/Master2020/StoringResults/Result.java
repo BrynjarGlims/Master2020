@@ -564,7 +564,7 @@ public class Result {
         odp.initializeOrderDistributionPopulation(population);
         OrderDistribution firstOD = odp.getRandomOrderDistribution();
         population.setOrderDistributionPopulation(odp);
-        population.initializePopulation(firstOD);
+        population.initializePopulation(firstOD, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
         Result res = new Result(population, "GA");
         res.store();
     }

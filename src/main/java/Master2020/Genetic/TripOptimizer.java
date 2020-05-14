@@ -44,9 +44,9 @@ public class TripOptimizer {
         odp.initializeOrderDistributionPopulation(population);
         OrderDistribution firstOD = odp.getRandomOrderDistribution();
         population.setOrderDistributionPopulation(odp);
-        population.initializePopulation(firstOD);
+        population.initializePopulation(firstOD, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
         Individual individual = population.getRandomIndividual();
-        AdSplit.adSplitPlural(individual);
+        AdSplit.adSplitPlural(individual, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
         System.out.println(individual.getFitness(true));
         for (int p = 0 ; p < data.numberOfPeriods ; p++){
             for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){

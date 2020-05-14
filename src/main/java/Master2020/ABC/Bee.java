@@ -3,14 +3,13 @@ package Master2020.ABC;
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.FitnessCalculation;
+import Master2020.Genetic.PenaltyControl;
 import Master2020.Individual.AdSplit;
 import Master2020.Individual.Journey;
 import Master2020.Utils.Utils;
 import Master2020.Utils.WeightedRandomSampler;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
@@ -26,13 +25,15 @@ public abstract class Bee {
     public PeriodSwarm colony;
     protected ThreadLocalRandom random = ThreadLocalRandom.current();
     protected WeightedRandomSampler enhancementsSampler = new WeightedRandomSampler(Parameters.weightsEnhancement);
+    private PenaltyControl penaltyControl;
 
 
-    public Bee(Data data, int period, PeriodSwarm colony){
+    public Bee(Data data, int period, PeriodSwarm colony, PenaltyControl penaltyControl){
         this.period = period;
         this.data = data;
         this.numCustomers = data.numberOfCustomerVisitsInPeriod[period];
         this.colony = colony;
+        this.penaltyControl = penaltyControl;
         scout();
     }
 
@@ -75,7 +76,7 @@ public abstract class Bee {
         ArrayList<Integer>[] giantTourEntry = HelperFunctions.parsePosition(data, period, position);
         double fitness = 0;
         for (int vt = 0 ; vt < giantTourEntry.length ; vt++){
-            ArrayList<Journey> journeys = AdSplit.adSplitSingular(giantTourEntry[vt], data, colony.orderDistribution, period, vt);
+            ArrayList<Journey> journeys = AdSplit.adSplitSingular(giantTourEntry[vt], data, colony.orderDistribution, period, vt, penaltyControl.timeWarpPenalty, penaltyControl.overLoadPenalty);
             for (Journey journey : journeys){
                 fitness += journey.getTotalFitness(colony.orderDistribution);
             }
@@ -112,13 +113,13 @@ public abstract class Bee {
         ArrayList<Integer> parsedIndices = po.parsedIndices[vt];
         if (parsedIndices.size() > 1){
             int[] positions = getPositions(parsedIndices);
-            ArrayList<Journey> oldJourneys = AdSplit.adSplitSingular(customerVisits, data, colony.orderDistribution, period, vt);
-            double oldFitness = FitnessCalculation.getTotatPeriodVehicleTypeFitness(oldJourneys, colony.orderDistribution, 1);
+            ArrayList<Journey> oldJourneys = AdSplit.adSplitSingular(customerVisits, data, colony.orderDistribution, period, vt, penaltyControl.timeWarpPenalty, penaltyControl.overLoadPenalty);
+            double oldFitness = FitnessCalculation.getTotalPeriodVehicleTypeFitness(oldJourneys, colony.orderDistribution, 1);
             //update
             function.apply(customerVisits).apply(positions[0]).accept(positions[1]);
             //evaluate
-            ArrayList<Journey> newJourneys = AdSplit.adSplitSingular(customerVisits, data, colony.orderDistribution, period, vt);
-            double newFitness = FitnessCalculation.getTotatPeriodVehicleTypeFitness(newJourneys, colony.orderDistribution, 1);
+            ArrayList<Journey> newJourneys = AdSplit.adSplitSingular(customerVisits, data, colony.orderDistribution, period, vt, penaltyControl.timeWarpPenalty, penaltyControl.overLoadPenalty);
+            double newFitness = FitnessCalculation.getTotalPeriodVehicleTypeFitness(newJourneys, colony.orderDistribution, 1);
             if (newFitness < oldFitness){
                 //update other structures
                 function.apply(parsedIndices).apply(positions[0]).accept(positions[1]);

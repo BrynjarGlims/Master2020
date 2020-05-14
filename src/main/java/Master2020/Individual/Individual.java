@@ -134,15 +134,9 @@ public class Individual implements Comparable<Individual> {
         this.giantTour = gt;
     }
 
-    public void setOptimalOrderDistribution(OrderDistribution orderDistribution){
-        setOptimalOrderDistribution(orderDistribution, true);
-    }
 
-    public void setOptimalOrderDistribution(OrderDistribution orderDistribution, boolean doAdSplit) {
+    public void setOptimalOrderDistribution(OrderDistribution orderDistribution) {
         this.orderDistribution = orderDistribution;
-        if (doAdSplit){
-            AdSplit.adSplitPlural(this);
-        }
         this.updateFitness();
     }
 
@@ -392,7 +386,7 @@ public class Individual implements Comparable<Individual> {
         Individual individual = new Individual(data);
         individual.initializeIndividual(od);
         for( int i = 0; i < 100; i++){
-            AdSplit.adSplitPlural(individual);
+            AdSplit.adSplitPlural(individual, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
             individual.updateFitness();
             individual.printDetailedFitness();
         }

@@ -2,6 +2,7 @@ package Master2020.Population;
 import Master2020.DataFiles.*;
 import Master2020.Genetic.BiasedFitness;
 import Master2020.Genetic.OrderDistributionCrossover;
+import Master2020.Genetic.PenaltyControl;
 import Master2020.Genetic.TournamentSelection;
 import Master2020.Individual.Individual;
 import Master2020.Individual.AdSplit;
@@ -67,11 +68,11 @@ public class Population {
     }
 
 
-    public void initializePopulation (OrderDistribution od) {
+    public void initializePopulation (OrderDistribution od, double timeWarpPenalty, double overLoadPenalty) {
         for (int i = 0; i < Parameters.populationSize; i++) {
             Individual individual = new Individual(this.data, this, isPeriodic, actualPeriod);
             individual.initializeIndividual(od);
-            AdSplit.adSplitPlural(individual);
+            AdSplit.adSplitPlural(individual, timeWarpPenalty, overLoadPenalty);
             individual.updateFitness();
             if (individual.isFeasible()) {
                 feasiblePopulation.add(individual);
@@ -302,7 +303,7 @@ public class Population {
         Population population = new Population(data);
         OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
         odp.initializeOrderDistributionPopulation(population);
-        population.initializePopulation(odp.getRandomOrderDistribution());
+        population.initializePopulation(odp.getRandomOrderDistribution(), Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
         Individual individual = TournamentSelection.performSelection(population);
         individual.printDetailedFitness();
     }

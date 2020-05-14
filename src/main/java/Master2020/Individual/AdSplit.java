@@ -10,20 +10,11 @@ import java.util.*;
 
 public class AdSplit {
 
-    //public static Individual individual;
-    //public static ArrayList<ArrayList<Integer>> matrixOfTrips;
-
-
-
     //MAIN ADSPLIT ALGORITHM------------------------------------------------------------------------------------------------------------------------------------------------------
-    public static void adSplitPlural(Individual individual){
-        adSplitPlural(individual, 1, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
-    }
 
     public static void adSplitPlural(Individual individual, double timeWarpPenalty, double overLoadPenalty){
         adSplitPlural(individual, 1, timeWarpPenalty, overLoadPenalty);
     }
-
 
 
     public static void adSplitPlural(Individual individual, double penaltyMultiplier, double timeWarpPenalty, double overLoadPenalty) {
@@ -55,7 +46,7 @@ public class AdSplit {
             //Labeling algorithm
             Label bestLabel  = labelingAlgorithm(matrixOfTrips, individual.data, individual.orderDistribution, individual.getActualPeriod(p), vt,
                     matrixOfTrips, penaltyMultiplier, timeWarpPenalty, overLoadPenalty);   // Sets bestLabel.
-
+            System.out.println("Label: TW: " + bestLabel.fleetTimeWarp + " OL: " +bestLabel.fleetOverLoad);
             //Trip generation
             ArrayList<Journey> journeyList = tripAssignment(bestLabel, matrixOfTrips, individual.data);
 
@@ -85,8 +76,6 @@ public class AdSplit {
     }
 
 
-
-
     // ------------- NEW ADSPLIT ---------------------
     public static ArrayList<Journey> adSplitSingular(ArrayList<Integer> giantTour, Data data,
                                                      OrderDistribution orderDistribution, int p, int vt, double penaltyMultiplier, double timeWarpPenalty, double overLoadPenalty){
@@ -107,11 +96,6 @@ public class AdSplit {
         }
     }
 
-
-
-    private static void adSplitSingular(Individual ind, int p, int vt){
-        adSplitSingular(ind, p, vt, 1, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
-    }
 
 
     private static ArrayList<Journey> tripAssignment(Label label, ArrayList<ArrayList<Integer>> matrixOfTrips, Data data){
