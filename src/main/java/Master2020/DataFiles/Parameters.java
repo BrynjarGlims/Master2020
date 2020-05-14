@@ -20,7 +20,8 @@ public class Parameters {
     public static final boolean useVestTeleDataset = true;
     public static final boolean doRandomSeed = true;
     public static final int samples = 1;
-    public static long randomSeedValue = 75;
+    public static long randomSeedValue = 57;
+
 
     // Population parameters
     public static final int populationSize = 50;    //my
@@ -37,13 +38,14 @@ public class Parameters {
     public static final int numberOfTrips = 5;
     public static int numberOfCustomers = 20;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
     public static final int numberOfVehicles = 10;
+
     public static final double distanceCutOffFromDepot = 3.0;   //default 3
     public static final boolean adjustTimeWindow = true;
     public static final double adjustTimeWindowReduction = 5;
     public static final double adjustTimeWindowLimit = 9.5;
 
     // GA specific parameters
-    public static final int nearestNeighbors = (int) Math.round(0.4 * numberOfCustomers);; //Neighborhood size for each customer
+    public static final int nearestNeighbors = (int) Math.round(0.4 * numberOfCustomers); //Neighborhood size for each customer
     public static final int educationTabooSize = 2;
     public static final int tripOptimizerSizeLimit = 7;
     public static final double educationProbability = 0.5;
@@ -52,19 +54,24 @@ public class Parameters {
     public static final double ODMIPProbability = 0.5;
     public static final double heuristicDominanceValue = 1;
 
+    // Periodic Parameters
+    public static final int numberOfAlgorithms = 5;
+    public static final int numberOfPGA = 0;
+    public static final int numberOfABC = numberOfAlgorithms - numberOfPGA;
+    public static final int minimumIterations = 15;
+
     // ABC specific parameters
     public static final int numberOfStoredSolutionsPerPeriod = 10;
     public static final boolean runSingular = false;
     public static final boolean threaded = true;
     public static final int numberOfSwarms = 5;
-    public static final int minimumIterations = 15;
     public static final int orderDistributionCutoff = 2;
     public static final int swarmIterationsWithoutImprovementLimit = 5;
     public static final int generationsPerOrderDistribution = 300;
     public static final int orderDistributionUpdates = 5;
     public static final int numberOfEmployees = 10;
-    public static final int numberOfOnlookers = 40;
-    public static final int numberOfScoutTrials = 10;
+    public static final int numberOfOnlookers = 4 * numberOfEmployees;
+    public static final int numberOfScoutTrials = 25;
     public static final int maxNumberOfTrials = 10;
     public static final int maxBoundDimensionality = 4; //max amount of dimensions that can be changed, chosen randomly from 1-this
     public static final double weightNeighborEmployed = 1;

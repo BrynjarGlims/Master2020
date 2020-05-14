@@ -236,8 +236,6 @@ public class Data {
             }
         }
         targetVolume = totalVolume/ numberOfPeriods;
-
-
     }
 
 

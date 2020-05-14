@@ -6,6 +6,7 @@ import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.*;
 import Master2020.Individual.Individual;
 import Master2020.Individual.Journey;
+import Master2020.Interfaces.PeriodicAlgorithm;
 import Master2020.MIP.DataConverter;
 import Master2020.MIP.JourneyCombinationModel;
 import Master2020.MIP.OrderAllocationModel;
@@ -23,7 +24,7 @@ import java.util.List;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
-public class GeneticPeriodicAlgorithm extends Thread{
+public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorithm {
     public Data data;
     public Population population;
     public PeriodicPopulation periodicPopulation;
@@ -41,6 +42,7 @@ public class GeneticPeriodicAlgorithm extends Thread{
     public int numberOfIterations = 0;
     public int iterationsWithoutImprovement = 0;
     public int iterationsWithSameOd = 0;
+    public int minimumIterations;
 
     //threading
     public boolean run;
@@ -69,6 +71,7 @@ public class GeneticPeriodicAlgorithm extends Thread{
         numberOfIterations = 0;
         iterationsWithoutImprovement = 0;
         iterationsWithSameOd = 0;
+        minimumIterations = 0;
 
 
         //threading
@@ -337,8 +340,9 @@ public class GeneticPeriodicAlgorithm extends Thread{
         }
     }
 
-
-
+    public ArrayList<Journey>[][] getJourneys(){
+        return journeys;
+    }
 
     private void updateOrderDistributionScalingParameter() {
         if (Parameters.initialOrderDistributionScale == 1){
@@ -363,6 +367,22 @@ public class GeneticPeriodicAlgorithm extends Thread{
         if (verbose)
             pgaSolution.individual.printDetailedFitness();
         return pgaSolution;
+    }
+
+    public void setRun(boolean run){
+        this.run = run;
+    }
+
+    public void setMinimumIterations(int value){
+        this.minimumIterations = value;
+    }
+
+    public int getMinimumIterations(){
+        return minimumIterations;
+    }
+
+    public int getIterationsWithoutImprovement(){
+        return iterationsWithoutImprovement;
     }
 
     public static void main(String[] args) throws Exception {

@@ -5,21 +5,19 @@ import Master2020.DataFiles.DataReader;
 import Master2020.Genetic.FitnessCalculation;
 import Master2020.Individual.AdSplit;
 import Master2020.Individual.Journey;
+import Master2020.Interfaces.PeriodicAlgorithm;
 import Master2020.MIP.OrderAllocationModel;
 import Master2020.Population.PeriodicOrderDistributionPopulation;
 import Master2020.ProductAllocation.OrderDistribution;
-import Master2020.Testing.ABCtests;
-import Master2020.Testing.IndividualTest;
 import gurobi.GRBException;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CyclicBarrier;
 
-public class Swarm extends Thread{
+public class PeriodicABC extends Thread implements PeriodicAlgorithm {
 
 
     public Data data;
@@ -32,11 +30,11 @@ public class Swarm extends Thread{
     private CyclicBarrier masterDownstreamGate;
     private List<PeriodSwarm> threads;
     private double fitness;
-    public double iterationsWithoutImprovement;
+    public int iterationsWithoutImprovement;
     public int minimumIterations;
     public boolean run;
 
-    public Swarm(Data data) throws GRBException {
+    public PeriodicABC(Data data) throws GRBException {
         this.data = data;
         orderAllocationModel = new OrderAllocationModel(data);
         orderDistribution = new OrderDistribution(data);
@@ -116,7 +114,7 @@ public class Swarm extends Thread{
         this.fitness = fitness;
     }
 
-    public void terminate() throws BrokenBarrierException, InterruptedException, CloneNotSupportedException, IOException {
+    public void terminate() throws BrokenBarrierException, InterruptedException {
         //terminate threads
         for (PeriodSwarm periodSwarm : threads){
             periodSwarm.run = false;
@@ -179,7 +177,7 @@ public class Swarm extends Thread{
             }
         }
         for (PeriodSwarm periodSwarm : threads){
-            for (PeriodSolution solution : periodSwarm.solutions){
+            for (ABCPeriodSolution solution : periodSwarm.solutions){
                 for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
                     journeys[periodSwarm.period][vt].addAll(solution.journeys[vt]);
                 }
@@ -196,9 +194,29 @@ public class Swarm extends Thread{
         return new ABCSolution(positions, orderDistribution.clone(), journeys);
     }
 
+    public OrderDistribution getOrderDistribution(){
+        return orderDistribution;
+    }
+
+    public void setRun(boolean run){
+        this.run = run;
+    }
+
+    public void setMinimumIterations(int value){
+        this.minimumIterations = value;
+    }
+
+    public int getMinimumIterations(){
+        return minimumIterations;
+    }
+
+    public int getIterationsWithoutImprovement(){
+        return iterationsWithoutImprovement;
+    }
+
     public static void main(String[] args) throws InterruptedException, BrokenBarrierException, GRBException, IOException, CloneNotSupportedException {
         Data data = DataReader.loadData();
-        Swarm swarm = new Swarm(data);
+        PeriodicABC swarm = new PeriodicABC(data);
         OrderDistribution od = new OrderDistribution(data);
         od.makeInitialDistribution();
         OrderDistribution copy = od.clone();

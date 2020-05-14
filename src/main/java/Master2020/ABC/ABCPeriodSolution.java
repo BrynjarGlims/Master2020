@@ -1,13 +1,14 @@
 package Master2020.ABC;
 
 import Master2020.DataFiles.Data;
+import Master2020.Genetic.FitnessCalculation;
 import Master2020.Individual.AdSplit;
 import Master2020.Individual.Journey;
 import Master2020.ProductAllocation.OrderDistribution;
 
 import java.util.ArrayList;
 
-public class PeriodSolution implements Comparable<PeriodSolution>{
+public class ABCPeriodSolution implements Comparable<ABCPeriodSolution>{
 
 
     public double[] position;
@@ -16,7 +17,7 @@ public class PeriodSolution implements Comparable<PeriodSolution>{
     public Data data;
     public double fitness;
 
-    public PeriodSolution(Data data, int period, double[] position, OrderDistribution orderDistribution){
+    public ABCPeriodSolution(Data data, int period, double[] position, OrderDistribution orderDistribution){
         this.position = position;
         this.period = period;
         this.data = data;
@@ -27,21 +28,24 @@ public class PeriodSolution implements Comparable<PeriodSolution>{
         ArrayList<Integer>[] giantTourEntry = HelperFunctions.parsePosition(data, period, position);
         ArrayList<Journey>[] allJourneys = new ArrayList[data.numberOfVehicleTypes];
         double fitness = 0;
+        double[] fitnesses;
         for (int vt = 0 ; vt < giantTourEntry.length ; vt++){
             allJourneys[vt] = new ArrayList<>();
             ArrayList<Journey> journeys = AdSplit.adSplitSingular(giantTourEntry[vt], data, orderDistribution, period, vt);
             for (Journey journey : journeys){
-                fitness += journey.getTotalFitness(orderDistribution);
+                fitnesses = FitnessCalculation.getJourneyFitness(journey, orderDistribution, 1);
+                fitness += fitnesses[0] + fitnesses[1] + fitnesses[2] + fitnesses[3];
+                if (fitnesses[1] + fitnesses[2] == 0){
+                    allJourneys[vt].add(journey);
+                }
             }
-            allJourneys[vt].addAll(journeys);
-
         }
         this.fitness = fitness;
         this.journeys  = allJourneys;
     }
 
     @Override
-    public int compareTo(PeriodSolution o) {
+    public int compareTo(ABCPeriodSolution o) {
         if (fitness < o.fitness){
             return -1;
         }

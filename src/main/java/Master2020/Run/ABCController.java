@@ -1,11 +1,12 @@
-package Master2020.ABC;
+package Master2020.Run;
 
+import Master2020.ABC.ABCSolution;
+import Master2020.ABC.PeriodicABC;
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Parameters;
 import Master2020.Individual.Journey;
 import Master2020.Population.PeriodicOrderDistributionPopulation;
-import Master2020.ProductAllocation.OrderDistribution;
 import gurobi.GRBException;
 
 import java.io.IOException;
@@ -22,7 +23,7 @@ public class ABCController {
 
 
     public Data data;
-    public ArrayList<Swarm> swarms;
+    public ArrayList<PeriodicABC> swarms;
     public PeriodicOrderDistributionPopulation pod;
     public ArrayList<ABCSolution> solutions;
     public ArrayList<ABCSolution> finalSolutions;
@@ -30,7 +31,7 @@ public class ABCController {
     public CyclicBarrier upstreamGate;
 
 
-    public Swarm swarm;
+    public PeriodicABC swarm;
 
 
     public ABCController(Data data){
@@ -55,7 +56,7 @@ public class ABCController {
         pod = new PeriodicOrderDistributionPopulation(data);
         pod.initialize(Parameters.numberOfSwarms);
         for (int i = 0 ; i < Parameters.numberOfSwarms ; i++){
-            Swarm s = new Swarm(data);
+            PeriodicABC s = new PeriodicABC(data);
             s.initialize(pod.distributions.get(i), downstreamGate, upstreamGate);
             if(Parameters.threaded){s.start();};
             swarms.add(s);
@@ -63,7 +64,7 @@ public class ABCController {
     }
 
     private void initializeSingular() throws GRBException {
-        swarm = new Swarm(data);
+        swarm = new PeriodicABC(data);
         swarm.initialize(swarm.orderDistribution);
     }
 
@@ -92,7 +93,7 @@ public class ABCController {
 
 
         }
-        for (Swarm swarm : swarms){
+        for (PeriodicABC swarm : swarms){
             finalSolutions.add(swarm.storeSolution());
             swarm.terminate();
         }
@@ -106,7 +107,7 @@ public class ABCController {
             System.out.println("running generation: " + i);
             runIteration();
         }
-        for (Swarm swarm : swarms){
+        for (PeriodicABC swarm : swarms){
             finalSolutions.add(swarm.storeSolution());
             swarm.terminate();
             swarm.run = false;
@@ -169,7 +170,7 @@ public class ABCController {
 
     public void updateOrderDistributionPopulation() throws CloneNotSupportedException {
         solutions.clear();
-        for (Swarm swarm : swarms){
+        for (PeriodicABC swarm : swarms){
             swarm.minimumIterations++;
             solutions.add(swarm.storeSolution());
         }
@@ -188,7 +189,7 @@ public class ABCController {
 //                pod.distributions.set(sortedIndices[i], newOD);
 
                 //diversified new OD:
-                pod.distributions.set(sortedIndices[i], pod.diversify(10));
+                pod.distributions.set(sortedIndices[i], pod.diversify(3));
                 swarms.get(sortedIndices[i]).updateOrderDistribution(pod.distributions.get(sortedIndices[i]));
                 swarms.get(sortedIndices[i]).minimumIterations = 0;
             }
@@ -211,7 +212,7 @@ public class ABCController {
             }
         }
         ArrayList<Journey>[][] swarmJourneys;
-        for (Swarm swarm : swarms){
+        for (PeriodicABC swarm : swarms){
             swarmJourneys = swarm.getJourneys();
             for (int p = 0 ; p < data.numberOfPeriods ; p++){
                 for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){

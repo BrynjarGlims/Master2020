@@ -1,8 +1,10 @@
-package Master2020.PGA;
+package Master2020.Run;
 
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Parameters;
+import Master2020.PGA.GeneticPeriodicAlgorithm;
+import Master2020.PGA.PGASolution;
 import Master2020.Population.PeriodicOrderDistributionPopulation;
 import Master2020.ProductAllocation.OrderDistribution;
 import gurobi.GRBException;

@@ -1,5 +1,7 @@
 package Master2020.Utils;
 
+import Master2020.DataFiles.*;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -9,6 +11,29 @@ import java.util.function.Function;
 public class Utils {
 
 
+
+    public static double averageDistanceToNeighbor(Data data){
+        double distance = 0;
+        double neighborDistance;
+        for (Customer c : data.customers){
+            neighborDistance = 0;
+            for (Customer neighbor : c.nearestNeighbors){
+                neighborDistance += data.distanceMatrix[c.customerID][neighbor.customerID];
+            }
+            distance += neighborDistance / c.nearestNeighbors.size();
+        }
+        return distance / data.numberOfCustomers;
+    }
+
+    public static double averageOrderVolume(Data data){
+        double volume = 0;
+        for (Customer c : data.customers){
+            for (Order o : c.orders){
+                volume += o.volume;
+            }
+        }
+        return volume /data.numberOfCustomers;
+    }
 
     public static Function<List<?>, Function<Integer, Consumer<Integer>>> reverse = list -> int1 -> int2 -> {
         reverse(list, int1, int2);
@@ -70,18 +95,24 @@ public class Utils {
 
 
     public static void main(String[] args){
-        ArrayList<Integer> l = new ArrayList<>();
-        for (int i = 0 ; i < 10 ; i++){
-            l.add(i);
+        double distances = 0;
+        double volumes = 0;
+        for (int i = 0 ; i < 100 ; i++){
+            System.out.println(" --- SEED: " + i + " ---");
+            Parameters.randomSeedValue = i;
+            Data data = DataReader.loadData();
+            double averageDistance = averageDistanceToNeighbor(data);
+            double averageVolume = averageOrderVolume(data);
+            volumes += averageVolume;
+            distances += averageDistance;
+            if (averageVolume > 65){
+                System.out.println("LARGE INSTANCE: " + i);
+                System.out.println(averageDistance);
+                System.out.println(averageVolume);
+            }
         }
-
-
-        Function<List<?>, Function<Integer, Consumer<Integer>>> function = le -> int1 -> int2 -> {
-            reverse(le, int1, int2);
-        };
-        insert(l, 5, 1);
-        insert(l, 1, 5);
-        System.out.println(l);
+        System.out.println("average distance: " + distances/100);
+        System.out.println("average volume: " + volumes/100);
     }
 }
 
