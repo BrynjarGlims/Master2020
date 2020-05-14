@@ -39,6 +39,7 @@ public class App {
     public static OrderAllocationModel orderAllocationModel;
     public static double scalingFactorOrderDistribution;
     public static PeriodicIndividual bestPeriodicIndividual;
+    public static PenaltyControl penaltyControl;
 
 
     public static void initialize() throws GRBException {
@@ -53,6 +54,7 @@ public class App {
         bestIndividualScore = Double.MAX_VALUE;
         BiasedFitness.setBiasedFitnessScore(population);
         orderAllocationModel = new OrderAllocationModel(data);
+        penaltyControl = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
         repaired = new HashSet<>();
         numberOfIterations = 0;
     }
@@ -73,6 +75,7 @@ public class App {
         bestIndividualScore = Double.MAX_VALUE;
         BiasedFitness.setBiasedFitnessScore(periodicPopulation);
         orderAllocationModel = new OrderAllocationModel(data);
+        penaltyControl = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
         repaired = new HashSet<>();
         numberOfIterations = 0;
     }
@@ -98,7 +101,7 @@ public class App {
         for (OrderDistribution od : crossoverOD) { //todo: EVALUEATE IF THIS IS DECENT
             odp.addOrderDistribution(od);
         }
-        return GiantTourCrossover.crossOver(parent1, parent2, crossoverOD[0]); // TODO: 02.04.2020 add to a pool?
+        return GiantTourCrossover.crossOver(parent1, parent2, crossoverOD[0], penaltyControl.timeWarpPenalty, penaltyControl.overLoadPenalty); // TODO: 02.04.2020 add to a pool?
     }
 
     public static Individual PIX(Population population){
@@ -114,7 +117,7 @@ public class App {
         }
 
          */
-        return GiantTourCrossover.crossOver(parent1, parent2, globalOrderDistribution); // TODO: 02.04.2020 add to a pool?
+        return GiantTourCrossover.crossOver(parent1, parent2, globalOrderDistribution, penaltyControl.timeWarpPenalty, penaltyControl.overLoadPenalty); // TODO: 02.04.2020 add to a pool?
     }
 
 
@@ -204,7 +207,6 @@ public class App {
         Individual bestInfeasibleIndividual = population.returnBestInfeasibleIndividual();
         if (!Parameters.isPeriodic){
             bestFeasibleIndividual.printDetailedFitness();
-            bestInfeasibleIndividual.printDetailedFitness();
         }
 
     }
@@ -289,6 +291,8 @@ public class App {
                 System.out.println("Populate..");
                 for (int j = 0; j < Parameters.numberOfIndividualsGeneratedEachGeneration; j++) {
                     Individual newIndividual = PIX();
+                    penaltyControl.adjust(newIndividual.hasTimeWarp(), newIndividual.hasOverLoad());
+
                     if (!Master2020.Testing.IndividualTest.testIndividual(newIndividual)) {
                         System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: PIX");
                     }
@@ -315,7 +319,12 @@ public class App {
                 repair();
 
                 System.out.println("Selection..");
+                System.out.println("Feas pop: " + population.feasiblePopulation.size());
+                System.out.println("Infeas pop: " + population.infeasiblePopulation.size());
                 selection();
+
+                System.out.println("Feas pop after: " + population.feasiblePopulation.size());
+                System.out.println("Infeas pop after: " + population.infeasiblePopulation.size());
 
                 numberOfIterations++;
             }

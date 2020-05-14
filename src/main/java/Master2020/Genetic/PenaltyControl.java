@@ -4,18 +4,22 @@ import Master2020.DataFiles.*;
 public class PenaltyControl {
 
     Data data;
-    int iteration;
-    int numOverload;
-    int numTimeWarp;
+    double iteration;
+    double numOverload;
+    double numTimeWarp;
     double indifferenceValue = 0.05;
     double increase = 1.25;
     double decrease = 0.8;
+    boolean verbose = false;
+
+    public double timeWarpPenalty;
+    public double overLoadPenalty;
 
 
-    public PenaltyControl(Data data){
-        this.data = data;
+    public PenaltyControl(double timeWarpPenalty, double overLoadPenalty){
+        this.timeWarpPenalty = timeWarpPenalty;
+        this.overLoadPenalty = overLoadPenalty;
         reset();
-
     }
 
     public void adjust(boolean hasTimeWarp, boolean hasOverLoad) {
@@ -36,20 +40,43 @@ public class PenaltyControl {
     }
 
     public void updateTimeWarpPenalties(){
-        if (numTimeWarp/iteration > Parameters.fractionOfFeasibleIndividualsFromAdsplit + indifferenceValue){
-            Parameters.initialTimeWarpPenalty *= increase;
+        double feasibleFraction = 1 - (numTimeWarp/ iteration);
+        if (verbose)
+            System.out.println(feasibleFraction);
+        if (feasibleFraction > Parameters.fractionOfFeasibleIndividualsFromAdsplit + indifferenceValue){
+            this.timeWarpPenalty *= increase;
+            if (verbose)
+                System.out.println("Increase timewarp: " + this.timeWarpPenalty);
         }
-        else if(numTimeWarp/iteration < Parameters.fractionOfFeasibleIndividualsFromAdsplit - indifferenceValue){
-            Parameters.initialTimeWarpPenalty *= decrease;
+        else if( feasibleFraction < Parameters.fractionOfFeasibleIndividualsFromAdsplit - indifferenceValue){
+            this.timeWarpPenalty *= decrease;
+            if (verbose)
+                System.out.println("Decrease timewarp: " + this.timeWarpPenalty);
         }
+        else {
+            if (verbose)
+                System.out.println("No change");
+        }
+
     }
 
     public void updateOverLoadPenalties(){
-        if (numOverload/iteration > Parameters.fractionOfFeasibleIndividualsFromAdsplit + indifferenceValue){
-            Parameters.initialCapacityPenalty *= increase;
+        double feasibleFraction = 1 - (numOverload/ iteration);
+        if (verbose)
+            System.out.println(feasibleFraction);
+        if (feasibleFraction > Parameters.fractionOfFeasibleIndividualsFromAdsplit + indifferenceValue){
+            this.overLoadPenalty *= increase;
+            if (verbose)
+                System.out.println("Increase overload: " + this.overLoadPenalty);
         }
-        else if(numOverload/iteration < Parameters.fractionOfFeasibleIndividualsFromAdsplit - indifferenceValue){
-            Parameters.initialCapacityPenalty *= decrease;
+        else if (feasibleFraction < Parameters.fractionOfFeasibleIndividualsFromAdsplit - indifferenceValue){
+            this.overLoadPenalty *= decrease;
+            if (verbose)
+                System.out.println("Decrease overload: " + this.overLoadPenalty );
+        }
+        else {
+            if (verbose)
+                System.out.println("No change");
         }
     }
 

@@ -3,8 +3,9 @@ package Master2020.Individual;
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.Parameters;
 import Master2020.ProductAllocation.OrderDistribution;
-import scala.xml.PrettyPrinter;
+import scala.collection.parallel.immutable.ParRange;
 
+import java.lang.reflect.Parameter;
 import java.util.*;
 
 public class AdSplit {
@@ -16,33 +17,44 @@ public class AdSplit {
 
     //MAIN ADSPLIT ALGORITHM------------------------------------------------------------------------------------------------------------------------------------------------------
     public static void adSplitPlural(Individual individual){
-        adSplitPlural(individual, 1);
+        adSplitPlural(individual, 1, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
     }
 
-    public static void adSplitPlural(Individual individual, double penaltyMultiplier) {
+    public static void adSplitPlural(Individual individual, double timeWarpPenalty, double overLoadPenalty){
+        adSplitPlural(individual, 1, timeWarpPenalty, overLoadPenalty);
+    }
+
+
+
+    public static void adSplitPlural(Individual individual, double penaltyMultiplier, double timeWarpPenalty, double overLoadPenalty) {
         for (int p = 0; p < individual.numberOfPeriods; p++) {
             if (Parameters.isPeriodic){
                 p = individual.actualPeriod;
             }
             for (int vt = 0; vt < individual.data.numberOfVehicleTypes; vt++) {
-                adSplitSingular(individual, p, vt, penaltyMultiplier);  //should have the actual period!!!
+                adSplitSingular(individual, p, vt, penaltyMultiplier, timeWarpPenalty, overLoadPenalty);  //should have the actual period!!!
             }
         }
     }
 
+    public static void adSplitSingular (Individual individual, int p, int vt, double timeWarpPenalty, double overLoadPenalty) {
+        adSplitSingular(individual, p , vt , 1, timeWarpPenalty, overLoadPenalty);
+    }
 
 
-    public static void adSplitSingular (Individual individual, int p, int vt, double penaltyMultiplier){
+        public static void adSplitSingular (Individual individual, int p, int vt, double penaltyMultiplier, double timeWarpPenalty, double overLoadPenalty){
         if (individual.giantTour.chromosome[Individual.getDefaultPeriod(p)][vt].size() == 0) {
             individual.journeyList[Individual.getDefaultPeriod(p)][vt] = new ArrayList<Journey>();
             individual.tripList[Individual.getDefaultPeriod(p)][vt] = new ArrayList<Trip>();
         }
         else{
             //Shortest path algorithm
-            ArrayList<ArrayList<Integer>> matrixOfTrips = createTrips(individual.giantTour.chromosome[Individual.getDefaultPeriod(p)][vt], individual.data, individual.orderDistribution, individual.getActualPeriod(p), vt, penaltyMultiplier);
+            ArrayList<ArrayList<Integer>> matrixOfTrips = createTrips(individual.giantTour.chromosome[Individual.getDefaultPeriod(p)][vt],
+                    individual.data, individual.orderDistribution, individual.getActualPeriod(p), vt, penaltyMultiplier, timeWarpPenalty, overLoadPenalty);
 
             //Labeling algorithm
-            Label bestLabel  = labelingAlgorithm(matrixOfTrips, individual.data, individual.orderDistribution, individual.getActualPeriod(p), vt, matrixOfTrips, penaltyMultiplier);   // Sets bestLabel.
+            Label bestLabel  = labelingAlgorithm(matrixOfTrips, individual.data, individual.orderDistribution, individual.getActualPeriod(p), vt,
+                    matrixOfTrips, penaltyMultiplier, timeWarpPenalty, overLoadPenalty);   // Sets bestLabel.
 
             //Trip generation
             ArrayList<Journey> journeyList = tripAssignment(bestLabel, matrixOfTrips, individual.data);
@@ -52,7 +64,7 @@ public class AdSplit {
         }
     }
 
-    private static void updateIndividual(Individual individual, ArrayList<Journey> journeyList, ArrayList<ArrayList<Integer>> matrixOfTrips, int p, int vt){
+    public static void updateIndividual(Individual individual, ArrayList<Journey> journeyList, ArrayList<ArrayList<Integer>> matrixOfTrips, int p, int vt){
 
         // set journey list
         individual.journeyList[p][vt] = journeyList;
@@ -68,8 +80,8 @@ public class AdSplit {
         setTripMap(individual, p, vt);
     }
 
-    public static ArrayList<Journey> adSplitSingular(ArrayList<Integer> giantTour, Data data, OrderDistribution orderDistribution, int p, int vt) {
-        return adSplitSingular(giantTour, data, orderDistribution, p, vt, 1);
+    public static ArrayList<Journey> adSplitSingular(ArrayList<Integer> giantTour, Data data, OrderDistribution orderDistribution, int p, int vt, double timeWarpPenalty, double overLoadPenalty) {
+        return adSplitSingular(giantTour, data, orderDistribution, p, vt, 1, timeWarpPenalty , overLoadPenalty);
     }
 
 
@@ -77,16 +89,16 @@ public class AdSplit {
 
     // ------------- NEW ADSPLIT ---------------------
     public static ArrayList<Journey> adSplitSingular(ArrayList<Integer> giantTour, Data data,
-                                                     OrderDistribution orderDistribution, int p, int vt, double penaltyMultiplier){
+                                                     OrderDistribution orderDistribution, int p, int vt, double penaltyMultiplier, double timeWarpPenalty, double overLoadPenalty){
         if (giantTour.size() == 0) {
             return new ArrayList<Journey>();
         }
         else{
             //Shortest path algorithm
-            ArrayList<ArrayList<Integer>> matrixOfTrips = createTrips(giantTour, data, orderDistribution,  p, vt, penaltyMultiplier);
+            ArrayList<ArrayList<Integer>> matrixOfTrips = createTrips(giantTour, data, orderDistribution,  p, vt, penaltyMultiplier, timeWarpPenalty, overLoadPenalty);
 
             //Labeling algorithm
-            Label bestLabel = labelingAlgorithm(matrixOfTrips, data, orderDistribution, p, vt, matrixOfTrips, penaltyMultiplier);   // Sets bestLabel.
+            Label bestLabel = labelingAlgorithm(matrixOfTrips, data, orderDistribution, p, vt, matrixOfTrips, penaltyMultiplier, timeWarpPenalty, overLoadPenalty);   // Sets bestLabel.
 
             //Trip generation
             ArrayList<Journey> journeyList = tripAssignment(bestLabel, matrixOfTrips, data);
@@ -97,8 +109,8 @@ public class AdSplit {
 
 
 
-    public static void adSplitSingular(Individual ind, int p, int vt){
-        adSplitSingular(ind, p, vt, 1);
+    private static void adSplitSingular(Individual ind, int p, int vt){
+        adSplitSingular(ind, p, vt, 1, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
     }
 
 
@@ -141,10 +153,10 @@ public class AdSplit {
     //SHORTEST PATH --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     private static void createTrips(ArrayList<Integer> giantTour, Data data, OrderDistribution orderDistribution, int  p, int vt){
-        createTrips(giantTour, data, orderDistribution, p, vt, 1);
+        createTrips(giantTour, data, orderDistribution, p, vt, 1, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
     }
 
-    private static ArrayList<ArrayList<Integer>> createTrips(ArrayList<Integer> giantTour, Data data, OrderDistribution orderDistribution, int p, int vt, double penaltyMultiplier) {
+    private static ArrayList<ArrayList<Integer>> createTrips(ArrayList<Integer> giantTour, Data data, OrderDistribution orderDistribution, int p, int vt, double penaltyMultiplier, double timeWarpPenalty, double overLoadPenalty) {
         ArrayList<Integer> customerSequence = (ArrayList<Integer>) giantTour.clone();  //// TODO: 18.02.2020 Brynjar: is this superfast or only fast?
         //insert depot to be in the 0th position
         customerSequence.add(0, data.customers.length);
@@ -178,8 +190,8 @@ public class AdSplit {
                             + data.customers[customerSequence.get(j)].totalUnloadingTime) - Parameters.maxJourneyDuration);
                     tempDistanceCost += 2*data.distanceMatrix[customerSequence.get(0)][customerSequence.get(j)];
                     loadSum = orderDistribution.getOrderVolumeDistribution(p,customerSequence.get(j));
-                    currentCost = routeTimeWarp*Parameters.initialTimeWarpPenalty
-                            + Parameters.initialCapacityPenalty*(Math.max(0, loadSum-data.vehicleTypes[vt].capacity));
+                    currentCost = routeTimeWarp*timeWarpPenalty
+                            + overLoadPenalty *(Math.max(0, loadSum-data.vehicleTypes[vt].capacity));
                     currentCost = currentCost * penaltyMultiplier + Parameters.initialDrivingCostPenalty * tempDistanceCost;
                 }
 
@@ -213,8 +225,8 @@ public class AdSplit {
                         }
                     }
 
-                    currentCost = Parameters.initialCapacityPenalty*(Math.max(0, loadSum-data.vehicleTypes[vt].capacity))
-                            + routeTimeWarp*Parameters.initialTimeWarpPenalty;
+                    currentCost = overLoadPenalty *(Math.max(0, loadSum-data.vehicleTypes[vt].capacity))
+                            + routeTimeWarp*timeWarpPenalty;
                     currentCost =  currentCost*penaltyMultiplier + Parameters.initialDrivingCostPenalty*tempDistanceCost;
                 }
 
@@ -253,18 +265,19 @@ public class AdSplit {
 
 
     //LABELING------------------------------------------------------------------------------------------------------------------------------------------------------------
-    private static Label labelingAlgorithm(ArrayList<ArrayList<Integer>> matrixOfTrips, Data data, OrderDistribution orderDistribution, int p, int vt, ArrayList<ArrayList<Integer>> listOfTrips, double penaltyMultiplier) {
+    private static Label labelingAlgorithm(ArrayList<ArrayList<Integer>> matrixOfTrips, Data data, OrderDistribution orderDistribution,
+                                           int p, int vt, ArrayList<ArrayList<Integer>> listOfTrips, double penaltyMultiplier, double timeWarpPenalty, double overLoadPenalty) {
 
         int tripNumber = 0;
-        LabelPool currentLabelPool = new LabelPool(data, listOfTrips, tripNumber, orderDistribution.getOrderVolumeDistribution());
+        LabelPool currentLabelPool = new LabelPool(data, listOfTrips, tripNumber, orderDistribution.getOrderVolumeDistribution(), timeWarpPenalty, overLoadPenalty);
         LabelPool nextLabelPool;
 
         while(tripNumber < listOfTrips.size()) {
             if (tripNumber == 0) {
-                currentLabelPool.generateFirstLabel(data.numberOfVehiclesInVehicleType[vt], p, vt, penaltyMultiplier);
+                currentLabelPool.generateFirstLabel(data.numberOfVehiclesInVehicleType[vt], p, vt, penaltyMultiplier, timeWarpPenalty, overLoadPenalty);
                 tripNumber++;
             } else {
-                nextLabelPool = new LabelPool(data, listOfTrips, tripNumber, orderDistribution.getOrderVolumeDistribution());
+                nextLabelPool = new LabelPool(data, listOfTrips, tripNumber, orderDistribution.getOrderVolumeDistribution(), timeWarpPenalty, overLoadPenalty);
                 nextLabelPool.generateAndRemoveDominatedLabels(currentLabelPool, penaltyMultiplier);
                 currentLabelPool = nextLabelPool;
                 tripNumber++;

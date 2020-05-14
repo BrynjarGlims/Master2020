@@ -6,7 +6,6 @@ import Master2020.Genetic.*;
 import Master2020.Individual.Individual;
 import Master2020.Individual.Journey;
 import Master2020.Individual.Trip;
-import Master2020.MIP.OrderAllocationModel;
 import Master2020.Population.Population;
 import Master2020.ProductAllocation.OrderDistribution;
 import gurobi.GRBException;
@@ -30,6 +29,12 @@ public class GeneticAlgorithm extends Thread {
     public int numberOfIterations;
     public int iterationsWithoutImprovement;
     public Individual currentBestIndividual;
+    public PenaltyControl penaltyControl;
+
+    public double timeWarpPenalty;
+    public double overLoadPenalty;
+
+
 
     //threads
     public CyclicBarrier downstreamGate;
@@ -47,6 +52,7 @@ public class GeneticAlgorithm extends Thread {
         this.population = population;
         this.period = period;
         this.orderDistribution = orderDistribution;
+        this.penaltyControl = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
         population.initializePopulation(this.orderDistribution);
         fitnessForPeriod = Double.MAX_VALUE;
         BiasedFitness.setBiasedFitnessScore(population);
@@ -61,14 +67,14 @@ public class GeneticAlgorithm extends Thread {
         this.population = population;
     }
 
-    public Individual PIX(Population population){
+    public Individual PIX(Population population, double timeWarpPenalty, double overLoadPenalty){
         // Select parents
         Individual parent1 = TournamentSelection.performSelection(population);
         Individual parent2 = TournamentSelection.performSelection(population);
         while (parent1.equals(parent2)){
             parent2 = TournamentSelection.performSelection(population);
         }
-        return GiantTourCrossover.crossOver(parent1, parent2, this.orderDistribution); // TODO: 02.04.2020 add to a pool?
+        return GiantTourCrossover.crossOver(parent1, parent2, this.orderDistribution, timeWarpPenalty, overLoadPenalty); // TODO: 02.04.2020 add to a pool?
     }
 
     public void educate(Individual individual){
@@ -135,20 +141,18 @@ public class GeneticAlgorithm extends Thread {
 
 
     public void runGeneration() {
-        //System.out.println("Start generation");
+
         for (int j = 0; j < Parameters.numberOfIndividualsGeneratedEachGeneration; j++) {
-            Individual newIndividual = PIX(population);
+            Individual newIndividual = PIX(population, penaltyControl.timeWarpPenalty, penaltyControl.overLoadPenalty);
+            penaltyControl.adjust(newIndividual.hasTimeWarp(), newIndividual.hasOverLoad());
             educate(newIndividual);
             tripOptimizer(newIndividual);
             population.addChildToPopulation(newIndividual);
-            System.out.println("new individual in period " + period);
         }
         repair(population);
-
         selection(population);
 
         updateSystemParameters();
-        //System.out.println("Generation done");
     }
 
     public void updateSystemParameters(){
@@ -186,11 +190,21 @@ public class GeneticAlgorithm extends Thread {
 
 
     public void runGenerations(int generations) {
+        resetCounters();
+        printPopulationStats();
         for (int i = 0 ; i < generations ; i++){
+            System.out.println("Start generation " + i);
             if (iterationsWithoutImprovement > Parameters.maxNumberIterationsWithoutImprovement)
                 break;
             runGeneration();
         }
+        printPopulationStats();
+    }
+
+    public void printPopulationStats(){
+        System.out.println("Period " + period);
+        System.out.println(" Number of feasible individuals: " + population.feasiblePopulation.size());
+        System.out.println(" Number of infeasible individuals: " + population.infeasiblePopulation.size());
     }
 
 }

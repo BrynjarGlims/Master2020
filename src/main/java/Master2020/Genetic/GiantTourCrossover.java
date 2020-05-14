@@ -22,7 +22,7 @@ public class GiantTourCrossover {
 
 
 
-    public static Individual crossOver(Individual parent1, Individual parent2, OrderDistribution orderDistribution){
+    public static Individual crossOver(Individual parent1, Individual parent2, OrderDistribution orderDistribution, double timeWarpPenalty, double overLoadPenalty){
         data = parent1.data;
         numPeriodVehicleTypeCouples = parent1.numberOfPeriods * data.numberOfVehicleTypes;
         Individual child = new Individual(data, parent1.population, Parameters.isPeriodic, parent1.actualPeriod);
@@ -39,7 +39,7 @@ public class GiantTourCrossover {
         combined.addAll(sets[1]);
         combined.addAll(sets[2]);
         inheritParent2(parent2, child, combined, visitedCustomers);
-        bestInsertion(child, orderDistribution, findMissingCustomers(visitedCustomers, child));
+        bestInsertion(child, orderDistribution, findMissingCustomers(visitedCustomers, child), timeWarpPenalty, overLoadPenalty);
         AdSplit.adSplitPlural(child);
         child.updateFitness();
         return child;
@@ -112,7 +112,7 @@ public class GiantTourCrossover {
         }
     }
 
-    private static void bestInsertion(Individual child, OrderDistribution orderDistribution, HashMap<Integer, HashSet<Integer>> missingCustomers){
+    private static void bestInsertion(Individual child, OrderDistribution orderDistribution, HashMap<Integer, HashSet<Integer>> missingCustomers, double timeWarpPenalty, double overLoadPenalty){
         double currentBestFitness;
         double journeyFitness;
         double tempJourneyFitness;
@@ -153,7 +153,7 @@ public class GiantTourCrossover {
                 }
 
                 child.setGiantTourFromTripsPerPeriodVehicleType(p, currentBestVehicleType, child.giantTour);
-                AdSplit.adSplitSingular(child, p, currentBestVehicleType);
+                AdSplit.adSplitSingular(child, p, currentBestVehicleType, timeWarpPenalty, overLoadPenalty);
             }
         }
         // IndividualTest.isMissingCustomersAdded(missingCustomers, child); //todo: create new test
@@ -258,7 +258,7 @@ public class GiantTourCrossover {
 
         System.out.println(individual1.getFitness(true));
         System.out.println(individual2.getFitness(true));
-        Individual child = GiantTourCrossover.crossOver(individual1, individual2, individual1.orderDistribution);
+        Individual child = GiantTourCrossover.crossOver(individual1, individual2, individual1.orderDistribution, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
         System.out.println(child.getFitness(true));
     }
 

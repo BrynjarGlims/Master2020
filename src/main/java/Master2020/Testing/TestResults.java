@@ -120,7 +120,7 @@ public class TestResults {
                 System.out.println("On day: " + tripData.get(line)[2]  + " on tripnumber " + tripData.get(line)[1]  );
 
             }
-            overloadInfeasibility += Math.max(0, volumeOfTrip - data.vehicles[Integer.parseInt(tripData.get(line)[3])].vehicleType.capacity) * Parameters.initialCapacityPenalty;
+            overloadInfeasibility += Math.max(0, volumeOfTrip - data.vehicles[Integer.parseInt(tripData.get(line)[3])].vehicleType.capacity) * Parameters.initialOverLoadPenalty;
         }
 
         return overloadInfeasibility;

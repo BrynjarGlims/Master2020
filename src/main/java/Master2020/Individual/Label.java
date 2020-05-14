@@ -1,10 +1,10 @@
 package Master2020.Individual;
 import Master2020.DataFiles.*;
+import scala.xml.PrettyPrinter;
 
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 
 public class Label {
 
@@ -35,9 +35,11 @@ public class Label {
     public LabelEntry[] labelEntries;
     public boolean isEmptyLabel;
 
+
+
     //create non-first labels
 
-    public Label(Label parentLabel, int vehicleIndex, double penaltyMultiplier){
+    public Label(Label parentLabel, int vehicleIndex, double penaltyMultiplier, double timeWarpPenalty, double overLoadPenalty){
 
         //Information attributes
         this.periodID = parentLabel.periodID;
@@ -53,7 +55,9 @@ public class Label {
         this.labelEntries[vehicleIndex].updateLabelEntryValues(listOfTrips.get(tripNumber), tripNumber);
 
         this.sortLabelEntries();
-        this.deriveLabelCost(penaltyMultiplier);
+        this.deriveLabelCost(penaltyMultiplier, timeWarpPenalty, overLoadPenalty);
+
+
 
     }
 
@@ -77,12 +81,12 @@ public class Label {
     public Label(int numberOfVehicles, Data data,
                  ArrayList<ArrayList<Integer>> listOfTrips, int tripNumber, double[][] orderDistribution, int periodID,
                  int vehicleTypeID){
-        this(numberOfVehicles, data, listOfTrips, tripNumber, orderDistribution, periodID, vehicleTypeID, 1);
+        this(numberOfVehicles, data, listOfTrips, tripNumber, orderDistribution, periodID, vehicleTypeID, 1, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
     }
 
     public Label(int numberOfVehicles, Data data,
                  ArrayList<ArrayList<Integer>> listOfTrips, int tripNumber, double[][] orderDistribution, int periodID,
-                 int vehicleTypeID, double penaltyMultiplier){
+                 int vehicleTypeID, double penaltyMultiplier, double timeWarpPenalty, double overLoadPenalty){
 
         //information variables for each label
         this.vehicleTypeID = vehicleTypeID;
@@ -101,7 +105,7 @@ public class Label {
         this.labelEntries[0].updateLabelEntryValues( listOfTrips.get(tripNumber), tripNumber);
 
         //derive cost
-        this.deriveLabelCost(penaltyMultiplier);
+        this.deriveLabelCost(penaltyMultiplier, timeWarpPenalty, overLoadPenalty);
     }
 
     private void initializeLabelEntries(int periodID, int vehicleTypeID){
@@ -124,10 +128,10 @@ public class Label {
     }
 
 
-    private void deriveLabelCost(double penaltyMulitplier) {  //todo: implement for new structure
+    private void deriveLabelCost(double penaltyMulitplier, double timeWarpPenalty, double overLoadPenalty) {  //todo: implement for new structure
         calculateDrivingCost();  //must be used before calculateOvertimeValue
-        calculateLoadValue(penaltyMulitplier);
-        calculateTimeWarp(penaltyMulitplier);
+        calculateLoadValue(penaltyMulitplier, overLoadPenalty);
+        calculateTimeWarp(penaltyMulitplier, timeWarpPenalty);
         calculateVehicleUseValue();
         this.costOfLabel = fleetTravelTime + fleetOvertime + fleetOverLoad + fleetTimeWarp + fleetUsageCost;
     }
@@ -144,14 +148,14 @@ public class Label {
 
     }
 
-    public void calculateTimeWarp(double penaltyMultiplier){
+    public void calculateTimeWarp(double penaltyMultiplier, double timeWarpPenalty){
         fleetTimeWarp = 0;
 
         for (LabelEntry labelEntry : this.labelEntries){
             fleetTimeWarp += labelEntry.getTimeWarpInfeasibility();
         }
 
-        fleetTimeWarp *= penaltyMultiplier*Parameters.initialTimeWarpPenalty;
+        fleetTimeWarp *= penaltyMultiplier*timeWarpPenalty;
 
     }
 
@@ -167,7 +171,7 @@ public class Label {
 
 
 
-    private void calculateLoadValue(double penaltyMultiplier){
+    private void calculateLoadValue(double penaltyMultiplier,double overLoadPenalty){
 
         fleetOverLoad = 0;
 
@@ -175,7 +179,7 @@ public class Label {
             fleetOverLoad += labelEntry.getLoadInfeasibility();
         }
 
-        fleetOverLoad *= penaltyMultiplier*Parameters.initialCapacityPenalty;
+        fleetOverLoad *= penaltyMultiplier*overLoadPenalty;
 
     }
 

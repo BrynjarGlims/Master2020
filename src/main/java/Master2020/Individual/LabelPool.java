@@ -14,21 +14,26 @@ public class LabelPool {
     int tripNumber;
     double[][] orderDistribution;
 
-    public LabelPool (Data data, ArrayList<ArrayList<Integer>> listOfTrips, int tripNumber, double[][] orderDistribution){
+    double timeWarpPenalty;
+    double overLoadPenalty;
+
+    public LabelPool (Data data, ArrayList<ArrayList<Integer>> listOfTrips, int tripNumber, double[][] orderDistribution, double timeWarpPenalty, double overLoadPenalty){
         this.labels = new HashSet<>();
         this.data = data;
         this.listOfTrips = listOfTrips;
         this.tripNumber = tripNumber;
         this.orderDistribution = orderDistribution;
+        this.timeWarpPenalty = timeWarpPenalty;
+        this.overLoadPenalty = overLoadPenalty;
     }
 
     public void generateFirstLabel(int numberOfVehicles, int periodID, int vehicleTypeID){
-        generateFirstLabel(numberOfVehicles, periodID, vehicleTypeID, 1);
+        generateFirstLabel(numberOfVehicles, periodID, vehicleTypeID, 1, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
     }
 
-    public void generateFirstLabel(int numberOfVehicles, int periodID, int vehicleTypeID, double penaltyMultiplier) {
+    public void generateFirstLabel(int numberOfVehicles, int periodID, int vehicleTypeID, double penaltyMultiplier, double timeWarpPenalty, double overLoadPenalty) {
         this.labels.add(new Label(numberOfVehicles, data, listOfTrips, tripNumber, orderDistribution,
-                periodID, vehicleTypeID, penaltyMultiplier));
+                periodID, vehicleTypeID, penaltyMultiplier, timeWarpPenalty, overLoadPenalty));
     }
 
     public void generateAndRemoveDominatedLabels(LabelPool previousLabelPool){
@@ -45,7 +50,7 @@ public class LabelPool {
         int vehicleCostOrderNumber = 0;
         // Generate labels by adding cost on already existing vehicles
         while (predecessorLabel.labelEntries[vehicleCostOrderNumber].inUse){
-            tryToAddNewLabel(new Label(predecessorLabel, vehicleCostOrderNumber, penaltyMultiplier));
+            tryToAddNewLabel(new Label(predecessorLabel, vehicleCostOrderNumber, penaltyMultiplier, timeWarpPenalty, overLoadPenalty));
             if (vehicleCostOrderNumber == predecessorLabel.labelEntries.length-1)
                 break;
             vehicleCostOrderNumber++;
@@ -53,7 +58,7 @@ public class LabelPool {
 
         // Creating labels based on a new vehicle in use.
         if (predecessorLabel.labelEntries[vehicleCostOrderNumber].vehicleCost == 0){
-            tryToAddNewLabel(new Label(predecessorLabel, vehicleCostOrderNumber, penaltyMultiplier));
+            tryToAddNewLabel(new Label(predecessorLabel, vehicleCostOrderNumber, penaltyMultiplier, timeWarpPenalty, overLoadPenalty));
         }
     }
 
@@ -115,7 +120,7 @@ public class LabelPool {
         }
         secondLabelValue *= Parameters.heuristicDominanceValue;
         firstLabelValue += calculateDeltaSumValue(firstLabel.labelEntries, secondLabel.labelEntries)
-                *Parameters.initialTimeWarpPenalty;
+                *timeWarpPenalty;
         return firstLabelValue <= secondLabelValue;
     }
 

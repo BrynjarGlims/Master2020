@@ -414,7 +414,7 @@ public class Result {
 
         results = new String[]{"Penalty parameters:", "---------"};
         csvWriter.writeNext(results, false);
-        results = new String[]{"Initial capacity penalty", String.valueOf(Parameters.initialCapacityPenalty)};
+        results = new String[]{"Initial capacity penalty", String.valueOf(Parameters.initialOverLoadPenalty)};
         csvWriter.writeNext(results, false);
         results = new String[]{"Initial time warp penalty", String.valueOf(Parameters.initialTimeWarpPenalty)};
         csvWriter.writeNext(results, false);

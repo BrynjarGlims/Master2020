@@ -302,6 +302,14 @@ public class Individual implements Comparable<Individual> {
         biasedFitness = (double) fitnessRank + (diversityScaling * (double) diversityRank);
     }
 
+    public boolean hasOverLoad(){
+        return this.overLoadCost > 0;
+    }
+
+    public boolean hasTimeWarp(){
+        return this.timeWarpCost > 0;
+    }
+
 
     public void setDiversity(double diversity){
         this.diversity = diversity;

@@ -94,7 +94,7 @@ public class PeriodicIndividual {
 
     public boolean isFeasible(){
         updateFitness();
-        return this.timeWarpCost == 0 && this.overLoadCost/Parameters.initialCapacityPenalty <= Parameters.indifferenceValue;
+        return this.timeWarpCost == 0 && this.overLoadCost/Parameters.initialOverLoadPenalty <= Parameters.indifferenceValue;
     }
 
     public double getFitness() {

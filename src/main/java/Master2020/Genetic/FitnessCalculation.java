@@ -16,7 +16,19 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
         return getIndividualFitness(individual.data, individual.journeyList, individual.orderDistribution, penaltyMultiplier);
     }
 
-    public static double[] getIndividualFitness(Data data, ArrayList<Journey>[][] journeys, OrderDistribution orderDistribution, double penaltyMultiplier){
+    public static double[] getIndividualFitness(Data data,
+                                                ArrayList<Journey>[][] journeys,
+                                                OrderDistribution orderDistribution,
+                                                double penaltyMultiplier){
+        return getIndividualFitness(data, journeys, orderDistribution, penaltyMultiplier, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
+    }
+
+    public static double[] getIndividualFitness(Data data,
+                                                ArrayList<Journey>[][] journeys,
+                                                OrderDistribution orderDistribution,
+                                                double penaltyMultiplier,
+                                                double timeWarpPenalty,
+                                                double overLoadPenalty){
         double travelCost = 0;
         double timeWarpCost = 0;
         double overloadCost = 0;
@@ -24,7 +36,7 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
         double[] fitnesses;
         for (int p = 0 ; p < journeys.length ; p++){
             for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
-                fitnesses = getIndividualFitnessPeriodVehicleType(journeys[p][vt], orderDistribution, penaltyMultiplier);
+                fitnesses = getIndividualFitnessPeriodVehicleType(journeys[p][vt], orderDistribution, penaltyMultiplier, timeWarpPenalty, overLoadPenalty);
                 travelCost += fitnesses[0];
                 timeWarpCost += fitnesses[1];
                 overloadCost += fitnesses[2];
@@ -43,8 +55,12 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
         return fitness;
     }
 
-
     public static double[] getIndividualFitnessPeriodVehicleType(ArrayList<Journey> journeys, OrderDistribution orderDistribution, double penaltyMultiplier){
+        return getIndividualFitnessPeriodVehicleType(journeys, orderDistribution, penaltyMultiplier, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
+    }
+
+
+    public static double[] getIndividualFitnessPeriodVehicleType(ArrayList<Journey> journeys, OrderDistribution orderDistribution, double penaltyMultiplier, double timeWarpPenalty, double overLoadPenalty){
         double[] fitnesses = new double[4];
         double[] tempFitness = null;
         for (Journey journey : journeys){
@@ -55,7 +71,7 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
             if (journey.trips.size() == 0){
                 System.out.println("No trips in journey");
             }
-            tempFitness = getJourneyFitness(journey, orderDistribution, penaltyMultiplier);
+            tempFitness = getJourneyFitness(journey, orderDistribution, penaltyMultiplier, overLoadPenalty, timeWarpPenalty);
             for (int i = 0 ; i < fitnesses.length ; i++){
                 fitnesses[i] += tempFitness[i];
             }
@@ -90,11 +106,17 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
 
 
     public static double[] getJourneyFitness(Journey journey, OrderDistribution orderDistribution){
-        return getJourneyFitness(journey, orderDistribution, 1);
+        return getJourneyFitness(journey, orderDistribution, 1, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
     }
 
     public static double[] getJourneyFitness(Journey journey, OrderDistribution orderDistribution, double penaltyMultiplier){
-        return journey.updateFitness(orderDistribution, penaltyMultiplier);
+        return getJourneyFitness(journey, orderDistribution, penaltyMultiplier, Parameters.initialTimeWarpPenalty, Parameters.initialTimeWarpPenalty);
+    }
+
+
+
+    public static double[] getJourneyFitness(Journey journey, OrderDistribution orderDistribution, double penaltyMultiplier, double timeWarpPenalty, double overLoadPenalty){
+        return journey.updateFitness(orderDistribution, penaltyMultiplier, timeWarpPenalty, overLoadPenalty);
     }
 
 
@@ -169,7 +191,7 @@ public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove pa
         for (int customerID : customerOrder){
             load += orderDistribution[p][customerID];
         }
-        return Math.max(0, load - data.vehicleTypes[vt].capacity*penaltyMultiplier*Parameters.initialCapacityPenalty);
+        return Math.max(0, load - data.vehicleTypes[vt].capacity*penaltyMultiplier*Parameters.initialOverLoadPenalty);
     }
 
 

@@ -3,6 +3,7 @@ package Master2020.ABC;
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Parameters;
+import Master2020.Genetic.PenaltyControl;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Utils.WeightedRandomSampler;
 
@@ -30,6 +31,8 @@ public class PeriodSwarm extends Thread {
     public double[] globalBestPosition;
     public boolean run = true;
 
+    public PenaltyControl penaltyControl;
+
     public ArrayList<PeriodSolution> solutions;
 
     private int counter;
@@ -41,6 +44,7 @@ public class PeriodSwarm extends Thread {
         this.downstreamGate = downstreamGate;
         this.upstreamGate = upstreamGate;
         this.orderDistribution = orderDistribution;
+        this.penaltyControl = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
         initialize();
     }
 

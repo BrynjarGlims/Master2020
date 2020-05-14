@@ -57,10 +57,10 @@ public class Journey {
 
 
     public double[] updateFitness(OrderDistribution orderDistribution){
-        return updateFitness(orderDistribution, 1);
+        return updateFitness(orderDistribution, 1, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
     }
 
-    public double[] updateFitness(OrderDistribution orderDistribution, double penaltyMultiplier){ //include cost of using vehicle?
+    public double[] updateFitness(OrderDistribution orderDistribution, double penaltyMultiplier, double timeWarpPenalty, double overLoadPenalty){ //include cost of using vehicle?
         currentTime = 0;
         timeWarp = 0;
         overLoad = 0;
@@ -80,17 +80,19 @@ public class Journey {
             updateOverload(trip, orderDistribution);
         }
         travelCost = travelDistance*data.vehicleTypes[vehicleType].travelCost;
-        double timeWarpCost = timeWarp* Parameters.initialTimeWarpPenalty*penaltyMultiplier;
-        double overLoadCost = overLoad*Parameters.penaltyFactorForOverFilling*penaltyMultiplier;
+        double timeWarpCost = timeWarp * timeWarpPenalty * penaltyMultiplier;
+        double overLoadCost = overLoad * overLoadPenalty * penaltyMultiplier;
         return new double[]{travelCost, timeWarpCost, overLoadCost, vehicleCost};
     }
 
     public double getTotalFitness(OrderDistribution orderDistribution){
-        return getTotalFitness(orderDistribution, 1);
+        return getTotalFitness(orderDistribution, 1, Parameters.initialTimeWarpPenalty, Parameters.initialTimeWarpPenalty);
     }
 
-    public double getTotalFitness(OrderDistribution orderDistribution, double penaltyMultiplier){
-        double[] fitnesses = updateFitness(orderDistribution, penaltyMultiplier);
+
+
+    public double getTotalFitness(OrderDistribution orderDistribution, double penaltyMultiplier, double timeWarpPenalty, double overLoadPenalty){
+        double[] fitnesses = updateFitness(orderDistribution, penaltyMultiplier, timeWarpPenalty, overLoadPenalty);
         return fitnesses[0] + fitnesses[1] + fitnesses[2] + fitnesses[3]; //travel + timewarp + overload + vehicle use
     }
 
@@ -156,7 +158,7 @@ public class Journey {
         Individual parent1 = population.getRandomIndividual();
         Individual parent2 = population.getRandomIndividual();
         System.out.println(parent1.getFitness(true));
-        Individual child = Master2020.Genetic.GiantTourCrossover.crossOver(parent1, parent2, parent1.orderDistribution);
+        Individual child = Master2020.Genetic.GiantTourCrossover.crossOver(parent1, parent2, parent1.orderDistribution, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
         System.out.println(child.getFitness(true));
         Master2020.Genetic.Education.improveRoutes(child, child.orderDistribution);
         System.out.println(child.getFitness(true));

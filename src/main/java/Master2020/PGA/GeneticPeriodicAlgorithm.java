@@ -136,7 +136,7 @@ public class GeneticPeriodicAlgorithm extends Thread{
 
         //System.out.println("Updating order distribution");
         periodicPopulation.addPeriodicIndividual(generateGreedyPeriodicIndividual());
-        if (Parameters.useJCM){
+        if (Parameters.useJCMInGPA){
             setJourneyFromBestIndividuals();
             createOrderDistributionFromJCM(threads, false);
         }
@@ -268,10 +268,7 @@ public class GeneticPeriodicAlgorithm extends Thread{
         }
         downstreamGate.await();
         upstreamGate.await();
-//        ABCSolution solution = storeSolution();
-//        Individual individual = HelperFunctions.createIndividual(data, journeys, orderDistribution);
-//        Result result = new Result(individual, "ABC");
-//        result.store();
+
     }
 
     private void makeOptimalOrderDistribution(List<GeneticAlgorithm> geneticAlgorithm, boolean newOD){
@@ -332,10 +329,10 @@ public class GeneticPeriodicAlgorithm extends Thread{
         }
     }
 
-    //todo: not in use
+
     public void runIterations() throws Exception {
         for (int i = 0; i < Parameters.minimumUpdatesPerOrderDistributions; i++){
-            System.out.println("Start iteration: " + i);
+            System.out.println("Start periodic algorithm iteration: " + i);
             runIteration();
         }
     }
@@ -384,7 +381,7 @@ public class GeneticPeriodicAlgorithm extends Thread{
         pod.initialize(5);
         OrderDistribution div = pod.diversify(10);
         periodicAlgorithm.initialize(div);
-        periodicAlgorithm.runIteration();
+        periodicAlgorithm.runIterations();
     }
 
 }
