@@ -20,7 +20,7 @@ public class Parameters {
     public static final boolean useVestTeleDataset = false;
     public static final boolean doRandomSeed = true;
     public static final int samples = 1;
-    public static long randomSeedValue = 10;
+    public static long randomSeedValue = 57;
 
 
     // Population parameters
@@ -34,15 +34,15 @@ public class Parameters {
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 30;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
-    public static final int numberOfVehicles = 10;
+    public static int numberOfCustomers = 10;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
+    public static final int numberOfVehicles = 5;
     public static final double distanceCutOffFromDepot = 3.0;   //default 3
     public static final boolean adjustTimeWindow = true;
     public static final double adjustTimeWindowReduction = 5;
     public static final double adjustTimeWindowLimit = 9.5;
 
     // GA specific parameters
-    public static final int nearestNeighbors = (int) Math.round(0.4 * numberOfCustomers);; //Neighborhood size for each customer
+    public static final int nearestNeighbors = (int) Math.round(0.4 * numberOfCustomers); //Neighborhood size for each customer
     public static final int educationTabooSize = 2;
     public static final int tripOptimizerSizeLimit = 7;
     public static final double educationProbability = 0.5;
@@ -51,12 +51,17 @@ public class Parameters {
     public static final double ODMIPProbability = 0.5;
     public static final double heuristicDominanceValue = 1;
 
+    // Periodic Parameters
+    public static final int numberOfAlgorithms = 5;
+    public static final int numberOfPGA = 0;
+    public static final int numberOfABC = numberOfAlgorithms - numberOfPGA;
+    public static final int minimumIterations = 15;
+
     // ABC specific parameters
     public static final int numberOfStoredSolutionsPerPeriod = 10;
     public static final boolean runSingular = false;
     public static final boolean threaded = true;
     public static final int numberOfSwarms = 5;
-    public static final int minimumIterations = 15;
     public static final int orderDistributionCutoff = 2;
     public static final int swarmIterationsWithoutImprovementLimit = 5;
     public static final int generationsPerOrderDistribution = 300;

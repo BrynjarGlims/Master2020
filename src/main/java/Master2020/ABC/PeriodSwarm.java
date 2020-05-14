@@ -6,9 +6,7 @@ import Master2020.DataFiles.Parameters;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Utils.WeightedRandomSampler;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.BrokenBarrierException;
@@ -30,7 +28,7 @@ public class PeriodSwarm extends Thread {
     public double[] globalBestPosition;
     public boolean run = true;
 
-    public ArrayList<PeriodSolution> solutions;
+    public ArrayList<ABCPeriodSolution> solutions;
 
     private int counter;
 
@@ -128,7 +126,7 @@ public class PeriodSwarm extends Thread {
     private void updateSolutionSet(){
         if (counter % 10 == 0){
             for (Employee employee : employees){
-                solutions.add(new PeriodSolution(data, period, employee.position, orderDistribution));
+                solutions.add(new ABCPeriodSolution(data, period, employee.position, orderDistribution));
             }
             Collections.sort(solutions);
             if (solutions.size() > Parameters.numberOfStoredSolutionsPerPeriod){

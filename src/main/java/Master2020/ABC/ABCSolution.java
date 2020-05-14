@@ -4,13 +4,14 @@ import Master2020.DataFiles.Data;
 import Master2020.Genetic.FitnessCalculation;
 import Master2020.Individual.Individual;
 import Master2020.Individual.Journey;
+import Master2020.Interfaces.PeriodicSolution;
 import Master2020.StoringResults.Result;
 import Master2020.ProductAllocation.OrderDistribution;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class ABCSolution implements Comparable<ABCSolution>{
+public class ABCSolution implements PeriodicSolution {
 
 
     public double[][] positions;
@@ -41,11 +42,27 @@ public class ABCSolution implements Comparable<ABCSolution>{
         return fitness;
     }
 
+    public ArrayList<Journey>[][] getJourneys(){
+        return journeys;
+    }
+
+    public OrderDistribution getOrderDistribution(){
+        return orderDistribution;
+    }
+
+    public boolean isFeasible(){
+        return feasible;
+    }
+
+    public double getInfeasibilityCost(){
+        return infeasibilityCost;
+    }
+
 
     @Override
-    public int compareTo(ABCSolution o) {
+    public int compareTo(PeriodicSolution o) {
         double[] thisFitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1);
-        double[] oFitnesses = FitnessCalculation.getIndividualFitness(data, o.journeys, o.orderDistribution, 1);
+        double[] oFitnesses = FitnessCalculation.getIndividualFitness(data, o.getJourneys(), o.getOrderDistribution(), 1);
         double thisFitness = 0;
         double oFitness = 0;
         for (int d = 0 ; d < thisFitnesses.length ; d++){
@@ -67,4 +84,5 @@ public class ABCSolution implements Comparable<ABCSolution>{
         result.store();
 
     }
+
 }

@@ -8,7 +8,7 @@ import Master2020.ProductAllocation.OrderDistribution;
 
 import java.util.ArrayList;
 
-public class PeriodSolution implements Comparable<PeriodSolution>{
+public class ABCPeriodSolution implements Comparable<ABCPeriodSolution>{
 
 
     public double[] position;
@@ -17,7 +17,7 @@ public class PeriodSolution implements Comparable<PeriodSolution>{
     public Data data;
     public double fitness;
 
-    public PeriodSolution(Data data, int period, double[] position, OrderDistribution orderDistribution){
+    public ABCPeriodSolution(Data data, int period, double[] position, OrderDistribution orderDistribution){
         this.position = position;
         this.period = period;
         this.data = data;
@@ -45,7 +45,7 @@ public class PeriodSolution implements Comparable<PeriodSolution>{
     }
 
     @Override
-    public int compareTo(PeriodSolution o) {
+    public int compareTo(ABCPeriodSolution o) {
         if (fitness < o.fitness){
             return -1;
         }
