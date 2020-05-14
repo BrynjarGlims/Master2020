@@ -3,6 +3,7 @@ package Master2020.Individual;
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.Parameters;
 import Master2020.ProductAllocation.OrderDistribution;
+import Master2020.Testing.AdsplitTest;
 import scala.collection.parallel.immutable.ParRange;
 
 import java.lang.reflect.Parameter;
@@ -42,12 +43,12 @@ public class AdSplit {
             //Shortest path algorithm
             ArrayList<ArrayList<Integer>> matrixOfTrips = createTrips(individual.giantTour.chromosome[Individual.getDefaultPeriod(p)][vt],
                     individual.data, individual.orderDistribution, individual.getActualPeriod(p), vt, penaltyMultiplier, timeWarpPenalty, overLoadPenalty);
-
+            //System.out.println("Time warp penalty " + +timeWarpPenalty + " overLoadPenalty " + overLoadPenalty);
+            //AdsplitTest.tripsWithOverload(individual.data, p, vt, individual.orderDistribution, matrixOfTrips);
             //Labeling algorithm
             Label bestLabel  = labelingAlgorithm(matrixOfTrips, individual.data, individual.orderDistribution, individual.getActualPeriod(p), vt,
                     matrixOfTrips, penaltyMultiplier, timeWarpPenalty, overLoadPenalty);   // Sets bestLabel.
-            //System.out.println("Label: TW: " + bestLabel.fleetTimeWarp + " OL: " +bestLabel.fleetOverLoad);
-            //Trip generation
+
             ArrayList<Journey> journeyList = tripAssignment(bestLabel, matrixOfTrips, individual.data);
 
             updateIndividual(individual, journeyList, matrixOfTrips, Individual.getDefaultPeriod(p), vt);
@@ -85,6 +86,8 @@ public class AdSplit {
         else{
             //Shortest path algorithm
             ArrayList<ArrayList<Integer>> matrixOfTrips = createTrips(giantTour, data, orderDistribution,  p, vt, penaltyMultiplier, timeWarpPenalty, overLoadPenalty);
+
+
 
             //Labeling algorithm
             Label bestLabel = labelingAlgorithm(matrixOfTrips, data, orderDistribution, p, vt, matrixOfTrips, penaltyMultiplier, timeWarpPenalty, overLoadPenalty);   // Sets bestLabel.
@@ -206,7 +209,7 @@ public class AdSplit {
                         }
                     }
 
-                    currentCost = overLoadPenalty *(Math.max(0, loadSum-data.vehicleTypes[vt].capacity))
+                    currentCost = overLoadPenalty * (Math.max(0, loadSum-data.vehicleTypes[vt].capacity))
                             + routeTimeWarp*timeWarpPenalty;
                     currentCost =  currentCost*penaltyMultiplier + Parameters.initialDrivingCostPenalty*tempDistanceCost;
                 }

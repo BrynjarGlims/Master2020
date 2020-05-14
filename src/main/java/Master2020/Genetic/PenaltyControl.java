@@ -10,7 +10,7 @@ public class PenaltyControl {
     double indifferenceValue = 0.05;
     double increase = 1.25;
     double decrease = 0.8;
-    boolean verbose = true;
+    boolean verbose = false;
 
     public double timeWarpPenalty;
     public double overLoadPenalty;

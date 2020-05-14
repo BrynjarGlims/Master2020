@@ -138,7 +138,7 @@ public class Result {
 
     private String getFileName(){
         if (FileParameters.useDefaultFileName){
-            SimpleDateFormat date_formatter = new SimpleDateFormat("dd_MM_yyyy");
+            SimpleDateFormat date_formatter = new SimpleDateFormat("dd_MM_yyyy_HH:mm:ss");
             String dateString = date_formatter.format(new Date());
             return modelName + "_S" + Parameters.randomSeedValue + "_C" + Parameters.numberOfCustomers +
                     "_V" + Parameters.numberOfVehicles + "_" + dateString;

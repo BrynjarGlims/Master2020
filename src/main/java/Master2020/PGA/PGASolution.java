@@ -1,6 +1,7 @@
 package Master2020.PGA;
 
 import Master2020.ABC.ABCSolution;
+import Master2020.ABC.HelperFunctions;
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.Order;
 import Master2020.DataFiles.Parameters;
@@ -9,6 +10,7 @@ import Master2020.Individual.Individual;
 import Master2020.Individual.Journey;
 import Master2020.Interfaces.PeriodicSolution;
 import Master2020.ProductAllocation.OrderDistribution;
+import Master2020.StoringResults.Result;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -69,7 +71,9 @@ public class PGASolution implements PeriodicSolution {
 
     @Override
     public void writeSolution() throws IOException {
-        // TODO: 14.05.2020 make this @Kåre
+        Individual individual = HelperFunctions.createIndividual(data, journeys, orderDistribution);
+        Result result = new Result(individual, "PGA");
+        result.store();
     }
 
     public void setIndividual(Individual individual){

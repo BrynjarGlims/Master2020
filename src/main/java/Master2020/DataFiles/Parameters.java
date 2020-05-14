@@ -1,8 +1,8 @@
 package Master2020.DataFiles;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import scala.Int;
+
+import java.util.*;
 
 public class Parameters {
 
@@ -17,27 +17,29 @@ public class Parameters {
     public static final String vehicleFilePath2 = "data/" + dataSet2 + "/Vehicles.txt";
     public static final String distancePathVestTele = "Google_VestTele";
     public static final String distancePathTrondelag = "Google_Trondelag";
-    public static final boolean useVestTeleDataset = true;
+    public static final boolean useVestTeleDataset = false;
     public static final boolean doRandomSeed = true;
     public static final int samples = 1;
+    public static List<Integer> seeds = Arrays.asList(1,2,3,4,5);
     public static long randomSeedValue = 57;
+    public static final int minimumVehicleSize = 2000;   // removes 1400 and 1800;
 
 
     // Population parameters
     public static final int populationSize = 50;    //my
     public static final int initialOrderDistributionPopulationSize = 50;
     public static final int maxNumberIterationsWithoutImprovement = 50;
-    public static final int maxNumberOfGenerations = 100;
-    public static final int numberOfIndividualsGeneratedEachGeneration = 100;    //lambda
+    public static final int maxNumberOfGenerations = 10;
+    public static final int numberOfIndividualsGeneratedEachGeneration = 10;    //lambda
     public static final double fractionEliteIndividuals = 0.4;     //el
-    public static final double fractionOfFeasibleIndividualsFromAdsplit = 0.4;
+    public static final double fractionOfFeasibleIndividualsFromAdsplit = 0.2;
     public static final int frequencyOfPenaltyUpdates = 50;
 
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 10;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
-    public static final int numberOfVehicles = 100;
+    public static int numberOfCustomers = 25;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
+    public static final int numberOfVehicles = 50;
 
     public static final double distanceCutOffFromDepot = 3.0;   //default 3
     public static final boolean adjustTimeWindow = true;
@@ -125,7 +127,7 @@ public class Parameters {
     public static final String instanceName = "testDataFromAsko";
     public static final int upperBoundQuantity = 100;  // upper bound q variable
     public static final int upperBoundOvertime = 1000;  // upper bound qO variable
-    public static final double MIPSafetyIndifference = 0.001;
+    public static final double MIPSafetyIndifference = 0.1;
     public static final boolean verboseODValidity = false;
 
 

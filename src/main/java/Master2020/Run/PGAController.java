@@ -74,35 +74,7 @@ public class PGAController {
         }
     }
 
-/*
-    private void multipleRunSingleThread() throws InterruptedException, BrokenBarrierException, CloneNotSupportedException, IOException {
-        System.out.println("RUNNING MULTIPLE ABC");
-        // TODO: 01.05.2020 diversify, run, scale down, diversify
-        // TODO: 01.05.2020 converged solutions stored somewhere else?
 
-        for (int i = 0 ; i < Parameters.orderDistributionUpdates ; i++){
-            System.out.println("Running generation: " + i);
-            //for (int s = 0 ; s < Parameters.numberOfSwarms ; s++){
-            //    swarms.get(s).runIteration();
-            //    pod.distributions.set(s, swarms.get(s).orderDistribution);
-            //}
-            updateOrderDistributionPopulation();
-
-
-        }
-
-        for (GeneticPeriodicAlgorithm algorithm : periodicAlgorithmsArrayList){
-            finalSolutions.add(algorithm.storeSolution(true));
-            algorithm.terminate();
-        }
-
-
-        Collections.sort(finalSolutions);
-        System.out.println(finalSolutions.get(0).getFitness());
-    }
-
-
- */
     private void multipleRunThreaded() throws Exception {
 
         for (int i = 0 ; i < Parameters.orderDistributionUpdatesGA ; i++){
