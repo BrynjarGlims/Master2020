@@ -1,6 +1,7 @@
 package Master2020.ABC;
 
 import Master2020.DataFiles.Data;
+import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.FitnessCalculation;
 import Master2020.Individual.Individual;
 import Master2020.Individual.Journey;
@@ -21,6 +22,8 @@ public class ABCSolution implements PeriodicSolution {
     public double fitness;
     public double infeasibilityCost;
     public Data data;
+    public double timeWarpPenalty;
+    public double overLoadPenalty;
 
 
     public ABCSolution(double[][] positions, OrderDistribution orderDistribution, ArrayList<Journey>[][] journeys){
@@ -28,10 +31,13 @@ public class ABCSolution implements PeriodicSolution {
         this.orderDistribution = orderDistribution;
         this.data = orderDistribution.data;
         this.journeys = journeys;
+        this.timeWarpPenalty = Parameters.initialTimeWarpPenalty;
+        this.overLoadPenalty = Parameters.initialOverLoadPenalty;
+
     }
 
     public double getFitness(){
-        double[] thisFitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1);
+        double[] thisFitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1, timeWarpPenalty, overLoadPenalty);
         double fitness = 0;
         for (int d = 0 ; d < thisFitnesses.length ; d++){
             fitness += thisFitnesses[d];
@@ -61,8 +67,8 @@ public class ABCSolution implements PeriodicSolution {
 
     @Override
     public int compareTo(PeriodicSolution o) {
-        double[] thisFitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1);
-        double[] oFitnesses = FitnessCalculation.getIndividualFitness(data, o.getJourneys(), o.getOrderDistribution(), 1);
+        double[] thisFitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1, timeWarpPenalty, overLoadPenalty);
+        double[] oFitnesses = FitnessCalculation.getIndividualFitness(data, o.getJourneys(), o.getOrderDistribution(), 1, timeWarpPenalty, overLoadPenalty);
         double thisFitness = 0;
         double oFitness = 0;
         for (int d = 0 ; d < thisFitnesses.length ; d++){

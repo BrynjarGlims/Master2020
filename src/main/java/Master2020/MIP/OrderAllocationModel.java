@@ -3,6 +3,7 @@ package Master2020.MIP;
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Parameters;
+import Master2020.Genetic.PenaltyControl;
 import Master2020.Individual.GiantTour;
 import Master2020.Individual.Individual;
 import Master2020.Individual.Journey;
@@ -676,9 +677,10 @@ public class OrderAllocationModel {
 
     public static void main(String[] args) throws GRBException {
         Data data = DataReader.loadData();
+        PenaltyControl penaltyControl = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
         OrderDistribution orderDistribution = new OrderDistribution(data);
         orderDistribution.makeInitialDistribution();
-        Individual individual = new Individual(data);
+        Individual individual = new Individual(data, penaltyControl);
         individual.setOrderDistribution(orderDistribution);
         individual.giantTour.initializeGiantTour();
         OrderAllocationModel oam = new OrderAllocationModel(data);

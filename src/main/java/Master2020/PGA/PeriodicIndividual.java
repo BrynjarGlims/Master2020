@@ -3,6 +3,7 @@ package Master2020.PGA;
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.FitnessCalculation;
+import Master2020.Genetic.PenaltyControl;
 import Master2020.Individual.Individual;
 import Master2020.Individual.Journey;
 import Master2020.Individual.Trip;
@@ -28,9 +29,12 @@ public class PeriodicIndividual {
     private double biasedFitness;
     private ArrayList<Journey>[][] journeys;
 
+    public PenaltyControl penaltyControl;
 
-    public PeriodicIndividual(Data data){
+
+    public PeriodicIndividual(Data data, PenaltyControl penaltyControl){
         this.data = data;
+        this.penaltyControl = penaltyControl;
         this.journeys = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
         for (int p  = 0; p < data.numberOfPeriods; p++ ){
             for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
@@ -103,7 +107,7 @@ public class PeriodicIndividual {
     }
 
     public void updateFitness(){
-        double[] fitnesses =  FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1 );
+        double[] fitnesses =  FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1, penaltyControl.timeWarpPenalty, penaltyControl.overLoadPenalty );
         this.travelCost = fitnesses[0];
         this.timeWarpCost = fitnesses[1];
         this.overLoadCost = fitnesses[2];
@@ -119,19 +123,10 @@ public class PeriodicIndividual {
         }
     }
 
-    public Individual createStandardIndividualObject(){
-        Individual newIndividual = new Individual(this.data, null, false, -1);
-        updateJourneysToPeriodicConfiguration();
-        newIndividual.journeyList = this.journeys;
-        newIndividual.orderDistribution = orderDistribution;
-        newIndividual.setGiantTourFromJourneys();
-        newIndividual.setTripListFromJourneys();
-        newIndividual.setTripMapFromTripList();
-        return newIndividual;
-    }
+
 
     public PGASolution createPGASolution(){
-        Individual newIndividual = new Individual(this.data, null, false, -1);
+        Individual newIndividual = new Individual(this.data, null, false, -1, penaltyControl);
         updateJourneysToPeriodicConfiguration();
         newIndividual.journeyList = this.journeys;
         newIndividual.orderDistribution = orderDistribution;
@@ -139,7 +134,7 @@ public class PeriodicIndividual {
         newIndividual.setTripListFromJourneys();
         newIndividual.setTripMapFromTripList();
         PGASolution pgaSolution = new PGASolution(data);
-        pgaSolution.initialize(journeys, orderDistribution);
+        pgaSolution.initialize(journeys, orderDistribution, penaltyControl.timeWarpPenalty, penaltyControl.overLoadPenalty);
         pgaSolution.setIndividual(newIndividual);
         return pgaSolution;
     }

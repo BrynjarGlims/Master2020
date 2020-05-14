@@ -32,7 +32,6 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
     public OrderAllocationModel orderAllocationModel;
     public JourneyCombinationModel journeyCombinationModel;
     public PeriodicIndividual bestPeriodicIndividual;
-    public Individual bestIndividual;
     public List<GeneticAlgorithm> threads;
     public ArrayList<Journey>[][] journeys;
     public OrderDistribution orderDistribution;
@@ -51,12 +50,17 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
     private CyclicBarrier masterDownstreamGate;
     private CyclicBarrier masterUpstreamGate;
 
+    public double timeWarpPenalty;
+    public double overLoadPenalty;
+
     public GeneticPeriodicAlgorithm(Data data) throws GRBException {
         this.data = data;
         orderAllocationModel = new OrderAllocationModel(data);
         journeyCombinationModel = new JourneyCombinationModel(DataConverter.convert(data));
         orderDistribution = new OrderDistribution(data);
         orderDistribution.makeInitialDistribution();
+        this.timeWarpPenalty = Parameters.initialTimeWarpPenalty;
+        this.overLoadPenalty = Parameters.initialOverLoadPenalty;
     }
 
     public void initialize(OrderDistribution orderDistribution) throws GRBException {
@@ -138,7 +142,7 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
         upstreamGate.reset();
 
         //System.out.println("Updating order distribution");
-        periodicPopulation.addPeriodicIndividual(generateGreedyPeriodicIndividual());
+        //periodicPopulation.addPeriodicIndividual(generateGreedyPeriodicIndividual());
         if (Parameters.useJCMInGPA){
             setJourneyFromBestIndividuals();
             createOrderDistributionFromJCM(threads, false);
@@ -173,7 +177,7 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
         if (verbose) {
             System.out.println("all customers exists? " + ABCtests.allCustomersExists(arrayOfJourneys, data));
             System.out.println("OD valid? " + IndividualTest.testValidOrderDistribution(data, orderDistribution));
-            double[] fitnesses = FitnessCalculation.getIndividualFitness(data, arrayOfJourneys, orderDistribution, 1);
+            double[] fitnesses = FitnessCalculation.getIndividualFitness(data, arrayOfJourneys, orderDistribution, 1, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
             System.out.println("overload: " + fitnesses[2]);
         }
 
@@ -250,7 +254,7 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
 
 
     private void updateFitness(){
-        double[] fitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1);
+        double[] fitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
         double fitness = 0;
         for (double d : fitnesses){
             fitness += d;
@@ -281,7 +285,7 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
         if (verbose) {
             System.out.println("all customers exists? " + ABCtests.allCustomersExists(journeys, data));
             System.out.println("OD valid? " + IndividualTest.testValidOrderDistribution(data, orderDistribution));
-            double[] fitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1);
+            double[] fitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
             System.out.println("overload: " + fitnesses[2]);
         }
         if (orderAllocationModel.createOptimalOrderDistribution(journeys, 1) == 2 && allFeasibleJourneys){
@@ -297,7 +301,7 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
 
 
     private PeriodicIndividual generateGreedyPeriodicIndividual(){
-        PeriodicIndividual newPeriodicIndividual = new PeriodicIndividual(data);
+        PeriodicIndividual newPeriodicIndividual = new PeriodicIndividual(data, null); // TODO: 14/05/2020 Change if in use
         newPeriodicIndividual.setOrderDistribution(orderDistribution);
         for (int p = 0; p < data.numberOfPeriods; p++){
             Individual individual = periodicPopulation.populations[p].returnBestIndividual();

@@ -2,6 +2,7 @@ package Master2020.StoringResults;
 
 import Master2020.DataFiles.*;
 import Master2020.Genetic.OrderDistributionCrossover;
+import Master2020.Genetic.PenaltyControl;
 import Master2020.Individual.Individual;
 import Master2020.Individual.Journey;
 import Master2020.Population.Population;
@@ -558,13 +559,14 @@ public class Result {
 
     public static void main(String[] args) throws IOException {
         Data data = DataReader.loadData();
+        PenaltyControl penaltyControl = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
         Population population = new Population(data);
         OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
         OrderDistributionCrossover ODC = new OrderDistributionCrossover(data);
         odp.initializeOrderDistributionPopulation(population);
         OrderDistribution firstOD = odp.getRandomOrderDistribution();
         population.setOrderDistributionPopulation(odp);
-        population.initializePopulation(firstOD, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
+        population.initializePopulation(firstOD, penaltyControl);
         Result res = new Result(population, "GA");
         res.store();
     }

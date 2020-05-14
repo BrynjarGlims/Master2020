@@ -79,7 +79,7 @@ public class HelperFunctions {
 
 
     public static Individual createIndividual(Data data, ArrayList<Journey>[][] journeys, OrderDistribution orderDistribution){
-        Individual individual = new Individual(data);
+        Individual individual = new Individual(data, null);
         individual.journeyList = journeys;
         individual.orderDistribution = orderDistribution;
         individual.setGiantTourFromJourneys();

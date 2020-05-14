@@ -4,6 +4,7 @@ package Master2020.Population;
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Parameters;
+import Master2020.Genetic.PenaltyControl;
 import Master2020.Individual.Individual;
 import Master2020.PGA.PeriodicPopulation;
 import Master2020.ProductAllocation.OrderDistribution;
@@ -128,9 +129,10 @@ public class OrderDistributionPopulation {
 
     public static void main(String[] args) {
         Data data = DataReader.loadData();
+        PenaltyControl penaltyControl = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
         Population population = new Population(data);
         OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
-        population.initializePopulation(odp.getRandomOrderDistribution(), Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
+        population.initializePopulation(odp.getRandomOrderDistribution(), penaltyControl);
         odp.initializeOrderDistributionPopulation(population);
 
     }

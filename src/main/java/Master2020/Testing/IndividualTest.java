@@ -1,6 +1,7 @@
 package Master2020.Testing;
 
 import Master2020.DataFiles.*;
+import Master2020.Genetic.PenaltyControl;
 import Master2020.Individual.Individual;
 import Master2020.Individual.Journey;
 import Master2020.Individual.Trip;
@@ -14,6 +15,7 @@ import gurobi.GRBException;
 import Master2020.StoringResults.Result;
 
 import java.io.IOException;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -199,7 +201,8 @@ public class IndividualTest {
 
     public static void main(String[] args) throws IOException, GRBException {
         Data data = DataReader.loadData();
-        Individual individual = new Individual(data);
+        PenaltyControl penaltyControl = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
+        Individual individual = new Individual(data, penaltyControl);
         ArrayList<Integer>[][] chromosome = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
         for (int p = 0; p < data.numberOfPeriods; p++){
             for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){

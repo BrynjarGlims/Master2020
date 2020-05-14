@@ -30,14 +30,14 @@ public class Parameters {
     public static final int maxNumberOfGenerations = 100;
     public static final int numberOfIndividualsGeneratedEachGeneration = 100;    //lambda
     public static final double fractionEliteIndividuals = 0.4;     //el
-    public static final double fractionOfFeasibleIndividualsFromAdsplit = 0.9;
+    public static final double fractionOfFeasibleIndividualsFromAdsplit = 0.4;
     public static final int frequencyOfPenaltyUpdates = 50;
 
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
     public static int numberOfCustomers = 10;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
-    public static final int numberOfVehicles = 40;
+    public static final int numberOfVehicles = 100;
 
     public static final double distanceCutOffFromDepot = 3.0;   //default 3
     public static final boolean adjustTimeWindow = true;

@@ -3,6 +3,7 @@ package Master2020.PGA;
 import Master2020.ABC.ABCSolution;
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.Order;
+import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.FitnessCalculation;
 import Master2020.Individual.Individual;
 import Master2020.Individual.Journey;
@@ -24,17 +25,22 @@ public class PGASolution implements PeriodicSolution {
     public boolean feasible;
     public double infeasibilityCost;
 
+    public double timeWarpPenalty;
+    public double overLoadPenalty;
+
     public PGASolution(Data data){
         this.data = data;
     }
 
-    public void initialize(ArrayList<Journey>[][] journeys, OrderDistribution orderDistribution){
+    public void initialize(ArrayList<Journey>[][] journeys, OrderDistribution orderDistribution, double timeWarpPenalty, double overLoadPenalty){
         this.orderDistribution = orderDistribution;
         this.journeys = journeys;
+        this.timeWarpPenalty = Parameters.initialTimeWarpPenalty;
+        this.overLoadPenalty = Parameters.initialOverLoadPenalty;
     }
 
     public double getFitness(){
-        double[] thisFitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1);
+        double[] thisFitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1, timeWarpPenalty, overLoadPenalty);
         double fitness = 0;
         for (int d = 0 ; d < thisFitnesses.length ; d++){
             fitness += thisFitnesses[d];
@@ -71,8 +77,8 @@ public class PGASolution implements PeriodicSolution {
     }
 
     public int compareTo(PeriodicSolution o) {
-        double[] thisFitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1);
-        double[] oFitnesses = FitnessCalculation.getIndividualFitness(data, o.getJourneys(), o.getOrderDistribution(), 1);
+        double[] thisFitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1, timeWarpPenalty, overLoadPenalty);
+        double[] oFitnesses = FitnessCalculation.getIndividualFitness(data, o.getJourneys(), o.getOrderDistribution(), 1,timeWarpPenalty, overLoadPenalty);
         fitness = 0;
         double oFitness = 0;
         for (int d = 0 ; d < thisFitnesses.length ; d++){

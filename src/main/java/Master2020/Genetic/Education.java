@@ -547,13 +547,14 @@ public class Education {
 
     public static void main(String[] args) {
         Data data = DataReader.loadData();
+        PenaltyControl penaltyControl = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
         Population population = new Population(data);
         OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
         OrderDistributionCrossover ODC = new OrderDistributionCrossover(data);
         odp.initializeOrderDistributionPopulation(population);
         OrderDistribution firstOD = odp.getRandomOrderDistribution();
         population.setOrderDistributionPopulation(odp);
-        population.initializePopulation(firstOD, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
+        population.initializePopulation(firstOD, penaltyControl);
 
         for (int i = 0; i < 1; i++) {
             Individual individual = population.getRandomIndividual();

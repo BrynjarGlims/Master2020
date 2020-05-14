@@ -22,10 +22,10 @@ public class GiantTourCrossover {
 
 
 
-    public static Individual crossOver(Individual parent1, Individual parent2, OrderDistribution orderDistribution, double timeWarpPenalty, double overLoadPenalty){
+    public static Individual crossOver(Individual parent1, Individual parent2, OrderDistribution orderDistribution, PenaltyControl penaltyControl){
         data = parent1.data;
         numPeriodVehicleTypeCouples = parent1.numberOfPeriods * data.numberOfVehicleTypes;
-        Individual child = new Individual(data, parent1.population, Parameters.isPeriodic, parent1.actualPeriod);
+        Individual child = new Individual(data, parent1.population, Parameters.isPeriodic, parent1.actualPeriod, penaltyControl);
         child.orderDistribution = orderDistribution;
         HashSet<Integer>[] sets = initializeSets();
         HashMap<Integer, HashSet<Integer>> visitedCustomers = new HashMap<>();
@@ -39,8 +39,8 @@ public class GiantTourCrossover {
         combined.addAll(sets[1]);
         combined.addAll(sets[2]);
         inheritParent2(parent2, child, combined, visitedCustomers);
-        bestInsertion(child, orderDistribution, findMissingCustomers(visitedCustomers, child), timeWarpPenalty, overLoadPenalty);
-        AdSplit.adSplitPlural(child, timeWarpPenalty, overLoadPenalty);
+        bestInsertion(child, orderDistribution, findMissingCustomers(visitedCustomers, child), penaltyControl.timeWarpPenalty, penaltyControl.overLoadPenalty);
+        AdSplit.adSplitPlural(child, penaltyControl.timeWarpPenalty, penaltyControl.overLoadPenalty);
         child.updateFitness();
         return child;
     }
@@ -235,6 +235,7 @@ public class GiantTourCrossover {
 
     public static void main(String[] args){
         Data data = DataReader.loadData();
+        PenaltyControl penaltyControl = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
         int correctCustomers = 0;
         for (Customer customer : data.customers){
             if(customer.numberOfNonDividableOrders == customer.numberOfVisitPeriods){
@@ -244,13 +245,13 @@ public class GiantTourCrossover {
 
         OrderDistribution od1 = new OrderDistribution(data);
         od1.makeInitialDistribution();
-        Individual individual1 = new Individual(data);
+        Individual individual1 = new Individual(data, penaltyControl);
         individual1.initializeIndividual(od1);
         AdSplit.adSplitPlural(individual1, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
 
         OrderDistribution od2 = new OrderDistribution(data);
         od2.makeInitialDistribution();
-        Individual individual2 = new Individual(data);
+        Individual individual2 = new Individual(data, penaltyControl);
         individual2.initializeIndividual(od1);
         AdSplit.adSplitPlural(individual2, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
 
@@ -258,7 +259,7 @@ public class GiantTourCrossover {
 
         System.out.println(individual1.getFitness(true));
         System.out.println(individual2.getFitness(true));
-        Individual child = GiantTourCrossover.crossOver(individual1, individual2, individual1.orderDistribution, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
+        Individual child = GiantTourCrossover.crossOver(individual1, individual2, individual1.orderDistribution, penaltyControl);
         System.out.println(child.getFitness(true));
     }
 

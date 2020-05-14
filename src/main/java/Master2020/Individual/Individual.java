@@ -1,6 +1,7 @@
 package Master2020.Individual;
 import Master2020.DataFiles.*;
 import Master2020.Genetic.FitnessCalculation;
+import Master2020.Genetic.PenaltyControl;
 import Master2020.Population.Population;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Testing.IndividualTest;
@@ -41,17 +42,19 @@ public class Individual implements Comparable<Individual> {
     public int numberOfPeriods;
     public int actualPeriod;
 
+    public PenaltyControl penaltyControl;
 
-    public Individual(Data data) {
-        this(data, null, false,  -1);
+
+    public Individual(Data data, PenaltyControl penaltyControl) {
+        this(data, null, false,  -1, penaltyControl);
     }
 
-    public Individual(Data data, Population population) {
-        this(data, population, false, -1);
+    public Individual(Data data, Population population, PenaltyControl penaltyControl) {
+        this(data, population, false, -1, penaltyControl);
 
     }
 
-    public Individual(Data data, Population population, boolean isPeriodic, int actualPeriod) {
+    public Individual(Data data, Population population, boolean isPeriodic, int actualPeriod, PenaltyControl penaltyControl) {
         this.data = data;
         this.isPeriodic = isPeriodic;
         this.numberOfPeriods = (isPeriodic) ? 1 : data.numberOfPeriods;
@@ -64,6 +67,7 @@ public class Individual implements Comparable<Individual> {
         this.initializeTripList();
         this.initializeJourneyList();
         this.population = population;
+        this.penaltyControl = penaltyControl;
 
     }
 
@@ -245,7 +249,7 @@ public class Individual implements Comparable<Individual> {
 
     public void updateFitness(double penaltyMultiplier) {
         //Calculate objective costs
-        double[] fitnesses = FitnessCalculation.getIndividualFitness(this, penaltyMultiplier);
+        double[] fitnesses = FitnessCalculation.getIndividualFitness(this, penaltyMultiplier, penaltyControl.timeWarpPenalty, penaltyControl.overLoadPenalty);
         this.travelCost = fitnesses[0];
         this.infeasibilityCost = fitnesses[1] + fitnesses[2];
         this.vehicleUsageCost = fitnesses[3];
@@ -260,7 +264,7 @@ public class Individual implements Comparable<Individual> {
 
     public double getPeriodicCost(double penaltyMultiplier) {
         //Calculate objective costs
-        double[] fitnesses = FitnessCalculation.getIndividualFitness(this, penaltyMultiplier);
+        double[] fitnesses = FitnessCalculation.getIndividualFitness(this, penaltyMultiplier, penaltyControl.timeWarpPenalty, penaltyControl.overLoadPenalty);
         this.travelCost = fitnesses[0];
         this.infeasibilityCost = fitnesses[1] + fitnesses[2];
         this.vehicleUsageCost = fitnesses[3];
@@ -383,7 +387,8 @@ public class Individual implements Comparable<Individual> {
         Data data = DataReader.loadData();
         OrderDistribution od = new OrderDistribution(data);
         od.makeInitialDistribution();
-        Individual individual = new Individual(data);
+        PenaltyControl penaltyControl = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
+        Individual individual = new Individual(data, penaltyControl);
         individual.initializeIndividual(od);
         for( int i = 0; i < 100; i++){
             AdSplit.adSplitPlural(individual, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);

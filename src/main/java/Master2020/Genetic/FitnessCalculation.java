@@ -12,16 +12,11 @@ import Master2020.Individual.Journey;
 public class FitnessCalculation {   // TODO: 26.02.2020 Se if this can remove parts of code in LabelEntryClass
 
 
-    public static double[] getIndividualFitness(Individual individual, double penaltyMultiplier){
-        return getIndividualFitness(individual.data, individual.journeyList, individual.orderDistribution, penaltyMultiplier);
+    public static double[] getIndividualFitness(Individual individual, double penaltyMultiplier, double timeWarpPenalty, double overLoadPenalty){
+        return getIndividualFitness(individual.data, individual.journeyList, individual.orderDistribution, penaltyMultiplier, timeWarpPenalty, overLoadPenalty);
     }
 
-    public static double[] getIndividualFitness(Data data,
-                                                ArrayList<Journey>[][] journeys,
-                                                OrderDistribution orderDistribution,
-                                                double penaltyMultiplier){
-        return getIndividualFitness(data, journeys, orderDistribution, penaltyMultiplier, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
-    }
+
 
     public static double[] getIndividualFitness(Data data,
                                                 ArrayList<Journey>[][] journeys,

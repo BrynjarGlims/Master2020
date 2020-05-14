@@ -51,7 +51,7 @@ public class GeneticAlgorithm extends Thread {
         this.period = period;
         this.orderDistribution = orderDistribution;
         this.penaltyControl = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
-        population.initializePopulation(this.orderDistribution, penaltyControl.timeWarpPenalty, penaltyControl.overLoadPenalty);
+        population.initializePopulation(this.orderDistribution, penaltyControl);
         fitnessForPeriod = Double.MAX_VALUE;
         BiasedFitness.setBiasedFitnessScore(population);
         repaired = new HashSet<>();
@@ -72,7 +72,7 @@ public class GeneticAlgorithm extends Thread {
         while (parent1.equals(parent2)){
             parent2 = TournamentSelection.performSelection(population);
         }
-        return GiantTourCrossover.crossOver(parent1, parent2, this.orderDistribution, timeWarpPenalty, overLoadPenalty); // TODO: 02.04.2020 add to a pool?
+        return GiantTourCrossover.crossOver(parent1, parent2, this.orderDistribution, penaltyControl); // TODO: 02.04.2020 add to a pool?
     }
 
     public void educate(Individual individual){

@@ -101,7 +101,8 @@ public class PeriodicABC extends Thread implements PeriodicAlgorithm {
 
 
     private void updateFitness(){
-        double[] fitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1);
+        double[] fitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution,
+                1, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
         double fitness = 0;
         for (double d : fitnesses){
             fitness += d;

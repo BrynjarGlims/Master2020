@@ -3,6 +3,7 @@ package Master2020.MIP;
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.Order;
 import Master2020.DataFiles.Parameters;
+import Master2020.Genetic.PenaltyControl;
 import Master2020.Individual.Individual;
 import Master2020.Individual.Trip;
 import Master2020.PR.*;
@@ -758,7 +759,7 @@ public class JourneyCombinationModel extends Model{
     }
 
     public void createIndividualAndOrderDistributionObject() throws GRBException {
-        this.individual = new Individual(dataMIP.newData);
+        this.individual = new Individual(dataMIP.newData, new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty));
         this.orderDistribution = new OrderDistribution(dataMIP.newData);
         //todo: change objective to be a cost of taking a journey
         ModelConverter.initializeIndividualFromModel(this);
@@ -766,7 +767,7 @@ public class JourneyCombinationModel extends Model{
     }
 
     public void createEmptyIndividualAndOrderDistribution() throws GRBException {
-        this.individual = new Individual(dataMIP.newData);
+        this.individual = new Individual(dataMIP.newData, new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty));
         this.orderDistribution = new OrderDistribution(dataMIP.newData);
         this.individual.setOrderDistribution(orderDistribution);
     }

@@ -68,11 +68,11 @@ public class Population {
     }
 
 
-    public void initializePopulation (OrderDistribution od, double timeWarpPenalty, double overLoadPenalty) {
+    public void initializePopulation (OrderDistribution od, PenaltyControl penaltyControl) {
         for (int i = 0; i < Parameters.populationSize; i++) {
-            Individual individual = new Individual(this.data, this, isPeriodic, actualPeriod);
+            Individual individual = new Individual(this.data, this, isPeriodic, actualPeriod, penaltyControl);
             individual.initializeIndividual(od);
-            AdSplit.adSplitPlural(individual, timeWarpPenalty, overLoadPenalty);
+            AdSplit.adSplitPlural(individual, penaltyControl.timeWarpPenalty, penaltyControl.overLoadPenalty);
             individual.updateFitness();
             if (individual.isFeasible()) {
                 feasiblePopulation.add(individual);
@@ -300,10 +300,11 @@ public class Population {
 
     public static void main( String[] args){
         Data data = DataReader.loadData();
+        PenaltyControl penaltyControl = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
         Population population = new Population(data);
         OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
         odp.initializeOrderDistributionPopulation(population);
-        population.initializePopulation(odp.getRandomOrderDistribution(), Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
+        population.initializePopulation(odp.getRandomOrderDistribution(), penaltyControl);
         Individual individual = TournamentSelection.performSelection(population);
         individual.printDetailedFitness();
     }

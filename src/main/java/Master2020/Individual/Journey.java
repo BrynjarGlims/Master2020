@@ -9,6 +9,8 @@ import Master2020.DataFiles.Order;
 import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.FitnessCalculation;
 import Master2020.Genetic.OrderDistributionCrossover;
+import Master2020.Genetic.PenaltyControl;
+import Master2020.PGA.PeriodicPopulation;
 import Master2020.Population.Population;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Population.OrderDistributionPopulation;
@@ -146,19 +148,20 @@ public class Journey {
 
     public static void main(String[] args){
         Data data = DataReader.loadData();
+        PenaltyControl penaltyControl = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
         Population population = new Population(data);
         OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
         OrderDistributionCrossover ODC = new OrderDistributionCrossover(data);
         odp.initializeOrderDistributionPopulation(population);
         OrderDistribution firstOD = odp.getRandomOrderDistribution();
         population.setOrderDistributionPopulation(odp);
-        population.initializePopulation(firstOD, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
+        population.initializePopulation(firstOD, penaltyControl);
         Individual individual = population.getRandomIndividual();
         AdSplit.adSplitPlural(individual, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
         Individual parent1 = population.getRandomIndividual();
         Individual parent2 = population.getRandomIndividual();
         System.out.println(parent1.getFitness(true));
-        Individual child = Master2020.Genetic.GiantTourCrossover.crossOver(parent1, parent2, parent1.orderDistribution, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
+        Individual child = Master2020.Genetic.GiantTourCrossover.crossOver(parent1, parent2, parent1.orderDistribution, penaltyControl);
         System.out.println(child.getFitness(true));
         Master2020.Genetic.Education.improveRoutes(child, child.orderDistribution, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
         System.out.println(child.getFitness(true));

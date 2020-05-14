@@ -1,5 +1,6 @@
 package Master2020.PR;
 import Master2020.DataFiles.Data;
+import Master2020.Genetic.PenaltyControl;
 import Master2020.Individual.Individual;
 import Master2020.MIP.DataConverter;
 import Master2020.DataFiles.Parameters;
@@ -853,14 +854,14 @@ public class JourneyBasedModel {
     }
 
     public void createIndividualAndOrderDistributionObject() throws GRBException {
-        this.individual = new Individual(dataMIP.newData);
+        this.individual = new Individual(dataMIP.newData, new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty));
         this.orderDistribution = new OrderDistribution(dataMIP.newData);
         ModelConverter.initializeIndividualFromJourneyBasedModel(this);
         this.individual.setFitness(this.model.get(GRB.DoubleAttr.ObjVal));
     }
 
     public void createEmptyIndividualAndOrderDistribution() throws GRBException {
-        this.individual = new Individual(dataMIP.newData);
+        this.individual = new Individual(dataMIP.newData, new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty));
         this.orderDistribution = new OrderDistribution(dataMIP.newData);
         this.individual.setOrderDistribution(orderDistribution);
     }

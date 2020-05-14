@@ -46,7 +46,7 @@ public class AdSplit {
             //Labeling algorithm
             Label bestLabel  = labelingAlgorithm(matrixOfTrips, individual.data, individual.orderDistribution, individual.getActualPeriod(p), vt,
                     matrixOfTrips, penaltyMultiplier, timeWarpPenalty, overLoadPenalty);   // Sets bestLabel.
-            System.out.println("Label: TW: " + bestLabel.fleetTimeWarp + " OL: " +bestLabel.fleetOverLoad);
+            //System.out.println("Label: TW: " + bestLabel.fleetTimeWarp + " OL: " +bestLabel.fleetOverLoad);
             //Trip generation
             ArrayList<Journey> journeyList = tripAssignment(bestLabel, matrixOfTrips, individual.data);
 
@@ -136,9 +136,6 @@ public class AdSplit {
 
     //SHORTEST PATH --------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    private static void createTrips(ArrayList<Integer> giantTour, Data data, OrderDistribution orderDistribution, int  p, int vt){
-        createTrips(giantTour, data, orderDistribution, p, vt, 1, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
-    }
 
     private static ArrayList<ArrayList<Integer>> createTrips(ArrayList<Integer> giantTour, Data data, OrderDistribution orderDistribution, int p, int vt, double penaltyMultiplier, double timeWarpPenalty, double overLoadPenalty) {
         ArrayList<Integer> customerSequence = (ArrayList<Integer>) giantTour.clone();  //// TODO: 18.02.2020 Brynjar: is this superfast or only fast?

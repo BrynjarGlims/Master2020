@@ -51,7 +51,7 @@ public class App {
         odp.initializeOrderDistributionPopulation(population);
         globalOrderDistribution = odp.getRandomOrderDistribution();
         population.setOrderDistributionPopulation(odp);
-        population.initializePopulation(globalOrderDistribution, penaltyControl.timeWarpPenalty, penaltyControl.overLoadPenalty);
+        population.initializePopulation(globalOrderDistribution, penaltyControl);
         bestIndividualScore = Double.MAX_VALUE;
         BiasedFitness.setBiasedFitnessScore(population);
         orderAllocationModel = new OrderAllocationModel(data);
@@ -80,7 +80,7 @@ public class App {
         for (OrderDistribution od : crossoverOD) { //todo: EVALUEATE IF THIS IS DECENT
             odp.addOrderDistribution(od);
         }
-        return GiantTourCrossover.crossOver(parent1, parent2, crossoverOD[0], penaltyControl.timeWarpPenalty, penaltyControl.overLoadPenalty); // TODO: 02.04.2020 add to a pool?
+        return GiantTourCrossover.crossOver(parent1, parent2, crossoverOD[0], penaltyControl); // TODO: 02.04.2020 add to a pool?
     }
 
 
@@ -249,7 +249,7 @@ public class App {
                 for (int j = 0; j < Parameters.numberOfIndividualsGeneratedEachGeneration; j++) {
                     Individual newIndividual = PIX();
                     penaltyControl.adjust(newIndividual.hasTimeWarp(), newIndividual.hasOverLoad());
-                    System.out.println("Time warp: " + newIndividual.timeWarpCost + " overLoad: " + newIndividual.overLoadCost);
+                    //System.out.println("Time warp: " + newIndividual.timeWarpCost + " overLoad: " + newIndividual.overLoadCost);
                     if (!Master2020.Testing.IndividualTest.testIndividual(newIndividual)) {
                         System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: PIX");
                     }
@@ -329,7 +329,7 @@ public class App {
 
 
     private static PeriodicIndividual generateGreedyPeriodicIndividual(){
-        PeriodicIndividual newPeriodicIndividual = new PeriodicIndividual(data);
+        PeriodicIndividual newPeriodicIndividual = new PeriodicIndividual(data, null);
         newPeriodicIndividual.setOrderDistribution(globalOrderDistribution);
         for (int p = 0; p < data.numberOfPeriods; p++){
             Individual individual = periodicPopulation.populations[p].returnBestIndividual();
@@ -358,18 +358,6 @@ public class App {
             System.out.println("############# CURRENT ORDER DISTRIBUTION SCALING IS " + scalingFactorOrderDistribution + "################");
         }
     }
-
-    private static PeriodicIndividual generatePeriodicIndividual(){
-        PeriodicIndividual newPeriodicIndividual = new PeriodicIndividual(data);
-        newPeriodicIndividual.setOrderDistribution(globalOrderDistribution);
-        for (int p = 0; p < data.numberOfPeriods; p++){
-            Individual individual = TournamentSelection.performSelection(periodicPopulation.populations[p]);
-            newPeriodicIndividual.setPeriodicIndividual(individual, p);
-        }
-        System.out.println("Fitness: " + newPeriodicIndividual.getFitness());
-        return newPeriodicIndividual;
-    }
-
 
 
     public static void main(String[] args) throws Exception {
