@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
-import Master2020.DataFiles.Order;
 import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.FitnessCalculation;
 import Master2020.Genetic.OrderDistributionCrossover;
@@ -54,8 +53,6 @@ public class Journey {
         updateFitness(orderDistribution);
         return travelCost + data.vehicleTypes[vehicleType].usageCost;
     }
-
-
 
 
     public double[] updateFitness(OrderDistribution orderDistribution){

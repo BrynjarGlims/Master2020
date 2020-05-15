@@ -12,11 +12,31 @@ public class App {
     public static void main(String[] args) throws Exception {
         for (int seed : Parameters.seeds) {
             Parameters.randomSeedValue = seed;
-            Data data = DataReader.loadData();
-            System.out.println(Parameters.randomSeedValue);
-            HybridController hybridController = new HybridController(data);
-            hybridController.initialize();
-            hybridController.run();
+            if (args[0].equals("AFM"))
+                runMIPAFM();
+            else if (args[0].equals("PFM"))
+                runMIPPFM();
+            else if (args[0].equals("JBM"))
+                runMIPJBM();
+            else if (args[0].equals("GA")){
+                GAController ga = new GAController();
+                ga.runGA();
+            }
+            else if (args[0].equals("PGA")) {
+                Parameters.numberOfPGA = Parameters.numberOfAlgorithms;
+                Parameters.isPeriodic = true;
+                HybridController hc = new HybridController();
+                hc.run();
+            }
+            else if (args[0].equals("ABC")) {
+                Parameters.numberOfPGA = 0;
+                HybridController hc = new HybridController();
+                hc.run();
+            }
+            else if (args[0].equals("HYBRID")) {
+                HybridController hc = new HybridController();
+                hc.run();
+            }
         }
     }
 }

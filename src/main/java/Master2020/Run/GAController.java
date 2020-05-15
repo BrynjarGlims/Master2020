@@ -44,6 +44,10 @@ public class GAController {
     public String modelName = "GA";
     public double time;
 
+    public GAController() throws GRBException {
+        initialize();
+    }
+
 
     public void initialize() throws GRBException {
         data = DataReader.loadData();
@@ -174,7 +178,7 @@ public class GAController {
 
 
 
-    public void runGA(int samples) throws IOException, GRBException {
+    public void runGA() throws IOException, GRBException {
         double time = System.currentTimeMillis();
         System.out.println("Initialize population..");
         initialize();
@@ -293,10 +297,5 @@ public class GAController {
         }
         System.out.println("Fitness: " + newPeriodicIndividual.getFitness());
         return newPeriodicIndividual;
-    }
-
-    public void main(String[] args) throws Exception {
-
-        runGA(1);
     }
 }
