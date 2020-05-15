@@ -42,8 +42,9 @@ public class HybridController {
 
 
 
-    public HybridController(Data data){
-        this.data = data;
+    public HybridController() throws GRBException {
+        this.data = DataReader.loadData();
+        initialize();
     }
 
     public void initialize() throws GRBException {
@@ -186,8 +187,7 @@ public class HybridController {
     }
 
     public static void main(String[] args) throws Exception {
-        Data data = DataReader.loadData();
-        HybridController hc = new HybridController(data);
+        HybridController hc = new HybridController();
         hc.initialize();
         hc.run();
     }
