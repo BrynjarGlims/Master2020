@@ -92,7 +92,6 @@ public class Result {
         }
         else{
             storeSummary();
-            createDetailedDirectory();
             storeDetailed();
             System.out.println("Storing complete");
         }
@@ -130,13 +129,7 @@ public class Result {
 
 
 
-    private void createDetailedDirectory(){
-        File file = new File(FileParameters.filePathDetailed + "/"+ fileName );
-        boolean bool = file.mkdir();
-        if (bool){
-            System.out.println("Directory succesfully created");
-        }
-    };
+
 
     private void storeDetailed() throws IOException {
         storeSummaryDetailed();

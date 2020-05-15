@@ -87,11 +87,12 @@ public class SolutionStorer {
             return myObj.nextLine();  // Read user input
         }
         createDirectory();
+        createDetailedDirectory(modelName);
         return modelName;
     }
 
     public static void createDirectory(){
-        System.out.println(" Directory Create");
+        System.out.println("Directory Create");
         File f = new File(FileParameters.filePathSummary);
         if (!f.exists()) {
             f.mkdir();
@@ -106,5 +107,14 @@ public class SolutionStorer {
                 f.mkdir();
             }
         }
+
     }
+
+    public static void createDetailedDirectory(String modelName){
+        File file = new File(FileParameters.filePathDetailed + "/"+ modelName  );
+        boolean bool = file.mkdir();
+        if (bool){
+            System.out.println("Directory succesfully created");
+        }
+    };
 }
