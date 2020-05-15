@@ -572,7 +572,10 @@ public class OrderAllocationModel {
                 initializeODObject();
                 if (Parameters.verboseODValidity)
                     printVolumeOfTrips();
-                checkIfValidOD();
+                if (false){
+                    checkIfValidOD();  //test valid od!
+                }
+
             }
             else{
                 System.out.println("Unkonwn optimization status");

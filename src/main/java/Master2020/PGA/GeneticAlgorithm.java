@@ -46,7 +46,6 @@ public class GeneticAlgorithm extends Thread {
 
 
     public void initialize(int period, OrderDistribution orderDistribution, CyclicBarrier downstreamGate, CyclicBarrier upstreamGate, Population population) throws GRBException {
-        System.out.println("Initialize population..");
         this.population = population;
         this.period = period;
         this.orderDistribution = orderDistribution;
@@ -58,7 +57,6 @@ public class GeneticAlgorithm extends Thread {
         numberOfIterations = 0;
         this.downstreamGate = downstreamGate;
         this.upstreamGate = upstreamGate;
-        //System.out.println("Initialization completed");
     }
 
     public void setPopulation(Population population) {
@@ -181,7 +179,6 @@ public class GeneticAlgorithm extends Thread {
                 e.printStackTrace();
             }
         }
-
     }
 
 
@@ -190,7 +187,6 @@ public class GeneticAlgorithm extends Thread {
         resetCounters();
         printPopulationStats();
         for (int i = 0 ; i < generations ; i++){
-            System.out.println("Start generation " + i);
             if (iterationsWithoutImprovement > Parameters.maxNumberIterationsWithoutImprovement)
                 break;
             runGeneration();
@@ -199,9 +195,7 @@ public class GeneticAlgorithm extends Thread {
     }
 
     public void printPopulationStats(){
-        System.out.println("Period " + period);
-        System.out.println(" Number of feasible individuals: " + population.feasiblePopulation.size());
-        System.out.println(" Number of infeasible individuals: " + population.infeasiblePopulation.size());
+        System.out.println("Period " + period + " feasible individuals: " + population.feasiblePopulation.size() + " infeasible individuals: " + population.infeasiblePopulation.size());
     }
 
 

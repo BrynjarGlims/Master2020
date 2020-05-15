@@ -30,12 +30,10 @@ public class PGASolution implements PeriodicSolution {
     public double timeWarpPenalty;
     public double overLoadPenalty;
 
-    public PGASolution(Data data){
-        this.data = data;
-    }
 
-    public void initialize(ArrayList<Journey>[][] journeys, OrderDistribution orderDistribution, double timeWarpPenalty, double overLoadPenalty){
+    public PGASolution(OrderDistribution orderDistribution, ArrayList<Journey>[][] journeys){
         this.orderDistribution = orderDistribution;
+        this.data = orderDistribution.data;
         this.journeys = journeys;
         this.timeWarpPenalty = Parameters.initialTimeWarpPenalty;
         this.overLoadPenalty = Parameters.initialOverLoadPenalty;
@@ -51,6 +49,15 @@ public class PGASolution implements PeriodicSolution {
         this.fitness = fitness;
         this.infeasibilityCost = thisFitnesses[1] + thisFitnesses[2];
         return fitness;
+    }
+
+    public void printDetailedFitness(){
+        double[] thisFitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1, timeWarpPenalty, overLoadPenalty);
+        System.out.println("Driving cost: " + thisFitnesses[0]);
+        System.out.println("TimeWarp cost: " + thisFitnesses[1]);
+        System.out.println("OverLoad cost: " + thisFitnesses[2]);
+        System.out.println("Vehicle usage cost: " + thisFitnesses[3]);
+        System.out.println("OrderDistributionCost: " + orderDistribution.getFitness());
     }
 
     public ArrayList<Journey>[][] getJourneys(){

@@ -93,7 +93,8 @@ public class PGAController {
         upstreamGate.await();
 
         Collections.sort(finalSolutions);
-        //System.out.println(finalSolutions.get(0).getFitness());
+        finalSolutions.get(0).printDetailedFitness();
+        System.out.println(finalSolutions.get(0).getFitness());
     }
 
 
@@ -110,46 +111,24 @@ public class PGAController {
         //update and find best order distribution
         for (int p = 0; p < Parameters.numberOfPeriodicParallels; p++){
             periodicAlgorithmsArrayList.get(p).runIteration();
-            solutions.add(periodicAlgorithmsArrayList.get(p).storeSolution());  //store solution : to implement
+            solutions.add(periodicAlgorithmsArrayList.get(p).storeSolution());
+            System.out.println(solutions.get(solutions.size()-1).getFitness());
+            solutions.get(solutions.size()-1).printDetailedFitness();
             pod.distributions.set(p, periodicAlgorithmsArrayList.get(p).getOrderDistribution());
+            System.out.println("STOP AND CHECK SOLUTION");
         }
-        updateOrderDistributionPopulation();
-
-
-
+        //updateOrderDistributionPopulation();
 
     }
-
-
-
-    private void singularRun() throws BrokenBarrierException, InterruptedException, IOException, CloneNotSupportedException {
-        System.out.println("RUNNING SINGULAR ABC");
-        /*
-        for (int i = 0 ; i < Parameters.orderDistributionUpdates ; i++){
-            System.out.println("running generation: " + i);
-            swarm.runIteration();
-        }
-        ABCSolution solution = swarm.storeSolution();
-        swarm.terminate();
-        System.out.println(solution.getFitness());
-
-         */
-
-    }
-
 
     public void run() throws Exception {
         if (Parameters.runSingularGA){
-            singularRun();
+            //singularRun();
         }
         else {
             multipleRun();
         }
     }
-
-
-
-
 
     public void updateOrderDistributionPopulation() throws CloneNotSupportedException {
 
@@ -178,19 +157,12 @@ public class PGAController {
                     od = new OrderDistribution(data);
                     od.makeInitialDistribution();
                 }
-
                 //initialize if new od
                 periodicAlgorithmsArrayList.get(i).updateOrderDistribution(od);
                 periodicAlgorithmsArrayList.get(i).resetPeriodicPopulation();
-
-
             }
         }
-
-
     }
-
-
 
     public static void main(String[] args) throws Exception {
         Data data = DataReader.loadData();

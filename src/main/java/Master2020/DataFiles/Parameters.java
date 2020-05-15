@@ -137,10 +137,12 @@ public class Parameters {
     public static int numberOfPeriodicParallels =  1;
     public static final boolean runSingularGA = false;  //do not change
     public static final boolean threadedGA = true;      //do not change
+
+    public static final boolean useODMIPBetweenGenerations = true;
     public static final double diversifiedODProbability = 0.5;    //remove, move to controller
-    public static final int generationsPerOrderDistributionPeriodic = 100;
-    public static final int minimumUpdatesPerOrderDistributions = 4;
-    public static final int orderDistributionUpdatesGA = 50;        // this / minimumUpdatesPerOrderDistributions = number of unique order distributions
+    public static final int generationsPerOrderDistributionPeriodic = 50;
+    public static final int minimumUpdatesPerOrderDistributions = 2;
+    public static final int orderDistributionUpdatesGA = 1;        // this / minimumUpdatesPerOrderDistributions = number of unique order distributions
     //......
     public static final double initialOrderDistributionScale = 1;
     public static final double incrementPerOrderDistributionScaling = 0.02;
@@ -149,7 +151,7 @@ public class Parameters {
     //......
 
     // Journey Combination Model parameters
-    public static final boolean useJCMInGPA = true;
+    public static final boolean useJCMInGPA = false;
     public static final int numberOfIndividualJourneysInMIPPerPeriod = 10;
     public static final String symmetryOFJCM = "none";
 

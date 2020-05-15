@@ -133,8 +133,7 @@ public class PeriodicIndividual {
         newIndividual.setGiantTourFromJourneys();
         newIndividual.setTripListFromJourneys();
         newIndividual.setTripMapFromTripList();
-        PGASolution pgaSolution = new PGASolution(data);
-        pgaSolution.initialize(journeys, orderDistribution, penaltyControl.timeWarpPenalty, penaltyControl.overLoadPenalty);
+        PGASolution pgaSolution = new PGASolution(orderDistribution, journeys);
         pgaSolution.setIndividual(newIndividual);
         return pgaSolution;
     }
