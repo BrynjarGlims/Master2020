@@ -77,10 +77,12 @@ public class PGAController {
 
     private void multipleRunThreaded() throws Exception {
 
-        for (int i = 0 ; i < Parameters.orderDistributionUpdatesGA ; i++){
+        for (int i = 0 ; i < Parameters.orderDistributionUpdatesGA - 1; i++){
             System.out.println("Running generation: " + i);
             runIteration();
+            updateOrderDistributionPopulation();
         }
+        runIteration();
 
         for (GeneticPeriodicAlgorithm algorithm : periodicAlgorithmsArrayList){
             finalSolutions.add(algorithm.storeSolution(true));
@@ -113,7 +115,7 @@ public class PGAController {
             solutions.add(periodicAlgorithmsArrayList.get(p).storeSolution());  //store solution : to implement
             pod.distributions.set(p, periodicAlgorithmsArrayList.get(p).getOrderDistribution());
         }
-        updateOrderDistributionPopulation();
+
 
 
 
