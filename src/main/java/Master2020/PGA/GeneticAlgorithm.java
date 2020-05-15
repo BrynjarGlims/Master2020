@@ -42,7 +42,7 @@ public class GeneticAlgorithm extends Thread {
 
     public GeneticAlgorithm(Data data){
         this.data = data;
-        this.penaltyControl = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
+        this.penaltyControl = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty, Parameters.frequencyOfPenaltyUpdatesPGA);
     }
 
 

@@ -33,7 +33,8 @@ public class Parameters {
     public static final int numberOfIndividualsGeneratedEachGeneration = 10;    //lambda
     public static final double fractionEliteIndividuals = 0.4;     //el
     public static final double fractionOfFeasibleIndividualsFromAdsplit = 0.2;
-    public static final int frequencyOfPenaltyUpdates = 50;
+    public static final int frequencyOfPenaltyUpdatesPGA = 50;
+    public static final int frequencyOfPenaltyUpdatesABC = 1000;
 
     // Loading data parameters
     public static final int numberOfPeriods = 6;

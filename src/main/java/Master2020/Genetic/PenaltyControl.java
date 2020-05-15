@@ -11,14 +11,16 @@ public class PenaltyControl {
     double increase = 1.25;
     double decrease = 0.8;
     boolean verbose = false;
+    private int updateFrequency;
 
     public double timeWarpPenalty;
     public double overLoadPenalty;
 
 
-    public PenaltyControl(double timeWarpPenalty, double overLoadPenalty){
+    public PenaltyControl(double timeWarpPenalty, double overLoadPenalty, int updateFrequency){
         this.timeWarpPenalty = timeWarpPenalty;
         this.overLoadPenalty = overLoadPenalty;
+        this.updateFrequency = updateFrequency;
         reset();
     }
 
@@ -26,7 +28,7 @@ public class PenaltyControl {
         iteration += 1;
         numTimeWarpFeasible += hasTimeWarp ? 0 : 1;
         numOverLoadFeasible += hasOverLoad ? 0 : 1;
-        if (iteration >= Parameters.frequencyOfPenaltyUpdates) {
+        if (iteration >= updateFrequency) {
             updatePenalties();
             reset();
         }
