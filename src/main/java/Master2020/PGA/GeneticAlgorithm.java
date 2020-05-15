@@ -42,6 +42,7 @@ public class GeneticAlgorithm extends Thread {
 
     public GeneticAlgorithm(Data data){
         this.data = data;
+        this.penaltyControl = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
     }
 
 
@@ -50,7 +51,6 @@ public class GeneticAlgorithm extends Thread {
         this.population = population;
         this.period = period;
         this.orderDistribution = orderDistribution;
-        this.penaltyControl = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
         population.initializePopulation(this.orderDistribution, penaltyControl);
         fitnessForPeriod = Double.MAX_VALUE;
         BiasedFitness.setBiasedFitnessScore(population);

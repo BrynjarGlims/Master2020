@@ -75,10 +75,15 @@ public abstract class Bee {
     protected double getFitness(double[] position){
         ArrayList<Integer>[] giantTourEntry = HelperFunctions.parsePosition(data, period, position);
         double fitness = 0;
+        double[] fitnesses = new double[4];
         for (int vt = 0 ; vt < giantTourEntry.length ; vt++){
             ArrayList<Journey> journeys = AdSplit.adSplitSingular(giantTourEntry[vt], data, colony.orderDistribution, period, vt, penaltyControl.timeWarpPenalty, penaltyControl.overLoadPenalty);
             for (Journey journey : journeys){
-                fitness += journey.getTotalFitness(colony.orderDistribution);
+                fitnesses = FitnessCalculation.getJourneyFitness(journey, colony.orderDistribution);
+                for (double d : fitnesses){
+                    fitness += d;
+                }
+                penaltyControl.adjust(fitnesses[1] > 0, fitnesses[3] > 0);
             }
         }
         return fitness;
