@@ -48,6 +48,10 @@ public class ABCSolution implements PeriodicSolution {
         return fitness;
     }
 
+    public double[] getFitnesses(){
+        return FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1, timeWarpPenalty, overLoadPenalty);
+    }
+
     public ArrayList<Journey>[][] getJourneys(){
         return journeys;
     }
@@ -84,9 +88,9 @@ public class ABCSolution implements PeriodicSolution {
         return 0;
     }
 
-    public void writeSolution() throws IOException {
+    public void writeSolution(String fileName) throws IOException {
         Individual individual = HelperFunctions.createIndividual(data, journeys, orderDistribution);
-        Result result = new Result(individual, "ABC");
+        Result result = new Result(individual, "ABC", fileName);
         result.store();
 
     }

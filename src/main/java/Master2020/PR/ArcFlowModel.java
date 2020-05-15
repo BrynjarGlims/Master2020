@@ -5,6 +5,7 @@ import Master2020.Genetic.PenaltyControl;
 import Master2020.Individual.Individual;
 import Master2020.MIP.DataConverter;
 import Master2020.ProductAllocation.OrderDistribution;
+import Master2020.StoringResults.SolutionStorer;
 import gurobi.*;
 
 import java.io.FileNotFoundException;
@@ -1252,7 +1253,9 @@ public class ArcFlowModel  {
         ArcFlowModel afm = new ArcFlowModel(dataMip);
         afm.runModel(Master2020.DataFiles.Parameters.symmetry);
         Individual individual = afm.getIndividual();
-        Master2020.StoringResults.Result res = new Master2020.StoringResults.Result(individual, "AFM");
+        String modelName = "AFM";
+        String fileName = SolutionStorer.getFolderName(modelName);
+        Master2020.StoringResults.Result res = new Master2020.StoringResults.Result(individual, "AFM", fileName);
         res.store();
         //PlotIndividual visualizer = new PlotIndividual(data);
         //visualizer.visualize(individual);

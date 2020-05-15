@@ -13,6 +13,7 @@ import Master2020.Population.OrderDistributionPopulation;
 import Master2020.Population.Population;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.StoringResults.Result;
+import Master2020.StoringResults.SolutionStorer;
 import Master2020.Testing.IndividualTest;
 import Master2020.Visualization.PlotIndividual;
 import gurobi.GRBException;
@@ -24,23 +25,27 @@ import java.util.concurrent.ThreadLocalRandom;
 public class GAController {
 
 
-    public static Data data;
-    public static Population population;
-    public static PeriodicPopulation periodicPopulation;
-    public static OrderDistributionPopulation odp;
-    public static OrderDistributionCrossover ODC;
-    public static OrderDistribution globalOrderDistribution;
-    public static double bestIndividualScore;
-    public static HashSet<Individual> repaired;
-    public static Individual bestIndividual;
-    public static int numberOfIterations;
-    public static OrderAllocationModel orderAllocationModel;
-    public static double scalingFactorOrderDistribution;
-    public static PeriodicIndividual bestPeriodicIndividual;
-    public static PenaltyControl penaltyControl;
+    public Data data;
+    public Population population;
+    public PeriodicPopulation periodicPopulation;
+    public OrderDistributionPopulation odp;
+    public OrderDistributionCrossover ODC;
+    public OrderDistribution globalOrderDistribution;
+    public double bestIndividualScore;
+    public HashSet<Individual> repaired;
+    public Individual bestIndividual;
+    public int numberOfIterations;
+    public OrderAllocationModel orderAllocationModel;
+    public double scalingFactorOrderDistribution;
+    public PeriodicIndividual bestPeriodicIndividual;
+    public PenaltyControl penaltyControl;
+
+    public String fileName;
+    public String modelName = "GA";
+    public double time;
 
 
-    public static void initialize() throws GRBException {
+    public void initialize() throws GRBException {
         data = DataReader.loadData();
         population = new Population(data);
         penaltyControl = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
@@ -51,6 +56,7 @@ public class GAController {
         population.setOrderDistributionPopulation(odp);
         population.initializePopulation(globalOrderDistribution, penaltyControl);
         bestIndividualScore = Double.MAX_VALUE;
+        fileName = SolutionStorer.getFolderName(this.modelName);
         BiasedFitness.setBiasedFitnessScore(population);
         orderAllocationModel = new OrderAllocationModel(data);
         repaired = new HashSet<>();
@@ -58,7 +64,7 @@ public class GAController {
     }
 
 
-    private static void findBestOrderDistribution(){
+    private void findBestOrderDistribution(){
         //Find best OD for the distribution
         odp.calculateFillingLevelFitnessScoresPlural();
         for (Individual individual : population.getTotalPopulation()){
@@ -67,7 +73,7 @@ public class GAController {
     }
 
 
-    public static Individual PIX(){
+    public Individual PIX(){
         // Select parents
         Individual parent1 = TournamentSelection.performSelection(population);
         Individual parent2 = TournamentSelection.performSelection(population);
@@ -82,14 +88,14 @@ public class GAController {
     }
 
 
-    public static void educate(Individual individual, PenaltyControl penaltyControl){
+    public void educate(Individual individual, PenaltyControl penaltyControl){
         if (ThreadLocalRandom.current().nextDouble() < Parameters.educationProbability){
             Education.improveRoutes(individual, individual.orderDistribution, penaltyControl.timeWarpPenalty, penaltyControl.overLoadPenalty);
         }
     }
 
 
-    public static void setOptimalOrderDistribution(Individual individual){
+    public void setOptimalOrderDistribution(Individual individual){
         if (ThreadLocalRandom.current().nextDouble() < Parameters.ODMIPProbability){
             OrderDistribution optimalOD;
             if (orderAllocationModel.createOptimalOrderDistribution(individual.journeyList) == 2){
@@ -103,7 +109,7 @@ public class GAController {
         }
     }
 
-    public static void tripOptimizer(Individual individual){
+    public void tripOptimizer(Individual individual){
         for (int p = 0 ; p < individual.numberOfPeriods ; p++){
             for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
                 for (Trip trip : individual.tripList[Individual.getDefaultPeriod(p)][vt]) {
@@ -116,11 +122,11 @@ public class GAController {
         individual.setGiantTourFromTrips();
     }
 
-    public static void repair(){
+    public void repair(){
         repair(population);
     }
 
-    public static void repair(Population population){
+    public void repair(Population population){
         repaired.clear();
         for (Individual infeasibleIndividual : population.infeasiblePopulation){
             if (ThreadLocalRandom.current().nextDouble() < Parameters.repairProbability){
@@ -133,12 +139,12 @@ public class GAController {
         population.feasiblePopulation.addAll(repaired);
     }
 
-    public static void selection(){
+    public void selection(){
         selection(population);
     }
 
 
-    public static void selection(Population population){
+    public void selection(Population population){
 
         // Reduce population size
 
@@ -168,7 +174,7 @@ public class GAController {
 
 
 
-    public static void runGA(int samples) throws IOException, GRBException {
+    public void runGA(int samples) throws IOException, GRBException {
         double time = System.currentTimeMillis();
         System.out.println("Initialize population..");
         initialize();
@@ -246,14 +252,14 @@ public class GAController {
             visualizer.visualize(bestIndividual);
         }
         double runTime = (System.currentTimeMillis() - time)/1000;
-        Result res = new Result(population, "GA");
+        Result res = new Result(population, "GA", fileName);
         res.store(runTime, -1);
         orderAllocationModel.terminateEnvironment();
     }
 
 
 
-    private static void createNewOptimalOrderDistribution(PeriodicIndividual bestPeriodicIndividual){
+    private void createNewOptimalOrderDistribution(PeriodicIndividual bestPeriodicIndividual){
         System.out.println("Perform update of volumes");
         if (orderAllocationModel.createOptimalOrderDistribution(bestPeriodicIndividual.getJourneys(), scalingFactorOrderDistribution) == 2){
             globalOrderDistribution = orderAllocationModel.getOrderDistribution();
@@ -271,7 +277,7 @@ public class GAController {
     }
 
 
-    private static PeriodicIndividual generateGreedyPeriodicIndividual(){
+    private PeriodicIndividual generateGreedyPeriodicIndividual(){
         PeriodicIndividual newPeriodicIndividual = new PeriodicIndividual(data, null);
         newPeriodicIndividual.setOrderDistribution(globalOrderDistribution);
         for (int p = 0; p < data.numberOfPeriods; p++){
@@ -289,7 +295,7 @@ public class GAController {
         return newPeriodicIndividual;
     }
 
-    public static void main(String[] args) throws Exception {
+    public void main(String[] args) throws Exception {
 
         runGA(1);
     }

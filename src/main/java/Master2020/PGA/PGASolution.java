@@ -76,10 +76,14 @@ public class PGASolution implements PeriodicSolution {
         return infeasibilityCost;
     }
 
+    public double[] getFitnesses(){
+        return FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1, timeWarpPenalty, overLoadPenalty);
+    }
+
     @Override
-    public void writeSolution() throws IOException {
+    public void writeSolution(String fileName) throws IOException {
         Individual individual = HelperFunctions.createIndividual(data, journeys, orderDistribution);
-        Result result = new Result(individual, "PGA");
+        Result result = new Result(individual, "PGA", fileName);
         result.store();
     }
 

@@ -21,6 +21,7 @@ public class JourneyCombinationModel extends Model{
     public GRBEnv env;
     public GRBModel model;
     public DataMIP dataMIP;
+    public Data data;
     public PathGenerator pg;
     public Result result;
     public String dataPath;
@@ -60,12 +61,16 @@ public class JourneyCombinationModel extends Model{
     public ArrayList<Master2020.Individual.Journey>[][] journeys;   //period, vehicleType
 
 
-    public JourneyCombinationModel(DataMIP dataMIP) throws GRBException {
-        super(dataMIP);
-        this.dataMIP = dataMIP;
+    public JourneyCombinationModel(Data data) throws GRBException {
+        super(data);
+        this.dataMIP = DataConverter.convert(data);
         env = new GRBEnv(true);
         this.env.set("logFile",  "JourneyBasedModel.log");
         this.env.start();
+        this.symmetry = Parameters.symmetryOFJCM;
+        this.globalOrderDistribution = new OrderDistribution(data);
+        this.globalOrderDistribution.makeInitialDistribution();
+
     }
 
     @Override
@@ -674,12 +679,11 @@ public class JourneyCombinationModel extends Model{
 
 
 
-    public double runModel(ArrayList<Master2020.Individual.Journey>[][] journeys, OrderDistribution globalOrderDistribution) {
+    public double runModel(ArrayList<Master2020.Individual.Journey>[][] journeys) {
         try {
             double time = System.currentTimeMillis();
-            this.globalOrderDistribution = globalOrderDistribution;
             this.journeys = journeys;
-            this.symmetry = Parameters.symmetryOFJCM;
+
             initializeModel();
             initializeParameters();
             setObjective();
@@ -759,7 +763,7 @@ public class JourneyCombinationModel extends Model{
     }
 
     public void createIndividualAndOrderDistributionObject() throws GRBException {
-        this.individual = new Individual(dataMIP.newData, new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty));
+        this.individual = new Individual(dataMIP.newData, new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty, Parameters.frequencyOfPenaltyUpdatesPGA));
         this.orderDistribution = new OrderDistribution(dataMIP.newData);
         //todo: change objective to be a cost of taking a journey
         ModelConverter.initializeIndividualFromModel(this);
@@ -767,7 +771,7 @@ public class JourneyCombinationModel extends Model{
     }
 
     public void createEmptyIndividualAndOrderDistribution() throws GRBException {
-        this.individual = new Individual(dataMIP.newData, new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty));
+        this.individual = new Individual(dataMIP.newData, new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty, Parameters.frequencyOfPenaltyUpdatesPGA));
         this.orderDistribution = new OrderDistribution(dataMIP.newData);
         this.individual.setOrderDistribution(orderDistribution);
     }
@@ -775,14 +779,8 @@ public class JourneyCombinationModel extends Model{
 
     public static void main (String[] args) throws IOException, GRBException {
         Data data = Master2020.DataFiles.DataReader.loadData();
-        DataMIP dataMip = DataConverter.convert(data);
-        JourneyCombinationModel jcm = new JourneyCombinationModel(dataMip);
+        JourneyCombinationModel jcm = new JourneyCombinationModel(data);
         //jcm.runModel(Master2020.DataFiles.Parameters.symmetry);
         Individual individual = jcm.getIndividual();
-        Master2020.StoringResults.Result res = new Master2020.StoringResults.Result(individual, "JBM");
-        res.store();
-        //PlotIndividual visualizer = new PlotIndividual(data);
-        //visualizer.visualize(individual);
-        System.out.println(" ");
     }
 }

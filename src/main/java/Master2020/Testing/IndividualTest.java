@@ -11,6 +11,7 @@ import Master2020.ProductAllocation.OrderDelivery;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Population.OrderDistributionPopulation;
 import Master2020.Individual.AdSplit;
+import Master2020.StoringResults.SolutionStorer;
 import gurobi.GRBException;
 import Master2020.StoringResults.Result;
 
@@ -250,7 +251,9 @@ public class IndividualTest {
         System.out.println(individual.getFitness(true));
         individual.printDetailedFitness();
         System.out.println("Done");
-        Result res = new Result(individual, "GA");
+        String modelName = "AFM";
+        String fileName = SolutionStorer.getFolderName(modelName);
+        Result res = new Result(individual, "GA", fileName);
         res.store();
 
 

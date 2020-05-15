@@ -21,55 +21,62 @@ public class SolutionStorer {
 
     public static String modelName;
 
-    public static void store(PeriodicSolution periodicSolution, String modelName){
+    public static void store(PeriodicSolution periodicSolution, double startTime, String folderName){
         try {
-            String fileName = getFileName(modelName);
-
-
-            String filePath = FileParameters.filePathDetailed + "/" + fileName + "/" + fileName + "_customer.csv";
+            String filePath = FileParameters.filePathDetailed + "/" + folderName + "/" + folderName + "_solutions.csv";
             File newFile = new File(filePath);
-            System.out.println("Path : " + newFile.getAbsolutePath());
+            System.out.println("Storing result at path : " + newFile.getAbsolutePath());
             Writer writer = Files.newBufferedWriter(Paths.get(filePath), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
             CSVWriter csvWriter = new CSVWriter(writer, Parameters.separator, CSVWriter.NO_QUOTE_CHARACTER,
                     CSVWriter.DEFAULT_ESCAPE_CHARACTER,
                     CSVWriter.DEFAULT_LINE_END);
-            NumberFormat formatter = new DecimalFormat("#0.00000000");
+            NumberFormat formatter = new DecimalFormat("#0.000000");
             SimpleDateFormat date_formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-            System.out.println("Changing detailed file...");
+            double runtime = (System.currentTimeMillis() - startTime)/1000;
+            double fitnesses[] = periodicSolution.getFitnesses();
+
             if (newFile.length() == 0) {
-                String[] CSV_COLUMNS = {"Customer Name", "CustomerID", "Customer number", "Orders", "Dividable Orders", "NonDividable Orders",
-                        "Frequency", "Total Volume", "Visit Monday", "Visit Tuesday", "Visit Wednesday", "Visit Thursday", "Visit Friday", "Visit Saturday",
-                        "Unloading time [minutes]"
-                };
+                String[] CSV_COLUMNS = {"Instance Name",
+                        "Time",
+                        "Objective",
+                        "TravelCost",
+                        "VehicleUsage",
+                        "OverTimeCost",
+                        "TimeWarp",
+                        "OverLoad",
+                        "Feasible" };
                 csvWriter.writeNext(CSV_COLUMNS, false);
             }
-            for (Customer c : data.customers) {
-                String[] results = {c.customerName, String.valueOf(c.customerID), String.valueOf(c.customerNumber),
-                        String.valueOf(c.numberOfOrders), String.valueOf(c.numberOfDividableOrders), String.valueOf(c.numberOfNonDividableOrders),
-                        String.valueOf(c.numberOfVisitPeriods), Converter.calculateTotalOrderVolume(c),
-                        Converter.convertTimeWindow(c.timeWindow[0][0], c.timeWindow[0][1]),
-                        Converter.convertTimeWindow(c.timeWindow[1][0], c.timeWindow[1][1]), Converter.convertTimeWindow(c.timeWindow[2][0], c.timeWindow[2][1]),
-                        Converter.convertTimeWindow(c.timeWindow[3][0], c.timeWindow[3][1]), Converter.convertTimeWindow(c.timeWindow[4][0], c.timeWindow[4][1]),
-                        Converter.convertTimeWindow(c.timeWindow[5][0], c.timeWindow[5][1]),
-                        String.format("%.0f", c.totalUnloadingTime * 60)};
-                csvWriter.writeNext(results, false);
-            }
+            String[] results = {folderName,
+                    formatter.format(runtime),
+                    formatter.format(periodicSolution.getFitness()),
+                    formatter.format(fitnesses[0]),
+                    formatter.format(fitnesses[3]),
+                    formatter.format(periodicSolution.getOrderDistribution().getFitness()),
+                    formatter.format(fitnesses[1]),
+                    formatter.format(fitnesses[2]),
+                    Boolean.toString(periodicSolution.isFeasible())};
+            csvWriter.writeNext(results, false);
+
             csvWriter.close();
             writer.close();
         }
-        catch () catch (IOException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        catch (Exception e) {
             e.printStackTrace();
         }
+
+
+
 
 
     }
 
 
-    private static String getFileName(String modelName){
+
+
+    public static String getFolderName(String modelName){
         if (FileParameters.useDefaultFileName){
-            SimpleDateFormat date_formatter = new SimpleDateFormat("dd_MM_yyyy_HH:mm:ss");
+            SimpleDateFormat date_formatter = new SimpleDateFormat("dd_MM_yyyy");
             String dateString = date_formatter.format(new Date());
             return modelName + "_S" + Parameters.randomSeedValue + "_C" + Parameters.numberOfCustomers +
                     "_V" + Parameters.numberOfVehicles + "_" + dateString;
@@ -79,6 +86,24 @@ public class SolutionStorer {
             System.out.println("Specify detailed filename: ");
             return myObj.nextLine();  // Read user input
         }
+        createDirectory();
         return modelName;
+    }
+
+    public static void createDirectory(){
+        File f = new File(FileParameters.filePathSummary);
+        if (!f.exists()) {
+            f.mkdir();
+        }
+        f = new File(FileParameters.filePathDetailed);
+        if (!f.exists()) {
+            f.mkdir();
+        }
+        else {
+            f.delete();
+            if (!f.exists()){
+                f.mkdir();
+            }
+        }
     }
 }

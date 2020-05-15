@@ -41,7 +41,7 @@ public class PeriodSwarm extends Thread {
         this.downstreamGate = downstreamGate;
         this.upstreamGate = upstreamGate;
         this.orderDistribution = orderDistribution;
-        this.penaltyControl = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
+        this.penaltyControl = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty, Parameters.frequencyOfPenaltyUpdatesABC);
         initialize();
     }
 
@@ -49,7 +49,7 @@ public class PeriodSwarm extends Thread {
         this.data = data;
         this.period = period;
         this.orderDistribution = orderDistribution;
-        this.penaltyControl = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
+        this.penaltyControl = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty, Parameters.frequencyOfPenaltyUpdatesABC);
         initialize();
     }
 

@@ -56,7 +56,7 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
     public GeneticPeriodicAlgorithm(Data data) throws GRBException {
         this.data = data;
         orderAllocationModel = new OrderAllocationModel(data);
-        journeyCombinationModel = new JourneyCombinationModel(DataConverter.convert(data));
+        journeyCombinationModel = new JourneyCombinationModel(data);
         orderDistribution = new OrderDistribution(data);
         orderDistribution.makeInitialDistribution();
         this.timeWarpPenalty = Parameters.initialTimeWarpPenalty;
@@ -128,7 +128,7 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
         //System.out.println("Updating order distribution");
         //periodicPopulation.addPeriodicIndividual(generateGreedyPeriodicIndividual());
         System.out.println("Current fitness: " + fitness);
-        if (Parameters.useJCMInGPA){
+        if (Parameters.useJCM){
             setJourneyFromBestIndividuals();
             createOrderDistributionFromJCM(threads, false);
         }
@@ -170,7 +170,7 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
             System.out.println("overload: " + fitnesses[2]);
         }
 
-        if (journeyCombinationModel.runModel(arrayOfJourneys, orderDistribution) == 2){
+        if (journeyCombinationModel.runModel(arrayOfJourneys) == 2){
             System.out.println("FOUND OPTIMAL OD!!! Ja vi elsker dette landet, som det stiger frem.");
             this.orderDistribution = journeyCombinationModel.getOrderDistribution();
             this.journeys = journeyCombinationModel.getOptimalJourneys();

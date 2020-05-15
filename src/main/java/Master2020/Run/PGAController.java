@@ -7,13 +7,12 @@ import Master2020.PGA.GeneticPeriodicAlgorithm;
 import Master2020.PGA.PGASolution;
 import Master2020.Population.PeriodicOrderDistributionPopulation;
 import Master2020.ProductAllocation.OrderDistribution;
+import Master2020.StoringResults.SolutionStorer;
 import gurobi.GRBException;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.stream.IntStream;
 
@@ -27,6 +26,9 @@ public class PGAController {
     public CyclicBarrier downstreamGate;
     public CyclicBarrier upstreamGate;
     public GeneticPeriodicAlgorithm periodicAlgorithm;
+    public String fileName;
+    public String modelName = "PGA";
+    public double time;
 
 
 
@@ -51,6 +53,7 @@ public class PGAController {
         periodicAlgorithmsArrayList = new ArrayList<>();
         pod = new PeriodicOrderDistributionPopulation(data);
         pod.initialize(Parameters.numberOfPeriodicParallels);
+        fileName = SolutionStorer.getFolderName(this.modelName);
         for (int i = 0; i < Parameters.numberOfPeriodicParallels; i++){
             GeneticPeriodicAlgorithm p = new GeneticPeriodicAlgorithm(data);
             p.initialize(pod.distributions.get(i), downstreamGate, upstreamGate);
@@ -77,10 +80,13 @@ public class PGAController {
 
     private void multipleRunThreaded() throws Exception {
 
-        for (int i = 0 ; i < Parameters.orderDistributionUpdatesGA ; i++){
+        for (int i = 0 ; i < Parameters.orderDistributionUpdatesGA - 1; i++){
             System.out.println("Running generation: " + i);
             runIteration();
+            storeBest
+            updateOrderDistributionPopulation();
         }
+        runIteration();
 
         for (GeneticPeriodicAlgorithm algorithm : periodicAlgorithmsArrayList){
             finalSolutions.add(algorithm.storeSolution(true));
@@ -113,12 +119,12 @@ public class PGAController {
             periodicAlgorithmsArrayList.get(p).runIteration();
             solutions.add(periodicAlgorithmsArrayList.get(p).storeSolution());
             System.out.println(solutions.get(solutions.size()-1).getFitness());
-            solutions.get(solutions.size()-1).printDetailedFitness();
-            pod.distributions.set(p, periodicAlgorithmsArrayList.get(p).getOrderDistribution());
-            System.out.println("STOP AND CHECK SOLUTION");
-        }
-        //updateOrderDistributionPopulation();
+            //solutions.get(solutions.size()-1).printDetailedFitness();
+            //solutions.get(solutions.size()-1).writeSolution(fileName);
 
+            pod.distributions.set(p, periodicAlgorithmsArrayList.get(p).getOrderDistribution());
+
+        }
     }
 
     public void run() throws Exception {

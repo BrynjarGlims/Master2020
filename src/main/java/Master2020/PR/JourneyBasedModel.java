@@ -5,6 +5,7 @@ import Master2020.Individual.Individual;
 import Master2020.MIP.DataConverter;
 import Master2020.DataFiles.Parameters;
 import Master2020.ProductAllocation.OrderDistribution;
+import Master2020.StoringResults.SolutionStorer;
 import gurobi.*;
 
 import java.io.FileNotFoundException;
@@ -873,7 +874,9 @@ public class JourneyBasedModel {
         JourneyBasedModel jbm = new JourneyBasedModel(dataMip);
         jbm.runModel(Master2020.DataFiles.Parameters.symmetry);
         Individual individual = jbm.getIndividual();
-        Master2020.StoringResults.Result res = new Master2020.StoringResults.Result(individual, "JBM");
+        String modelName = "JBM";
+        String fileName = SolutionStorer.getFolderName(modelName);
+        Master2020.StoringResults.Result res = new Master2020.StoringResults.Result(individual, "JBM", fileName);
         res.store();
         //PlotIndividual visualizer = new PlotIndividual(data);
         //visualizer.visualize(individual);

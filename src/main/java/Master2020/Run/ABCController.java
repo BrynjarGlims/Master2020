@@ -7,6 +7,7 @@ import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Parameters;
 import Master2020.Individual.Journey;
 import Master2020.Population.PeriodicOrderDistributionPopulation;
+import Master2020.StoringResults.SolutionStorer;
 import gurobi.GRBException;
 
 import java.io.IOException;
@@ -30,8 +31,11 @@ public class ABCController {
     public CyclicBarrier downstreamGate;
     public CyclicBarrier upstreamGate;
 
-
     public PeriodicABC swarm;
+
+    public String fileName;
+    public String modelName = "ABC";
+    public double time;
 
 
     public ABCController(Data data){
@@ -55,6 +59,7 @@ public class ABCController {
         swarms = new ArrayList<>();
         pod = new PeriodicOrderDistributionPopulation(data);
         pod.initialize(Parameters.numberOfSwarms);
+        fileName = SolutionStorer.getFolderName(this.modelName);
         for (int i = 0 ; i < Parameters.numberOfSwarms ; i++){
             PeriodicABC s = new PeriodicABC(data);
             s.initialize(pod.distributions.get(i), downstreamGate, upstreamGate);
@@ -103,10 +108,13 @@ public class ABCController {
 
     private void multipleRunThreaded() throws BrokenBarrierException, InterruptedException, CloneNotSupportedException, IOException {
 
-        for (int i = 0 ; i < Parameters.orderDistributionUpdates ; i++){
+        for (int i = 0 ; i < Parameters.orderDistributionUpdates - 1; i++){
             System.out.println("running generation: " + i);
             runIteration();
+            updateOrderDistributionPopulation();
         }
+        runIteration();
+
         for (PeriodicABC swarm : swarms){
             finalSolutions.add(swarm.storeSolution());
             swarm.terminate();
@@ -117,7 +125,7 @@ public class ABCController {
         ArrayList<Journey>[][] journeys = getJourneys();
         Collections.sort(finalSolutions);
         System.out.println(finalSolutions.get(0).getFitness());
-        finalSolutions.get(0).writeSolution();
+        finalSolutions.get(0).writeSolution(fileName);
     }
 
 
@@ -139,7 +147,7 @@ public class ABCController {
             solution = swarms.get(s).storeSolution();
             System.out.println("swarm " + s + " fitness: "+ solution.getFitness() + " feasible: " + solution.feasible + " infeasibility cost: " + solution.infeasibilityCost);
         }
-        updateOrderDistributionPopulation();
+
 
     }
 

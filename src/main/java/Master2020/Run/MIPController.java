@@ -9,6 +9,7 @@ import Master2020.PR.DataMIP;
 import Master2020.PR.JourneyBasedModel;
 import Master2020.PR.PathFlowModel;
 import Master2020.StoringResults.Result;
+import Master2020.StoringResults.SolutionStorer;
 
 import java.io.IOException;
 
@@ -20,7 +21,10 @@ public class MIPController {
         ArcFlowModel afm = new ArcFlowModel(dataMip);
         afm.runModel(Master2020.DataFiles.Parameters.symmetry);
         Individual bestIndividual = afm.getIndividual();
-        Result result = new Result(bestIndividual, "AFM", afm.feasible, afm.optimal);
+        String modelName = "AFM";
+        String folderName = SolutionStorer.getFolderName(modelName);
+
+        Result result = new Result(bestIndividual, modelName, folderName, afm.feasible, afm.optimal);
         try{
             result.store(afm.runTime, afm.MIPGap);
         } catch (IOException e) {
@@ -34,7 +38,9 @@ public class MIPController {
         PathFlowModel pfm = new PathFlowModel(dataMip);
         pfm.runModel(Master2020.DataFiles.Parameters.symmetry);
         Individual bestIndividual = pfm.getIndividual();
-        Result result = new Result(bestIndividual, "PFM", pfm.feasible, pfm.optimal);
+        String modelName = "PFM";
+        String folderName = SolutionStorer.getFolderName(modelName);
+        Result result = new Result(bestIndividual, modelName, folderName, pfm.feasible, pfm.optimal);
         try{
             result.store(pfm.runTime, pfm.MIPGap);
         } catch (IOException e) {
@@ -51,7 +57,9 @@ public class MIPController {
         JourneyBasedModel jbm = new JourneyBasedModel(dataMip);
         jbm.runModel(Master2020.DataFiles.Parameters.symmetry);
         Individual bestIndividual = jbm.getIndividual();
-        Result result = new Result(bestIndividual, "JBM", jbm.feasible, jbm.optimal);
+        String modelName = "JBM";
+        String folderName = SolutionStorer.getFolderName(modelName);
+        Result result = new Result(bestIndividual, modelName, folderName, jbm.feasible, jbm.optimal);
         try{
             result.store(jbm.runTime, jbm.MIPGap);
         } catch (IOException e) {

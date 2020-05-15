@@ -5,6 +5,7 @@ import Master2020.Genetic.PenaltyControl;
 import Master2020.Individual.Individual;
 import Master2020.MIP.DataConverter;
 import Master2020.ProductAllocation.OrderDistribution;
+import Master2020.StoringResults.SolutionStorer;
 import gurobi.*;
 
 import java.io.FileNotFoundException;
@@ -982,7 +983,9 @@ public class PathFlowModel{
         PathFlowModel pfm = new PathFlowModel(dataMip);
         pfm.runModel(Master2020.DataFiles.Parameters.symmetry);
         Individual individual = pfm.getIndividual();
-        Master2020.StoringResults.Result res = new Master2020.StoringResults.Result(individual, "PFM");
+        String modelName = "PFM";
+        String fileName = SolutionStorer.getFolderName(modelName);
+        Master2020.StoringResults.Result res = new Master2020.StoringResults.Result(individual, "PFM", fileName);
         res.store();
         System.out.println(" ");
 

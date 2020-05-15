@@ -26,11 +26,14 @@ import java.util.Date;
 import java.util.Scanner;
 
 public class Result {
+
+
     Population population;
     Data data;
     Individual bestIndividual;
     OrderDistribution bestOD;
     String modelName;
+    String fileName;
     boolean isFeasible;
     boolean isOptimal;
     double runTime;
@@ -38,7 +41,7 @@ public class Result {
 
 
 
-    public Result(Population population, String modelName){
+    public Result(Population population, String modelName, String fileName){
         this.population = population;
         this.data = population.data;
         this.bestIndividual = population.returnBestIndividual();
@@ -46,26 +49,28 @@ public class Result {
         this.isFeasible = bestIndividual.isFeasible();
         this.isOptimal = false;
         this.modelName = modelName;
+        this.fileName = fileName;
     }
 
-    public Result(Individual individual, String modelName){
+    public Result(Individual individual, String modelName, String fileName){
         this.bestOD = individual.orderDistribution;
         this.data = individual.data;
         this.bestIndividual = individual;
         this.isFeasible = bestIndividual.isFeasible();
         this.isOptimal = false;
         this.modelName = modelName;
+        this.fileName = fileName;
     }
 
-    public Result(Individual individual, String modelName, boolean isFeasible, boolean isOptimal){
-        this(individual, modelName);
+    public Result(Individual individual, String modelName, String fileName, boolean isFeasible, boolean isOptimal){
+        this(individual, modelName, fileName);
         this.isFeasible = isFeasible;
         this.isOptimal = isOptimal;
 
     }
 
-    public Result(Population population, String modelName, boolean isFeasible, boolean isOptimal){
-        this(population, modelName);
+    public Result(Population population, String modelName, String fileName, boolean isFeasible, boolean isOptimal){
+        this(population, modelName, fileName);
         this.isFeasible = isFeasible;
         this.isOptimal = isOptimal;
         this.modelName = modelName;
@@ -78,35 +83,23 @@ public class Result {
     public void store(double runTime, double MIPGap) throws IOException {
         this.runTime = runTime;
         this.MIPGap = MIPGap;
-        createDirectory();
 
-        String fileName = getFileName();
+
         if (!this.isFeasible && (modelName == "PFM" || modelName != "AFM" || modelName != "JBM")) {
-            createEmptyResult(fileName);
+            createEmptyResult();
             System.out.println("Trolig feil....");
             System.out.println("Storing complete");
         }
         else{
-            storeSummary(fileName);
-            createDetailedDirectory(fileName);
-            storeDetailed(fileName);
+            storeSummary();
+            createDetailedDirectory();
+            storeDetailed();
             System.out.println("Storing complete");
-
         }
     }
 
-    private void createDirectory(){
-        File f = new File(FileParameters.filePathSummary);
-        if (!f.exists()) {
-            f.mkdir();
-        }
-        f = new File(FileParameters.filePathDetailed);
-        if (!f.exists()) {
-            f.mkdir();
-        }
-    }
 
-    private void createEmptyResult(String fileName) throws IOException {
+    private void createEmptyResult() throws IOException {
         String filePath  = FileParameters.filePathSummary + "/main_results.csv";
         File newFile = new File(filePath);
         Writer writer = Files.newBufferedWriter(Paths.get(filePath), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
@@ -136,22 +129,8 @@ public class Result {
     }
 
 
-    private String getFileName(){
-        if (FileParameters.useDefaultFileName){
-            SimpleDateFormat date_formatter = new SimpleDateFormat("dd_MM_yyyy_HH:mm:ss");
-            String dateString = date_formatter.format(new Date());
-            return modelName + "_S" + Parameters.randomSeedValue + "_C" + Parameters.numberOfCustomers +
-                    "_V" + Parameters.numberOfVehicles + "_" + dateString;
-        }
-        else if (FileParameters.specifyFileNameWhenRunning){
-            Scanner myObj = new Scanner(System.in);  // Create a Scanner object
-            System.out.println("Specify detailed filename: ");
-            return myObj.nextLine();  // Read user input
-        }
-        return this.modelName;
-    }
 
-    private void createDetailedDirectory(String fileName){
+    private void createDetailedDirectory(){
         File file = new File(FileParameters.filePathDetailed + "/"+ fileName );
         boolean bool = file.mkdir();
         if (bool){
@@ -159,16 +138,16 @@ public class Result {
         }
     };
 
-    private void storeDetailed(String fileName) throws IOException {
-        storeSummaryDetailed(fileName);
-        storeDetailedVehicle(fileName);
-        storeDetailedCustomer(fileName);
-        storeDetailedTrip(fileName);
-        storeDetailedOrders(fileName);
-        storeParameters(fileName);
+    private void storeDetailed() throws IOException {
+        storeSummaryDetailed();
+        storeDetailedVehicle();
+        storeDetailedCustomer();
+        storeDetailedTrip();
+        storeDetailedOrders();
+        storeParameters();
     }
 
-    private void storeDetailedVehicle(String fileName) throws IOException {
+    private void storeDetailedVehicle() throws IOException {
         String filePath  = FileParameters.filePathDetailed + "/" + fileName + "/" + fileName + "_vehicle.csv";
         File newFile = new File(filePath);
         System.out.println("Path : " + newFile.getAbsolutePath());
@@ -197,7 +176,7 @@ public class Result {
 
     }
 
-    private void storeDetailedTrip(String fileName) throws IOException {
+    private void storeDetailedTrip() throws IOException {
         String filePath  = FileParameters.filePathDetailed + "/" + fileName + "/" + fileName + "_trip.csv";
         File newFile = new File(filePath);
         System.out.println("Path : " + newFile.getAbsolutePath());
@@ -249,7 +228,7 @@ public class Result {
         writer.close();
     }
 
-    private void storeDetailedCustomer(String fileName) throws IOException {
+    private void storeDetailedCustomer() throws IOException {
         String filePath  = FileParameters.filePathDetailed + "/" + fileName + "/" + fileName + "_customer.csv";
         File newFile = new File(filePath);
         System.out.println("Path : " + newFile.getAbsolutePath());
@@ -267,6 +246,8 @@ public class Result {
             };
             csvWriter.writeNext(CSV_COLUMNS, false);
         }
+
+
         for (Customer c : data.customers){
             String[] results = {c.customerName, String.valueOf(c.customerID), String.valueOf(c.customerNumber),
                     String.valueOf(c.numberOfOrders), String.valueOf(c.numberOfDividableOrders), String.valueOf(c.numberOfNonDividableOrders),
@@ -282,7 +263,7 @@ public class Result {
         writer.close();
     }
 
-    private void storeDetailedOrders(String fileName) throws IOException {
+    private void storeDetailedOrders() throws IOException {
         String filePath  = FileParameters.filePathDetailed + "/" + fileName + "/" + fileName + "_orders.csv";
         File newFile = new File(filePath);
         System.out.println("Path : " + newFile.getAbsolutePath());
@@ -344,7 +325,7 @@ public class Result {
         writer.close();
     }
 
-    private void storeParameters(String fileName) throws IOException {
+    private void storeParameters() throws IOException {
         String filePath  = FileParameters.filePathDetailed + "/" + fileName + "/" + fileName + "_parameters.csv";
         File newFile = new File(filePath);
         System.out.println("Path : " + newFile.getAbsolutePath());
@@ -490,7 +471,7 @@ public class Result {
         writer.close();
     }
 
-    private void storeSummaryDetailed(String fileName) throws IOException {
+    private void storeSummaryDetailed() throws IOException {
         String filePath  = FileParameters.filePathDetailed + "/" + fileName + "/" + fileName + "_summary.csv";
         File newFile = new File(filePath);
         Writer writer = Files.newBufferedWriter(Paths.get(filePath), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
@@ -524,7 +505,7 @@ public class Result {
     }
 
 
-    private void storeSummary(String fileName) throws IOException {
+    private void storeSummary() throws IOException {
         String filePath  = FileParameters.filePathSummary + "/main_results.csv";
         File newFile = new File(filePath);
         Writer writer = Files.newBufferedWriter(Paths.get(filePath), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
@@ -559,7 +540,7 @@ public class Result {
 
     public static void main(String[] args) throws IOException {
         Data data = DataReader.loadData();
-        PenaltyControl penaltyControl = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
+        PenaltyControl penaltyControl = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty, Parameters.frequencyOfPenaltyUpdatesPGA);
         Population population = new Population(data);
         OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
         OrderDistributionCrossover ODC = new OrderDistributionCrossover(data);
@@ -567,7 +548,9 @@ public class Result {
         OrderDistribution firstOD = odp.getRandomOrderDistribution();
         population.setOrderDistributionPopulation(odp);
         population.initializePopulation(firstOD, penaltyControl);
-        Result res = new Result(population, "GA");
+        String modelName = "GA";
+        String folderName = SolutionStorer.getFolderName(modelName);
+        Result res = new Result(population, modelName, folderName);
         res.store();
     }
 
