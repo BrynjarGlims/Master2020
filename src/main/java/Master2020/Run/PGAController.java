@@ -83,11 +83,10 @@ public class PGAController {
         for (int i = 0 ; i < Parameters.orderDistributionUpdatesGA - 1; i++){
             System.out.println("Running generation: " + i);
             runIteration();
-            storeBest
+            //storeBest
             updateOrderDistributionPopulation();
         }
         runIteration();
-
         for (GeneticPeriodicAlgorithm algorithm : periodicAlgorithmsArrayList){
             finalSolutions.add(algorithm.storeSolution(true));
             algorithm.terminate();
