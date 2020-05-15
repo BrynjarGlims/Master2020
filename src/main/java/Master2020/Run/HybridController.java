@@ -60,10 +60,12 @@ public class HybridController {
     }
     public void run() throws Exception {
 
-        for (int i = 0 ; i < Parameters.orderDistributionUpdates ; i++){
+        for (int i = 0 ; i < Parameters.orderDistributionUpdates - 1 ; i++){
             System.out.println("running generation: " + i);
             runIteration();
+            updateOrderDistributionPopulation();
         }
+        runIteration();
         for (PeriodicAlgorithm algorithm : algorithms){
             finalSolutions.add(algorithm.storeSolution());
             algorithm.terminate();
@@ -96,8 +98,6 @@ public class HybridController {
             solution = algorithms.get(s).storeSolution();
             System.out.println("swarm " + s + " fitness: "+ solution.getFitness() + " feasible: " + solution.isFeasible() + " infeasibility cost: " + solution.getInfeasibilityCost());
         }
-        updateOrderDistributionPopulation();
-
     }
 
     public void updateOrderDistributionPopulation() throws CloneNotSupportedException {
