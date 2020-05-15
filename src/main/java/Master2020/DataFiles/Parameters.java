@@ -59,8 +59,8 @@ public class Parameters {
 
     // Periodic Parameters
     public static final int numberOfAlgorithms = 1;
-    public static final int numberOfPGA = 0;
-    public static final int numberOfABC = numberOfAlgorithms - numberOfPGA;
+    public static int numberOfPGA = 0;
+    public static int numberOfABC = numberOfAlgorithms - numberOfPGA;
     public static final int minimumIterations = 15;
 
     // ABC specific parameters
