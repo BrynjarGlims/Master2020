@@ -15,6 +15,7 @@ import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.StoringResults.SolutionStorer;
 import gurobi.GRBException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -77,10 +78,13 @@ public class HybridController {
             runIteration();
             if (Parameters.useJCM)
                 generateOptimalSolution();
-
+            storeBestCurrentSolution();
             updateOrderDistributionPopulation();
         }
         runIteration();
+        if (Parameters.useJCM)
+            generateOptimalSolution();
+
         for (PeriodicAlgorithm algorithm : algorithms){
             finalSolutions.add(algorithm.storeSolution());
             algorithm.terminate();
@@ -89,11 +93,14 @@ public class HybridController {
         downstreamGate.await();
         upstreamGate.await();
 
-
-
         Collections.sort(finalSolutions);
         System.out.println(finalSolutions.get(0).getFitness());
         finalSolutions.get(0).writeSolution(fileName);
+    }
+
+    public void storeBestCurrentSolution() throws IOException {
+        Collections.sort(solutions);
+        SolutionStorer.store(solutions.get(solutions.size()-1), time, fileName);
     }
 
     public void generateOptimalSolution( ){
@@ -126,7 +133,7 @@ public class HybridController {
             algorithms.get(s).runIteration();
             pod.distributions.set(s, algorithms.get(s).getOrderDistribution());
             solution = algorithms.get(s).storeSolution();
-            System.out.println("swarm " + s + " fitness: "+ solution.getFitness() + " feasible: " + solution.isFeasible() + " infeasibility cost: " + solution.getInfeasibilityCost());
+            System.out.println("Algorithm " + s + " fitness: "+ solution.getFitness() + " feasible: " + solution.isFeasible() + " infeasibility cost: " + solution.getInfeasibilityCost());
         }
     }
 

@@ -128,7 +128,10 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
         //System.out.println("Updating order distribution");
         //periodicPopulation.addPeriodicIndividual(generateGreedyPeriodicIndividual());
         System.out.println("Current fitness: " + fitness);
-        if (Parameters.useJCM){
+
+
+        if (false){
+            //JCM should not be used here.
             setJourneyFromBestIndividuals();
             createOrderDistributionFromJCM(threads, false);
         }
@@ -317,13 +320,13 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
 
     }
 
-    public PGASolution storeSolution(){
+    public PGASolution storeSolution() throws CloneNotSupportedException {
         return storeSolution(false);
     }
 
-    public PGASolution storeSolution(boolean verbose){
+    public PGASolution storeSolution(boolean verbose) throws CloneNotSupportedException {
         journeys = getOptimalJourneyFromThreads();
-        PGASolution pgaSolution = new PGASolution(orderDistribution, journeys);  //// TODO: 14/05/2020 Implement correctly
+        PGASolution pgaSolution = new PGASolution(orderDistribution.clone(), journeys);  //// TODO: 14/05/2020 Implement correctly
         return pgaSolution;
     }
 

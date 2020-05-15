@@ -91,6 +91,7 @@ public class SolutionStorer {
     }
 
     public static void createDirectory(){
+        System.out.println(" Directory Create");
         File f = new File(FileParameters.filePathSummary);
         if (!f.exists()) {
             f.mkdir();

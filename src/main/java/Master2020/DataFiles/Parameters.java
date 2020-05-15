@@ -59,7 +59,7 @@ public class Parameters {
 
     // Periodic Parameters
     public static final int numberOfAlgorithms = 1;
-    public static final int numberOfPGA = 1;
+    public static final int numberOfPGA = 0;
     public static final int numberOfABC = numberOfAlgorithms - numberOfPGA;
     public static final int minimumIterations = 15;
 
@@ -152,7 +152,7 @@ public class Parameters {
     //......
 
     // Journey Combination Model parameters
-    public static final boolean useJCM = false;
+    public static final boolean useJCM = true;
     public static final int numberOfIndividualJourneysInMIPPerPeriod = 10;
     public static final String symmetryOFJCM = "none";
 
