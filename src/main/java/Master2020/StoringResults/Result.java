@@ -294,12 +294,15 @@ public class Result {
                         continue;
                     }
                     else{
-
-                        if (!bestIndividual.tripMap.get(period).containsKey(orderDelivery.order.customerID)){
-                            System.out.println("-------Wrong delivery-------- Find this message in result.java, storing results");
-                            System.out.println("OrderID: " + orderDelivery.order.orderID+  " Period: " + period + " customer: " + orderDelivery.order.customerID + " required visit: " + orderDelivery.orderPeriods[period]);
-                            continue;
+                        if (bestIndividual.tripMap.get(period).size() == 0){
+                            if (!bestIndividual.tripMap.get(period).containsKey(orderDelivery.order.customerID)){
+                                System.out.println("-------Wrong delivery-------- Find this message in result.java, storing results");
+                                System.out.println("OrderID: " + orderDelivery.order.orderID+  " Period: " + period + " customer: " + orderDelivery.order.customerID + " required visit: " + orderDelivery.orderPeriods[period]);
+                                continue;
+                            }
                         }
+
+
 
 
                         vehicleID = bestIndividual.tripMap.get(period).get(orderDelivery.order.customerID).vehicleID;

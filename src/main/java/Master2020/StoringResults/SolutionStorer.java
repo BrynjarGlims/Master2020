@@ -1,12 +1,10 @@
 package Master2020.StoringResults;
 
-import Master2020.DataFiles.Customer;
 import Master2020.DataFiles.Parameters;
 import Master2020.Interfaces.PeriodicSolution;
 import com.opencsv.CSVWriter;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -15,7 +13,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Scanner;
 
 public class SolutionStorer {
 
@@ -74,24 +71,24 @@ public class SolutionStorer {
 
 
 
-    public static String getFolderName(String modelName){
-        if (FileParameters.useDefaultFileName){
-            SimpleDateFormat date_formatter = new SimpleDateFormat("dd_MM_yyyy");
+    public static String getFolderName(String modelName) {
+        try{
+            SimpleDateFormat date_formatter = new SimpleDateFormat("dd_MM_yyyy_HH_mm_ss");
             String dateString = date_formatter.format(new Date());
-            return modelName + "_S" + Parameters.randomSeedValue + "_C" + Parameters.numberOfCustomers +
+            String filePath =  modelName + "_S" + Parameters.randomSeedValue + "_C" + Parameters.numberOfCustomers +
                     "_V" + Parameters.numberOfVehicles + "_" + dateString;
+            createDefaultDirectory();
+            createDetailedDirectory(filePath);
+            return filePath;
         }
-        else if (FileParameters.specifyFileNameWhenRunning){
-            Scanner myObj = new Scanner(System.in);  // Create a Scanner object
-            System.out.println("Specify detailed filename: ");
-            return myObj.nextLine();  // Read user input
+        catch (Exception e){
+            e.printStackTrace();
+            return "";
         }
-        createDirectory();
-        createDetailedDirectory(modelName);
-        return modelName;
+
     }
 
-    public static void createDirectory(){
+    public static void createDefaultDirectory(){
         System.out.println("Directory Create");
         File f = new File(FileParameters.filePathSummary);
         if (!f.exists()) {
@@ -101,20 +98,29 @@ public class SolutionStorer {
         if (!f.exists()) {
             f.mkdir();
         }
-        else {
-            f.delete();
-            if (!f.exists()){
-                f.mkdir();
-            }
-        }
 
     }
 
-    public static void createDetailedDirectory(String modelName){
-        File file = new File(FileParameters.filePathDetailed + "/"+ modelName  );
-        boolean bool = file.mkdir();
+    public static void createDetailedDirectory(String modelName) throws Exception {
+        File f = new File(FileParameters.filePathDetailed + "/"+ modelName  );
+        Boolean bool;
+        if (!f.exists()) {
+            bool = f.mkdir();
+        }
+        else {
+            f.delete();
+            if (!f.exists()){
+                bool = f.mkdir();
+            }
+            else{
+                bool = false;
+            }
+        }
         if (bool){
             System.out.println("Directory succesfully created");
+        }
+        else{
+            throw new Exception("Instance already created");
         }
     };
 }

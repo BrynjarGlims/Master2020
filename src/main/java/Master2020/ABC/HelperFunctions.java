@@ -1,6 +1,8 @@
 package Master2020.ABC;
 
 import Master2020.DataFiles.Data;
+import Master2020.DataFiles.Parameters;
+import Master2020.Genetic.PenaltyControl;
 import Master2020.Individual.AdSplit;
 import Master2020.Individual.Individual;
 import Master2020.Individual.Journey;
@@ -79,10 +81,12 @@ public class HelperFunctions {
 
 
     public static Individual createIndividual(Data data, ArrayList<Journey>[][] journeys, OrderDistribution orderDistribution){
-        Individual individual = new Individual(data, null);
+        Individual individual = new Individual(data, new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty));
         individual.journeyList = journeys;
         individual.orderDistribution = orderDistribution;
         individual.setGiantTourFromJourneys();
+        individual.setTripListFromJourneys();
+        individual.setTripMapFromTripList();
         return individual;
     }
 

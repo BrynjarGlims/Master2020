@@ -72,6 +72,11 @@ public class HybridController {
             algorithms.add(s);
         }
     }
+
+    public void terminate() throws GRBException {
+        journeyCombinationModel.terminateModel();
+    }
+
     public void run() throws Exception {
 
         for (int i = 0 ; i < Parameters.orderDistributionUpdates - 1 ; i++){
@@ -197,6 +202,8 @@ public class HybridController {
         HybridController hc = new HybridController();
         hc.initialize();
         hc.run();
+        hc.terminate();
+        System.out.println("Terminate");
     }
 
 }

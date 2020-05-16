@@ -151,7 +151,7 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
         journeys = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
         boolean allFeasibleJourneys = true;
         for (int p = 0; p < data.numberOfPeriods; p++) {
-            Individual individual = periodicPopulation.populations[p].returnBestInfeasibleIndividual();
+            Individual individual = periodicPopulation.populations[p].returnBestIndividual();
             if (!individual.isFeasible())
                 allFeasibleJourneys = false;
             for (int vt = 0; vt < data.numberOfVehicleTypes; vt++) {
