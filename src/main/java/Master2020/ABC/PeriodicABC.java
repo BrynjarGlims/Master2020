@@ -132,6 +132,24 @@ public class PeriodicABC extends Thread implements PeriodicAlgorithm {
     }
 
 
+    private OrderDistribution makeOptimalOrderDistribution(double[][] positions){
+        journeys = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
+        for (int p = 0 ; p < data.numberOfPeriods ; p++){
+            ArrayList<Integer>[] giantTourEntry = HelperFunctions.parsePosition(data, p, positions[p]);
+
+            for (int vt = 0 ; vt < giantTourEntry.length ; vt++) {
+                ArrayList<Journey> journeysEntry = AdSplit.adSplitSingular(giantTourEntry[vt], data, orderDistribution, p, vt, threads.get(p).penaltyControl.timeWarpPenalty, threads.get(p).penaltyControl.overLoadPenalty);
+                journeys[p][vt] = journeysEntry;
+            }
+        }
+        if (orderAllocationModel.createOptimalOrderDistribution(journeys, 1) == 2){
+            return orderAllocationModel.getOrderDistribution();
+        }
+        else{
+            System.out.println("no optimal OD found");
+            return this.orderDistribution;
+        }
+    }
 
     private void makeOptimalOrderDistribution(List<PeriodSwarm> periodSwarms){
         PeriodSwarm periodSwarm;
@@ -192,12 +210,12 @@ public class PeriodicABC extends Thread implements PeriodicAlgorithm {
     return journeys;
     }
 
-    public ABCSolution storeSolution() throws CloneNotSupportedException {
+    public ABCSolution storeSolution() {
         double[][] positions = new double[threads.size()][];
         for (PeriodSwarm ps : threads){
             positions[ps.period] = ps.globalBestPosition.clone();
         }
-        return new ABCSolution(positions, orderDistribution.clone(), journeys);
+        return new ABCSolution(positions, makeOptimalOrderDistribution(positions), journeys);
     }
 
     public OrderDistribution getOrderDistribution(){

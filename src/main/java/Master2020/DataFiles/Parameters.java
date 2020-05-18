@@ -65,12 +65,11 @@ public class Parameters {
     public static final boolean ABCPenaltyAdjustment = false;
     public static final int orderDistributionCutoff = 2;
     public static final int swarmIterationsWithoutImprovementLimit = 5;
-    public static final int generationsPerOrderDistribution = 300;
-
-    public static final int numberOfEmployees = 10;
+    public static final int generationsPerOrderDistribution = 1000;
+    public static final int numberOfEmployees = 20;
     public static final int numberOfOnlookers = 4 * numberOfEmployees;
-    public static final int numberOfScoutTrials = 25;
-    public static final int maxNumberOfTrials = 10;
+    public static final int numberOfScoutTrials = 100;
+    public static final int maxNumberOfTrials = 15;
     public static final int maxBoundDimensionality = 4; //max amount of dimensions that can be changed, chosen randomly from 1-this
     public static final double weightNeighborEmployed = 1;
     public static final double weightNeighborOnlooker = 1.5;

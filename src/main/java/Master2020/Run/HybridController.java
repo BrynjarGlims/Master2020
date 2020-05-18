@@ -120,7 +120,9 @@ public class HybridController {
 
     public void storeBestCurrentSolution() throws IOException {
         Collections.sort(solutions);
-        SolutionStorer.store(solutions.get(solutions.size()-1), time, fileName);
+        if (solutions.size() > 0){
+            SolutionStorer.store(solutions.get(solutions.size()-1), time, fileName);
+        }
     }
 
     public void generateOptimalSolution( ) throws CloneNotSupportedException {

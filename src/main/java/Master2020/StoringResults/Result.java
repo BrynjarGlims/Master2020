@@ -8,6 +8,7 @@ import Master2020.Individual.Journey;
 import Master2020.Population.Population;
 import Master2020.ProductAllocation.OrderDelivery;
 import Master2020.ProductAllocation.OrderDistribution;
+import Master2020.Testing.IndividualTest;
 import com.opencsv.CSVWriter;
 import Master2020.Population.OrderDistributionPopulation;
 import Master2020.Individual.Trip;
@@ -257,6 +258,8 @@ public class Result {
     }
 
     private void storeDetailedOrders() throws IOException {
+        System.out.println("complete?: " + IndividualTest.checkIfIndividualIsComplete(bestIndividual));
+        System.out.println("complete OD?: " + IndividualTest.testValidOrderDistribution(data, bestOD));
         String filePath  = FileParameters.filePathDetailed + "/" + fileName + "/" + fileName + "_orders.csv";
         File newFile = new File(filePath);
         System.out.println("Path : " + newFile.getAbsolutePath());
@@ -301,9 +304,6 @@ public class Result {
                                 continue;
                             }
                         }
-
-
-
 
                         vehicleID = bestIndividual.tripMap.get(period).get(orderDelivery.order.customerID).vehicleID;
                         String[] results = {String.valueOf(orderDelivery.order.orderID), Converter.dividableConverter(orderDelivery.dividable),
