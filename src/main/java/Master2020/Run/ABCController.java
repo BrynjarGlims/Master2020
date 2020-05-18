@@ -88,7 +88,7 @@ public class ABCController {
         // TODO: 01.05.2020 diversify, run, scale down, diversify
         // TODO: 01.05.2020 converged solutions stored somewhere else?
 
-        for (int i = 0 ; i < Parameters.orderDistributionUpdates ; i++){
+        for (int i = 0; i < Parameters.JCMruns; i++){
             System.out.println("running generation: " + i);
             for (int s = 0 ; s < Parameters.numberOfSwarms ; s++){
                 swarms.get(s).runIteration();
@@ -108,7 +108,7 @@ public class ABCController {
 
     private void multipleRunThreaded() throws BrokenBarrierException, InterruptedException, CloneNotSupportedException, IOException {
 
-        for (int i = 0 ; i < Parameters.orderDistributionUpdates - 1; i++){
+        for (int i = 0; i < Parameters.JCMruns - 1; i++){
             System.out.println("running generation: " + i);
             runIteration();
             updateOrderDistributionPopulation();
@@ -155,7 +155,7 @@ public class ABCController {
 
     private void singularRun() throws BrokenBarrierException, InterruptedException, IOException, CloneNotSupportedException {
         System.out.println("RUNNING SINGULAR ABC");
-        for (int i = 0 ; i < Parameters.orderDistributionUpdates ; i++){
+        for (int i = 0; i < Parameters.JCMruns; i++){
             System.out.println("running generation: " + i);
             swarm.runIteration();
         }
