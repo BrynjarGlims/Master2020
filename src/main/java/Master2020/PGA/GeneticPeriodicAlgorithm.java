@@ -16,6 +16,7 @@ import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Testing.ABCtests;
 import Master2020.Testing.IndividualTest;
 import gurobi.GRBException;
+import org.nustaq.kson.KsonStringOutput;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,6 +41,8 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
     public int iterationsWithoutImprovement = 0;
     public int iterationsWithSameOd = 0;
     public int minimumIterations;
+    public double startTime;
+    public double firstIterationTime;
 
     //threading
     public boolean run;
@@ -114,6 +117,7 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
 
     public void runIteration() throws Exception {
 
+
         downstreamGate.await();
         downstreamGate.reset();
 
@@ -125,11 +129,16 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
         //periodicPopulation.addPeriodicIndividual(generateGreedyPeriodicIndividual());
 
 
-
         if (Parameters.useODMIPBetweenGenerations){
+            if ((System.currentTimeMillis() - startTime ) < Parameters.timeLimitPerAlgorithm){  //todo: evaluate this
             makeOptimalOrderDistribution(threads ,false);
+            updateOrderDistributionForPopulations(orderDistribution, false);
+            }
+            else{
+                setJourneyFromBestIndividuals();
+            }
         }
-        updateOrderDistributionForPopulations(orderDistribution, false);
+        //System.out.println("Time: :" +  Double.toString(System.currentTimeMillis() - startTime));
         updateFitness();
     }
 
@@ -249,8 +258,23 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
 
 
     public void runIterations() throws Exception {
+        setStartTimeOfThreads();
+
         for (int i = 0; i < Parameters.minimumUpdatesPerOrderDistributions; i++){
-            runIteration();
+            //System.out.println("Start odgeneration " + i);
+            if ((System.currentTimeMillis() - this.startTime) < Parameters.timeLimitPerAlgorithm) {
+                runIteration();
+            }
+            if (i == 0){
+                firstIterationTime = (System.currentTimeMillis() - startTime);
+            }
+        }
+    }
+
+    public void setStartTimeOfThreads(){
+        startTime = System.currentTimeMillis();
+        for (GeneticAlgorithm algorithm : threads){
+            algorithm.startTime = this.startTime;
         }
     }
 
@@ -308,6 +332,10 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
 
     public int getIterationsWithoutImprovement(){
         return iterationsWithoutImprovement;
+    }
+
+    public double getIterationTime(){
+        return this.firstIterationTime;
     }
 
     public static void main(String[] args) throws Exception {

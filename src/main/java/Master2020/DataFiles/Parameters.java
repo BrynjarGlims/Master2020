@@ -137,7 +137,7 @@ public class Parameters {
     public static final boolean useODMIPBetweenGenerations = true;
     public static final double diversifiedODProbability = 0.5;    //remove, move to controller
     public static final int generationsPerOrderDistributionPeriodic = 50;
-    public static final int minimumUpdatesPerOrderDistributions = 2;
+    public static final int minimumUpdatesPerOrderDistributions = 5;
     public static final int orderDistributionUpdatesGA = 1;        // this / minimumUpdatesPerOrderDistributions = number of unique order distributions
     //......
     public static final double initialOrderDistributionScale = 1;
@@ -147,20 +147,24 @@ public class Parameters {
     //......
 
     // Journey Combination Model parameters
-    public static final boolean useJCM = false;
+    public static final boolean useJCM = true;
     public static final int numberOfIndividualJourneysInMIPPerPeriod = 10;
     public static final String symmetryOFJCM = "none";
 
 
     // Periodic Parameters, common for PGA, ABC, and HYBRID
-    public static final int JCMruns = 1;
-    public static final long timeLimitPerAlgorithm = 20000 ;  // in milli
+    public static final int JCMruns = 5;
     public static final int numberOfAlgorithms = 5;
-    public static int numberOfPGA = 0;
+    public static int numberOfPGA = 2;
     public static int numberOfABC = numberOfAlgorithms - numberOfPGA;
     public static final int minimumIterations = 3;
     public static final int hybridIterationsWithoutImprovementLimit = 1;
 
+    // Time run parameters
+    public static long timeLimitPerAlgorithm = 30000 ;  // in milli
+    public static final double odUpdateTime = 2.3;
+
+    public static final int minimumRequiredIterationsOfOD = 3;
 
     // Verbose parameters
     public static final boolean verboseArcFlow = false;

@@ -17,6 +17,7 @@ import gurobi.GRBException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.concurrent.CyclicBarrier;
@@ -80,13 +81,13 @@ public class HybridController {
     }
 
     public void run() throws Exception {
-
         for (int i = 0; i < Parameters.JCMruns - 1 ; i++){
             runIteration();
             if (Parameters.useJCM)
                 generateOptimalSolution();
             storeBestCurrentSolution();
             updateOrderDistributionPopulation();
+            updateRuntimeOfThreads();
         }
         runIteration();
         if (Parameters.useJCM)
@@ -101,8 +102,20 @@ public class HybridController {
         upstreamGate.await();
 
         Collections.sort(finalSolutions);
-        System.out.println(finalSolutions.get(0).getFitness());
+        System.out.println("The fitness of the final solution is: " + finalSolutions.get(0).getFitness());
         finalSolutions.get(0).writeSolution(fileName);
+    }
+
+    public void updateRuntimeOfThreads(){
+        double[] times = new double[Parameters.numberOfAlgorithms];
+        int counter = 0;
+        for (PeriodicAlgorithm periodicAlgorithm : algorithms){
+            times[counter] = periodicAlgorithm.getIterationTime();
+            counter ++;
+        }
+        double maxIterationTime = Arrays.stream(times).max().getAsDouble();
+        Parameters.timeLimitPerAlgorithm = (long) (Parameters.odUpdateTime *maxIterationTime);
+        System.out.println("New time for single run is: " + Parameters.timeLimitPerAlgorithm);
     }
 
     public void storeBestCurrentSolution() throws IOException {
@@ -110,20 +123,27 @@ public class HybridController {
         SolutionStorer.store(solutions.get(solutions.size()-1), time, fileName);
     }
 
-    public void generateOptimalSolution( ){
-        ArrayList<Journey>[][] journeys = getJourneys();
-        if (journeyCombinationModel.runModel(journeys) == 2) {
-            journeys = journeyCombinationModel.getJourneys();
-            orderDistributionJCM = journeyCombinationModel.getOrderDistribution();
-            PeriodicSolution JCMSolution = new PGASolution(orderDistributionJCM, journeys);
-            solutions.add(JCMSolution);
-        } else {
-            orderDistributionJCM = pod.diversify(3);
+    public void generateOptimalSolution( ) throws CloneNotSupportedException {
+        try{
+            ArrayList<Journey>[][] journeys = getJourneys();
+            if (journeyCombinationModel.runModel(journeys) == 2) {
+                journeys = journeyCombinationModel.getOptimalJourneys();
+                orderDistributionJCM = journeyCombinationModel.getOrderDistribution();
+                PeriodicSolution JCMSolution = new PGASolution(orderDistributionJCM.clone(), journeys);
+                System.out.println("Fitness of JBM: " + JCMSolution.getFitness());
+                double[] fitnesses = JCMSolution.getFitnesses();
+                System.out.println("Time warp "+ fitnesses[1]);
+                System.out.println("Over load "+ fitnesses[2]);
+                solutions.add(JCMSolution);
+                finalSolutions.add(JCMSolution);
+            } else {
+                orderDistributionJCM = pod.diversify(3);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
         }
 
     }
-
-
 
     private void runIteration() throws Exception {
         //release all period swarms for
