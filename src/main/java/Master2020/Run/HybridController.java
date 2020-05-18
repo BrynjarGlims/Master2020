@@ -74,12 +74,14 @@ public class HybridController {
     }
 
     public void terminate() throws GRBException {
-        journeyCombinationModel.terminateModel();
+        if (Parameters.useJCM){
+            journeyCombinationModel.terminateModel();
+        }
     }
 
     public void run() throws Exception {
 
-        for (int i = 0 ; i < Parameters.orderDistributionUpdates - 1 ; i++){
+        for (int i = 0; i < Parameters.JCMruns - 1 ; i++){
             runIteration();
             if (Parameters.useJCM)
                 generateOptimalSolution();
