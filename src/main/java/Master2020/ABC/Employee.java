@@ -13,6 +13,9 @@ public class Employee extends Bee {
     public HashMap<Onlooker, Double> onlookerFitnesses;
     public int trials;
 
+    public double[] bestPosition;
+    public double bestFitness = Double.MAX_VALUE;
+
 
     public Employee(Data data, int period, PeriodSwarm colony, PenaltyControl penaltyControl) {
         super(data, period, colony, penaltyControl);
@@ -23,6 +26,10 @@ public class Employee extends Bee {
 
 
     public double[] scout(){
+        if (getFitness(this.position) < bestFitness){
+            this.bestPosition = this.position.clone();
+            this.bestFitness = getFitness(this.bestPosition);
+        }
         double[] bestScoutedPosition = super.scout();
         double bestFitness = getFitness(bestScoutedPosition);
         double[] position;
