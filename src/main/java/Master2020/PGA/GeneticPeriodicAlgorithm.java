@@ -30,8 +30,6 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
     public PeriodicPopulation periodicPopulation;
     public HashSet<Individual> repaired;
     public OrderAllocationModel orderAllocationModel;
-    public JourneyCombinationModel journeyCombinationModel;
-    public PeriodicIndividual bestPeriodicIndividual;
     public List<GeneticAlgorithm> threads;
     public ArrayList<Journey>[][] journeys;
     public OrderDistribution orderDistribution;
@@ -56,7 +54,6 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
     public GeneticPeriodicAlgorithm(Data data) throws GRBException {
         this.data = data;
         orderAllocationModel = new OrderAllocationModel(data);
-        journeyCombinationModel = new JourneyCombinationModel(data);
         orderDistribution = new OrderDistribution(data);
         orderDistribution.makeInitialDistribution();
         this.timeWarpPenalty = Parameters.initialTimeWarpPenalty;
@@ -88,7 +85,6 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
         //threading
         this.masterDownstreamGate = masterDownstreamGate;
         this.masterUpstreamGate = masterUpstreamGate;
-        System.out.println("Initialization periodic completed");
     }
 
     public OrderDistribution getOrderDistribution() {
@@ -127,22 +123,17 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
 
         //System.out.println("Updating order distribution");
         //periodicPopulation.addPeriodicIndividual(generateGreedyPeriodicIndividual());
-        System.out.println("Current fitness: " + fitness);
 
 
-        if (false){
-            //JCM should not be used here.
-            setJourneyFromBestIndividuals();
-            createOrderDistributionFromJCM(threads, false);
-        }
-        else if (Parameters.useODMIPBetweenGenerations){
+
+        if (Parameters.useODMIPBetweenGenerations){
             makeOptimalOrderDistribution(threads ,false);
         }
         updateOrderDistributionForPopulations(orderDistribution, false);
         updateFitness();
-        PGASolution pgaSolution = storeSolution();
-        pgaSolution.getFitness();
-        pgaSolution.printDetailedFitness();
+        //PGASolution pgaSolution = storeSolution();
+        //pgaSolution.getFitness();
+        //pgaSolution.printDetailedFitness();
 
     }
 
@@ -161,29 +152,6 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
         return allFeasibleJourneys;
     }
 
-    private void createOrderDistributionFromJCM(List<GeneticAlgorithm> geneticAlgorithm, boolean newOD) throws Exception {
-        ArrayList<Journey>[][] arrayOfJourneys = createJourneysToJCM();
-
-        boolean verbose = false;
-        if (verbose) {
-            System.out.println("all customers exists? " + ABCtests.allCustomersExists(arrayOfJourneys, data));
-            System.out.println("OD valid? " + IndividualTest.testValidOrderDistribution(data, orderDistribution));
-            double[] fitnesses = FitnessCalculation.getIndividualFitness(data, arrayOfJourneys, orderDistribution, 1, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
-            System.out.println("overload: " + fitnesses[2]);
-        }
-
-        if (journeyCombinationModel.runModel(arrayOfJourneys) == 2){
-            System.out.println("FOUND OPTIMAL OD!!! Ja vi elsker dette landet, som det stiger frem.");
-            this.orderDistribution = journeyCombinationModel.getOrderDistribution();
-            this.journeys = journeyCombinationModel.getOptimalJourneys();
-
-        }
-        else{
-            System.out.println("Did not find any Optimal OD");
-        }
-        iterationsWithSameOd += 1;
-
-    }
 
     public void resetPeriodicPopulation() {
         periodicPopulation = new PeriodicPopulation(data);
@@ -286,7 +254,6 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
 
     public void runIterations() throws Exception {
         for (int i = 0; i < Parameters.minimumUpdatesPerOrderDistributions; i++){
-            System.out.println("Start periodic algorithm iteration: " + i);
             runIteration();
         }
     }

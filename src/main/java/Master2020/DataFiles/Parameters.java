@@ -22,7 +22,7 @@ public class Parameters {
     public static final int samples = 1;
     public static List<Integer> seeds = Arrays.asList(57, 97, 80, 89, 1);
     public static long randomSeedValue = 57;
-    public static final int minimumVehicleSize = 2000;   // removes 1400 and 1800;
+    public static final int minimumVehicleSize = 2500;   // removes 1400 and 1800;
 
 
     // Population parameters

@@ -80,7 +80,6 @@ public class HybridController {
     public void run() throws Exception {
 
         for (int i = 0 ; i < Parameters.orderDistributionUpdates - 1 ; i++){
-            System.out.println("running generation: " + i);
             runIteration();
             if (Parameters.useJCM)
                 generateOptimalSolution();
@@ -200,7 +199,6 @@ public class HybridController {
 
     public static void main(String[] args) throws Exception {
         HybridController hc = new HybridController();
-        hc.initialize();
         hc.run();
         hc.terminate();
         System.out.println("Terminate");
