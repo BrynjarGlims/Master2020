@@ -34,7 +34,6 @@ public abstract class Bee {
         this.numCustomers = data.numberOfCustomerVisitsInPeriod[period];
         this.colony = colony;
         this.penaltyControl = penaltyControl;
-        scout();
     }
 
     protected double[] scout(){

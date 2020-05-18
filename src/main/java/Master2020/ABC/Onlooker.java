@@ -10,6 +10,7 @@ public class Onlooker extends Bee {
 
     public Onlooker(Data data, int period, PeriodSwarm colony, PenaltyControl penaltyControl) {
         super(data, period, colony, penaltyControl);
+        scout();
     }
 
 
