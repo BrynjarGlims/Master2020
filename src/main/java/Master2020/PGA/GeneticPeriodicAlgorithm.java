@@ -131,10 +131,6 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
         }
         updateOrderDistributionForPopulations(orderDistribution, false);
         updateFitness();
-        //PGASolution pgaSolution = storeSolution();
-        //pgaSolution.getFitness();
-        //pgaSolution.printDetailedFitness();
-
     }
 
     private boolean setJourneyFromBestIndividuals() {
@@ -226,7 +222,7 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
             System.out.println("overload: " + fitnesses[2]);
         }
         if (orderAllocationModel.createOptimalOrderDistribution(journeys, 1) == 2 && allFeasibleJourneys){
-            System.out.println("New optimal od found");
+            // System.out.println("New optimal od found");
             this.orderDistribution = orderAllocationModel.getOrderDistribution();
         }
         iterationsWithSameOd += 1;

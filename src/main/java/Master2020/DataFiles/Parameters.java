@@ -154,7 +154,7 @@ public class Parameters {
 
     // Periodic Parameters, common for PGA, ABC, and HYBRID
     public static final int numberOfAlgorithms = 5;
-    public static int numberOfPGA = 5;
+    public static int numberOfPGA = 0;
     public static int numberOfABC = numberOfAlgorithms - numberOfPGA;
     public static final int minimumIterations = 3;
     public static final int hybridIterationsWithoutImprovementLimit = 1;
