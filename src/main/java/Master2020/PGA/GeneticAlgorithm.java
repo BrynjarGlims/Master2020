@@ -38,13 +38,13 @@ public class GeneticAlgorithm extends Thread {
     public CyclicBarrier downstreamGate;
     public CyclicBarrier upstreamGate;
     public boolean run = true;
+    public double startTime;
 
 
     public GeneticAlgorithm(Data data){
         this.data = data;
         this.penaltyControl = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty, Parameters.frequencyOfPenaltyUpdatesPGA);
     }
-
 
     public void initialize(int period, OrderDistribution orderDistribution, CyclicBarrier downstreamGate, CyclicBarrier upstreamGate, Population population) throws GRBException {
         this.population = population;
@@ -129,9 +129,7 @@ public class GeneticAlgorithm extends Thread {
     }
 
     public void selection(Population population){
-
         // Reduce population size
-
         population.improvedSurvivorSelection();
     }
 
@@ -163,7 +161,6 @@ public class GeneticAlgorithm extends Thread {
         this.numberOfIterations += 1;
     }
 
-
     @Override
     public void run() {
         while (run){
@@ -181,13 +178,12 @@ public class GeneticAlgorithm extends Thread {
         }
     }
 
-
-
     public void runGenerations(int generations) {
         resetCounters();
         //printPopulationStats();
         for (int i = 0 ; i < generations ; i++){
-            if (iterationsWithoutImprovement > Parameters.maxNumberIterationsWithoutImprovement)
+            if (iterationsWithoutImprovement > Parameters.maxNumberIterationsWithoutImprovement ||
+                    (System.currentTimeMillis() - this.startTime) > Parameters.timeLimitPerAlgorithm)
                 break;
             runGeneration();
         }

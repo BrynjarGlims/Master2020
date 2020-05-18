@@ -34,4 +34,6 @@ public interface PeriodicAlgorithm {
     int getIterationsWithoutImprovement();
 
     PeriodicSolution storeSolution() throws CloneNotSupportedException;
+
+    double getIterationTime();
 }

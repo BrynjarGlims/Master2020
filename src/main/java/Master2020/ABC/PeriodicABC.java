@@ -87,6 +87,10 @@ public class PeriodicABC extends Thread implements PeriodicAlgorithm {
         iterationsWithoutImprovement = 0;
     }
 
+    public double getIterationTime(){
+        return 0;  //set to zero as there is no measure of this in ABC
+    }
+
 
 
     public void runIteration() throws InterruptedException, BrokenBarrierException {

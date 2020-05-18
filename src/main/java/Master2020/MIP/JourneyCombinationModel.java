@@ -75,6 +75,7 @@ public class JourneyCombinationModel extends Model{
 
     @Override
     public ArrayList<Master2020.Individual.Journey>[][] getJourneys() {
+        //Gives all jourenys, not the optimal ones.
         return journeys;
     }
 
@@ -188,7 +189,7 @@ public class JourneyCombinationModel extends Model{
                 for (int r = 0; r < journeys[d][dataMIP.vehicles[v].vehicleType.type].size(); r++) {
                     lhs.addTerm(1, gamma[d][v][r]);
                 }
-                String constraint_name = String.format("5.70 -Max number of vehicles to be used for period %d and v %d", d, v);
+                String constraint_name = String.format("5.70 - Can only take one journey for vehicle %d period  %d", v, d);
                 model.addConstr(lhs, GRB.LESS_EQUAL, 1, constraint_name);
             }
         }
@@ -232,7 +233,7 @@ public class JourneyCombinationModel extends Model{
                         for (int j = 0; j < journeys[d][dataMIP.vehicles[v].vehicleType.type].size(); j++) {
                             for (Trip t : journeys[d][dataMIP.vehicles[v].vehicleType.type].get(j).trips ){
                                 if (t.customers.contains(dataMIP.customers[i].customerID)) {
-                                    lhs.addTerm(-dataMIP.vehicleCapacity[v], gamma[d][v][j]);
+                                    lhs.addTerm(-dataMIP.vehicles[v].vehicleType.capacity + Parameters.modelMipGap, gamma[d][v][j]);
                                 }
                             }
                         }
