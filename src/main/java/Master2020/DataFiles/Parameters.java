@@ -39,7 +39,7 @@ public class Parameters {
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 2;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
+    public static int numberOfCustomers = 50;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
     public static final int numberOfVehicles = 50;
 
     public static final double distanceCutOffFromDepot = 3.0;   //default 3
@@ -58,8 +58,8 @@ public class Parameters {
     public static final double heuristicDominanceValue = 1;
 
     // Periodic Parameters
-    public static final int numberOfAlgorithms = 1;
-    public static int numberOfPGA = 0;
+    public static final int numberOfAlgorithms = 5;
+    public static int numberOfPGA = 2;
     public static int numberOfABC = numberOfAlgorithms - numberOfPGA;
     public static final int minimumIterations = 15;
 

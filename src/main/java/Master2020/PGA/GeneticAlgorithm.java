@@ -185,13 +185,13 @@ public class GeneticAlgorithm extends Thread {
 
     public void runGenerations(int generations) {
         resetCounters();
-        printPopulationStats();
+        //printPopulationStats();
         for (int i = 0 ; i < generations ; i++){
             if (iterationsWithoutImprovement > Parameters.maxNumberIterationsWithoutImprovement)
                 break;
             runGeneration();
         }
-        printPopulationStats();
+        //printPopulationStats();
     }
 
     public void printPopulationStats(){

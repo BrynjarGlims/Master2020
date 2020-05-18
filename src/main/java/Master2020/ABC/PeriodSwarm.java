@@ -57,6 +57,8 @@ public class PeriodSwarm extends Thread {
         for (int i = 0 ; i < generations ; i++){
             runGeneration();
         }
+        //update and trim the solution list
+        updateSolutionSet();
     }
 
     public void runGeneration(){
@@ -83,8 +85,7 @@ public class PeriodSwarm extends Thread {
             employee.updateToBestPosition();
         }
 
-        //update and trim the solution list
-        updateSolutionSet();
+
 
         //scoute stage:
         for (Employee employee : employees){

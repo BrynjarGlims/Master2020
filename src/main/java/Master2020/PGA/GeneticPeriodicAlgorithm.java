@@ -143,7 +143,6 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
         PGASolution pgaSolution = storeSolution();
         pgaSolution.getFitness();
         pgaSolution.printDetailedFitness();
-        System.out.println("Stop");
 
     }
 
@@ -312,8 +311,10 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
         this.journeys = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
         for (GeneticAlgorithm algorithm : threads){
             Individual individual =  algorithm.population.returnBestIndividual();
-            if (!individual.isFeasible())
+            if (!individual.isFeasible()) {
+                System.out.println("Individual is feasible: " + individual.isFeasible());
                 System.out.println("Individual added is not feasible");
+            }
             this.journeys[algorithm.period] = individual.journeyList[0];
         }
         return this.journeys;
