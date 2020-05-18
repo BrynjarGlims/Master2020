@@ -82,7 +82,9 @@ public abstract class Bee {
                 for (double d : fitnesses){
                     fitness += d;
                 }
-                penaltyControl.adjust(fitnesses[1] > 0, fitnesses[3] > 0);
+                if (Parameters.ABCPenaltyAdjustment){
+                    penaltyControl.adjust(fitnesses[1] > 0, fitnesses[3] > 0);
+                }
             }
         }
         return fitness;
