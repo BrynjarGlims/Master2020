@@ -137,8 +137,8 @@ public class Result {
         storeDetailedVehicle();
         storeDetailedCustomer();
         storeDetailedTrip();
-        storeDetailedOrders();
         storeParameters();
+        storeDetailedOrders();
     }
 
     private void storeDetailedVehicle() throws IOException {

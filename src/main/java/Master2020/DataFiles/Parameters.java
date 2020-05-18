@@ -39,7 +39,7 @@ public class Parameters {
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
     public static int numberOfCustomers = 30;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
-    public static final int numberOfVehicles = 30;
+    public static final int numberOfVehicles = 15;
 
     public static final double distanceCutOffFromDepot = 3.0;   //default 3
     public static final boolean adjustTimeWindow = true;
@@ -65,15 +65,15 @@ public class Parameters {
     public static final boolean ABCPenaltyAdjustment = false;
     public static final int orderDistributionCutoff = 2;
     public static final int swarmIterationsWithoutImprovementLimit = 5;
-    public static final int generationsPerOrderDistribution = 1000;
-    public static final int numberOfEmployees = 20;
+    public static final int generationsPerOrderDistribution = 600;
+    public static final int numberOfEmployees = 5;
     public static final int numberOfOnlookers = 4 * numberOfEmployees;
     public static final int numberOfScoutTrials = 100;
     public static final int maxNumberOfTrials = 15;
-    public static final int maxBoundDimensionality = 4; //max amount of dimensions that can be changed, chosen randomly from 1-this
+    public static final int maxBoundDimensionality = 5; //max amount of dimensions that can be changed, chosen randomly from 1-this
     public static final double weightNeighborEmployed = 1;
     public static final double weightNeighborOnlooker = 1.5;
-    public static final double weightGlobalBest = 0.8;
+    public static final double weightGlobalBest = 1;
     public static final double movementRange = 1; //both positive and negative, but only half in negative direction
     public static final double onlookerRandomAdjustment = 0.2; //a random number added when onlooker goes to employers foodsource
     public static final int numberOfEnhancements = 0; //number of enhancements for employees
@@ -153,10 +153,10 @@ public class Parameters {
 
     // Periodic Parameters, common for PGA, ABC, and HYBRID
 
-    public static final int JCMruns = 1;
+    public static final int JCMruns = 10;
     public static final long timeLimitPerAlgorithm = 20000 ;  // in milli
-    public static final int numberOfAlgorithms = 2;
-    public static int numberOfPGA = 0;
+    public static final int numberOfAlgorithms = 5;
+    public static int numberOfPGA = 2;
     public static int numberOfABC = numberOfAlgorithms - numberOfPGA;
     public static final int minimumIterations = 3;
     public static final int hybridIterationsWithoutImprovementLimit = 1;
