@@ -84,8 +84,6 @@ public class PeriodSwarm extends Thread {
             employee.updateToBestPosition();
         }
 
-        //update and trim the solution list
-
         //scoute stage:
         for (Employee employee : employees){
             if (employee.trials > Parameters.maxNumberOfTrials){
