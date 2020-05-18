@@ -11,6 +11,7 @@ import Master2020.MIP.OrderAllocationModel;
 import Master2020.Population.PeriodicOrderDistributionPopulation;
 import Master2020.ProductAllocation.OrderDistribution;
 import gurobi.GRBException;
+import scala.xml.PrettyPrinter;
 
 import java.io.IOException;
 import java.util.concurrent.BrokenBarrierException;
@@ -65,7 +66,12 @@ public class PeriodicABC extends Thread implements PeriodicAlgorithm {
                 //wait for all threads to be ready
                 masterDownstreamGate.await();
                 //run generations
-                if (run){runIteration();}
+                long startTime = System.currentTimeMillis();
+                if(run){
+                    while(System.currentTimeMillis() - startTime < Parameters.timeLimitPerAlgorithm){
+                        {runIteration();}
+                    }
+                }
                 //wait for all periods to finish
                 masterUpstreamGate.await();
 
