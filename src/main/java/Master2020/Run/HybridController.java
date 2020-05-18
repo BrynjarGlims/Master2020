@@ -13,6 +13,7 @@ import Master2020.PGA.PGASolution;
 import Master2020.Population.PeriodicOrderDistributionPopulation;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.StoringResults.SolutionStorer;
+import Master2020.Testing.SolutionTest;
 import gurobi.GRBException;
 
 import java.io.IOException;
@@ -136,6 +137,7 @@ public class HybridController {
                 double[] fitnesses = JCMSolution.getFitnesses();
                 System.out.println("Time warp "+ fitnesses[1]);
                 System.out.println("Over load "+ fitnesses[2]);
+                SolutionTest.checkForInfeasibility(JCMSolution, data);
                 solutions.add(JCMSolution);
                 finalSolutions.add(JCMSolution);
             } else {

@@ -38,7 +38,7 @@ public class Parameters {
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 30;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
+    public static int numberOfCustomers = 10;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
     public static final int numberOfVehicles = 30;
 
     public static final double distanceCutOffFromDepot = 3.0;   //default 3
@@ -153,8 +153,8 @@ public class Parameters {
 
     // Periodic Parameters, common for PGA, ABC, and HYBRID
     public static final int JCMruns = 5;
-    public static final int numberOfAlgorithms = 5;
-    public static int numberOfPGA = 2;
+    public static final int numberOfAlgorithms = 3;
+    public static int numberOfPGA = 3;
     public static int numberOfABC = numberOfAlgorithms - numberOfPGA;
     public static final int minimumIterations = 3;
     public static final int hybridIterationsWithoutImprovementLimit = 1;

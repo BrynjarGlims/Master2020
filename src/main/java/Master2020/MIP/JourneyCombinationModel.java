@@ -231,10 +231,14 @@ public class JourneyCombinationModel extends Model{
                             }
                         }
                         for (int j = 0; j < journeys[d][dataMIP.vehicles[v].vehicleType.type].size(); j++) {
-                            for (Trip t : journeys[d][dataMIP.vehicles[v].vehicleType.type].get(j).trips ){
+                            if (r < journeys[d][dataMIP.vehicles[v].vehicleType.type].get(j).trips.size()){
+                                Trip t = journeys[d][dataMIP.vehicles[v].vehicleType.type].get(j).trips.get(r);
                                 if (t.customers.contains(dataMIP.customers[i].customerID)) {
                                     lhs.addTerm(-dataMIP.vehicles[v].vehicleType.capacity + Parameters.modelMipGap, gamma[d][v][j]);
                                 }
+                            }
+                            if (journeys[d][dataMIP.vehicles[v].vehicleType.type].get(j).trips.size() > dataMIP.numTrips){
+                                System.out.println("Too few num trips");
                             }
                         }
                         String constraint_name = String.format("5.72 -Connection gamma and q for customer %d vehicle %d day %d. M = %f", i, v, d, dataMIP.vehicleCapacity[v]);
