@@ -57,6 +57,7 @@ public class PeriodSwarm extends Thread {
         for (int i = 0 ; i < generations ; i++){
             runGeneration();
         }
+        updateSolutionSet();
     }
 
     public void runGeneration(){
@@ -84,7 +85,6 @@ public class PeriodSwarm extends Thread {
         }
 
         //update and trim the solution list
-        updateSolutionSet();
 
         //scoute stage:
         for (Employee employee : employees){
@@ -131,7 +131,7 @@ public class PeriodSwarm extends Thread {
     private void updateSolutionSet(){
         if (counter % 10 == 0){
             for (Employee employee : employees){
-                solutions.add(new ABCPeriodSolution(data, period, employee.position, orderDistribution));
+                solutions.add(new ABCPeriodSolution(data, period, employee.bestPosition, orderDistribution));
             }
             Collections.sort(solutions);
             if (solutions.size() > Parameters.numberOfStoredSolutionsPerPeriod){
