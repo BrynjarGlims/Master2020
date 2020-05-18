@@ -57,11 +57,6 @@ public class Parameters {
     public static final double ODMIPProbability = 0.5;
     public static final double heuristicDominanceValue = 1;
 
-    // Periodic Parameters
-    public static final int numberOfAlgorithms = 5;
-    public static int numberOfPGA = 2;
-    public static int numberOfABC = numberOfAlgorithms - numberOfPGA;
-    public static final int minimumIterations = 15;
 
     // ABC specific parameters
     public static final int numberOfStoredSolutionsPerPeriod = 10;
@@ -155,6 +150,15 @@ public class Parameters {
     public static final boolean useJCM = true;
     public static final int numberOfIndividualJourneysInMIPPerPeriod = 10;
     public static final String symmetryOFJCM = "none";
+
+
+    // Periodic Parameters, common for PGA, ABC, and HYBRID
+    public static final int numberOfAlgorithms = 1;
+    public static int numberOfPGA = 0;
+    public static int numberOfABC = numberOfAlgorithms - numberOfPGA;
+    public static final int minimumIterations = 3;
+    public static final int hybridIterationsWithoutImprovementLimit = 1;
+
 
     // Verbose parameters
     public static final boolean verboseArcFlow = false;

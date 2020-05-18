@@ -170,7 +170,7 @@ public class HybridController {
             }
         }
         for (int i = 0; i < algorithms.size() ; i++){
-            if (algorithms.get(i).getIterationsWithoutImprovement() > Parameters.swarmIterationsWithoutImprovementLimit){
+            if (algorithms.get(i).getIterationsWithoutImprovement() > Parameters.hybridIterationsWithoutImprovementLimit){
                 System.out.println("MAX ITERATIONS HIT");
                 finalSolutions.add(algorithms.get(i).storeSolution());
                 pod.distributions.set(i, pod.diversify(3));
