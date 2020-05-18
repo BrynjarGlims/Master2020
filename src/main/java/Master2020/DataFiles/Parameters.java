@@ -22,7 +22,7 @@ public class Parameters {
     public static final int samples = 1;
     public static List<Integer> seeds = Arrays.asList(57, 97, 80, 89, 1);
     public static long randomSeedValue = 57;
-    public static final int minimumVehicleSize = 2000;   // removes 1400 and 1800;
+    public static final int minimumVehicleSize = 2500;   // removes 1400 and 1800;
 
 
     // Population parameters
@@ -39,7 +39,7 @@ public class Parameters {
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 50;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
+    public static int numberOfCustomers = 25;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
     public static final int numberOfVehicles = 50;
 
     public static final double distanceCutOffFromDepot = 3.0;   //default 3
@@ -153,8 +153,8 @@ public class Parameters {
 
 
     // Periodic Parameters, common for PGA, ABC, and HYBRID
-    public static final int numberOfAlgorithms = 1;
-    public static int numberOfPGA = 0;
+    public static final int numberOfAlgorithms = 5;
+    public static int numberOfPGA = 5;
     public static int numberOfABC = numberOfAlgorithms - numberOfPGA;
     public static final int minimumIterations = 3;
     public static final int hybridIterationsWithoutImprovementLimit = 1;
