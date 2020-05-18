@@ -50,7 +50,7 @@ public class Employee extends Bee {
         return this.position;
     }
 
-    public void search(Bee neighbor){
+    public void search(Bee neighbor) {
         double[] currentPosition = position.clone();
         updatePosition(currentPosition, neighbor.position, true);
         enhance();
@@ -59,13 +59,19 @@ public class Employee extends Bee {
 
     }
 
-    private void updateTrials(double fitness, double[] currentPosition, boolean searched){
+    private void updateTrials(double fitness, double[] currentPosition, boolean searched) {
         if (fitness < this.fitness){
             this.fitness = fitness;
             this.position = currentPosition;
             if (fitness < colony.globalBestFitness){
                 colony.globalBestPosition = this.position.clone();
                 colony.globalBestFitness = this.fitness;
+                try{
+                    colony.globalBestOrderDistribution = colony.orderDistribution.clone();
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
                 trials = 0;
             }
             else if (fitness < colony.globalBestFitness * Parameters.globalTrialsCutoff){
@@ -80,7 +86,7 @@ public class Employee extends Bee {
         }
     }
 
-    public void updateToBestPosition(){
+    public void updateToBestPosition() {
         double currentBestFitness = fitness;
         Bee currentBestBee = this;
         for (Onlooker onlooker : onlookerFitnesses.keySet()){

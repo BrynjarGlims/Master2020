@@ -39,7 +39,7 @@ public class Parameters {
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 25;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
+    public static int numberOfCustomers = 10;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
     public static final int numberOfVehicles = 50;
 
     public static final double distanceCutOffFromDepot = 3.0;   //default 3
@@ -63,6 +63,7 @@ public class Parameters {
     public static final boolean runSingular = false;
     public static final boolean threaded = true;
     public static final int numberOfSwarms = 5;
+    public static final boolean ABCPenaltyAdjustment = false;
     public static final int orderDistributionCutoff = 2;
     public static final int swarmIterationsWithoutImprovementLimit = 5;
     public static final int generationsPerOrderDistribution = 300;
