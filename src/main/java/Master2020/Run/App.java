@@ -20,9 +20,9 @@ public class App {
                 //OFFSPRING GENERATED
                 double[] tripProbs = new double[]{0, 0.25, 0.5, 0.75, 1};
                 for (double tripProb : tripProbs){
-                    Parameters.tripOptimizerProbability = tripProb;
-                    Parameters.customFileName = "_TripProb" + tripProb;
-                    System.out.println(Parameters.tripOptimizerProbability);
+                    Parameters.ODMIPProbability = tripProb;
+                    Parameters.customFileName = "_ODMIP" + tripProb;
+                    System.out.println(Parameters.ODMIPProbability);
                     System.out.println("Using vestTele: " + Parameters.useVestTeleDataset + " for seed: " + Parameters.randomSeedValue);
 
 
