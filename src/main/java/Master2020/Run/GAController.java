@@ -162,10 +162,11 @@ public class GAController {
         // Check if it has improved for early termination
         if (bestIndividualScore == bestIndividual.getFitness(false)){
             population.setIterationsWithoutImprovement(population.getIterationsWithoutImprovement()+1);
-            bestIndividualScore = bestIndividual.getFitness(false);
         }
         else{
             population.setIterationsWithoutImprovement(0);
+            bestIndividualScore = bestIndividual.getFitness(false);
+
         }
 
         Individual bestFeasibleIndividual = population.returnBestIndividual();
