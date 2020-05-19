@@ -7,8 +7,6 @@ import Master2020.Genetic.*;
 import Master2020.Individual.Individual;
 import Master2020.Individual.Journey;
 import Master2020.Interfaces.PeriodicAlgorithm;
-import Master2020.MIP.DataConverter;
-import Master2020.MIP.JourneyCombinationModel;
 import Master2020.MIP.OrderAllocationModel;
 import Master2020.Population.PeriodicOrderDistributionPopulation;
 import Master2020.Population.Population;
@@ -16,7 +14,6 @@ import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Testing.ABCtests;
 import Master2020.Testing.IndividualTest;
 import gurobi.GRBException;
-import org.nustaq.kson.KsonStringOutput;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,6 +29,7 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
     public HashSet<Individual> repaired;
     public OrderAllocationModel orderAllocationModel;
     public List<GeneticAlgorithm> threads;
+    public ArrayList<Journey>[][] journeysForODMIP;
     public ArrayList<Journey>[][] journeys;
     public OrderDistribution orderDistribution;
 
@@ -117,7 +115,6 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
 
     public void runIteration() throws Exception {
 
-
         downstreamGate.await();
         downstreamGate.reset();
 
@@ -125,32 +122,20 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
         upstreamGate.await();
         upstreamGate.reset();
 
-        //System.out.println("Updating order distribution");
-        //periodicPopulation.addPeriodicIndividual(generateGreedyPeriodicIndividual());
 
 
-        if (Parameters.useODMIPBetweenGenerations){
-            if ((System.currentTimeMillis() - startTime ) < Parameters.timeLimitPerAlgorithm){  //todo: evaluate this
-            makeOptimalOrderDistribution(threads ,false);
-            updateOrderDistributionForPopulations(orderDistribution, false);
-            }
-            else{
-                setJourneyFromBestIndividuals();
-            }
-        }
-        //System.out.println("Time: :" +  Double.toString(System.currentTimeMillis() - startTime));
-        updateFitness();
+
     }
 
     private boolean setJourneyFromBestIndividuals() {
-        journeys = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
+        journeysForODMIP = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
         boolean allFeasibleJourneys = true;
         for (int p = 0; p < data.numberOfPeriods; p++) {
             Individual individual = periodicPopulation.populations[p].returnBestIndividual();
             if (!individual.isFeasible())
                 allFeasibleJourneys = false;
             for (int vt = 0; vt < data.numberOfVehicleTypes; vt++) {
-                journeys[p][vt] = individual.journeyList[0][vt];
+                journeysForODMIP[p][vt] = individual.journeyList[0][vt];
 
             }
         }
@@ -196,7 +181,7 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
     }
 
     private void updateFitness(){
-        double[] fitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
+        double[] fitnesses = FitnessCalculation.getIndividualFitness(data, journeysForODMIP, orderDistribution, 1, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
         double fitness = 0;
         for (double d : fitnesses){
             fitness += d;
@@ -225,12 +210,12 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
         boolean verbose = false;
 
         if (verbose) {
-            System.out.println("all customers exists? " + ABCtests.allCustomersExists(journeys, data));
+            System.out.println("all customers exists? " + ABCtests.allCustomersExists(journeysForODMIP, data));
             System.out.println("OD valid? " + IndividualTest.testValidOrderDistribution(data, orderDistribution));
-            double[] fitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
+            double[] fitnesses = FitnessCalculation.getIndividualFitness(data, journeysForODMIP, orderDistribution, 1, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
             System.out.println("overload: " + fitnesses[2]);
         }
-        if (orderAllocationModel.createOptimalOrderDistribution(journeys, 1) == 2 && allFeasibleJourneys){
+        if (orderAllocationModel.createOptimalOrderDistribution(journeysForODMIP, 1) == 2 && allFeasibleJourneys){
             // System.out.println("New optimal od found");
             this.orderDistribution = orderAllocationModel.getOrderDistribution();
         }
@@ -259,16 +244,17 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
 
     public void runIterations() throws Exception {
         setStartTimeOfThreads();
-
-        for (int i = 0; i < Parameters.minimumUpdatesPerOrderDistributions; i++){
-            //System.out.println("Start odgeneration " + i);
-            if ((System.currentTimeMillis() - this.startTime) < Parameters.timeLimitPerAlgorithm) {
-                runIteration();
-            }
-            if (i == 0){
-                firstIterationTime = (System.currentTimeMillis() - startTime);
-            }
+        runIteration();
+        if (Parameters.useODMIPBetweenIterations){
+            makeOptimalOrderDistribution(threads ,false);
+            updateOrderDistributionForPopulations(orderDistribution, false);
         }
+        updateFitness();
+        runIteration();
+        setJourneyFromBestIndividuals();
+        setListOfJourneysFromThreads();
+        updateFitness();
+        firstIterationTime = (System.currentTimeMillis() - startTime);
     }
 
     public void setStartTimeOfThreads(){
@@ -282,30 +268,25 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
         return journeys;
     }
 
-    private void updateOrderDistributionScalingParameter() {
-        if (Parameters.initialOrderDistributionScale == 1){
-            return;
-        }
-        if (numberOfIterations % Parameters.numberOfGenerationsBetweenODScaling == 0 && numberOfIterations > Parameters.numberOfGenerationBeforeODScalingStarts) {
-            scalingFactorOrderDistribution = (scalingFactorOrderDistribution < 1) ? Parameters.incrementPerOrderDistributionScaling + scalingFactorOrderDistribution : 1;
-            orderDistribution.setOrderScalingFactor(scalingFactorOrderDistribution);
-            periodicPopulation.reassignPeriodicIndividuals();
-            System.out.println("############# CURRENT ORDER DISTRIBUTION SCALING IS " + scalingFactorOrderDistribution + "################");
-        }
-    }
-
     public ArrayList<Journey>[][] getOptimalJourneyFromThreads(){
-        this.journeys = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
+        this.journeysForODMIP = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
         for (GeneticAlgorithm algorithm : threads){
             Individual individual =  algorithm.population.returnBestIndividual();
             if (!individual.isFeasible()) {
                 System.out.println("Individual is feasible: " + individual.isFeasible());
                 System.out.println("Individual added is not feasible");
             }
-            this.journeys[algorithm.period] = individual.journeyList[0];
+            this.journeysForODMIP[algorithm.period] = individual.journeyList[0];
         }
-        return this.journeys;
+        return this.journeysForODMIP;
 
+    }
+
+    public void setListOfJourneysFromThreads() {
+        this.journeys = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
+        for (int p = 0; p < data.numberOfPeriods; p++) {
+            this.journeys[p] = threads.get(p).getListOfBestJourneys();
+        }
     }
 
     public PGASolution storeSolution() throws CloneNotSupportedException {
@@ -313,8 +294,8 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
     }
 
     public PGASolution storeSolution(boolean verbose) throws CloneNotSupportedException {
-        journeys = getOptimalJourneyFromThreads();
-        PGASolution pgaSolution = new PGASolution(orderDistribution.clone(), journeys);  //// TODO: 14/05/2020 Implement correctly
+        journeysForODMIP = getOptimalJourneyFromThreads();
+        PGASolution pgaSolution = new PGASolution(orderDistribution.clone(), journeysForODMIP);  //// TODO: 14/05/2020 Implement correctly
         return pgaSolution;
     }
 

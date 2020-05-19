@@ -85,7 +85,6 @@ public class JourneyCombinationModel extends Model{
         this.pg = new PathGenerator(dataMIP);
         double time = System.currentTimeMillis();
         this.preProcessTime = (System.currentTimeMillis() - time) / 1000;
-        System.out.println("stop");
     }
 
 

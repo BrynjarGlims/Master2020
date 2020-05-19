@@ -42,8 +42,8 @@ public class Parameters {
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 30;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
-    public static final int numberOfVehicles = 5;
+    public static int numberOfCustomers = 50;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
+    public static final int numberOfVehicles = 75;
 
     public static final double distanceCutOffFromDepot = 3.0;   //default 3
     public static final boolean adjustTimeWindow = true;
@@ -136,9 +136,9 @@ public class Parameters {
     public static int numberOfPeriodicParallels =  1;
     public static final boolean runSingularGA = false;  //do not change
     public static final boolean threadedGA = true;      //do not change
-    public static final boolean useODMIPBetweenGenerations = true;
+    public static final boolean useODMIPBetweenIterations = true;
     public static final double diversifiedODProbability = 0.5;    //remove, move to controller
-    public static final int generationsPerOrderDistributionPeriodic = 50;
+    public static final int generationsPerOrderDistributionPeriodic = 30;
     public static final int minimumUpdatesPerOrderDistributions = 5;
     public static final int orderDistributionUpdatesGA = 1;        // this / minimumUpdatesPerOrderDistributions = number of unique order distributions
     //......
@@ -146,10 +146,12 @@ public class Parameters {
     public static final double incrementPerOrderDistributionScaling = 0.02;
     public static final int numberOfGenerationsBetweenODScaling = 2;
     public static final int numberOfGenerationBeforeODScalingStarts = 20;
+    public static final int numberOfSolutionExtractedFromPopulationToJCM = 5;
+
     //......
 
     // Journey Combination Model parameters
-    public static final boolean useJCM = false;
+    public static final boolean useJCM = true;
     public static final int numberOfIndividualJourneysInMIPPerPeriod = 10;
     public static final String symmetryOFJCM = "none";
 
@@ -158,13 +160,13 @@ public class Parameters {
 
     public static final int JCMruns = 10;
     public static final int numberOfAlgorithms = 5;
-    public static int numberOfPGA = 0;
+    public static int numberOfPGA = 2;
     public static int numberOfABC = numberOfAlgorithms - numberOfPGA;
     public static final int minimumIterations = 3;
     public static final int hybridIterationsWithoutImprovementLimit = 1;
 
     // Time run parameters
-    public static long timeLimitPerAlgorithm = 15000 ;  // in milli
+    public static long timeLimitPerAlgorithm = 100000 ;  // in milli
     public static final double odUpdateTime = 2.3;
 
     public static final int minimumRequiredIterationsOfOD = 3;
@@ -173,7 +175,7 @@ public class Parameters {
     public static final boolean verboseArcFlow = false;
     public static final boolean verbosePathFlow = false;
     public static final boolean verboseJourneyBased = false;
-    public static final boolean verboseJourneyCombination = true;
+    public static final boolean verboseJourneyCombination = false;
     public static final boolean savePlots = false;
     public static final boolean verbose = false;
     public static final char separator = ';';

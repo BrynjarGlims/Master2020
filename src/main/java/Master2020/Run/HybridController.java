@@ -83,7 +83,7 @@ public class HybridController {
 
     public void run() throws Exception {
         for (int i = 0; i < Parameters.JCMruns - 1 ; i++){
-            System.out.println("running generation: " + i);
+            System.out.println(" ### Running generation: " + i + " ### ");
             runIteration();
             if (Parameters.useJCM)
                 generateOptimalSolution();
@@ -164,7 +164,6 @@ public class HybridController {
         //update and find best order distribution
         PeriodicSolution solution;
         for (int s = 0 ; s < Parameters.numberOfAlgorithms ; s++){
-            algorithms.get(s).runIteration();
             pod.distributions.set(s, algorithms.get(s).getOrderDistribution());
             solution = algorithms.get(s).storeSolution();
             System.out.println("Algorithm " + s + " fitness: "+ solution.getFitness() + " feasible: " + solution.isFeasible() + " infeasibility cost: " + solution.getInfeasibilityCost());
@@ -214,12 +213,12 @@ public class HybridController {
                 journeys[p][vt] = new ArrayList<>();
             }
         }
-        ArrayList<Journey>[][] swarmJourneys;
+        ArrayList<Journey>[][] tempJourneys;
         for (PeriodicAlgorithm algorithm : algorithms){
-            swarmJourneys = algorithm.getJourneys();
+            tempJourneys = algorithm.getJourneys();
             for (int p = 0 ; p < data.numberOfPeriods ; p++){
                 for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
-                    journeys[p][vt].addAll(swarmJourneys[p][vt]);
+                    journeys[p][vt].addAll(tempJourneys[p][vt]);
                 }
             }
         }

@@ -108,6 +108,10 @@ public class GeneticAlgorithm extends Thread {
         individual.setGiantTourFromTrips();
     }
 
+    public ArrayList<Journey>[] getListOfBestJourneys(){
+        return population.getListOfBestJourneysPeriodic();
+    }
+
     public void repair(Population population){
         repaired.clear();
         for (Individual infeasibleIndividual : population.infeasiblePopulation){
@@ -180,10 +184,12 @@ public class GeneticAlgorithm extends Thread {
         resetCounters();
         //printPopulationStats();
         for (int i = 0 ; i < generations ; i++){
-            if (iterationsWithoutImprovement > Parameters.maxNumberIterationsWithoutImprovement ||
-                    (System.currentTimeMillis() - this.startTime) > Parameters.timeLimitPerAlgorithm)
-                break;
             runGeneration();
+            if (iterationsWithoutImprovement > Parameters.maxNumberIterationsWithoutImprovement ||
+                    (System.currentTimeMillis() - this.startTime) > Parameters.timeLimitPerAlgorithm) {
+                //System.out.println("BREAK DUE TO: improvement: " + (iterationsWithoutImprovement > Parameters.maxNumberIterationsWithoutImprovement) + " time: " + ((System.currentTimeMillis() - this.startTime) > Parameters.timeLimitPerAlgorithm));
+                break;
+            }
         }
         //printPopulationStats();
     }
