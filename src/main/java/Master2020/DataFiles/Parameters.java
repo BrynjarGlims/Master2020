@@ -58,7 +58,7 @@ public class Parameters {
     public static final double educationProbability = 1;
     public static double tripOptimizerProbability = 0.4;
     public static final double repairProbability = 0.4;
-    public static double ODMIPProbability = 0.5;
+    public static double ODMIPProbability = 0.0;
     public static final double heuristicDominanceValue = 1;
 
 

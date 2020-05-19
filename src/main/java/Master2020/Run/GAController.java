@@ -247,7 +247,9 @@ public class GAController {
         double runTime = (System.currentTimeMillis() - time)/1000;
         Result res = new Result(population, "GA", fileName);
         res.store(runTime, -1);
-        orderAllocationModel.terminateEnvironment();
+        if (Parameters.ODMIPProbability > 0){
+            orderAllocationModel.terminateEnvironment();
+        }
     }
 
 
