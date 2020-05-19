@@ -38,8 +38,8 @@ public class Parameters {
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 10;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
-    public static final int numberOfVehicles = 30;
+    public static int numberOfCustomers = 25;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
+    public static final int numberOfVehicles = 5;
 
     public static final double distanceCutOffFromDepot = 3.0;   //default 3
     public static final boolean adjustTimeWindow = true;
@@ -90,7 +90,7 @@ public class Parameters {
     public static final double penaltyFactorForUnderFilling = 1.5;
 
     // Scaling and cost parameters - Not tunable
-    public static final boolean euclidianDistance = true;
+    public static final boolean euclidianDistance = false;
     public static final double scalingDistanceParameter = 2.0; //set to 2.2
     public static final double timeShift = 6;
     public static final double maxJourneyDuration = 11; //changed to journey duration
@@ -98,7 +98,7 @@ public class Parameters {
     public static final double loadingTimeAtDepotVariable = 0.001;
     public static final double scalingUnloadingTimeAtCustomerConstant = 0.02;
     public static final double scalingUnloadingTimeAtCustomerVariable = 0.5;
-    public static final double scalingVehicleCapacity = 0.01;
+    public static final double scalingVehicleCapacity = 0.02;
     public static final double indifferenceValue = 0.0001;
     public static final double scalingVolumeValue = 1.5;
     public static final double lowerVolumeFlexibility = 0.7;
@@ -132,7 +132,6 @@ public class Parameters {
     public static int numberOfPeriodicParallels =  1;
     public static final boolean runSingularGA = false;  //do not change
     public static final boolean threadedGA = true;      //do not change
-
     public static final boolean useODMIPBetweenGenerations = true;
     public static final double diversifiedODProbability = 0.5;    //remove, move to controller
     public static final int generationsPerOrderDistributionPeriodic = 50;
@@ -154,7 +153,7 @@ public class Parameters {
     // Periodic Parameters, common for PGA, ABC, and HYBRID
 
     public static final int JCMruns = 10;
-    public static final int numberOfAlgorithms = 5;
+    public static final int numberOfAlgorithms = 2;
     public static int numberOfPGA = 2;
     public static int numberOfABC = numberOfAlgorithms - numberOfPGA;
     public static final int minimumIterations = 3;
@@ -170,6 +169,7 @@ public class Parameters {
     public static final boolean verboseArcFlow = false;
     public static final boolean verbosePathFlow = false;
     public static final boolean verboseJourneyBased = false;
+    public static final boolean verboseJourneyCombination = true;
     public static final boolean savePlots = false;
     public static final boolean verbose = false;
     public static final char separator = ';';

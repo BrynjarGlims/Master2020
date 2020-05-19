@@ -23,7 +23,6 @@ public class MIPController {
         Individual bestIndividual = afm.getIndividual();
         String modelName = "AFM";
         String folderName = SolutionStorer.getFolderName(modelName);
-
         Result result = new Result(bestIndividual, modelName, folderName, afm.feasible, afm.optimal);
         try{
             result.store(afm.runTime, afm.MIPGap);
@@ -50,7 +49,7 @@ public class MIPController {
 
     }
 
-    public static void runMIPJBM(){
+    public static void runMIPJBM() {
         System.out.println("RUNNING FOR SAMPLE: " + Parameters.randomSeedValue);
         Data data = Master2020.DataFiles.DataReader.loadData();
         DataMIP dataMip = DataConverter.convert(data);
@@ -60,11 +59,14 @@ public class MIPController {
         String modelName = "JBM";
         String folderName = SolutionStorer.getFolderName(modelName);
         Result result = new Result(bestIndividual, modelName, folderName, jbm.feasible, jbm.optimal);
-        try{
+        try {
             result.store(jbm.runTime, jbm.MIPGap);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    public static void main(String[] args) throws Exception {
+        runMIPJBM();
+    }
 }
