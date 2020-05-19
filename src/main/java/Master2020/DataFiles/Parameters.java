@@ -53,10 +53,10 @@ public class Parameters {
 
     // GA specific parameters
     public static final int nearestNeighbors = (int) Math.round(0.4 * numberOfCustomers); //Neighborhood size for each customer
-    public static final int educationTabooSize = 2;
+    public static final int educationTabooSize = 1;
     public static final int tripOptimizerSizeLimit = 7;
-    public static final double educationProbability = 0.5;
-    public static final double tripOptimizerProbability = 0.3;
+    public static final double educationProbability = 1;
+    public static double tripOptimizerProbability = 0.3;
     public static final double repairProbability = 0.4;
     public static final double ODMIPProbability = 0.5;
     public static final double heuristicDominanceValue = 1;
