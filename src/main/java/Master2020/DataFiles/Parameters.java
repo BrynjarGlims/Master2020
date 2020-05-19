@@ -25,8 +25,11 @@ public class Parameters {
 
     public static final long totalRuntime = 600000;
 
+    //Misc
+    public static String customFileName = "";
+
     // Population parameters
-    public static final int populationSize = 50;    //my
+    public static final int populationSize = 25;    //my
     public static final int initialOrderDistributionPopulationSize = 50;
     public static final int maxNumberIterationsWithoutImprovement = 20;
     public static final int maxNumberOfGenerations = 10;
@@ -40,7 +43,7 @@ public class Parameters {
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
     public static int numberOfCustomers = 25;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
-    public static final int numberOfVehicles = 25;
+    public static final int numberOfVehicles = 12;
 
 
     public static final double distanceCutOffFromDepot = 3.0;   //default 3

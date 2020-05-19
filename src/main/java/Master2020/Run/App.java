@@ -21,7 +21,9 @@ public class App {
                 int[] offspring = new int[]{40, 80, 120, 160, 200};
                 for (int numOffspring : offspring){
                     Parameters.numberOfOffspring = numOffspring;
+                    Parameters.customFileName = "_Offspring" + numOffspring;
 
+                    System.out.println("Using vestTele: " + Parameters.useVestTeleDataset + " for seed: " + Parameters.randomSeedValue);
 
 
                     if (args[0].equals("AFM"))
