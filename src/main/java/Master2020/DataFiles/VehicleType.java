@@ -30,7 +30,7 @@ public class VehicleType {
         this.loadingTimeAtDepot = Parameters.loadingTimeAtDepotConstant +
                 Parameters.loadingTimeAtDepotVariable *this.capacity;
 
-        this.travelCost =  costPerKm; //todo: implement a better way to determine this
+        this.travelCost = costPerKm; //todo: implement a better way to determine this
         this.usageCost = costPerDay *this.capacity/25; //todo: implement a better way to determine this
         this.vehicleSet = new HashSet<>();
     }

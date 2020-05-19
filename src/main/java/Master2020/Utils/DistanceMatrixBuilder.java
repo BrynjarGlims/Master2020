@@ -41,7 +41,7 @@ public class DistanceMatrixBuilder {
     private static HashMap<Integer, HashMap<Integer, Long>> loadDistanceMap(String name)  {
         HashMap<Integer, HashMap<Integer, Long>> map = null;
         try {
-            String path = System.getProperty("user.dir") + "\\data\\Distances\\" + name + ".ser";
+            String path = System.getProperty("user.dir") + "/data/Distances/" + name + ".ser";
             FileInputStream fileIn = new FileInputStream(path);
             ObjectInputStream in = new ObjectInputStream(fileIn);
             map = (HashMap<Integer, HashMap<Integer, Long>>) in.readObject();
