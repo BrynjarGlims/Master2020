@@ -182,13 +182,12 @@ public class GAController {
         double time = System.currentTimeMillis();
         System.out.println("Initialize population..");
         initialize();
-
+        long startTime = System.currentTimeMillis();
         while ((population.getIterationsWithoutImprovement() < Parameters.maxNumberIterationsWithoutImprovement &&
-                numberOfIterations < Parameters.maxNumberOfGenerations)) {
+                System.currentTimeMillis() - startTime < Parameters.totalRuntime)) {
             System.out.println("Start generation: " + numberOfIterations);
-
+            System.out.println(population.getIterationsWithoutImprovement());
             //Find best OD for the distribution
-            System.out.println("Assign best OD..");
             findBestOrderDistribution();
 
             //Generate new population
@@ -198,26 +197,18 @@ public class GAController {
                 }
             }
 
-            System.out.println("Populate..");
-            for (int j = 0; j < Parameters.numberOfIndividualsGeneratedEachGeneration; j++) {
+
+            for (int j = 0; j < Parameters.numberOfOffspring; j++) {
                 Individual newIndividual = PIX();
                 penaltyControl.adjust(newIndividual.hasTimeWarp(), newIndividual.hasOverLoad());
                 //System.out.println("Time warp: " + newIndividual.timeWarpCost + " overLoad: " + newIndividual.overLoadCost);
-                if (!Master2020.Testing.IndividualTest.testIndividual(newIndividual)) {
-                    System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: PIX");
-                }
+
                 educate(newIndividual, penaltyControl);
-                if (!Master2020.Testing.IndividualTest.testIndividual(newIndividual)) {
-                    System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: EDUCATE");
-                }
+
                 setOptimalOrderDistribution(newIndividual);
-                if (!Master2020.Testing.IndividualTest.testIndividual(newIndividual)) {
-                    System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: OD OPTIMIZER");
-                }
+
                 tripOptimizer(newIndividual);
-                if (!Master2020.Testing.IndividualTest.testIndividual(newIndividual)) {
-                    System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: TRIP OPTIMIZER");
-                }
+
                 population.addChildToPopulation(newIndividual);
 
             }
@@ -225,10 +216,10 @@ public class GAController {
                 IndividualTest.checkIfIndividualIsComplete(individual);
             }
 
-            System.out.println("Repair..");
+
             repair();
 
-            System.out.println("Selection..");
+
             /*
             System.out.println("Feas pop: " + population.feasiblePopulation.size());
             System.out.println("Infeas pop: " + population.infeasiblePopulation.size());
@@ -239,16 +230,13 @@ public class GAController {
             System.out.println("Infeas pop after: " + population.infeasiblePopulation.size());
 
              */
-
+            System.out.println("Fitness: " + population.returnBestIndividual().getFitness(false) + " feasible: " + population.returnBestIndividual().isFeasible());
             numberOfIterations++;
         }
 
 
 
         Individual bestIndividual = population.returnBestIndividual();
-        if (!Master2020.Testing.IndividualTest.testIndividual(bestIndividual)) {
-            System.out.println("BEST INDIVIDUAL IS NOT COMPLETE");
-        }
         System.out.println("Individual feasible: " + bestIndividual.isFeasible());
         System.out.println("Fitness: " + bestIndividual.getFitness(false));
         if (Parameters.savePlots) {
@@ -297,5 +285,12 @@ public class GAController {
         }
         System.out.println("Fitness: " + newPeriodicIndividual.getFitness());
         return newPeriodicIndividual;
+    }
+
+
+
+    public static void main(String[] args) throws GRBException, IOException {
+        GAController ga = new GAController();
+        ga.runGA();
     }
 }

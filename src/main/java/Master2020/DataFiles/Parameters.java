@@ -17,19 +17,20 @@ public class Parameters {
     public static final String vehicleFilePath2 = "data/" + dataSet2 + "/Vehicles.txt";
     public static final String distancePathVestTele = "Google_VestTele";
     public static final String distancePathTrondelag = "Google_Trondelag";
-    public static final boolean useVestTeleDataset = false;
+    public static boolean useVestTeleDataset = false;
     public static final boolean doRandomSeed = true;
     public static List<Integer> seeds = Arrays.asList(57, 97, 80, 89, 1);
     public static long randomSeedValue = 10;
     public static final int minimumVehicleSize = 2000;   // removes 1400 and 1800;
 
+    public static final long totalRuntime = 600000;
 
     // Population parameters
     public static final int populationSize = 50;    //my
     public static final int initialOrderDistributionPopulationSize = 50;
-    public static final int maxNumberIterationsWithoutImprovement = 50;
+    public static final int maxNumberIterationsWithoutImprovement = 20;
     public static final int maxNumberOfGenerations = 10;
-    public static final int numberOfIndividualsGeneratedEachGeneration = 10;    //lambda
+    public static int numberOfOffspring = 10;    //lambda
     public static final double fractionEliteIndividuals = 0.4;     //el
     public static final double fractionOfFeasibleIndividualsFromAdsplit = 0.2;
     public static final int frequencyOfPenaltyUpdatesPGA = 50;
@@ -38,8 +39,8 @@ public class Parameters {
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 30;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
-    public static final int numberOfVehicles = 15;
+    public static int numberOfCustomers = 25;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
+    public static final int numberOfVehicles = 25;
 
     public static final double distanceCutOffFromDepot = 3.0;   //default 3
     public static final boolean adjustTimeWindow = true;
@@ -65,32 +66,32 @@ public class Parameters {
     public static final boolean ABCPenaltyAdjustment = false;
     public static final int orderDistributionCutoff = 2;
     public static final int swarmIterationsWithoutImprovementLimit = 5;
-    public static final int generationsPerOrderDistribution = 600;
+    public static final int generationsPerOrderDistribution = 300;
     public static final int numberOfEmployees = 5;
     public static final int numberOfOnlookers = 4 * numberOfEmployees;
     public static final int numberOfScoutTrials = 100;
     public static final int maxNumberOfTrials = 15;
-    public static final int maxBoundDimensionality = 5; //max amount of dimensions that can be changed, chosen randomly from 1-this
+    public static final int maxBoundDimensionality = (int) Math.round(0.2 * numberOfCustomers); //max amount of dimensions that can be changed, chosen randomly from 1-this
     public static final double weightNeighborEmployed = 1;
     public static final double weightNeighborOnlooker = 1.5;
-    public static final double weightGlobalBest = 1;
+    public static final double weightGlobalBest = 0.8;
     public static final double movementRange = 1; //both positive and negative, but only half in negative direction
     public static final double onlookerRandomAdjustment = 0.2; //a random number added when onlooker goes to employers foodsource
     public static final int numberOfEnhancements = 0; //number of enhancements for employees
     public static final double[] weightsEnhancement = new double[]{33, 33, 34}; //probability distribution of enhancements, [reverse, swap, insert]
-    public static final double globalTrialsCutoff = 1.1; //trials will not increment if solution is within this multiplier of global best
+    public static final double globalTrialsCutoff = 1.3; //trials will not increment if solution is within this multiplier of global best
 
 
 
     //Penalty parameters for heuristics - Tunable
-    public static double initialOverLoadPenalty = 10000;  // lambda
-    public static double initialTimeWarpPenalty = 10000;  // theta
+    public static double initialOverLoadPenalty = 100000;  // lambda
+    public static double initialTimeWarpPenalty = 100000;  // theta
     public static final double initialDrivingCostPenalty = 1; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
     public static final double penaltyFactorForOverFilling = 1.1;
     public static final double penaltyFactorForUnderFilling = 1.5;
 
     // Scaling and cost parameters - Not tunable
-    public static final boolean euclidianDistance = true;
+    public static final boolean euclidianDistance = false;
     public static final double scalingDistanceParameter = 2.0; //set to 2.2
     public static final double timeShift = 6;
     public static final double maxJourneyDuration = 11; //changed to journey duration
@@ -146,7 +147,7 @@ public class Parameters {
     //......
 
     // Journey Combination Model parameters
-    public static final boolean useJCM = true;
+    public static final boolean useJCM = false;
     public static final int numberOfIndividualJourneysInMIPPerPeriod = 10;
     public static final String symmetryOFJCM = "none";
 
@@ -154,13 +155,13 @@ public class Parameters {
     // Periodic Parameters, common for PGA, ABC, and HYBRID
     public static final int JCMruns = 10;
     public static final int numberOfAlgorithms = 5;
-    public static int numberOfPGA = 2;
+    public static int numberOfPGA = 0;
     public static int numberOfABC = numberOfAlgorithms - numberOfPGA;
     public static final int minimumIterations = 3;
     public static final int hybridIterationsWithoutImprovementLimit = 1;
 
     // Time run parameters
-    public static long timeLimitPerAlgorithm = 30000 ;  // in milli
+    public static long timeLimitPerAlgorithm = 15000 ;  // in milli
     public static final double odUpdateTime = 2.3;
 
     public static final int minimumRequiredIterationsOfOD = 3;

@@ -240,13 +240,11 @@ public class Data {
 
 
     public static void main(String[] args){
-        Data data = DataReader.loadData();
-        for (Customer c : data.customers[0].nearestNeighbors){
-            System.out.println(c.customerID);
-        }
-        for (Customer c : data.customers[0].nearestNeighborsDiversity){
-            System.out.println(c.customerID);
-        }
+        final int a = 17;
+        int x = (int) (0.4 * a);
+        System.out.println(x);
+        System.out.println(Parameters.maxBoundDimensionality);
+
     }
 
 }
