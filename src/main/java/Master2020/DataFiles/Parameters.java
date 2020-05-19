@@ -33,7 +33,7 @@ public class Parameters {
     public static final int initialOrderDistributionPopulationSize = 50;
     public static final int maxNumberIterationsWithoutImprovement = 20;
     public static final int maxNumberOfGenerations = 10;
-    public static int numberOfOffspring = 10;    //lambda
+    public static int numberOfOffspring = 50;    //lambda
     public static final double fractionEliteIndividuals = 0.4;     //el
     public static final double fractionOfFeasibleIndividualsFromAdsplit = 0.2;
     public static final int frequencyOfPenaltyUpdatesPGA = 50;
@@ -56,7 +56,7 @@ public class Parameters {
     public static final int educationTabooSize = 1;
     public static final int tripOptimizerSizeLimit = 7;
     public static final double educationProbability = 1;
-    public static double tripOptimizerProbability = 0.3;
+    public static double tripOptimizerProbability = 0.4;
     public static final double repairProbability = 0.4;
     public static double ODMIPProbability = 0.5;
     public static final double heuristicDominanceValue = 1;
