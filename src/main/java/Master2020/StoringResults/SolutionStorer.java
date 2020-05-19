@@ -76,8 +76,12 @@ public class SolutionStorer {
             SimpleDateFormat date_formatter = new SimpleDateFormat("dd_MM_yyyy_HH_mm_ss");
             String dateString = date_formatter.format(new Date());
             String filePath =  modelName + "_S" + Parameters.randomSeedValue + "_C" + Parameters.numberOfCustomers +
+<<<<<<< HEAD
                     "_V" + Parameters.numberOfVehicles + "_" + dateString;
 
+=======
+                    "_V" + Parameters.numberOfVehicles + "_" + Parameters.customFileName + "_" + dateString;
+>>>>>>> e10de5d78f187cefba950a958312a5052e502877
             createDefaultDirectory();
             createDetailedDirectory(filePath);
             return filePath;

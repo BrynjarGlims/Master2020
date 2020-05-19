@@ -83,6 +83,7 @@ public class HybridController {
 
     public void run() throws Exception {
         for (int i = 0; i < Parameters.JCMruns - 1 ; i++){
+            System.out.println("running generation: " + i);
             runIteration();
             if (Parameters.useJCM)
                 generateOptimalSolution();
@@ -108,15 +109,17 @@ public class HybridController {
     }
 
     public void updateRuntimeOfThreads(){
-        double[] times = new double[Parameters.numberOfAlgorithms];
-        int counter = 0;
-        for (PeriodicAlgorithm periodicAlgorithm : algorithms){
-            times[counter] = periodicAlgorithm.getIterationTime();
-            counter ++;
+        if (Parameters.numberOfPGA > 0){
+            double[] times = new double[Parameters.numberOfAlgorithms];
+            int counter = 0;
+            for (PeriodicAlgorithm periodicAlgorithm : algorithms){
+                times[counter] = periodicAlgorithm.getIterationTime();
+                counter ++;
+            }
+            double maxIterationTime = Arrays.stream(times).max().getAsDouble();
+            Parameters.timeLimitPerAlgorithm = (long) (Parameters.odUpdateTime *maxIterationTime);
+            System.out.println("New time for single run is: " + Parameters.timeLimitPerAlgorithm);
         }
-        double maxIterationTime = Arrays.stream(times).max().getAsDouble();
-        Parameters.timeLimitPerAlgorithm = (long) (Parameters.odUpdateTime *maxIterationTime);
-        System.out.println("New time for single run is: " + Parameters.timeLimitPerAlgorithm);
     }
 
     public void storeBestCurrentSolution() throws IOException {

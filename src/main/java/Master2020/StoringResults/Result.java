@@ -24,7 +24,6 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Scanner;
 
 public class Result {
 
@@ -347,7 +346,7 @@ public class Result {
         csvWriter.writeNext(results, false);
         results = new String[]{"Initial population size", String.valueOf(Parameters.populationSize)};
         csvWriter.writeNext(results, false);
-        results = new String[]{"New Individuals Each Generation", String.valueOf(Parameters.numberOfIndividualsGeneratedEachGeneration)};
+        results = new String[]{"New Individuals Each Generation", String.valueOf(Parameters.numberOfOffspring)};
         csvWriter.writeNext(results, false);
         results = new String[]{"Fraction of elite individuals", String.valueOf(Parameters.fractionEliteIndividuals)};
         csvWriter.writeNext(results, false);

@@ -37,6 +37,7 @@ public class DataConverter {
 
         dm.storeMainData(customers,vehicleTypes,vehicles);
         dm.storeAdditionalData(data);
+        dm.setDistances(data.distanceMatrix);
 
         return dm;
     }

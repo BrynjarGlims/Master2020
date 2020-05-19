@@ -1,13 +1,11 @@
 package Master2020.PGA;
 
 import Master2020.DataFiles.Data;
-import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.*;
 import Master2020.Individual.Individual;
 import Master2020.Individual.Journey;
 import Master2020.Individual.Trip;
-import Master2020.Population.PeriodicOrderDistributionPopulation;
 import Master2020.Population.Population;
 import Master2020.ProductAllocation.OrderDistribution;
 import gurobi.GRBException;
@@ -136,7 +134,7 @@ public class GeneticAlgorithm extends Thread {
 
     public void runGeneration() {
 
-        for (int j = 0; j < Parameters.numberOfIndividualsGeneratedEachGeneration; j++) {
+        for (int j = 0; j < Parameters.numberOfOffspring; j++) {
             Individual newIndividual = PIX(population, penaltyControl.timeWarpPenalty, penaltyControl.overLoadPenalty);
             penaltyControl.adjust(newIndividual.hasTimeWarp(), newIndividual.hasOverLoad());
             educate(newIndividual);
