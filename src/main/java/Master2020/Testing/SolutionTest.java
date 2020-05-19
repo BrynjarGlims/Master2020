@@ -2,6 +2,7 @@ package Master2020.Testing;
 
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.Parameters;
+import Master2020.Genetic.FitnessCalculation;
 import Master2020.Individual.Journey;
 import Master2020.Individual.Trip;
 import Master2020.Interfaces.PeriodicAlgorithm;
@@ -47,7 +48,17 @@ public class SolutionTest {
                 }
             }
         }
-
+    }
+    public static void checkJourneyForTimeWarp(ArrayList<Journey>[][] journeys, DataMIP data, OrderDistribution orderDistribution){
+        for (int p = 0; p < data.numPeriods; p++) {
+            for (int vt = 0; vt < data.numVehicleTypes; vt++) {
+                for (Journey journey : journeys[p][vt]) {
+                    if (FitnessCalculation.getJourneyFitness(journey, orderDistribution)[1] > 0){
+                        throw new IllegalArgumentException("Journey inserted with time warp");
+                    }
+                }
+            }
+        }
 
     }
 }

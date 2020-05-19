@@ -77,6 +77,7 @@ public class SolutionStorer {
             String dateString = date_formatter.format(new Date());
             String filePath =  modelName + "_S" + Parameters.randomSeedValue + "_C" + Parameters.numberOfCustomers +
                     "_V" + Parameters.numberOfVehicles + "_" + dateString;
+
             createDefaultDirectory();
             createDetailedDirectory(filePath);
             return filePath;
