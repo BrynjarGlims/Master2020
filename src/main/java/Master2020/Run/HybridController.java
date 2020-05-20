@@ -164,7 +164,6 @@ public class HybridController {
         //update and find best order distribution
         PeriodicSolution solution;
         for (int s = 0 ; s < Parameters.numberOfAlgorithms ; s++){
-            algorithms.get(s).runIteration();
             pod.distributions.set(s, algorithms.get(s).getOrderDistribution());
             solution = algorithms.get(s).storeSolution();
             System.out.println("Algorithm " + s + " fitness: "+ solution.getFitness() + " feasible: " + solution.isFeasible() + " infeasibility cost: " + solution.getInfeasibilityCost());

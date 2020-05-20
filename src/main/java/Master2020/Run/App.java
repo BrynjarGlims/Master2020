@@ -12,7 +12,7 @@ public class App {
     public static void main(String[] args) throws Exception {
         for (int bool = 0 ; bool < 2 ; bool++){
             Parameters.useVestTeleDataset = bool == 0;
-            int[] seeds = Parameters.useVestTeleDataset ? new int[]{15,12} : new int[]{69,85};
+            int[] seeds = Parameters.useVestTeleDataset ? new int[]{84} : new int[]{};
             for (int seed : seeds) {
                 Parameters.randomSeedValue = seed;
 

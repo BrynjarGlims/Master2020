@@ -75,7 +75,8 @@ public class SolutionStorer {
         try{
             SimpleDateFormat date_formatter = new SimpleDateFormat("dd_MM_yyyy_HH_mm_ss");
             String dateString = date_formatter.format(new Date());
-            String filePath =  modelName + "_S" + Parameters.randomSeedValue + "_C" + Parameters.numberOfCustomers +
+            String dataset = Parameters.useVestTeleDataset ? "VT" : "T";
+            String filePath =  modelName + "_S" + Parameters.randomSeedValue + "_D" + dataset + "_C" + Parameters.numberOfCustomers +
                     "_V" + Parameters.numberOfVehicles + "_" + Parameters.customFileName + "_" + dateString;
             createDefaultDirectory();
             createDetailedDirectory(filePath);
