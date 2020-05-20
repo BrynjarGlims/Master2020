@@ -175,7 +175,7 @@ public class HybridController {
                 .sorted(Comparator.comparing(i -> solutions.get(i)))
                 .mapToInt(i -> i)
                 .toArray();
-        for (int i = sortedIndices.length - 1 ; i > sortedIndices.length - Parameters.orderDistrgiibutionCutoff ; i--){
+        for (int i = sortedIndices.length - 1 ; i > sortedIndices.length - Parameters.orderDistributionCutoff ; i--){
             if (algorithms.get(sortedIndices[i]).getMinimumIterations() > Parameters.minimumIterations){
                 System.out.println("Changing od: " + sortedIndices[i]);
 
