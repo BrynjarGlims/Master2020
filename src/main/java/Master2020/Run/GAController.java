@@ -231,6 +231,7 @@ public class GAController {
             System.out.println("Infeas pop after: " + population.infeasiblePopulation.size());
 
              */
+            System.out.println("OBject: " + population.returnBestIndividual().hashCode());
             System.out.println("Fitness: " + population.returnBestIndividual().getFitness(false) + " feasible: " + population.returnBestIndividual().isFeasible());
             numberOfIterations++;
         }
