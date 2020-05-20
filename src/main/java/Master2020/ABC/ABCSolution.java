@@ -8,6 +8,7 @@ import Master2020.Individual.Journey;
 import Master2020.Interfaces.PeriodicSolution;
 import Master2020.StoringResults.Result;
 import Master2020.ProductAllocation.OrderDistribution;
+import Master2020.Testing.IndividualTest;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -90,8 +91,10 @@ public class ABCSolution implements PeriodicSolution {
 
     public void writeSolution(String fileName) throws IOException {
         Individual individual = HelperFunctions.createIndividual(data, journeys, orderDistribution);
-        Result result = new Result(individual, "ABC", fileName);
-        result.store();
+        System.out.println(IndividualTest.testValidOrderDistribution(data, orderDistribution));
+        System.out.println(IndividualTest.checkIfIndividualIsComplete(individual));
+//        Result result = new Result(individual, "ABC", fileName);
+//        result.store();
 
     }
 

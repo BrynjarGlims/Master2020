@@ -66,12 +66,6 @@ public class Employee extends Bee {
             if (fitness < colony.globalBestFitness){
                 colony.globalBestPosition = this.position.clone();
                 colony.globalBestFitness = this.fitness;
-                try{
-                    colony.globalBestOrderDistribution = colony.orderDistribution.clone();
-                }
-                catch (Exception e){
-                    e.printStackTrace();
-                }
                 trials = 0;
             }
             else if (fitness < colony.globalBestFitness * Parameters.globalTrialsCutoff){

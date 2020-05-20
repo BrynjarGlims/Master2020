@@ -250,7 +250,7 @@ public class HybridController {
         }
     }
 
-    public ArrayList<Journey>[][] getJourneys(){
+    public ArrayList<Journey>[][] getJourneys() {
         ArrayList<Journey>[][] journeys = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
         for (int p = 0 ; p < data.numberOfPeriods ; p++){
             for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){

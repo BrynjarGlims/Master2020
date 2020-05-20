@@ -240,10 +240,12 @@ public class Data {
 
 
     public static void main(String[] args){
-        final int a = 17;
-        int x = (int) (0.4 * a);
-        System.out.println(x);
-        System.out.println(Parameters.maxBoundDimensionality);
+        Data data = DataReader.loadData();
+        for (Customer c : data.customers){
+            if (c.requiredVisitPeriod[5] == 1){
+                System.out.println("hello");
+            }
+        }
 
     }
 

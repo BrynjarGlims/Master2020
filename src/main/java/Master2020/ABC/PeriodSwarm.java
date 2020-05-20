@@ -27,11 +27,11 @@ public class PeriodSwarm extends Thread {
     public CyclicBarrier upstreamGate;
     public double globalBestFitness;
     public double[] globalBestPosition;
-    public OrderDistribution globalBestOrderDistribution;
     public boolean run = true;
 
     public PenaltyControl penaltyControl;
     public ArrayList<ABCPeriodSolution> solutions;
+    private double currentBestFitness;
 
     private int counter;
 
@@ -128,14 +128,18 @@ public class PeriodSwarm extends Thread {
     }
 
     private void updateSolutionSet(){
+        ABCPeriodSolution employeeSolution;
         for (Employee employee : employees){
-            solutions.add(new ABCPeriodSolution(data, period, employee.bestPosition, orderDistribution));
+            employeeSolution = new ABCPeriodSolution(data, period, employee.bestPosition, orderDistribution);
+            if (employeeSolution.fitness < currentBestFitness){
+                solutions.add(employeeSolution);
+            }
         }
         Collections.sort(solutions);
         if (solutions.size() > Parameters.numberOfStoredSolutionsPerPeriod){
             solutions.subList(Parameters.numberOfStoredSolutionsPerPeriod, solutions.size()).clear();
         }
-        solutions.add(new ABCPeriodSolution(data, period, globalBestPosition, globalBestOrderDistribution));
+        currentBestFitness = solutions.get(0).fitness;
     }
 
     public void initialize(){
@@ -144,6 +148,7 @@ public class PeriodSwarm extends Thread {
         globalBestFitness = Double.MAX_VALUE;
         globalBestPosition = employees.get(0).position;
         solutions = new ArrayList<>();
+        currentBestFitness = Double.MAX_VALUE;
         counter = 0;
     }
 

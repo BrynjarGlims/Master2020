@@ -5,11 +5,13 @@ import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.FitnessCalculation;
 import Master2020.Individual.AdSplit;
+import Master2020.Individual.Individual;
 import Master2020.Individual.Journey;
 import Master2020.Interfaces.PeriodicAlgorithm;
 import Master2020.MIP.OrderAllocationModel;
 import Master2020.Population.PeriodicOrderDistributionPopulation;
 import Master2020.ProductAllocation.OrderDistribution;
+import Master2020.Testing.IndividualTest;
 import gurobi.GRBException;
 import jdk.swing.interop.SwingInterOpUtils;
 import scala.xml.PrettyPrinter;
@@ -172,6 +174,7 @@ public class PeriodicABC extends Thread implements PeriodicAlgorithm {
         }
         if (orderAllocationModel.createOptimalOrderDistribution(journeys, 1) == 2){
             this.orderDistribution = orderAllocationModel.getOrderDistribution();
+            System.out.println(IndividualTest.testValidOrderDistribution(data, orderDistribution));
         }
         else{
             System.out.println("no optimal OD found");
