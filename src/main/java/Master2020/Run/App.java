@@ -18,10 +18,10 @@ public class App {
 
                 //MUST BE CHANGED DEPENDING ON WHAT WE WANT TO TEST!!!
                 //OFFSPRING GENERATED
-                double[] tripProbs = new double[]{0, 0.25, 0.5, 0.75, 1};
-                for (double tripProb : tripProbs){
-                    Parameters.tripOptimizerProbability = tripProb;
-                    Parameters.customFileName = " TripOptimizer" + tripProb;
+                int[] numberOfOffspring = new int[]{40, 80, 120, 160, 200};
+                for (int offspring : numberOfOffspring){
+                    Parameters.numberOfOffspring = offspring;
+                    Parameters.customFileName = " Offspring" + offspring;
                     System.out.println(Parameters.ODMIPProbability);
                     System.out.println("Using vestTele: " + Parameters.useVestTeleDataset + " for seed: " + Parameters.randomSeedValue);
 
