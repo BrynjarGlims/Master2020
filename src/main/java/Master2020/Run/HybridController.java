@@ -17,10 +17,7 @@ import Master2020.Testing.SolutionTest;
 import gurobi.GRBException;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.*;
 import java.util.concurrent.CyclicBarrier;
 import java.util.stream.IntStream;
 
@@ -40,6 +37,8 @@ public class HybridController {
     public String fileName;
     public String modelName = "HYBRID";
     public double time;
+    public double currentBestSolution;
+    public int iterationsWithoutImprovement;
 
 
 
@@ -52,6 +51,8 @@ public class HybridController {
 
     public void initialize() throws GRBException {
         time = System.currentTimeMillis();
+        currentBestSolution = Double.MAX_VALUE;
+        iterationsWithoutImprovement = 0;
         downstreamGate = new CyclicBarrier(Parameters.numberOfAlgorithms + 1);
         upstreamGate = new CyclicBarrier(Parameters.numberOfAlgorithms + 1);
         solutions = new ArrayList<>();
@@ -82,14 +83,17 @@ public class HybridController {
     }
 
     public void run() throws Exception {
-        for (int i = 0; i < Parameters.JCMruns - 1 ; i++){
-            System.out.println(" ### Running generation: " + i + " ### ");
+        int genCounter = 0;
+        while (System.currentTimeMillis() - time < Parameters.totalRuntime && iterationsWithoutImprovement < Parameters.maxNumberIterationsWithoutImprovement){
+            System.out.println(" ### Running generation: " + genCounter + " ### ");
             runIteration();
             if (Parameters.useJCM)
                 generateOptimalSolution();
             storeBestCurrentSolution();
+            //updateItertionsWithoutImprovement();
             updateOrderDistributionPopulation();
             updateRuntimeOfThreads();
+            genCounter++;
         }
         runIteration();
         if (Parameters.useJCM)
@@ -152,6 +156,41 @@ public class HybridController {
 
     }
 
+    private double getCurrentBestFitness() throws Exception {
+        double fitness = 0;
+        if (Parameters.useJCM){
+            fitness = new PGASolution(orderDistributionJCM.clone(), journeyCombinationModel.getOptimalJourneys()).getFitness();
+        }
+        else {
+            try {
+                OptionalDouble f = algorithms.stream().map(o -> {
+                    try {
+                        return o.storeSolution();
+                    } catch (CloneNotSupportedException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                }).filter(Objects::nonNull).mapToDouble(PeriodicSolution::getFitness).min();
+                fitness = f.orElse(-1);
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        return fitness;
+    }
+
+    private void updateItertionsWithoutImprovement() throws Exception {
+        double currentFitness = getCurrentBestFitness();
+        if (currentFitness < this.currentBestSolution){
+            this.currentBestSolution = currentFitness;
+            iterationsWithoutImprovement = 0;
+        }
+        else{
+            iterationsWithoutImprovement++;
+        }
+    }
+
     private void runIteration() throws Exception {
         //release all period swarms for
         downstreamGate.await();
@@ -184,6 +223,12 @@ public class HybridController {
         for (int i = sortedIndices.length - 1 ; i > sortedIndices.length - Parameters.orderDistributionCutoff ; i--){
             if (algorithms.get(sortedIndices[i]).getMinimumIterations() > Parameters.minimumIterations){
                 System.out.println("changing od: " + sortedIndices[i]);
+                if (Parameters.useJCM && i == sortedIndices.length - 1){
+                    pod.distributions.set(sortedIndices[i], orderDistributionJCM);
+                }
+                else{
+                    pod.distributions.set(sortedIndices[i], pod.diversify(3));
+                }
 
 //                //random OD:
 //                OrderDistribution newOD = new OrderDistribution(data);
@@ -191,7 +236,6 @@ public class HybridController {
 //                pod.distributions.set(sortedIndices[i], newOD);
 
                 //diversified new OD:
-                pod.distributions.set(sortedIndices[i], pod.diversify(3));
                 algorithms.get(sortedIndices[i]).updateOrderDistribution(pod.distributions.get(sortedIndices[i]));
                 algorithms.get(sortedIndices[i]).setMinimumIterations(0);
             }

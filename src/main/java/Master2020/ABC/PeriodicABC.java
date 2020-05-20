@@ -11,6 +11,7 @@ import Master2020.MIP.OrderAllocationModel;
 import Master2020.Population.PeriodicOrderDistributionPopulation;
 import Master2020.ProductAllocation.OrderDistribution;
 import gurobi.GRBException;
+import jdk.swing.interop.SwingInterOpUtils;
 import scala.xml.PrettyPrinter;
 
 import java.io.IOException;

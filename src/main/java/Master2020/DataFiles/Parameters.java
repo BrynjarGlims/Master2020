@@ -151,7 +151,7 @@ public class Parameters {
     //......
 
     // Journey Combination Model parameters
-    public static final boolean useJCM = true;
+    public static final boolean useJCM = false;
     public static final int numberOfIndividualJourneysInMIPPerPeriod = 10;
     public static final String symmetryOFJCM = "none";
 
@@ -159,8 +159,8 @@ public class Parameters {
     // Periodic Parameters, common for PGA, ABC, and HYBRID
 
     public static final int JCMruns = 10;
-    public static final int numberOfAlgorithms = 5;
-    public static int numberOfPGA = 2;
+    public static final int numberOfAlgorithms = 2;
+    public static int numberOfPGA = 0;
     public static int numberOfABC = numberOfAlgorithms - numberOfPGA;
     public static final int minimumIterations = 3;
     public static final int hybridIterationsWithoutImprovementLimit = 1;

@@ -10,6 +10,7 @@ import static Master2020.Run.MIPController.*;
 public class App {
 
     public static void main(String[] args) throws Exception {
+        //CHANGE ITERATIONS!
         for (int iteration = 0 ; iteration < 1 ; iteration++){
             for (int bool = 0 ; bool < 2 ; bool++){
                 Parameters.useVestTeleDataset = bool == 0;
