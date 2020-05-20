@@ -1,11 +1,9 @@
 package Master2020.Population;
 import Master2020.DataFiles.*;
-import Master2020.Genetic.BiasedFitness;
-import Master2020.Genetic.OrderDistributionCrossover;
-import Master2020.Genetic.PenaltyControl;
-import Master2020.Genetic.TournamentSelection;
+import Master2020.Genetic.*;
 import Master2020.Individual.Individual;
 import Master2020.Individual.AdSplit;
+import Master2020.Individual.Journey;
 import Master2020.PGA.PeriodicIndividual;
 import Master2020.MIP.OrderAllocationModel;
 import Master2020.PGA.PeriodicPopulation;
@@ -198,7 +196,28 @@ public class Population {
         return null;
     }
 
-
+    public ArrayList<Journey>[] getListOfBestJourneysPeriodic(){
+        ArrayList<Journey>[] bestJourneys = new ArrayList[data.numberOfVehicleTypes];
+        for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
+            bestJourneys[vt] = new ArrayList<>();
+        }
+        ArrayList<Individual> individuals = new ArrayList<Individual>(feasiblePopulation);
+        individuals.addAll(infeasiblePopulation);
+        Collections.sort(individuals);
+        int numberOfIndividuals = 0;
+        for (Individual individual : individuals){
+            if (FitnessCalculation.getIndividualFitness(individual, 1, Parameters.initialTimeWarpPenalty,
+                    Parameters.initialOverLoadPenalty)[1] <= Parameters.indifferenceValue){
+                for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
+                    bestJourneys[vt].addAll(individual.journeyList[0][vt]);
+                }
+                numberOfIndividuals += 1;
+                if (numberOfIndividuals > Parameters.numberOfSolutionExtractedFromPopulationToJCM)
+                    break;
+            }
+        }
+        return bestJourneys;
+    }
 
 
     public void setIterationsWithoutImprovement(int iterations){

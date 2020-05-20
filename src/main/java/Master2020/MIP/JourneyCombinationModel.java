@@ -11,9 +11,12 @@ import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Testing.SolutionTest;
 import gurobi.*;
 
+import javax.crypto.spec.PSource;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class JourneyCombinationModel extends Model{
 
@@ -82,7 +85,6 @@ public class JourneyCombinationModel extends Model{
         this.pg = new PathGenerator(dataMIP);
         double time = System.currentTimeMillis();
         this.preProcessTime = (System.currentTimeMillis() - time) / 1000;
-        System.out.println("stop");
     }
 
 
@@ -130,10 +132,10 @@ public class JourneyCombinationModel extends Model{
         }
 
         for (int i = 0; i < dataMIP.numCustomers; i++) {
-            for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
-                for (int d = 0; d < dataMIP.numPeriods; d++) {
-                    for (int v = 0; v < dataMIP.numVehicles; v++) {
-                        for (int r = 0; r < dataMIP.numTrips; r++){
+            for (int d = 0; d < dataMIP.numPeriods; d++) {
+                for (int v = 0; v < dataMIP.numVehicles; v++) {
+                    for (int r = 0; r < dataMIP.numTrips; r++){
+                        for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                             String variable_name = String.format("q[%d][%d][%d][%d][%d]", d, v, r, i, m);
                             q[d][v][r][i][m] = model.addVar(0.0, DataMIP.upperBoundQuantity , 0, GRB.CONTINUOUS, variable_name);
                         }
@@ -176,6 +178,28 @@ public class JourneyCombinationModel extends Model{
         }
     }
 
+    public void tempConstraint() throws  GRBException{
+        int bigM = 100000;
+        for (int d = 0; d < dataMIP.numPeriods; d++) {
+            for (int v = 0; v < dataMIP.numVehicles; v++) {
+                GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
+                for (int i = 0; i < dataMIP.numCustomers; i++) {
+                    for (int r = 0; r < dataMIP.numTrips; r++) {
+                        for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
+                            lhs.addTerm(1, q[d][v][r][i][m]);
+                        }
+                    }
+                }
+                for (int r = 0; r < journeys[d][dataMIP.vehicles[v].vehicleType.type].size(); r++) {
+                    lhs.addTerm(-bigM, gamma[d][v][r]);
+                }
+                String constraint_name = String.format("Temp constraint for day %d and vehicle %d ", d, v);
+                model.addConstr(lhs, GRB.LESS_EQUAL, 0, constraint_name);
+
+            }
+        }
+    }
+
     public void allowableVisits() throws GRBException {
         // Constraint 5.69
         // Allowable visits to customer on spesific day
@@ -202,22 +226,29 @@ public class JourneyCombinationModel extends Model{
         // Constraint 5.70
         //Capacity constraint on each delivery
         for (int d = 0; d < dataMIP.numPeriods; d++) {
-            for (int v = 0; v < dataMIP.numVehicleTypes; v++) {
+            for (int v = 0; v < dataMIP.numVehicles; v++) {
                 for (int i = 0; i < dataMIP.numCustomers; i++) {
                     for (int r = 0; r < dataMIP.numTrips; r++) {
                         GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
                         for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
                             lhs.addTerm(1, q[d][v][r][i][m]);
+                            //System.out.print("q["+ d + "][" + v + "]["+r+"]["+i+"]["+m+"] + " );
                         }
                         for (int j = 0; j < journeys[d][dataMIP.vehicles[v].vehicleType.type].size(); j++) {
                             if (r < journeys[d][dataMIP.vehicles[v].vehicleType.type].get(j).trips.size()) {
-                                if (journeys[d][dataMIP.vehicles[v].vehicleType.type].get(j).trips.get(r).customers.contains(i)) {
-                                    lhs.addTerm(-dataMIP.vehicles[v].vehicleType.capacity + Parameters.modelMipGap, gamma[d][v][j]);
+                                List<Integer> customers = journeys[d][dataMIP.vehicles[v].vehicleType.type].get(j).trips.get(r).customers;
+                                for (int customerid : customers){
+                                    if ( i == customerid){
+                                        //System.out.print("gamma["+d+"]["+v+"]["+j+"]");
+                                        lhs.addTerm(-dataMIP.vehicles[v].vehicleType.capacity+Parameters.modelMipGap, gamma[d][v][j]);
+                                    }
                                 }
                             }
                         }
-                        String constraint_name = String.format("5.72 -Connection gamma and q for customer %d vehicle %d day %d. M = %f", i, v, d, dataMIP.vehicleCapacity[v]);
-                        model.addConstr(lhs, GRB.LESS_EQUAL, 0, constraint_name);
+                        String constraint_name = String.format("5.72 -Connection gamma and q for customer %d vehicle %d day %d. M = %f", i, v, d, dataMIP.vehicles[v].vehicleType.capacity);
+                        //System.out.println(" ");
+                        //System.out.println(constraint_name);
+                        model.addConstr(lhs, GRB.LESS_EQUAL, 0 , constraint_name);
                     }
                 }
             }
@@ -239,11 +270,12 @@ public class JourneyCombinationModel extends Model{
                         }
                     }
                     String constraint_name = String.format("5.73 -Capacity vehicle %d trip %d period %d. Capacity %f", v, r, d, dataMIP.vehicleCapacity[v]);
-                    model.addConstr(lhs, GRB.LESS_EQUAL, dataMIP.vehicles[v].vehicleType.capacity, constraint_name);
+                    model.addConstr(lhs, GRB.LESS_EQUAL, dataMIP.vehicles[v].vehicleType.capacity - Parameters.modelMipGap, constraint_name);
                 }
             }
         }
     }
+
 
     public void constraint72() throws GRBException {
         // Constraint 5.74:
@@ -503,6 +535,8 @@ public class JourneyCombinationModel extends Model{
         capacityOfVehicle();
         constraint72();
 
+        //tempConstraint();
+
         // ------- Constraints form AFM ---------
         constraint73();
         constraint74();
@@ -595,7 +629,7 @@ public class JourneyCombinationModel extends Model{
                             for (int i : t.customers){
                                 System.out.print(" - " + i);
                             }
-                            System.out.print(" #### ");
+                            System.out.println(" #### ");
                         }
                     }
                 }
@@ -633,9 +667,19 @@ public class JourneyCombinationModel extends Model{
                             if (q[d][v][r][i][m].get(GRB.DoubleAttr.X) >= 0.001) {
                                 System.out.println("Quantity " + q[d][v][r][i][m].get(GRB.DoubleAttr.X) +
                                         " of product " + m + " is delivered to " + "customer " +
-                                        i + " with vehicle " + v + " on period " + d + " on trip " + r);
+                                        i + " with vehicle " + v + " on period " + d + " on trip " + r + " journey: see later" );
                             }
                         }
+                    }
+                }
+                for (int j = 0; j < journeys[d][dataMIP.vehicles[v].vehicleType.type].size(); j++){
+                    if (gamma[d][v][j].get(GRB.DoubleAttr.X) > 0.8){
+                        System.out.print(" Day " + d + " vehicle " + v  + " uses journey " + j );
+                        for (Trip t : journeys[d][dataMIP.vehicles[v].vehicleType.type].get(j).trips){
+                            System.out.print(t.customers.toString());
+                        }
+                        System.out.println(" ###### ");
+
                     }
                 }
             }
@@ -684,6 +728,7 @@ public class JourneyCombinationModel extends Model{
             double time = System.currentTimeMillis();
             this.journeys = journeys;
             SolutionTest.checkJourneyLength(journeys, dataMIP);
+            SolutionTest.checkJourneyForTimeWarp(journeys,dataMIP,globalOrderDistribution);
             initializeModel();
             initializeParameters();
             setObjective();
@@ -716,7 +761,7 @@ public class JourneyCombinationModel extends Model{
                     feasible = true;
                     optimal = false;
                     createIndividualAndOrderDistributionObject();
-                    if (Parameters.verboseJourneyBased)
+                    if (Parameters.verboseJourneyCombination)
                         printSolution();
                     System.out.println("Terminate model");
                     this.MIPGap = model.get(GRB.DoubleAttr.MIPGap);

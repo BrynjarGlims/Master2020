@@ -83,7 +83,7 @@ public class HybridController {
 
     public void run() throws Exception {
         for (int i = 0; i < Parameters.JCMruns - 1 ; i++){
-            System.out.println("running generation: " + i);
+            System.out.println(" ### Running generation: " + i + " ### ");
             runIteration();
             if (Parameters.useJCM)
                 generateOptimalSolution();
@@ -213,12 +213,12 @@ public class HybridController {
                 journeys[p][vt] = new ArrayList<>();
             }
         }
-        ArrayList<Journey>[][] swarmJourneys;
+        ArrayList<Journey>[][] tempJourneys;
         for (PeriodicAlgorithm algorithm : algorithms){
-            swarmJourneys = algorithm.getJourneys();
+            tempJourneys = algorithm.getJourneys();
             for (int p = 0 ; p < data.numberOfPeriods ; p++){
                 for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
-                    journeys[p][vt].addAll(swarmJourneys[p][vt]);
+                    journeys[p][vt].addAll(tempJourneys[p][vt]);
                 }
             }
         }
