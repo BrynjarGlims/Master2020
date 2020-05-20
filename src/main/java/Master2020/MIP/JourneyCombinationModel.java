@@ -178,27 +178,6 @@ public class JourneyCombinationModel extends Model{
         }
     }
 
-    public void tempConstraint() throws  GRBException{
-        int bigM = 100000;
-        for (int d = 0; d < dataMIP.numPeriods; d++) {
-            for (int v = 0; v < dataMIP.numVehicles; v++) {
-                GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
-                for (int i = 0; i < dataMIP.numCustomers; i++) {
-                    for (int r = 0; r < dataMIP.numTrips; r++) {
-                        for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
-                            lhs.addTerm(1, q[d][v][r][i][m]);
-                        }
-                    }
-                }
-                for (int r = 0; r < journeys[d][dataMIP.vehicles[v].vehicleType.type].size(); r++) {
-                    lhs.addTerm(-bigM, gamma[d][v][r]);
-                }
-                String constraint_name = String.format("Temp constraint for day %d and vehicle %d ", d, v);
-                model.addConstr(lhs, GRB.LESS_EQUAL, 0, constraint_name);
-
-            }
-        }
-    }
 
     public void allowableVisits() throws GRBException {
         // Constraint 5.69

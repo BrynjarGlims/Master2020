@@ -26,8 +26,6 @@ import java.util.stream.IntStream;
 
 public class HybridController {
 
-
-
     public Data data;
     public ArrayList<PeriodicAlgorithm> algorithms;
     public PeriodicOrderDistributionPopulation pod;
@@ -40,10 +38,6 @@ public class HybridController {
     public String fileName;
     public String modelName = "HYBRID";
     public double time;
-
-
-
-
 
     public HybridController() throws GRBException {
         this.data = DataReader.loadData();
@@ -181,14 +175,9 @@ public class HybridController {
                 .sorted(Comparator.comparing(i -> solutions.get(i)))
                 .mapToInt(i -> i)
                 .toArray();
-        for (int i = sortedIndices.length - 1 ; i > sortedIndices.length - Parameters.orderDistributionCutoff ; i--){
+        for (int i = sortedIndices.length - 1 ; i > sortedIndices.length - Parameters.orderDistrgiibutionCutoff ; i--){
             if (algorithms.get(sortedIndices[i]).getMinimumIterations() > Parameters.minimumIterations){
-                System.out.println("changing od: " + sortedIndices[i]);
-
-//                //random OD:
-//                OrderDistribution newOD = new OrderDistribution(data);
-//                newOD.makeInitialDistribution();
-//                pod.distributions.set(sortedIndices[i], newOD);
+                System.out.println("Changing od: " + sortedIndices[i]);
 
                 //diversified new OD:
                 pod.distributions.set(sortedIndices[i], pod.diversify(3));
