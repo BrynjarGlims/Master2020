@@ -10,20 +10,21 @@ import static Master2020.Run.MIPController.*;
 public class App {
 
     public static void main(String[] args) throws Exception {
-        for (int bool = 0 ; bool < 2 ; bool++){
-            Parameters.useVestTeleDataset = bool == 0;
-            int[] seeds = Parameters.useVestTeleDataset ? new int[]{15,12} : new int[]{69,85};
-            for (int seed : seeds) {
-                Parameters.randomSeedValue = seed;
+        for (int iteration = 0 ; iteration < 1 ; iteration++){
+            for (int bool = 0 ; bool < 2 ; bool++){
+                Parameters.useVestTeleDataset = bool == 0;
+                int[] seeds = Parameters.useVestTeleDataset ? new int[]{89,1} : new int[]{57,97,80};
+                for (int seed : seeds) {
+                    Parameters.randomSeedValue = seed;
 
-                //MUST BE CHANGED DEPENDING ON WHAT WE WANT TO TEST!!!
-                //OFFSPRING GENERATED
-                double[] tripProbs = new double[]{0, 0.25, 0.5, 0.75, 1};
-                for (double tripProb : tripProbs){
-                    Parameters.ODMIPProbability = tripProb;
-                    Parameters.customFileName = "_ODMIP" + tripProb;
-                    System.out.println(Parameters.ODMIPProbability);
-                    System.out.println("Using vestTele: " + Parameters.useVestTeleDataset + " for seed: " + Parameters.randomSeedValue);
+//                //MUST BE CHANGED DEPENDING ON WHAT WE WANT TO TEST!!!
+//                //OFFSPRING GENERATED
+//                double[] probs = new double[]{0.0,0.25,0.5,0.75,1.0};
+//                for (double prob : probs){
+//                    Parameters.ODMIPProbability = prob;
+//                    Parameters.customFileName = "ODMIPProb" + prob;
+//                    System.out.println(Parameters.ODMIPProbability);
+//                    System.out.println("Using vestTele: " + Parameters.useVestTeleDataset + " for seed: " + Parameters.randomSeedValue);
 
 
                     if (args[0].equals("AFM"))
@@ -52,7 +53,7 @@ public class App {
                         hc.run();
                     }
                 }
-
+//                }
             }
         }
 

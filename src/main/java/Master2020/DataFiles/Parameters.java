@@ -33,7 +33,7 @@ public class Parameters {
     public static final int initialOrderDistributionPopulationSize = 50;
     public static final int maxNumberIterationsWithoutImprovement = 20;
     public static final int maxNumberOfGenerations = 10;
-    public static int numberOfOffspring = 50;    //lambda
+    public static int numberOfOffspring = 40;    //lambda
     public static final double fractionEliteIndividuals = 0.4;     //el
     public static final double fractionOfFeasibleIndividualsFromAdsplit = 0.2;
     public static final int frequencyOfPenaltyUpdatesPGA = 50;
@@ -42,8 +42,8 @@ public class Parameters {
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 50;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
-    public static final int numberOfVehicles = 75;
+    public static int numberOfCustomers = 10;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
+    public static final int numberOfVehicles = 5;
 
     public static final double distanceCutOffFromDepot = 3.0;   //default 3
     public static final boolean adjustTimeWindow = true;
@@ -55,7 +55,7 @@ public class Parameters {
     public static final int educationTabooSize = 1;
     public static final int tripOptimizerSizeLimit = 7;
     public static final double educationProbability = 1;
-    public static double tripOptimizerProbability = 0.4;
+    public static double tripOptimizerProbability = 0.0;
     public static final double repairProbability = 0.4;
     public static double ODMIPProbability = 0.0;
     public static final double heuristicDominanceValue = 1;
@@ -113,14 +113,14 @@ public class Parameters {
 
     //Tournament selection parameters - Probably tunable
     public static final int nearestNeighborsDiversity = 5;  // Neighbours from calculating diversity ... change!!!
-    public static final int diversityCalculationInterval = 100;
+    public static final int diversityCalculationInterval = 20;
     public static final double bestIndividualProbability = 0.6;
     public static final int tournamentSize = 5;  // 2 or larger, size = 2 --> binary tournament selection
     public static final boolean binarySelection = true;  // if true, bestIndProp must be much larger than 0.5
 
     //GUROBI parameters - Not tunable
     public static final String symmetry =  "trips";      // // none, car, trips, customers, cost, duration
-    public static final double modelTimeLimit = 36000;
+    public static final double modelTimeLimit = 10800;  //seconds
     public static final double modelMipGap = 0.00001;
     public static final boolean plotArcFlow = false;
     public static final String instanceName = "testDataFromAsko";
