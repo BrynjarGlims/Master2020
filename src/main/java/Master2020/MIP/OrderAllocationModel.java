@@ -4,18 +4,16 @@ import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.PenaltyControl;
-import Master2020.Individual.GiantTour;
 import Master2020.Individual.Individual;
 import Master2020.Individual.Journey;
 import Master2020.ProductAllocation.OrderDistribution;
+import Master2020.Testing.MIPTest;
 import gurobi.*;
 import Master2020.Individual.Trip;
-import org.nustaq.kson.KsonStringOutput;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class OrderAllocationModel {
 
@@ -73,7 +71,6 @@ public class OrderAllocationModel {
 
 
     private void createParameters() {
-        //this.y = new GRBVar[data.numberOfPeriods][data.numberOfVehicles][data.numberOfTrips][data.numberOfCustomers];
         this.uD = new GRBVar[data.numberOfPeriods][data.numberOfCustomers][];
         this.uND = new GRBVar[data.numberOfPeriods][data.numberOfCustomers][];
         this.qD = new GRBVar[data.numberOfPeriods][data.numberOfCustomers][];
@@ -97,7 +94,6 @@ public class OrderAllocationModel {
     }
 
     private void initializeUVariables() throws GRBException {
-
         // Create uND variables:
         for (int d = 0; d < data.numberOfPeriods; d++) {
             for (int i = 0; i < data.numberOfCustomers; i++) {
@@ -107,7 +103,6 @@ public class OrderAllocationModel {
                 }
             }
         }
-
         // Create uD variables:
         for (int d = 0; d < data.numberOfPeriods; d++) {
             for (int i = 0; i < data.numberOfCustomers; i++) {
@@ -120,7 +115,6 @@ public class OrderAllocationModel {
     }
 
     private void initializeQVariables() throws GRBException {
-
         //Create qND variables
         for (int d = 0; d < data.numberOfPeriods; d++) {
             for (int i = 0; i < data.numberOfCustomers; i++) {
@@ -131,8 +125,6 @@ public class OrderAllocationModel {
                 }
             }
         }
-
-
         //Create qD variables
         for (int d = 0; d < data.numberOfPeriods; d++) {
             for (int i = 0; i < data.numberOfCustomers; i++) {
@@ -145,7 +137,6 @@ public class OrderAllocationModel {
         }
     }
 
-
     private void initializeQOVariables() throws GRBException {
 
         //Create qO (overtime) variables
@@ -153,21 +144,11 @@ public class OrderAllocationModel {
             String variable_name = String.format("qO[%d]", d);
             qO[d] = model.addVar(0.0, Parameters.upperBoundOvertime, Parameters.overtimeCost[d], GRB.CONTINUOUS, variable_name);
         }
-
-
     }
 
     private void setObjective() throws GRBException {
         this.model.set(GRB.IntAttr.ModelSense, GRB.MINIMIZE); // TODO: 20.11.2019 Change objective
     }
-
-
-    private void terminateModel() throws GRBException {
-
-    }
-
-
-
 
     private void capacityOfVehicleAtTrip() throws GRBException {
         // Constraint 5.4: Overtime constraint at the warehouse if the goods delivered is higher
@@ -558,6 +539,7 @@ public class OrderAllocationModel {
             this.scalingFactorOrderDistribution = scalingFactorOrderDistribution;
             this.journeys = journeys;
             this.orderDistribution = new OrderDistribution(data);
+            MIPTest.testIfValidJourneys(journeys, data);
             initializeModel();
             initializeParameters();
             setObjective();
@@ -575,7 +557,6 @@ public class OrderAllocationModel {
                 if (false){
                     checkIfValidOD();  //test valid od!
                 }
-
             }
             else{
                 System.out.println("Unkonwn optimization status");
@@ -625,6 +606,7 @@ public class OrderAllocationModel {
                         System.out.println("Volume is " + volumeOfTrip + " on a vehicle with capacity " + data.vehicleTypes[vt].capacity);
                         if (volumeOfTrip >= data.vehicleTypes[vt].capacity){
                             System.out.println("######### THIS IS PROBLEMATIC ##########");
+                            throw new IllegalArgumentException("Overload of a trip");
                         }
                     }
                 }
@@ -662,6 +644,24 @@ public class OrderAllocationModel {
                 }
             }
         }
+
+        /*
+        for (int p = 0; p < data.numberOfPeriods; p++){
+            for (int i = 0; i < data.numberOfCustomers; i++){
+                for (int m = 0; m < data.customers[i].dividableOrders.length; m++) {
+                    if (orderDistribution.orderDeliveries[i] == null){
+                        System.out.println("test");
+                    }
+                }
+                for (int m = 0; m < data.customers[i].dividableOrders.length; m++) {
+
+                }
+            }
+        }
+
+         */
+
+
 
     }
 

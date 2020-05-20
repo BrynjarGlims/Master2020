@@ -166,7 +166,7 @@ public class Parameters {
     public static final int hybridIterationsWithoutImprovementLimit = 1;
 
     // Time run parameters
-    public static long timeLimitPerAlgorithm = 10000 ;  // in milli
+    public static long timeLimitPerAadlgorithm = 10000 ;  // in milli
     public static final double odUpdateTime = 2.3;
 
     public static final int minimumRequiredIterationsOfOD = 3;

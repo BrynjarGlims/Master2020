@@ -1,10 +1,15 @@
 package Master2020.Testing;
 
+import Master2020.DataFiles.Data;
 import Master2020.DataFiles.Parameters;
+import Master2020.Individual.Trip;
 import Master2020.PR.ArcFlowModel;
 import Master2020.PR.DataMIP;
+import Master2020.PR.Journey;
 import gurobi.GRB;
 import gurobi.GRBException;
+
+import java.util.ArrayList;
 
 public class MIPTest {
     public static void printZSolutions(ArcFlowModel afm) throws GRBException {
@@ -23,6 +28,33 @@ public class MIPTest {
 
                     }
 
+                }
+            }
+        }
+    }
+
+    public static void testIfValidJourneys(ArrayList<Master2020.Individual.Journey>[][] journeys, Data data){
+        for (int p = 0; p < data.numberOfPeriods; p++){
+            for (int i = 0; i < data.numberOfCustomers; i++){
+                if (data.customers[i].requiredVisitPeriod[p] == 1){
+                    boolean foundCustomer = false;
+                    for (int vt = 0; vt < data.numberOfVehicleTypes; vt++) {
+                        for (Master2020.Individual.Journey journey : journeys[p][vt]) {
+                            for (Trip trip : journey.trips) {
+                                if (trip.customers.contains(i)) {
+                                    //System.out.println("Found customer " + i + " in period " + p);
+                                    foundCustomer = true;
+                                    break; //should be a double break
+                                }
+                            }
+                        }
+                    }
+                    if (!foundCustomer) {
+                        System.out.println("Customer " + i + " not found in period " + p);
+                        throw new IllegalArgumentException("Customer not found");
+                    }
+                }else {
+                    //System.out.println("Customer should not be found c: " + i + " in period " + p);
                 }
             }
         }

@@ -13,8 +13,6 @@ import Master2020.Population.PeriodicOrderDistributionPopulation;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Testing.IndividualTest;
 import gurobi.GRBException;
-import jdk.swing.interop.SwingInterOpUtils;
-import scala.xml.PrettyPrinter;
 
 import java.io.IOException;
 import java.util.concurrent.BrokenBarrierException;
@@ -174,7 +172,7 @@ public class PeriodicABC extends Thread implements PeriodicAlgorithm {
         }
         if (orderAllocationModel.createOptimalOrderDistribution(journeys, 1) == 2){
             this.orderDistribution = orderAllocationModel.getOrderDistribution();
-            System.out.println(IndividualTest.testValidOrderDistribution(data, orderDistribution));
+            //System.out.println(IndividualTest.testValidOrderDistribution(data, orderDistribution)); test of valid od
         }
         else{
             System.out.println("no optimal OD found");
