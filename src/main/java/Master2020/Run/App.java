@@ -13,7 +13,7 @@ public class App {
         for (int iteration = 0 ; iteration < 5 ; iteration++){
             for (int bool = 0 ; bool < 2 ; bool++){
                 Parameters.useVestTeleDataset = bool == 0;
-                int[] seeds = Parameters.useVestTeleDataset ? new int[]{89,1} : new int[]{57,97,80};
+                int[] seeds = Parameters.useVestTeleDataset ? new int[]{15,84} : new int[]{69,85};
                 for (int seed : seeds) {
                     Parameters.randomSeedValue = seed;
 
