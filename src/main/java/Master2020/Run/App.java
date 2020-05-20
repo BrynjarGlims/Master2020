@@ -12,19 +12,19 @@ public class App {
     public static void main(String[] args) throws Exception {
         for (int bool = 0 ; bool < 2 ; bool++){
             Parameters.useVestTeleDataset = bool == 0;
-            int[] seeds = Parameters.useVestTeleDataset ? new int[]{84} : new int[]{};
+            int[] seeds = Parameters.useVestTeleDataset ? new int[]{89,1} : new int[]{57,97,80};
             for (int seed : seeds) {
                 Parameters.randomSeedValue = seed;
 
-                //MUST BE CHANGED DEPENDING ON WHAT WE WANT TO TEST!!!
-                //OFFSPRING GENERATED
-                int[] numberOfOffspring = new int[]{40, 80, 120, 160, 200};
-                for (int offspring : numberOfOffspring){
-                    Parameters.numberOfOffspring = offspring;
-                    Parameters.customFileName = " Offspring" + offspring;
-                    System.out.println(Parameters.ODMIPProbability);
-                    System.out.println("Using vestTele: " + Parameters.useVestTeleDataset + " for seed: " + Parameters.randomSeedValue);
-
+//                //MUST BE CHANGED DEPENDING ON WHAT WE WANT TO TEST!!!
+//                //OFFSPRING GENERATED
+//                int[] numberOfOffspring = new int[]{40, 80, 120, 160, 200};
+//                for (int offspring : numberOfOffspring){
+//                    Parameters.numberOfOffspring = offspring;
+//                    Parameters.customFileName = " Offspring" + offspring;
+//                    System.out.println(Parameters.ODMIPProbability);
+//                    System.out.println("Using vestTele: " + Parameters.useVestTeleDataset + " for seed: " + Parameters.randomSeedValue);
+//
 
                     if (args[0].equals("AFM"))
                         runMIPAFM();
@@ -51,7 +51,7 @@ public class App {
                         HybridController hc = new HybridController();
                         hc.run();
                     }
-                }
+//                }
 
             }
         }

@@ -42,8 +42,8 @@ public class Parameters {
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 25;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
-    public static final int numberOfVehicles = 12;
+    public static int numberOfCustomers = 10;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
+    public static final int numberOfVehicles = 5;
 
     public static final double distanceCutOffFromDepot = 3.0;   //default 3
     public static final boolean adjustTimeWindow = true;
@@ -120,7 +120,7 @@ public class Parameters {
 
     //GUROBI parameters - Not tunable
     public static final String symmetry =  "trips";      // // none, car, trips, customers, cost, duration
-    public static final double modelTimeLimit = 36000;
+    public static final double modelTimeLimit = 10800;  //seconds
     public static final double modelMipGap = 0.00001;
     public static final boolean plotArcFlow = false;
     public static final String instanceName = "testDataFromAsko";
