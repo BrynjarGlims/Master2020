@@ -127,10 +127,6 @@ public class Parameters {
 
     //Periodic parameters
     public static boolean isPeriodic = false;  // should be set to true, but has default value false
-    public static final boolean threadedPGA = true;
-    public static int numberOfPeriodicParallels =  1;
-    public static final boolean runSingularGA = false;  //do not change
-    public static final boolean threadedGA = true;      //do not change
     public static final boolean useODMIPBetweenIterations = true;
     public static final double diversifiedODProbability = 0.5;    //remove, move to controller
     public static final int generationsPerOrderDistributionPeriodic = 30;
