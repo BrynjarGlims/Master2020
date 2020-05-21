@@ -71,7 +71,7 @@ public class Parameters {
     public static final int maxBoundDimensionality = (int) Math.round(0.2 * numberOfCustomers); //max amount of dimensions that can be changed, chosen randomly from 1-this
     public static double weightNeighborOnlooker = 1;
     public static double weightNeighborEmployed = 0.5 * weightNeighborOnlooker;
-    public static final double weightGlobalBest = 0.01;
+    public static double weightGlobalBest = 0.01;
     public static final double movementRange = 1; //both positive and negative, but only half in negative direction
     public static final double onlookerRandomAdjustment = 0.2; //a random number added when onlooker goes to employers foodsource
     public static final int numberOfEnhancements = 0; //number of enhancements for employees
