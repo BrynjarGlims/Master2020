@@ -56,7 +56,7 @@ public abstract class Bee {
             newPosition[d] = (newPosition[d]
                     + weight * random.nextDouble(-(Parameters.movementRange/2), Parameters.movementRange) * (neighborPosition[d] - newPosition[d])
                     +  random.nextDouble(0, Parameters.weightGlobalBest) * (colony.globalBestPosition[d] - newPosition[d])
-                    + data.numberOfVehicleTypes) % data.numberOfVehicleTypes;
+                    + (data.numberOfVehicleTypes * 5)) % data.numberOfVehicleTypes;
         }
     }
 

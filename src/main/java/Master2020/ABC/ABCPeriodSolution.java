@@ -39,7 +39,7 @@ public class ABCPeriodSolution implements Comparable<ABCPeriodSolution>{
             allJourneys[vt] = new ArrayList<>();
             ArrayList<Journey> journeys = AdSplit.adSplitSingular(giantTourEntry[vt], data, orderDistribution, period, vt, timeWarpPenalty, overLoadPenalty);
             for (Journey journey : journeys){
-                fitnesses = FitnessCalculation.getJourneyFitness(journey, orderDistribution, 1);
+                fitnesses = FitnessCalculation.getJourneyFitness(journey, orderDistribution);
                 fitness += fitnesses[0] + fitnesses[1] + fitnesses[2] + fitnesses[3];
                 if (fitnesses[1] + fitnesses[2] == 0){
                     allJourneys[vt].add(journey);

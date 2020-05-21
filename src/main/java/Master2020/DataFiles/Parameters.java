@@ -62,14 +62,9 @@ public class Parameters {
 
 
     // ABC specific parameters
-    public static final int numberOfStoredSolutionsPerPeriod = 10;
     public static final boolean runSingular = false;
-    public static final boolean threaded = true;
-    public static final int numberOfSwarms = 5;
     public static final boolean ABCPenaltyAdjustment = false;
-    public static final int orderDistributionCutoff = 2;
-    public static final int swarmIterationsWithoutImprovementLimit = 5;
-    public static final int generationsPerOrderDistribution = 300;
+    public static final int generationsPerOrderDistribution = 8 * numberOfCustomers;
     public static final int numberOfEmployees = 5;
     public static final int numberOfOnlookers = 4 * numberOfEmployees;
     public static final int numberOfScoutTrials = 100;
@@ -159,14 +154,15 @@ public class Parameters {
     // Periodic Parameters, common for PGA, ABC, and HYBRID
 
     public static final int JCMruns = 10;
-    public static final int numberOfAlgorithms = 1;
-    public static int numberOfPGA = 0;
+    public static final int numberOfAlgorithms = 2;
+    public static int numberOfPGA = 2;
     public static int numberOfABC = numberOfAlgorithms - numberOfPGA;
     public static final int minimumIterations = 3;
     public static final int hybridIterationsWithoutImprovementLimit = 1;
+    public static final int orderDistributionCutoff = 2;
 
     // Time run parameters
-    public static long timeLimitPerAadlgorithm = 10000 ;  // in milli
+    public static long timeLimitPerAlgorithm = 10000 ;  // in milli
     public static final double odUpdateTime = 2.3;
 
     public static final int minimumRequiredIterationsOfOD = 3;

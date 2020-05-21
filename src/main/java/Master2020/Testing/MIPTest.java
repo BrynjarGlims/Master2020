@@ -51,6 +51,7 @@ public class MIPTest {
                     }
                     if (!foundCustomer) {
                         System.out.println("Customer " + i + " not found in period " + p);
+                        System.out.println();
                         throw new IllegalArgumentException("Customer not found");
                     }
                 }else {

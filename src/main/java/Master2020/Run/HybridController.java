@@ -84,7 +84,7 @@ public class HybridController {
             if (Parameters.useJCM)
                 generateOptimalSolution();
             storeBestCurrentSolution();
-            //updateItertionsWithoutImprovement();
+            updateItertionsWithoutImprovement();
             updateOrderDistributionPopulation();
             updateRuntimeOfThreads();
             genCounter++;
@@ -214,11 +214,13 @@ public class HybridController {
                 .sorted(Comparator.comparing(i -> solutions.get(i)))
                 .mapToInt(i -> i)
                 .toArray();
+        boolean firstOD = true;
         for (int i = sortedIndices.length - 1 ; i > sortedIndices.length - Parameters.orderDistributionCutoff ; i--){
             if (algorithms.get(sortedIndices[i]).getMinimumIterations() > Parameters.minimumIterations){
                 System.out.println("changing od: " + sortedIndices[i]);
-                if (Parameters.useJCM && i == sortedIndices.length - 1){
+                if (Parameters.useJCM && firstOD){
                     pod.distributions.set(sortedIndices[i], orderDistributionJCM);
+                    firstOD = false;
                 }
                 else{
                     pod.distributions.set(sortedIndices[i], pod.diversify(3));

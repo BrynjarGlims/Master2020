@@ -11,10 +11,12 @@ import Master2020.Interfaces.PeriodicAlgorithm;
 import Master2020.MIP.OrderAllocationModel;
 import Master2020.Population.PeriodicOrderDistributionPopulation;
 import Master2020.ProductAllocation.OrderDistribution;
+import Master2020.Testing.ABCtests;
 import Master2020.Testing.IndividualTest;
 import gurobi.GRBException;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.ArrayList;
 import java.util.List;
@@ -170,9 +172,8 @@ public class PeriodicABC extends Thread implements PeriodicAlgorithm {
                 journeys[p][vt] = journeysEntry;
             }
         }
-        if (orderAllocationModel.createOptimalOrderDistribution(journeys, 1) == 2){
+        if (ABCtests.allCustomersExists(journeys, data) && orderAllocationModel.createOptimalOrderDistribution(journeys, 1) == 2){
             this.orderDistribution = orderAllocationModel.getOrderDistribution();
-            //System.out.println(IndividualTest.testValidOrderDistribution(data, orderDistribution)); test of valid od
         }
         else{
             System.out.println("no optimal OD found");
