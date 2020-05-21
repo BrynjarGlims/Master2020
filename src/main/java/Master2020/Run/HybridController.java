@@ -224,14 +224,10 @@ public class HybridController {
                     pod.distributions.set(sortedIndices[i], pod.diversify(3));
                 }
 
-//                //random OD:
-//                OrderDistribution newOD = new OrderDistribution(data);
-//                newOD.makeInitialDistribution();
-//                pod.distributions.set(sortedIndices[i], newOD);
-
                 //diversified new OD:
                 algorithms.get(sortedIndices[i]).updateOrderDistribution(pod.distributions.get(sortedIndices[i]));
                 algorithms.get(sortedIndices[i]).setMinimumIterations(0);
+
             }
         }
         for (int i = 0; i < algorithms.size() ; i++){

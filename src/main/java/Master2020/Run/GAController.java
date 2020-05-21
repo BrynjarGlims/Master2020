@@ -154,7 +154,7 @@ public class GAController {
 
         population.improvedSurvivorSelection();
         if (!Parameters.isPeriodic){
-            odp.removeNoneUsedOrderDistributions(population);
+            odp.removeNoneUsedOrderDistributions(population)cd 
         }
         bestIndividual = population.returnBestIndividual();
 
@@ -162,6 +162,11 @@ public class GAController {
         // Check if it has improved for early termination
         if (bestIndividualScore == bestIndividual.getFitness(false)){
             population.setIterationsWithoutImprovement(population.getIterationsWithoutImprovement()+1);
+        }
+        else if(population.returnBestIndividual().getFitness(false) > bestIndividualScore){
+            System.out.println(population.returnBestIndividual().getFitness(false));
+            System.out.println(population.returnBestIndividual().hashCode());
+            System.out.println("population has become worse");
         }
         else{
             population.setIterationsWithoutImprovement(0);
@@ -233,6 +238,9 @@ public class GAController {
              */
             System.out.println("OBject: " + population.returnBestIndividual().hashCode());
             System.out.println("Fitness: " + population.returnBestIndividual().getFitness(false) + " feasible: " + population.returnBestIndividual().isFeasible());
+
+
+            bestIndividualScore = population.returnBestIndividual().getFitness(false);
             numberOfIterations++;
         }
 

@@ -32,7 +32,7 @@ public class Parameters {
     public static final int populationSize = 25;    //my
     public static final int initialOrderDistributionPopulationSize = 50;
     public static final int maxNumberIterationsWithoutImprovement = 20;
-    public static final int maxNumberOfGenerations = 10;
+    public static final int maxNumberOfGenerations = 150;  //was 10
     public static int numberOfOffspring = 40;    //lambda
     public static final double fractionEliteIndividuals = 0.4;     //el
     public static final double fractionOfFeasibleIndividualsFromAdsplit = 0.2;
@@ -42,7 +42,7 @@ public class Parameters {
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 10;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
+    public static int numberOfCustomers = 40;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
     public static final int numberOfVehicles = 5;
 
     public static final double distanceCutOffFromDepot = 3.0;   //default 3
@@ -160,7 +160,7 @@ public class Parameters {
 
     public static final int JCMruns = 10;
     public static final int numberOfAlgorithms = 1;
-    public static int numberOfPGA = 0;
+    public static int numberOfPGA = 1;
     public static int numberOfABC = numberOfAlgorithms - numberOfPGA;
     public static final int minimumIterations = 3;
     public static final int hybridIterationsWithoutImprovementLimit = 1;
