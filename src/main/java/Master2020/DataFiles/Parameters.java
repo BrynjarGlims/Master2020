@@ -64,14 +64,14 @@ public class Parameters {
     // ABC specific parameters
     public static final boolean ABCPenaltyAdjustment = false;
     public static final int generationsPerOrderDistribution = 8 * numberOfCustomers;
-    public static final int numberOfEmployees = 5;
+    public static final int numberOfEmployees = 15;
     public static final int numberOfOnlookers = 4 * numberOfEmployees;
     public static final int numberOfScoutTrials = 100;
     public static final int maxNumberOfTrials = 15;
     public static final int maxBoundDimensionality = (int) Math.round(0.2 * numberOfCustomers); //max amount of dimensions that can be changed, chosen randomly from 1-this
-    public static final double weightNeighborEmployed = 1;
-    public static final double weightNeighborOnlooker = 1.5;
-    public static final double weightGlobalBest = 0.8;
+    public static double weightNeighborOnlooker = 1;
+    public static double weightNeighborEmployed = 0.5 * weightNeighborOnlooker;
+    public static final double weightGlobalBest = 0.01;
     public static final double movementRange = 1; //both positive and negative, but only half in negative direction
     public static final double onlookerRandomAdjustment = 0.2; //a random number added when onlooker goes to employers foodsource
     public static final int numberOfEnhancements = 0; //number of enhancements for employees
@@ -136,7 +136,6 @@ public class Parameters {
     public static final double incrementPerOrderDistributionScaling = 0.02;
     public static final int numberOfGenerationsBetweenODScaling = 2;
     public static final int numberOfGenerationBeforeODScalingStarts = 20;
-    public static final int numberOfSolutionExtractedFromPopulationToJCM = 5;
 
     //......
 
@@ -148,7 +147,6 @@ public class Parameters {
 
     // Periodic Parameters, common for PGA, ABC, and HYBRID
 
-    public static final int JCMruns = 10;
     public static final int numberOfAlgorithms = 6;
     public static int numberOfPGA = 6;
     public static int numberOfABC = numberOfAlgorithms - numberOfPGA;
@@ -157,7 +155,7 @@ public class Parameters {
     public static final int orderDistributionCutoff = 2;
 
     // Time run parameters
-    public static long timeLimitPerAlgorithm = 10000 ;  // in milli
+    public static long timeLimitPerAlgorithm = 15000 ;  // in milli
     public static final double odUpdateTime = 2.3;
 
     public static final int minimumRequiredIterationsOfOD = 3;
