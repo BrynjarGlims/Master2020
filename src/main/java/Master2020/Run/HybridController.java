@@ -216,7 +216,7 @@ public class HybridController {
                 .toArray();
         boolean firstOD = true;
         for (int i = sortedIndices.length - 1 ; i > sortedIndices.length - Parameters.orderDistributionCutoff ; i--){
-            if (algorithms.get(sortedIndices[i]).getMinimumIterations() > Parameters.minimumIterations){
+            if (algorithms.get(sortedIndices[i]).getMinimumIterations() > Parameters.minimumIterationsPerOD){
                 System.out.println("changing od: " + sortedIndices[i]);
                 if (Parameters.useJCM && firstOD){
                     pod.distributions.set(sortedIndices[i], orderDistributionJCM);
