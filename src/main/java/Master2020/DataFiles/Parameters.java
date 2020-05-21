@@ -69,7 +69,7 @@ public class Parameters {
     public static final int numberOfScoutTrials = 100;
     public static final int maxNumberOfTrials = 15;
     public static final int maxBoundDimensionality = (int) Math.round(0.2 * numberOfCustomers); //max amount of dimensions that can be changed, chosen randomly from 1-this
-    public static double weightNeighborOnlooker = 1;
+    public static double weightNeighborOnlooker = 0.1;
     public static double weightNeighborEmployed = 0.5 * weightNeighborOnlooker;
     public static double weightGlobalBest = 0.01;
     public static final double movementRange = 1; //both positive and negative, but only half in negative direction

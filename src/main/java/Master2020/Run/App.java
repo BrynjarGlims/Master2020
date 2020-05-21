@@ -20,7 +20,7 @@ public class App {
 
                 //MUST BE CHANGED DEPENDING ON WHAT WE WANT TO TEST!!!
                 //GENERATIONS / OD
-                double[] gens = new double[]{0.0, 0.25,0.5,0.75,1.0};
+                double[] gens = new double[]{0.01, 0.25,0.5,0.75,1.0};
                 for (double gen : gens){
                     Parameters.weightGlobalBest = gen;
                     Parameters.customFileName = "WeightGlobal" + gen;
