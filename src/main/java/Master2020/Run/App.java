@@ -11,21 +11,21 @@ public class App {
 
     public static void main(String[] args) throws Exception {
         //CHANGE ITERATIONS!
-        for (int iteration = 0 ; iteration < 1 ; iteration++){
+        for (int iteration = 0 ; iteration < 5 ; iteration++){
             for (int bool = 0 ; bool < 2 ; bool++){
                 Parameters.useVestTeleDataset = bool == 0;
-                int[] seeds = Parameters.useVestTeleDataset ? new int[]{89,1} : new int[]{57,97,80};
+                int[] seeds = Parameters.useVestTeleDataset ? new int[]{15,84} : new int[]{69,85};
                 for (int seed : seeds) {
                     Parameters.randomSeedValue = seed;
 
-//                //MUST BE CHANGED DEPENDING ON WHAT WE WANT TO TEST!!!
-//                //OFFSPRING GENERATED
-//                double[] probs = new double[]{0.0,0.25,0.5,0.75,1.0};
-//                for (double prob : probs){
-//                    Parameters.ODMIPProbability = prob;
-//                    Parameters.customFileName = "ODMIPProb" + prob;
-//                    System.out.println(Parameters.ODMIPProbability);
-//                    System.out.println("Using vestTele: " + Parameters.useVestTeleDataset + " for seed: " + Parameters.randomSeedValue);
+                //MUST BE CHANGED DEPENDING ON WHAT WE WANT TO TEST!!!
+                //GENERATIONS / OD
+                double[] gens = new double[]{0.25,0.5,0.75,1.0};
+                for (double gen : gens){
+                    Parameters.weightNeighborOnlooker = gen;
+                    Parameters.customFileName = "WeightOnlooker" + gen;
+                    System.out.println(Parameters.customFileName);
+                    System.out.println("Using vestTele: " + Parameters.useVestTeleDataset + " for seed: " + Parameters.randomSeedValue);
 
 
                     if (args[0].equals("AFM"))
@@ -54,7 +54,7 @@ public class App {
                         hc.run();
                     }
                 }
-//                }
+                }
             }
         }
 

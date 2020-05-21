@@ -13,6 +13,7 @@ import Master2020.PGA.PGASolution;
 import Master2020.Population.PeriodicOrderDistributionPopulation;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.StoringResults.SolutionStorer;
+import Master2020.Testing.HybridTest;
 import Master2020.Testing.SolutionTest;
 import gurobi.GRBException;
 
@@ -81,10 +82,12 @@ public class HybridController {
         while (System.currentTimeMillis() - time < Parameters.totalRuntime && iterationsWithoutImprovement < Parameters.maxNumberIterationsWithoutImprovement){
             System.out.println(" ### Running generation: " + genCounter + " ### ");
             runIteration();
-            if (Parameters.useJCM)
+            if (Parameters.useJCM) {
                 generateOptimalSolution();
+                HybridTest.displayJourneyTags(solutions.get(solutions.size()-1).getJourneys(), data);
+            }
             storeBestCurrentSolution();
-            //updateItertionsWithoutImprovement();
+            updateItertionsWithoutImprovement();
             updateOrderDistributionPopulation();
             updateRuntimeOfThreads();
             genCounter++;
@@ -142,7 +145,7 @@ public class HybridController {
                 solutions.add(JCMSolution);
                 finalSolutions.add(JCMSolution);
             } else {
-                orderDistributionJCM = pod.diversify(3);
+                orderDistributionJCM = pod.diversify(Parameters.diversifiedODsGenerated);
             }
         } catch (Exception e){
             e.printStackTrace();
@@ -214,14 +217,16 @@ public class HybridController {
                 .sorted(Comparator.comparing(i -> solutions.get(i)))
                 .mapToInt(i -> i)
                 .toArray();
+        boolean firstOD = true;
         for (int i = sortedIndices.length - 1 ; i > sortedIndices.length - Parameters.orderDistributionCutoff ; i--){
-            if (algorithms.get(sortedIndices[i]).getMinimumIterations() > Parameters.minimumIterations){
+            if (algorithms.get(sortedIndices[i]).getMinimumIterations() > Parameters.minimumIterationsPerOD){
                 System.out.println("changing od: " + sortedIndices[i]);
-                if (Parameters.useJCM && i == sortedIndices.length - 1){
+                if (Parameters.useJCM && firstOD){
                     pod.distributions.set(sortedIndices[i], orderDistributionJCM);
+                    firstOD = false;
                 }
                 else{
-                    pod.distributions.set(sortedIndices[i], pod.diversify(3));
+                    pod.distributions.set(sortedIndices[i], pod.diversify(Parameters.diversifiedODsGenerated));
                 }
 
                 //diversified new OD:
@@ -234,7 +239,7 @@ public class HybridController {
             if (algorithms.get(i).getIterationsWithoutImprovement() > Parameters.hybridIterationsWithoutImprovementLimit){
                 System.out.println("MAX ITERATIONS HIT");
                 finalSolutions.add(algorithms.get(i).storeSolution());
-                pod.distributions.set(i, pod.diversify(3));
+                pod.distributions.set(i, pod.diversify(Parameters.diversifiedODsGenerated));
                 algorithms.get(i).updateOrderDistribution(pod.distributions.get(i));
             }
         }
@@ -250,6 +255,8 @@ public class HybridController {
         ArrayList<Journey>[][] tempJourneys;
         for (PeriodicAlgorithm algorithm : algorithms){
             tempJourneys = algorithm.getJourneys();
+            if (true)  //display journey number from each algorithm
+                HybridTest.printNumberOfJourneys(tempJourneys,data);
             for (int p = 0 ; p < data.numberOfPeriods ; p++){
                 for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
                     journeys[p][vt].addAll(tempJourneys[p][vt]);

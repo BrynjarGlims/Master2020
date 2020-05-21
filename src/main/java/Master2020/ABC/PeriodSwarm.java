@@ -8,6 +8,7 @@ import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Utils.WeightedRandomSampler;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.BrokenBarrierException;
@@ -136,8 +137,8 @@ public class PeriodSwarm extends Thread {
             }
         }
         Collections.sort(solutions);
-        if (solutions.size() > Parameters.numberOfStoredSolutionsPerPeriod){
-            solutions.subList(Parameters.numberOfStoredSolutionsPerPeriod, solutions.size()).clear();
+        if (solutions.size() > Parameters.numberOfIndividualJourneysInMIPPerPeriod){
+            solutions.subList(Parameters.numberOfIndividualJourneysInMIPPerPeriod, solutions.size()).clear();
         }
         currentBestFitness = solutions.get(0).fitness;
     }

@@ -32,8 +32,8 @@ public class Parameters {
     public static final int populationSize = 25;    //my
     public static final int initialOrderDistributionPopulationSize = 50;
     public static final int maxNumberIterationsWithoutImprovement = 20;
-    public static final int maxNumberOfGenerations = 150;  //was 10
-    public static int numberOfOffspring = 40;    //lambda
+    public static final int maxNumberOfGenerations = 10; //NOT IN USE
+    public static int numberOfOffspring = 80;    //lambda FINAL
     public static final double fractionEliteIndividuals = 0.4;     //el
     public static final double fractionOfFeasibleIndividualsFromAdsplit = 0.2;
     public static final int frequencyOfPenaltyUpdatesPGA = 50;
@@ -42,8 +42,8 @@ public class Parameters {
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 40;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
-    public static final int numberOfVehicles = 5;
+    public static int numberOfCustomers = 25;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
+    public static final int numberOfVehicles = 12;
 
     public static final double distanceCutOffFromDepot = 3.0;   //default 3
     public static final boolean adjustTimeWindow = true;
@@ -54,30 +54,24 @@ public class Parameters {
     public static final int nearestNeighbors = (int) Math.round(0.4 * numberOfCustomers); //Neighborhood size for each customer
     public static final int educationTabooSize = 1;
     public static final int tripOptimizerSizeLimit = 7;
-    public static final double educationProbability = 1;
-    public static double tripOptimizerProbability = 0.0;
-    public static final double repairProbability = 0.4;
-    public static double ODMIPProbability = 0.0;
+    public static final double educationProbability = 1; //FINAL 1.0
+    public static double tripOptimizerProbability = 0.25; //FINAL 0.25
+    public static final double repairProbability = 0.4; //FINAL 0.4
+    public static double ODMIPProbability = 0.75; //FINAL 0.75
     public static final double heuristicDominanceValue = 1;
 
 
     // ABC specific parameters
-    public static final int numberOfStoredSolutionsPerPeriod = 10;
-    public static final boolean runSingular = false;
-    public static final boolean threaded = true;
-    public static final int numberOfSwarms = 5;
     public static final boolean ABCPenaltyAdjustment = false;
-    public static final int orderDistributionCutoff = 2;
-    public static final int swarmIterationsWithoutImprovementLimit = 5;
-    public static final int generationsPerOrderDistribution = 300;
-    public static final int numberOfEmployees = 5;
+    public static final int generationsPerOrderDistribution = 8 * numberOfCustomers;
+    public static final int numberOfEmployees = 15;
     public static final int numberOfOnlookers = 4 * numberOfEmployees;
     public static final int numberOfScoutTrials = 100;
     public static final int maxNumberOfTrials = 15;
     public static final int maxBoundDimensionality = (int) Math.round(0.2 * numberOfCustomers); //max amount of dimensions that can be changed, chosen randomly from 1-this
-    public static final double weightNeighborEmployed = 1;
-    public static final double weightNeighborOnlooker = 1.5;
-    public static final double weightGlobalBest = 0.8;
+    public static double weightNeighborOnlooker = 0.1;
+    public static double weightNeighborEmployed = 0.5 * weightNeighborOnlooker;
+    public static double weightGlobalBest = 0.01;
     public static final double movementRange = 1; //both positive and negative, but only half in negative direction
     public static final double onlookerRandomAdjustment = 0.2; //a random number added when onlooker goes to employers foodsource
     public static final int numberOfEnhancements = 0; //number of enhancements for employees
@@ -132,13 +126,9 @@ public class Parameters {
 
     //Periodic parameters
     public static boolean isPeriodic = false;  // should be set to true, but has default value false
-    public static final boolean threadedPGA = true;
-    public static int numberOfPeriodicParallels =  1;
-    public static final boolean runSingularGA = false;  //do not change
-    public static final boolean threadedGA = true;      //do not change
     public static final boolean useODMIPBetweenIterations = true;
     public static final double diversifiedODProbability = 0.5;    //remove, move to controller
-    public static final int generationsPerOrderDistributionPeriodic = 30;
+    public static int generationsPerOrderDistributionPeriodic = 30;
     public static final int minimumUpdatesPerOrderDistributions = 5;
     public static final int orderDistributionUpdatesGA = 1;        // this / minimumUpdatesPerOrderDistributions = number of unique order distributions
     //......
@@ -146,27 +136,27 @@ public class Parameters {
     public static final double incrementPerOrderDistributionScaling = 0.02;
     public static final int numberOfGenerationsBetweenODScaling = 2;
     public static final int numberOfGenerationBeforeODScalingStarts = 20;
-    public static final int numberOfSolutionExtractedFromPopulationToJCM = 5;
 
     //......
 
     // Journey Combination Model parameters
-    public static final boolean useJCM = true;
+    public static final boolean useJCM = false;
     public static final int numberOfIndividualJourneysInMIPPerPeriod = 10;
     public static final String symmetryOFJCM = "none";
 
 
     // Periodic Parameters, common for PGA, ABC, and HYBRID
 
-    public static final int JCMruns = 10;
-    public static final int numberOfAlgorithms = 1;
-    public static int numberOfPGA = 1;
+    public static final int numberOfAlgorithms = 5;
+    public static int numberOfPGA = 0;
     public static int numberOfABC = numberOfAlgorithms - numberOfPGA;
-    public static final int minimumIterations = 3;
+    public static final int minimumIterationsPerOD = 3;
     public static final int hybridIterationsWithoutImprovementLimit = 1;
+    public static final int orderDistributionCutoff = 2;
+    public static final int diversifiedODsGenerated = 3;
 
     // Time run parameters
-    public static long timeLimitPerAlgorithm = 10000 ;  // in milli
+    public static long timeLimitPerAlgorithm = 15000 ;  // in milli
     public static final double odUpdateTime = 2.3;
 
     public static final int minimumRequiredIterationsOfOD = 3;

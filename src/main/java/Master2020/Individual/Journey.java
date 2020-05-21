@@ -6,14 +6,11 @@ import java.util.List;
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Parameters;
-import Master2020.Genetic.FitnessCalculation;
 import Master2020.Genetic.OrderDistributionCrossover;
 import Master2020.Genetic.PenaltyControl;
-import Master2020.PGA.PeriodicPopulation;
 import Master2020.Population.Population;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Population.OrderDistributionPopulation;
-import org.apache.commons.math.genetics.Fitness;
 
 public class Journey {
 
@@ -33,6 +30,8 @@ public class Journey {
     private double timeWarp;
     private double overLoad;
     private double travelCost;
+
+    public Origin ID;
 
     public Journey(Data data, int period, int vehicleType, int vehicleId){
         this.data = data;

@@ -154,7 +154,7 @@ public class GAController {
 
         population.improvedSurvivorSelection();
         if (!Parameters.isPeriodic){
-            odp.removeNoneUsedOrderDistributions(population)cd 
+            odp.removeNoneUsedOrderDistributions(population);
         }
         bestIndividual = population.returnBestIndividual();
 

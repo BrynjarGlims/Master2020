@@ -212,7 +212,7 @@ public class Population {
                     bestJourneys[vt].addAll(individual.journeyList[0][vt]);
                 }
                 numberOfIndividuals += 1;
-                if (numberOfIndividuals > Parameters.numberOfSolutionExtractedFromPopulationToJCM)
+                if (numberOfIndividuals > Parameters.numberOfIndividualJourneysInMIPPerPeriod)
                     break;
             }
         }

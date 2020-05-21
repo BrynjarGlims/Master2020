@@ -6,6 +6,7 @@ import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.*;
 import Master2020.Individual.Individual;
 import Master2020.Individual.Journey;
+import Master2020.Individual.Origin;
 import Master2020.Interfaces.PeriodicAlgorithm;
 import Master2020.MIP.OrderAllocationModel;
 import Master2020.Population.PeriodicOrderDistributionPopulation;
@@ -265,6 +266,13 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
     }
 
     public ArrayList<Journey>[][] getJourneys(){
+        for (int p = 0; p < data.numberOfPeriods; p++){
+            for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
+                for (Journey journey : journeys[p][vt]){
+                    journey.ID = Origin.PGA;
+                }
+            }
+        }
         return journeys;
     }
 

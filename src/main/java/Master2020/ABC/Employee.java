@@ -20,14 +20,14 @@ public class Employee extends Bee {
     public Employee(Data data, int period, PeriodSwarm colony, PenaltyControl penaltyControl) {
         super(data, period, colony, penaltyControl);
         onlookerFitnesses = new HashMap<>();
-        this.bestFitness = Double.MAX_VALUE;
-        this.position = super.scout();
         scout();
     }
 
 
 
     public double[] scout(){
+        this.bestFitness = Double.MAX_VALUE;
+        this.position = super.scout();
         if (getFitness(this.position) < this.bestFitness){
             this.bestPosition = this.position.clone();
             this.bestFitness = getFitness(this.bestPosition);
@@ -90,6 +90,10 @@ public class Employee extends Bee {
             }
         }
         double[] currentBestPosition = currentBestBee.position.clone();
+        if (currentBestFitness < bestFitness){
+            bestFitness = currentBestFitness;
+            bestPosition = currentBestPosition;
+        }
         updateTrials(currentBestFitness, currentBestPosition, false);
         onlookerFitnesses.clear();
     }
