@@ -84,7 +84,8 @@ public class HybridController {
             runIteration();
             if (Parameters.useJCM) {
                 generateOptimalSolution();
-                HybridTest.displayJourneyTags(solutions.get(solutions.size()-1).getJourneys(), data);
+                if (solutions.size()>1)
+                    HybridTest.displayJourneyTags(solutions.get(solutions.size()-1).getJourneys(), data);
             }
             storeBestCurrentSolution();
             updateItertionsWithoutImprovement();
