@@ -63,17 +63,17 @@ public class Parameters {
 
     // ABC specific parameters
     public static final boolean ABCPenaltyAdjustment = false;
-    public static final int generationsPerOrderDistribution = 8 * numberOfCustomers;
+    public static final int generationsPerOrderDistribution = 4 * numberOfCustomers;
     public static final int numberOfEmployees = 15;
     public static final int numberOfOnlookers = 4 * numberOfEmployees;
     public static final int numberOfScoutTrials = 100;
     public static final int maxNumberOfTrials = 15;
-    public static final int maxBoundDimensionality = (int) Math.round(0.2 * numberOfCustomers); //max amount of dimensions that can be changed, chosen randomly from 1-this
-    public static double weightNeighborOnlooker = 0.1;
+    public static int maxBoundDimensionality = (int) Math.round(0.2 * numberOfCustomers); //max amount of dimensions that can be changed, chosen randomly from 1-this
+    public static double weightNeighborOnlooker = 0.75;
     public static double weightNeighborEmployed = 0.5 * weightNeighborOnlooker;
-    public static double weightGlobalBest = 0.01;
+    public static double weightGlobalBest = 0.5;
     public static final double movementRange = 1; //both positive and negative, but only half in negative direction
-    public static final double onlookerRandomAdjustment = 0.2; //a random number added when onlooker goes to employers foodsource
+    public static double onlookerRandomAdjustment = 0.2; //a random number added when onlooker goes to employers foodsource
     public static final int numberOfEnhancements = 0; //number of enhancements for employees
     public static final double[] weightsEnhancement = new double[]{33, 33, 34}; //probability distribution of enhancements, [reverse, swap, insert]
     public static final double globalTrialsCutoff = 1.3; //trials will not increment if solution is within this multiplier of global best
@@ -81,8 +81,8 @@ public class Parameters {
 
 
     //Penalty parameters for heuristics - Tunable
-    public static double initialOverLoadPenalty = 100000;  // lambda
-    public static double initialTimeWarpPenalty = 100000;  // theta
+    public static double initialOverLoadPenalty = 10000;  // lambda
+    public static double initialTimeWarpPenalty = 10000;  // theta
     public static final double initialDrivingCostPenalty = 1; //used in weighted sum calculations of route costs in createTrips() in the AdSplit class.
     public static final double penaltyFactorForOverFilling = 1.1;
     public static final double penaltyFactorForUnderFilling = 1.5;
@@ -128,7 +128,7 @@ public class Parameters {
     public static boolean isPeriodic = false;  // should be set to true, but has default value false
     public static final boolean useODMIPBetweenIterations = true;
     public static final double diversifiedODProbability = 0.5;    //remove, move to controller
-    public static int generationsPerOrderDistributionPeriodic = 30;
+    public static int generationsPerOrderDistributionPeriodic = 75; //FINAL
     public static final int minimumUpdatesPerOrderDistributions = 5;
     public static final int orderDistributionUpdatesGA = 1;        // this / minimumUpdatesPerOrderDistributions = number of unique order distributions
     //......
@@ -147,7 +147,7 @@ public class Parameters {
 
     // Periodic Parameters, common for PGA, ABC, and HYBRID
 
-    public static final int numberOfAlgorithms = 5;
+    public static final int numberOfAlgorithms = 6;
     public static int numberOfPGA = 0;
     public static int numberOfABC = numberOfAlgorithms - numberOfPGA;
     public static final int minimumIterationsPerOD = 3;

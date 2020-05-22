@@ -63,10 +63,12 @@ public class Utils {
     }
 
     public static <E> void reverse(List<E> list, int pos1, int pos2){
-        List<E> sublist = list.subList(pos1, pos2 + 1);
+        int from = Math.min(pos1, pos2);
+        int to = Math.max(pos1, pos2);
+        List<E> sublist = list.subList(from, to + 1);
         Collections.reverse(sublist);
         int count = 0;
-        for (int i = pos1 ; i < pos2 + 1; i++){
+        for (int i = from ; i < to + 1; i++){
             list.set(i, sublist.get(count));
             count++;
 
@@ -95,25 +97,39 @@ public class Utils {
 
 
     public static void main(String[] args){
-        double distances = 0;
-        double volumes = 0;
-        for (int i = 0 ; i < 100 ; i++){
-            System.out.println(" --- SEED: " + i + " ---");
-            Parameters.randomSeedValue = i;
-            Data data = DataReader.loadData();
-            double averageDistance = averageDistanceToNeighbor(data);
-            double averageVolume = averageOrderVolume(data);
-            volumes += averageVolume;
-            distances += averageDistance;
-            if (averageVolume > 65){
-                System.out.println("LARGE INSTANCE: " + i);
-                System.out.println(averageDistance);
-                System.out.println(averageVolume);
-            }
-        }
-        System.out.println("average distance: " + distances/100);
-        System.out.println("average volume: " + volumes/100);
+        ArrayList<Integer> c = new ArrayList<>();
+        c.add(1);
+        c.add(2);
+        c.add(3);
+        c.add(4);
+        c.add(5);
+        System.out.println(c);
+        swap.apply(c).apply(2).accept(4);
+        System.out.println(c);
+        swap.apply(c).apply(4).accept(2);
+        System.out.println(c);
+
+
+//        double distances = 0;
+//        double volumes = 0;
+//        for (int i = 0 ; i < 100 ; i++){
+//            System.out.println(" --- SEED: " + i + " ---");
+//            Parameters.randomSeedValue = i;
+//            Data data = DataReader.loadData();
+//            double averageDistance = averageDistanceToNeighbor(data);
+//            double averageVolume = averageOrderVolume(data);
+//            volumes += averageVolume;
+//            distances += averageDistance;
+//            if (averageVolume > 65){
+//                System.out.println("LARGE INSTANCE: " + i);
+//                System.out.println(averageDistance);
+//                System.out.println(averageVolume);
+//            }
+//        }
+//        System.out.println("average distance: " + distances/100);
+//        System.out.println("average volume: " + volumes/100);
     }
+
 }
 
 

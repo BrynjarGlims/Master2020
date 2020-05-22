@@ -59,7 +59,9 @@ public class PeriodSwarm extends Thread {
         for (int i = 0 ; i < generations ; i++){
             runGeneration();
         }
-        updateSolutionSet();
+        if (Parameters.useJCM){
+            updateSolutionSet();
+        }
     }
 
     public void runGeneration(){

@@ -28,8 +28,14 @@ public class WeightedRandomSampler {
 
 
     public static void main(String[] args) {
-        double[] weights = new double[]{20, 10, 20, 30, 15, 5};
+        double[] weights = new double[]{Math.exp(-50), Math.exp(-50), Math.exp(-50)};
+        weights = new double[]{Math.log(10), Math.log(40), Math.log(50)};
         WeightedRandomSampler ws = new WeightedRandomSampler(weights);
+        int[] r = new int[3];
+        for (int i = 0 ; i < 10000 ; i++){
+            r[ws.nextIndex()] += 1;
+        }
+        System.out.println(Arrays.toString(r));
 
     }
 }
