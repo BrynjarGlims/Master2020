@@ -88,7 +88,7 @@ public class Result {
 
     public void store(double startTime, double MIPGap) throws IOException {
         this.startTime = startTime;
-        this.runTime = (System.currentTimeMillis() - startTime);
+        this.runTime = (System.currentTimeMillis() - startTime)/1000;
         this.MIPGap = MIPGap;
 
         if (!this.isFeasible && (modelName == "PFM" || modelName != "AFM" || modelName != "JBM")) {
@@ -571,7 +571,7 @@ public class Result {
                 CSVWriter.DEFAULT_LINE_END);
         NumberFormat formatter = new DecimalFormat("#0.00000000");
         SimpleDateFormat date_formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        System.out.println("Changing summary file...");
+        System.out.println("Changing detailed file...");
         if (newFile.length() == 0){
             String[] CSV_COLUMNS = {"File name" ,"Objective Value", "Model", "Runtime", "Date", "Seed value", "Population Size ", "Generations",
                     "Customers", "Vehicles", "isFeasible", "isOptimal", "MIPGap"};

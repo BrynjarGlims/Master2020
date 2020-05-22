@@ -44,7 +44,9 @@ public class IndividualTest {
                 }
             }
             if (numOrders < order.minFrequency || numOrders > order.maxFrequency){
-                System.out.println("frequency invalid, visits: " + numOrders + " bounds: " + order.minFrequency + " - " + order.maxFrequency);
+                System.out.println("frequency invalid, visits: " + numOrders + " bounds: " + order.minFrequency
+                        + " - " + order.maxFrequency +" to customer " + order.customerID +
+                        " and orderID " + order.orderID );
                 valid = false;
             }
         }

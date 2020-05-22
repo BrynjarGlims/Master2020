@@ -15,6 +15,7 @@ import Master2020.Population.PeriodicOrderDistributionPopulation;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.StoringResults.SolutionStorer;
 import Master2020.Testing.HybridTest;
+import Master2020.Testing.IndividualTest;
 import Master2020.Testing.SolutionTest;
 import gurobi.GRBException;
 
@@ -138,6 +139,8 @@ public class HybridController {
             if (journeyCombinationModel.runModel(journeys) == 2) {
                 journeys = journeyCombinationModel.getOptimalJourneys();
                 orderDistributionJCM = journeyCombinationModel.getOrderDistribution();
+                System.out.println("OD valid? " + IndividualTest.testValidOrderDistribution(data, orderDistributionJCM));
+                System.out.println("Fitness of od" + orderDistributionJCM.getFitness());
                 PeriodicSolution JCMSolution = new JCMSolution(orderDistributionJCM.clone(), journeys);
                 System.out.print("Fitness of JBM: " + JCMSolution.getFitness());
                 double[] fitnesses = JCMSolution.getFitnesses();

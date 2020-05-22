@@ -503,6 +503,33 @@ public class JourneyCombinationModel extends Model{
         }
     }
 
+    public void symmetryCar() throws GRBException {
+        /*
+        // Constrant 5.66 //// Can be used with all symetries
+        System.out.println("------------------- Symmetri: trip --------------------");
+        for (int d = 0; d < dataMIP.numPeriods; d++) {
+            for (int vt = 0; vt < dataMIP.numVehicleTypes; vt++){
+                int counter = 0;
+                for (int v = 0; v < dataMIP.numVehicles; v++){
+                    if ( dataMIP.vehicles[v].vehicleType.type != vt ){
+                        continue;
+                    }
+                    if( counter >= dataMIP.vehicleTypes.length - 2){  //todo check
+                        continue;
+                    }
+                    GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
+                    for (int j = 0; j < journeys[d][vt].size(); j++){
+                        lhs.addTerm(1, gamma[d][v][j]);
+                        lhs.addTerm(1, gamma[d][v + 1][j]);
+
+                    }
+                }
+
+
+
+         */
+    }
+
 
     public void activateConstraints() throws GRBException {
         // -------- Add constraints -------------
@@ -530,7 +557,7 @@ public class JourneyCombinationModel extends Model{
 
         // Four choices: none, car, cost, customers, trips
         if (!symmetry.equals("none")){
-            //symmetryCar();  /todo: im
+            symmetryCar();
             if (symmetry.equals("cost")) {
                 symmetryCost();
             }
