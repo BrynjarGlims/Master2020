@@ -46,7 +46,7 @@ public class IndividualTest {
             if (numOrders < order.minFrequency || numOrders > order.maxFrequency){
                 System.out.println("frequency invalid, visits: " + numOrders + " bounds: " + order.minFrequency
                         + " - " + order.maxFrequency +" to customer " + order.customerID +
-                        " and orderID " + order.orderID );
+                        " and orderID " + order.orderID + " and is dividable " + order.isDividable + " quantity: " + Arrays.toString(orderDelivery.orderVolumes));
                 valid = false;
             }
         }

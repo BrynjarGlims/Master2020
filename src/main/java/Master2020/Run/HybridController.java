@@ -40,6 +40,7 @@ public class HybridController {
     public double startTime;
     public double currentBestSolution;
     public int iterationsWithoutImprovement;
+    public double bestIterationFitness;
 
     public HybridController() throws GRBException {
         this.data = DataReader.loadData();
@@ -142,7 +143,7 @@ public class HybridController {
                 System.out.println("OD valid? " + IndividualTest.testValidOrderDistribution(data, orderDistributionJCM));
                 System.out.println("Fitness of od" + orderDistributionJCM.getFitness());
                 PeriodicSolution JCMSolution = new JCMSolution(orderDistributionJCM.clone(), journeys);
-                System.out.print("Fitness of JBM: " + JCMSolution.getFitness());
+                System.out.println("Improvement from " + bestIterationFitness + " to " + JCMSolution.getFitness() + " equivalent to " + (bestIterationFitness-JCMSolution.getFitness())/bestIterationFitness*100 + " %");
                 double[] fitnesses = JCMSolution.getFitnesses();
                 System.out.print(" | Time warp "+ fitnesses[1] + " | ");
                 System.out.println("Over load "+ fitnesses[2]);
@@ -204,9 +205,11 @@ public class HybridController {
 
         //update and find best order distribution
         PeriodicSolution solution;
+        bestIterationFitness = Double.MAX_VALUE;
         for (int s = 0 ; s < Parameters.numberOfAlgorithms ; s++){
             pod.distributions.set(s, algorithms.get(s).getOrderDistribution());
             solution = algorithms.get(s).storeSolution();
+            bestIterationFitness = Math.min(solution.getFitness(), bestIterationFitness);
             System.out.println("Algorithm " + s + " fitness: "+ solution.getFitness() + " feasible: " + solution.isFeasible() + " infeasibility cost: " + solution.getInfeasibilityCost());
 
         }
