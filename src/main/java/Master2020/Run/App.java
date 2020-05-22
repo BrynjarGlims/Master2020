@@ -22,8 +22,8 @@ public class App {
                 //GENERATIONS / OD
                 double[] gens = new double[]{0.25,0.5,0.75,1.0};
                 for (double gen : gens){
-                    Parameters.weightNeighborOnlooker = gen;
-                    Parameters.customFileName = "WeightOnlooker" + gen;
+                    Parameters.weightGlobalBest = gen;
+                    Parameters.customFileName = "WeightGlobal" + gen;
                     System.out.println(Parameters.customFileName);
                     System.out.println("Using vestTele: " + Parameters.useVestTeleDataset + " for seed: " + Parameters.randomSeedValue);
 
