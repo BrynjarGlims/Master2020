@@ -133,7 +133,7 @@ public abstract class Bee {
             }
             else {
                 //reverse change
-                function.apply(customerVisits).apply(positions[0]).accept(positions[1]);
+                function.apply(customerVisits).apply(positions[1]).accept(positions[0]);
             }
         }
         return false;

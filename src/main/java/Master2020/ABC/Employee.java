@@ -56,7 +56,6 @@ public class Employee extends Bee {
         enhance();
         double newFitness = getFitness(currentPosition);
         updateTrials(newFitness, currentPosition, true);
-
     }
 
     private void updateTrials(double fitness, double[] currentPosition, boolean searched) {
