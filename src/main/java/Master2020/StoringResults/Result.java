@@ -216,14 +216,6 @@ public class Result {
             }
         }
 
-        for (ArrayList<Trip>[] periodTrips : bestIndividual.tripList ){
-            for (ArrayList<Trip> vehicleTypeTrips : periodTrips ){
-                for (Trip t : vehicleTypeTrips){
-
-
-                }
-            }
-        }
         csvWriter.close();
         writer.close();
     }
