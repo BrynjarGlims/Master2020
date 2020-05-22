@@ -73,7 +73,7 @@ public class Parameters {
     public static double weightNeighborEmployed = 0.5 * weightNeighborOnlooker;
     public static double weightGlobalBest = 0.5;
     public static final double movementRange = 1; //both positive and negative, but only half in negative direction
-    public static final double onlookerRandomAdjustment = 0.2; //a random number added when onlooker goes to employers foodsource
+    public static double onlookerRandomAdjustment = 0.2; //a random number added when onlooker goes to employers foodsource
     public static final int numberOfEnhancements = 0; //number of enhancements for employees
     public static final double[] weightsEnhancement = new double[]{33, 33, 34}; //probability distribution of enhancements, [reverse, swap, insert]
     public static final double globalTrialsCutoff = 1.3; //trials will not increment if solution is within this multiplier of global best

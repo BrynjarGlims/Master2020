@@ -20,10 +20,10 @@ public class App {
 
                 //MUST BE CHANGED DEPENDING ON WHAT WE WANT TO TEST!!!
                 //GENERATIONS / OD
-                double[] gens = new double[]{0.1, 0.4, 0.7, 1};
+                double[] gens = new double[]{0.01, 0.1, 0.2, 0.3,0.4};
                 for (double gen : gens){
-                    Parameters.maxBoundDimensionality = (int) Math.round(gen * 25);
-                    Parameters.customFileName = "Dimensions" + gen;
+                    Parameters.onlookerRandomAdjustment = gen;
+                    Parameters.customFileName = "OnlookerRandom" + gen;
                     System.out.println(Parameters.customFileName);
                     System.out.println("Using vestTele: " + Parameters.useVestTeleDataset + " for seed: " + Parameters.randomSeedValue);
 
