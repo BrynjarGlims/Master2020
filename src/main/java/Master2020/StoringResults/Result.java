@@ -135,8 +135,6 @@ public class Result {
 
 
 
-
-
     private void storeDetailed() throws IOException {
         storeSummaryDetailed();
         storeDetailedVehicle();
@@ -609,21 +607,15 @@ public class Result {
         SimpleDateFormat date_formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         System.out.println("Changing summary file...");
         if (newFile.length() == 0){
-            String[] CSV_COLUMNS = {"File name" ,"Objective Value", "Model", "Runtime", "Date", "Seed value", "Population Size ", "Generations",
-                    "Customers", "Vehicles", "isFeasible", "isOptimal", "MIPGap"};
+            String[] CSV_COLUMNS = {"File name" ,"Objective Value", "Model", "Runtime", "Time limit", "VestTeleDataset", "Date", "Seed value", "UseJCM", "PGAs", "ABCs" , "Population Size ", "Generations",
+                    "Customers", "Vehicles","isFeasible", "isOptimal", "MIPGap"};
             csvWriter.writeNext(CSV_COLUMNS, false);
         }
 
-        if (modelName == "GA") {
-            this.isFeasible = bestIndividual.isFeasible();
-        }
 
-        if (modelName == "GA"){
-            this.isOptimal = false;
-        }
-
-
-        String[] results = {fileName, String.format("%.4f",bestIndividual.getFitness(false)), modelName, String.valueOf(this.runTime), date_formatter.format(new Date()), String.valueOf(Parameters.randomSeedValue),
+        String[] results = {fileName, String.format("%.4f",bestIndividual.getFitness(false)), modelName,  String.valueOf(this.runTime), String.valueOf(Parameters.timeLimitPerAlgorithm),
+                String.valueOf(Parameters.useVestTeleDataset),
+                date_formatter.format(new Date()), String.valueOf(Parameters.useJCM) ,String.valueOf(Parameters.numberOfPGA), String.valueOf(Parameters.numberOfABC) ,String.valueOf(Parameters.randomSeedValue),
                 String.valueOf(Parameters.populationSize),String.valueOf(Parameters.maxNumberOfGenerations), String.valueOf(Parameters.numberOfCustomers)
                 , String.valueOf(Parameters.numberOfVehicles), String.valueOf(this.isFeasible), String.valueOf(this.isOptimal), String.valueOf(Math.round(this.MIPGap*1000000)/10000) + "%"};
         csvWriter.writeNext(results, false);

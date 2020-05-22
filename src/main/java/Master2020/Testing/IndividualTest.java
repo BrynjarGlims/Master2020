@@ -253,7 +253,7 @@ public class IndividualTest {
         System.out.println("Done");
         String modelName = "AFM";
         String fileName = SolutionStorer.getFolderName(modelName);
-        Result res = new Result(individual, "GA", fileName);
+        Result res = new Result(individual, "GA", fileName, true, false);
         res.store();
 
 
