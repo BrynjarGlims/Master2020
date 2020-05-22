@@ -109,7 +109,7 @@ public class HybridController {
 
         Collections.sort(finalSolutions);
         System.out.println("The fitness of the final solution is: " + finalSolutions.get(0).getFitness());
-        finalSolutions.get(0).writeSolution(fileName, startTime);
+        finalSolutions.get(0).writeSolution(fileName, this.startTime);
     }
 
     public void updateRuntimeOfThreads(){

@@ -88,12 +88,15 @@ public class Result {
 
     public void store(double startTime, double MIPGap) throws IOException {
         this.startTime = startTime;
-        this.runTime = (System.currentTimeMillis() - startTime)/1000;
+        System.out.println("Start time: " + startTime);
+        this.runTime = (System.currentTimeMillis() - this.startTime)/1000;
+        System.out.println("Run time: " + runTime);
+
         this.MIPGap = MIPGap;
 
         if (!this.isFeasible && (modelName == "PFM" || modelName != "AFM" || modelName != "JBM")) {
             createEmptyResult();
-            System.out.println("Trolig feil....");
+            System.out.println("Empty result created");
             System.out.println("Storing complete");
         }
         else{

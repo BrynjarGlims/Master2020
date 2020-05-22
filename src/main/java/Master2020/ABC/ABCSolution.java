@@ -89,12 +89,12 @@ public class ABCSolution implements PeriodicSolution {
         return 0;
     }
 
-    public void writeSolution(String fileName, double startingTime) throws IOException {
+    public void writeSolution(String fileName, double startTime) throws IOException {
         Individual individual = HelperFunctions.createIndividual(data, journeys, orderDistribution);
         System.out.println(IndividualTest.testValidOrderDistribution(data, orderDistribution));
         System.out.println(IndividualTest.checkIfIndividualIsComplete(individual));
         Result result = new Result(individual, "ABC", fileName, individual.isFeasible() , false);
-        result.store();
+        result.store(startTime);
 
     }
 
