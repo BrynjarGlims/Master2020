@@ -21,5 +21,5 @@ public interface PeriodicSolution extends Comparable<PeriodicSolution> {
 
     double getInfeasibilityCost();
 
-    void writeSolution(String fileName) throws IOException;
+    void writeSolution(String fileName, double startingTime) throws IOException;
 }

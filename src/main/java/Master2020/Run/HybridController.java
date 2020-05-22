@@ -7,6 +7,7 @@ import Master2020.DataFiles.Parameters;
 import Master2020.Individual.Journey;
 import Master2020.Interfaces.PeriodicAlgorithm;
 import Master2020.Interfaces.PeriodicSolution;
+import Master2020.MIP.JCMSolution;
 import Master2020.MIP.JourneyCombinationModel;
 import Master2020.PGA.GeneticPeriodicAlgorithm;
 import Master2020.PGA.PGASolution;
@@ -35,7 +36,7 @@ public class HybridController {
     public CyclicBarrier upstreamGate;
     public String fileName;
     public String modelName = "HYBRID";
-    public double time;
+    public double startTime;
     public double currentBestSolution;
     public int iterationsWithoutImprovement;
 
@@ -45,7 +46,7 @@ public class HybridController {
     }
 
     public void initialize() throws GRBException {
-        time = System.currentTimeMillis();
+        startTime = System.currentTimeMillis();
         currentBestSolution = Double.MAX_VALUE;
         iterationsWithoutImprovement = 0;
         downstreamGate = new CyclicBarrier(Parameters.numberOfAlgorithms + 1);
@@ -79,12 +80,12 @@ public class HybridController {
 
     public void run() throws Exception {
         int genCounter = 0;
-        while (System.currentTimeMillis() - time < Parameters.totalRuntime && iterationsWithoutImprovement < Parameters.maxNumberIterationsWithoutImprovement){
+        while (System.currentTimeMillis() - startTime < Parameters.totalRuntime && iterationsWithoutImprovement < Parameters.maxNumberIterationsWithoutImprovement){
             System.out.println(" ### Running generation: " + genCounter + " ### ");
             runIteration();
             if (Parameters.useJCM) {
                 generateOptimalSolution();
-                if (solutions.size()>1)
+                if (solutions.size()>0)
                     HybridTest.displayJourneyTags(solutions.get(solutions.size()-1).getJourneys(), data);
             }
             storeBestCurrentSolution();
@@ -107,7 +108,7 @@ public class HybridController {
 
         Collections.sort(finalSolutions);
         System.out.println("The fitness of the final solution is: " + finalSolutions.get(0).getFitness());
-        finalSolutions.get(0).writeSolution(fileName);
+        finalSolutions.get(0).writeSolution(fileName, startTime);
     }
 
     public void updateRuntimeOfThreads(){
@@ -127,7 +128,7 @@ public class HybridController {
     public void storeBestCurrentSolution() throws IOException {
         Collections.sort(solutions);
         if (solutions.size() > 0){
-            SolutionStorer.store(solutions.get(solutions.size()-1), time, fileName);
+            SolutionStorer.store(solutions.get(solutions.size()-1), startTime, fileName);
         }
     }
 
@@ -137,10 +138,10 @@ public class HybridController {
             if (journeyCombinationModel.runModel(journeys) == 2) {
                 journeys = journeyCombinationModel.getOptimalJourneys();
                 orderDistributionJCM = journeyCombinationModel.getOrderDistribution();
-                PeriodicSolution JCMSolution = new PGASolution(orderDistributionJCM.clone(), journeys);
-                System.out.println("Fitness of JBM: " + JCMSolution.getFitness());
+                PeriodicSolution JCMSolution = new JCMSolution(orderDistributionJCM.clone(), journeys);
+                System.out.print("Fitness of JBM: " + JCMSolution.getFitness());
                 double[] fitnesses = JCMSolution.getFitnesses();
-                System.out.println("Time warp "+ fitnesses[1]);
+                System.out.print(" | Time warp "+ fitnesses[1] + " | ");
                 System.out.println("Over load "+ fitnesses[2]);
                 SolutionTest.checkForInfeasibility(JCMSolution, data);
                 solutions.add(JCMSolution);
@@ -204,6 +205,7 @@ public class HybridController {
             pod.distributions.set(s, algorithms.get(s).getOrderDistribution());
             solution = algorithms.get(s).storeSolution();
             System.out.println("Algorithm " + s + " fitness: "+ solution.getFitness() + " feasible: " + solution.isFeasible() + " infeasibility cost: " + solution.getInfeasibilityCost());
+
         }
     }
 

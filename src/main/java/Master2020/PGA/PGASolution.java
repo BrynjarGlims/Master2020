@@ -81,9 +81,9 @@ public class PGASolution implements PeriodicSolution {
     }
 
     @Override
-    public void writeSolution(String fileName) throws IOException {
+    public void writeSolution(String fileName, double time) throws IOException {
         Individual individual = HelperFunctions.createIndividual(data, journeys, orderDistribution);
-        Result result = new Result(individual, "PGA", fileName);
+        Result result = new Result(individual, "PGA", fileName, individual.isFeasible() , false);
         result.store();
     }
 

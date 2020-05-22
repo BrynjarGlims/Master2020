@@ -23,6 +23,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 public class Result {
@@ -36,8 +37,9 @@ public class Result {
     String fileName;
     boolean isFeasible;
     boolean isOptimal;
-    double runTime;
+    double startTime;
     double MIPGap;
+    double runTime;
 
 
 
@@ -80,10 +82,14 @@ public class Result {
         store(0, -1);
     }
 
-    public void store(double runTime, double MIPGap) throws IOException {
-        this.runTime = runTime;
-        this.MIPGap = MIPGap;
+    public void store(double startTime) throws IOException {
+        store(startTime, -1);
+    }
 
+    public void store(double startTime, double MIPGap) throws IOException {
+        this.startTime = startTime;
+        this.runTime = (System.currentTimeMillis() - startTime);
+        this.MIPGap = MIPGap;
 
         if (!this.isFeasible && (modelName == "PFM" || modelName != "AFM" || modelName != "JBM")) {
             createEmptyResult();
@@ -116,7 +122,7 @@ public class Result {
         //todo: change to print other values
         String[] results = {fileName, "-", modelName, String.valueOf(this.runTime), date_formatter.format(new Date()),  String.valueOf(Parameters.randomSeedValue),
                 String.valueOf(Parameters.populationSize),String.valueOf(Parameters.maxNumberOfGenerations), String.valueOf(Parameters.numberOfCustomers)
-                , String.valueOf(Parameters.numberOfVehicles), "FALSE", "FALSE", "-100%"};
+                , String.valueOf(Parameters.numberOfVehicles), "false", "false", "-100%"};
         csvWriter.writeNext(results, false);
         csvWriter.close();
         writer.close();
@@ -341,6 +347,12 @@ public class Result {
         String dataSet = Parameters.useVestTeleDataset ? Parameters.dataSet2 : Parameters.dataSet1;
         results = new String[]{"Dataset:", dataSet};
         csvWriter.writeNext(results, false);
+        results = new String[]{"Minimum vehicle size:", String.valueOf(Parameters.minimumVehicleSize)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Total runtime", String.valueOf(Parameters.totalRuntime)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Custom file name:", String.valueOf(Parameters.customFileName)};
+        csvWriter.writeNext(results, false);
 
         results = new String[]{"Population Parameters:", "---------"};
         csvWriter.writeNext(results, false);
@@ -350,11 +362,17 @@ public class Result {
         csvWriter.writeNext(results, false);
         results = new String[]{"Fraction of elite individuals", String.valueOf(Parameters.fractionEliteIndividuals)};
         csvWriter.writeNext(results, false);
+        results = new String[]{"Fraction of feasible individuals", String.valueOf(Parameters.fractionOfFeasibleIndividualsFromAdsplit)};
+        csvWriter.writeNext(results, false);
         results = new String[]{"Initial OD population size", String.valueOf(Parameters.initialOrderDistributionPopulationSize)};
         csvWriter.writeNext(results, false);
         results = new String[]{"Maximum number of generations", String.valueOf(Parameters.maxNumberOfGenerations)};
         csvWriter.writeNext(results, false);
         results = new String[]{"Generations without improvement", String.valueOf(Parameters.maxNumberIterationsWithoutImprovement)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Frequency penalty update PGA", String.valueOf(Parameters.frequencyOfPenaltyUpdatesPGA)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Frequency penalty update PGA", String.valueOf(Parameters.frequencyOfPenaltyUpdatesABC)};
         csvWriter.writeNext(results, false);
 
         results = new String[]{"Loading Parameters:", "---------"};
@@ -369,7 +387,6 @@ public class Result {
         csvWriter.writeNext(results, false);
         results = new String[]{"Distance cutoff from depot", String.valueOf(Parameters.distanceCutOffFromDepot)};
         csvWriter.writeNext(results, false);
-
         results = new String[]{"GA specific Parameters:", "---------"};
         csvWriter.writeNext(results, false);
         results = new String[]{"Nearest neighbours education", String.valueOf(Parameters.nearestNeighbors)};
@@ -382,11 +399,39 @@ public class Result {
         csvWriter.writeNext(results, false);
         results = new String[]{"Repair probability", String.valueOf(Parameters.repairProbability)};
         csvWriter.writeNext(results, false);
-        results = new String[]{"Repair probability", String.valueOf(Parameters.repairProbability)};
-        csvWriter.writeNext(results, false);
         results = new String[]{"ODMip probability ", String.valueOf(Parameters.ODMIPProbability)};
         csvWriter.writeNext(results, false);
         results = new String[]{"Heuristic domimance value", String.valueOf(Parameters.heuristicDominanceValue)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"ABC parameters:", "---------"};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Generations per order distribution", String.valueOf(Parameters.generationsPerOrderDistribution)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Number of employees", String.valueOf(Parameters.numberOfEmployees)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Number of onlockers", String.valueOf(Parameters.numberOfOnlookers)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Number of scout trials", String.valueOf(Parameters.numberOfScoutTrials)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Max number of trials", String.valueOf(Parameters.maxNumberOfTrials)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Max bound dimentionality", String.valueOf(Parameters.maxBoundDimensionality)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Wigthed Neighbour Onlocker", String.valueOf(Parameters.weightNeighborOnlooker)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Wigthed Neighbour Employed", String.valueOf(Parameters.weightNeighborEmployed)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Weight global best", String.valueOf(Parameters.weightGlobalBest)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Movement Range" , String.valueOf(Parameters.movementRange)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Onlooker Random Adjustment", String.valueOf(Parameters.onlookerRandomAdjustment)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Number of Enhancements" , String.valueOf(Parameters.numberOfEnhancements)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Weights Enhancement", String.valueOf(Arrays.toString(Parameters.weightsEnhancement))};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Global trials cutoff", String.valueOf(Parameters.globalTrialsCutoff)};
         csvWriter.writeNext(results, false);
 
         results = new String[]{"Penalty parameters:", "---------"};
@@ -403,6 +448,8 @@ public class Result {
         csvWriter.writeNext(results, false);
 
         results = new String[]{"Scaling Parameters:", "---------"};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Eucledian distance", String.valueOf(Parameters.euclidianDistance)};
         csvWriter.writeNext(results, false);
         results = new String[]{"Scaling distance", String.valueOf(Parameters.scalingDistanceParameter)};
         csvWriter.writeNext(results, false);
@@ -422,6 +469,13 @@ public class Result {
         csvWriter.writeNext(results, false);
         results = new String[]{"Indifference value", String.valueOf(Parameters.indifferenceValue)};
         csvWriter.writeNext(results, false);
+        results = new String[]{"Scaling volume value", String.valueOf(Parameters.scalingVolumeValue)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Lower volume flexibility", String.valueOf(Parameters.lowerVolumeFlexibility)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Upper volume flexibility", String.valueOf(Parameters.upperVolumeFlexibility)};
+        csvWriter.writeNext(results, false);
+
 
         results = new String[]{"Cost parameters:", "------"};
         csvWriter.writeNext(results, false);
@@ -460,6 +514,50 @@ public class Result {
         results = new String[]{"Upper bound on q", String.valueOf(Parameters.upperBoundQuantity)};
         csvWriter.writeNext(results, false);
         results = new String[]{"Upper bound on q0", String.valueOf(Parameters.upperBoundOvertime)};
+        csvWriter.writeNext(results, false);
+
+        results = new String[]{"Periodic Parameters:", "---------"};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Is periodic", String.valueOf(Parameters.isPeriodic)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Use odMip Between iterations", String.valueOf(Parameters.useODMIPBetweenIterations)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Generations Per Order Distribution Periodic", String.valueOf(Parameters.generationsPerOrderDistributionPeriodic)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Initial order distribution scale", String.valueOf(Parameters.initialOrderDistributionScale)};
+        csvWriter.writeNext(results, false);
+
+        results = new String[]{"Joureny Combination Parameters:", "---------"};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Use JCM", String.valueOf(Parameters.useJCM)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Number of individualjourneys in mip per period", String.valueOf(Parameters.useODMIPBetweenIterations)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Symmetry of JCM", String.valueOf(Parameters.symmetryOFJCM)};
+        csvWriter.writeNext(results, false);
+
+        results = new String[]{"Common Parameters for abc, pga and hybrid:", "---------"};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Number of algorithms", String.valueOf(Parameters.numberOfAlgorithms)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Number of PGA", String.valueOf(Parameters.numberOfPGA)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Number of ABC", String.valueOf(Parameters.numberOfABC)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Minimum iteration per OD", String.valueOf(Parameters.minimumIterationsPerOD)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Hybrid iterations without improvement limit", String.valueOf(Parameters.hybridIterationsWithoutImprovementLimit)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Order distribution cutoff", String.valueOf(Parameters.orderDistributionCutoff)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Diversified OD generated", String.valueOf(Parameters.diversifiedODsGenerated)};
+        csvWriter.writeNext(results, false);
+
+        results = new String[]{"Time run Parameters:", "---------"};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"Time limit per algorithm", String.valueOf(Parameters.timeLimitPerAlgorithm)};
+        csvWriter.writeNext(results, false);
+        results = new String[]{"odUpdateTime", String.valueOf(Parameters.odUpdateTime)};
         csvWriter.writeNext(results, false);
 
         csvWriter.close();

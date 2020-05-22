@@ -1,40 +1,38 @@
-package Master2020.ABC;
+package Master2020.MIP;
 
+import Master2020.ABC.HelperFunctions;
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.FitnessCalculation;
 import Master2020.Individual.Individual;
 import Master2020.Individual.Journey;
 import Master2020.Interfaces.PeriodicSolution;
-import Master2020.StoringResults.Result;
 import Master2020.ProductAllocation.OrderDistribution;
-import Master2020.Testing.IndividualTest;
+import Master2020.StoringResults.Result;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class ABCSolution implements PeriodicSolution {
+public class JCMSolution implements PeriodicSolution{
 
-
-    public double[][] positions;
-    public OrderDistribution orderDistribution;
-    public ArrayList<Journey>[][] journeys;
+    Data data;
+    OrderDistribution orderDistribution;
+    ArrayList<Journey>[][] journeys;
+    Individual individual;
+    double fitness;
     public boolean feasible;
-    public double fitness;
     public double infeasibilityCost;
-    public Data data;
+
     public double timeWarpPenalty;
     public double overLoadPenalty;
 
 
-    public ABCSolution(double[][] positions, OrderDistribution orderDistribution, ArrayList<Journey>[][] journeys){
-        this.positions = positions;
+    public JCMSolution(OrderDistribution orderDistribution, ArrayList<Journey>[][] journeys){
         this.orderDistribution = orderDistribution;
         this.data = orderDistribution.data;
         this.journeys = journeys;
         this.timeWarpPenalty = Parameters.initialTimeWarpPenalty;
         this.overLoadPenalty = Parameters.initialOverLoadPenalty;
-
     }
 
     public double getFitness(){
@@ -49,8 +47,13 @@ public class ABCSolution implements PeriodicSolution {
         return fitness;
     }
 
-    public double[] getFitnesses(){
-        return FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1, timeWarpPenalty, overLoadPenalty);
+    public void printDetailedFitness(){
+        double[] thisFitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1, timeWarpPenalty, overLoadPenalty);
+        System.out.println("Driving cost: " + thisFitnesses[0]);
+        System.out.println("TimeWarp cost: " + thisFitnesses[1]);
+        System.out.println("OverLoad cost: " + thisFitnesses[2]);
+        System.out.println("Vehicle usage cost: " + thisFitnesses[3]);
+        System.out.println("OrderDistributionCost: " + orderDistribution.getFitness());
     }
 
     public ArrayList<Journey>[][] getJourneys(){
@@ -69,33 +72,39 @@ public class ABCSolution implements PeriodicSolution {
         return infeasibilityCost;
     }
 
+    public double[] getFitnesses(){
+        return FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1, timeWarpPenalty, overLoadPenalty);
+    }
 
     @Override
+    public void writeSolution(String fileName, double time) throws IOException {
+        Individual individual = HelperFunctions.createIndividual(data, journeys, orderDistribution);
+        Result result = new Result(individual, "JCM", fileName, individual.isFeasible() , false);
+        result.store();
+    }
+
+    public void setIndividual(Individual individual){
+        this.individual = individual;
+    }
+
     public int compareTo(PeriodicSolution o) {
         double[] thisFitnesses = FitnessCalculation.getIndividualFitness(data, journeys, orderDistribution, 1, timeWarpPenalty, overLoadPenalty);
-        double[] oFitnesses = FitnessCalculation.getIndividualFitness(data, o.getJourneys(), o.getOrderDistribution(), 1, timeWarpPenalty, overLoadPenalty);
-        double thisFitness = 0;
+        double[] oFitnesses = FitnessCalculation.getIndividualFitness(data, o.getJourneys(), o.getOrderDistribution(), 1,timeWarpPenalty, overLoadPenalty);
+        fitness = 0;
         double oFitness = 0;
         for (int d = 0 ; d < thisFitnesses.length ; d++){
-            thisFitness += thisFitnesses[d];
+            fitness += thisFitnesses[d];
             oFitness += oFitnesses[d];
         }
-        if (thisFitness < oFitness){
+
+        if (fitness < oFitness){
             return -1;
         }
-        else if (thisFitness > oFitness){
+        else if (fitness > oFitness){
             return 1;
         }
         return 0;
     }
 
-    public void writeSolution(String fileName, double startingTime) throws IOException {
-        Individual individual = HelperFunctions.createIndividual(data, journeys, orderDistribution);
-        System.out.println(IndividualTest.testValidOrderDistribution(data, orderDistribution));
-        System.out.println(IndividualTest.checkIfIndividualIsComplete(individual));
-        Result result = new Result(individual, "ABC", fileName, individual.isFeasible() , false);
-        result.store();
-
-    }
 
 }

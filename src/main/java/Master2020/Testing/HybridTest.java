@@ -35,7 +35,8 @@ public class HybridTest {
         int count = 0;
         Origin id = null;
         for (int p = 0; p < data.numberOfPeriods; p++){
-            id = journeys[p][0].get(0).ID;
+            if (journeys[p][0].size() > 0)
+                id = journeys[p][0].get(0).ID;
             for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
                 for (Journey journey: journeys[p][vt]){
                     count += 1;
