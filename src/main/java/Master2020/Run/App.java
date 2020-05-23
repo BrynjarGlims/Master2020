@@ -20,10 +20,10 @@ public class App {
 
                 //MUST BE CHANGED DEPENDING ON WHAT WE WANT TO TEST!!!
                 //GENERATIONS / OD
-                double[] gens = new double[]{0.01, 0.25, 0.5, 0.75};
+                double[] gens = new double[]{0.1, 0.4, 0.7, 1};
                 for (double gen : gens){
-                    Parameters.weightGlobalBest = gen;
-                    Parameters.customFileName = "weightGlobal" + gen;
+                    Parameters.maxBoundDimensionality =(int) Math.round(gen * 25);
+                    Parameters.customFileName = "dimensionsChanged" + gen;
                     System.out.println(Parameters.customFileName);
                     System.out.println("Using vestTele: " + Parameters.useVestTeleDataset + " for seed: " + Parameters.randomSeedValue);
 
