@@ -20,10 +20,10 @@ public class App {
 
                 //MUST BE CHANGED DEPENDING ON WHAT WE WANT TO TEST!!!
                 //GENERATIONS / OD
-                double[] gens = new double[]{0.25, 0.5, 0.75, 1};
+                double[] gens = new double[]{0.01, 0.25, 0.5, 0.75};
                 for (double gen : gens){
-                    Parameters.weightNeighborOnlooker = gen;
-                    Parameters.customFileName = "weightNeighbor" + gen;
+                    Parameters.weightGlobalBest = gen;
+                    Parameters.customFileName = "weightGlobal" + gen;
                     System.out.println(Parameters.customFileName);
                     System.out.println("Using vestTele: " + Parameters.useVestTeleDataset + " for seed: " + Parameters.randomSeedValue);
 
