@@ -17,7 +17,7 @@ public class Parameters {
     public static final String vehicleFilePath2 = "data/" + dataSet2 + "/Vehicles.txt";
     public static final String distancePathVestTele = "Google_VestTele";
     public static final String distancePathTrondelag = "Google_Trondelag";
-    public static boolean useVestTeleDataset = false;
+    public static boolean useVestTeleDataset = true;
     public static final boolean doRandomSeed = true;
     public static List<Integer> seeds = Arrays.asList(57, 97, 80, 89, 1);
     public static long randomSeedValue = 10;
@@ -58,7 +58,7 @@ public class Parameters {
     public static double tripOptimizerProbability = 0.25; //FINAL 0.25
     public static final double repairProbability = 0.4; //FINAL 0.4
     public static double ODMIPProbability = 0.75; //FINAL 0.75
-    public static final double heuristicDominanceValue = 1;
+    public static double heuristicDominanceValue = 1;
 
 
     // ABC specific parameters
@@ -74,7 +74,7 @@ public class Parameters {
     public static double weightGlobalBest = 0.5;
     public static final double movementRange = 1; //both positive and negative, but only half in negative direction
     public static double onlookerRandomAdjustment = 0.2; //a random number added when onlooker goes to employers foodsource
-    public static final int numberOfEnhancements = 0; //number of enhancements for employees
+    public static int numberOfEnhancements = 0; //number of enhancements for employees
     public static final double[] weightsEnhancement = new double[]{33, 33, 34}; //probability distribution of enhancements, [reverse, swap, insert]
     public static final double globalTrialsCutoff = 1.3; //trials will not increment if solution is within this multiplier of global best
 

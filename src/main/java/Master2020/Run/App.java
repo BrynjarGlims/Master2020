@@ -20,10 +20,10 @@ public class App {
 
                 //MUST BE CHANGED DEPENDING ON WHAT WE WANT TO TEST!!!
                 //GENERATIONS / OD
-                double[] gens = new double[]{0.01, 0.1, 0.2, 0.3,0.4};
-                for (double gen : gens){
-                    Parameters.onlookerRandomAdjustment = gen;
-                    Parameters.customFileName = "OnlookerRandom" + gen;
+                int[] gens = new int[]{1,2,3,4,5};
+                for (int gen : gens){
+                    Parameters.heuristicDominanceValue = gen;
+                    Parameters.customFileName = "HeuristicDominance" + gen;
                     System.out.println(Parameters.customFileName);
                     System.out.println("Using vestTele: " + Parameters.useVestTeleDataset + " for seed: " + Parameters.randomSeedValue);
 
