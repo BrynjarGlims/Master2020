@@ -58,7 +58,7 @@ public class Parameters {
     public static double tripOptimizerProbability = 0.25; //FINAL 0.25
     public static final double repairProbability = 0.4; //FINAL 0.4
     public static double ODMIPProbability = 0.75; //FINAL 0.75
-    public static final double heuristicDominanceValue = 1;
+    public static double heuristicDominanceValue = 1;
 
 
     // ABC specific parameters

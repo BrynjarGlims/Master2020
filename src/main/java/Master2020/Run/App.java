@@ -20,10 +20,10 @@ public class App {
 
                 //MUST BE CHANGED DEPENDING ON WHAT WE WANT TO TEST!!!
                 //GENERATIONS / OD
-                int[] gens = new int[]{0,1,2,3,4,5,6};
+                int[] gens = new int[]{1,2,3,4,5};
                 for (int gen : gens){
-                    Parameters.numberOfEnhancements = gen;
-                    Parameters.customFileName = "Enhancements" + gen;
+                    Parameters.heuristicDominanceValue = gen;
+                    Parameters.customFileName = "HeuristicDominance" + gen;
                     System.out.println(Parameters.customFileName);
                     System.out.println("Using vestTele: " + Parameters.useVestTeleDataset + " for seed: " + Parameters.randomSeedValue);
 
