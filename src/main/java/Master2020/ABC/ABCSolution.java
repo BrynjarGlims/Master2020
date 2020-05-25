@@ -9,6 +9,7 @@ import Master2020.Interfaces.PeriodicSolution;
 import Master2020.StoringResults.Result;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Testing.IndividualTest;
+import Master2020.Individual.GiantTour;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -63,7 +63,6 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
     }
 
     public void initialize(OrderDistribution orderDistribution) throws GRBException {
-        System.out.println("Initialize periodic population..");
         Parameters.isPeriodic = true;
         this.orderDistribution = orderDistribution;
         periodicPopulation = new PeriodicPopulation(data);

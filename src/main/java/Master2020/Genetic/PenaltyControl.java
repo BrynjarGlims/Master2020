@@ -13,6 +13,9 @@ public class PenaltyControl {
     boolean verbose = false;
     private int updateFrequency;
 
+    private double maxPenaltyValue = 1000000000;
+    private double minPenaltyValue = 10;
+
     public double timeWarpPenalty;
     public double overLoadPenalty;
 
@@ -51,12 +54,12 @@ public class PenaltyControl {
         if (verbose)
             System.out.println("Time warp feasible fraction: " + feasibleFraction);
         if (feasibleFraction > Parameters.fractionOfFeasibleIndividualsFromAdsplit + indifferenceValue){
-            this.timeWarpPenalty *= decrease;
+            this.timeWarpPenalty = Math.max( this.timeWarpPenalty*decrease, this.minPenaltyValue);
             if (verbose)
                 System.out.println("Decrease timewarp: " + this.timeWarpPenalty);
         }
         else if( feasibleFraction < Parameters.fractionOfFeasibleIndividualsFromAdsplit - indifferenceValue){
-            this.timeWarpPenalty *= increase;
+            this.timeWarpPenalty = Math.min(this.timeWarpPenalty*increase, this.maxPenaltyValue);
             if (verbose)
                 System.out.println("Increase timewarp: " + this.timeWarpPenalty);
         }
@@ -72,12 +75,12 @@ public class PenaltyControl {
         if (verbose)
             System.out.println("Over load feasible fraction: " +feasibleFraction);
         if (feasibleFraction > Parameters.fractionOfFeasibleIndividualsFromAdsplit + indifferenceValue){
-            this.overLoadPenalty *= decrease;
+            this.overLoadPenalty = Math.max( this.overLoadPenalty*decrease, this.minPenaltyValue);
             if (verbose)
                 System.out.println("Decrease overload: " + this.overLoadPenalty );
         }
         else if (feasibleFraction < Parameters.fractionOfFeasibleIndividualsFromAdsplit - indifferenceValue){
-            this.overLoadPenalty *= increase;
+            this.overLoadPenalty = Math.min(this.overLoadPenalty*increase, this.maxPenaltyValue);
             if (verbose)
                 System.out.println("Increase overload: " + this.overLoadPenalty);
 
