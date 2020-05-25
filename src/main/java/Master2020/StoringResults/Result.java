@@ -515,7 +515,7 @@ public class Result {
         csvWriter.writeNext(results, false);
         results = new String[]{"Use odMip Between iterations", String.valueOf(Parameters.useODMIPBetweenIterations)};
         csvWriter.writeNext(results, false);
-        results = new String[]{"Generations Per Order Distribution Periodic", String.valueOf(Parameters.generationsPerOrderDistributionPeriodic)};
+        results = new String[]{"Generations Per Order Distribution Periodic", String.valueOf(Parameters.maxGenerationsPerOrderDistributionUpdatePeriodic)};
         csvWriter.writeNext(results, false);
         results = new String[]{"Initial order distribution scale", String.valueOf(Parameters.initialOrderDistributionScale)};
         csvWriter.writeNext(results, false);

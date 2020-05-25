@@ -5,6 +5,7 @@ import Master2020.Genetic.PenaltyControl;
 import Master2020.Population.Population;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Testing.IndividualTest;
+import Master2020.Individual.GiantTour;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,8 +20,6 @@ public class Individual implements Comparable<Individual> {
     public ArrayList<Trip>[][] tripList; //period, vehicleType
     public ArrayList<Journey>[][] journeyList; //period, vehicleType
     public Data data;
-
-    public Label[][] bestLabels;
 
     //fitness values:
     public double travelCost;
@@ -62,7 +61,6 @@ public class Individual implements Comparable<Individual> {
             this.actualPeriod = actualPeriod;
         }
         this.giantTour = new GiantTour(data, this.isPeriodic, this.actualPeriod);
-        this.bestLabels = new Label[data.numberOfPeriods][data.numberOfVehicleTypes];
         this.initializeTripMap();
         this.initializeTripList();
         this.initializeJourneyList();

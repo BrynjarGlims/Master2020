@@ -61,11 +61,6 @@ public class SolutionStorer {
         catch (Exception e) {
             e.printStackTrace();
         }
-
-
-
-
-
     }
 
 

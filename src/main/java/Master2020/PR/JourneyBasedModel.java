@@ -493,7 +493,7 @@ public class JourneyBasedModel {
                 }
                 for (Journey r : dataMIP.journeyMap.get(d).get(dataMIP.vehicles[v].vehicleType.type) ) {
                     lhs.addTerm(r.cost, gamma[d][v][r.journeyId]);
-                    lhs.addTerm(r.cost, gamma[d][v + 1][r.journeyId]);
+                    lhs.addTerm(-r.cost, gamma[d][v + 1][r.journeyId]);
                 String constraint_name = String.format("5.87 Sym5 - Length of jouney for vehicle %d must be larger than vehicle %d in period %d and vehicle type %d", v, v + 1, d, dataMIP.vehicles[v + 1].vehicleType.type);
                 model.addConstr(lhs, GRB.GREATER_EQUAL, 0, constraint_name);
                 }
@@ -511,7 +511,7 @@ public class JourneyBasedModel {
                     continue;
                 for (Journey r : dataMIP.journeyMap.get(d).get(dataMIP.vehicles[v].vehicleType.type)) {
                     lhs.addTerm(r.numCustomers, gamma[d][v][r.journeyId]);
-                    lhs.addTerm(r.numCustomers, gamma[d][v + 1][r.journeyId]);
+                    lhs.addTerm(-r.numCustomers, gamma[d][v + 1][r.journeyId]);
                 }
                 String constraint_name = String.format("5.88 Sym4 - Number of customer visits for vehicle %d must be larger than vehicle %d in period %d and vehicle type %d", v, v + 1, d, dataMIP.vehicles[v + 1].vehicleType.type);
                 model.addConstr(lhs, GRB.GREATER_EQUAL, 0, constraint_name);
@@ -529,7 +529,7 @@ public class JourneyBasedModel {
                     continue;
                 for (Journey r : dataMIP.journeyMap.get(d).get(dataMIP.vehicles[v].vehicleType.type)) {
                     lhs.addTerm(r.numTrips, gamma[d][v][r.journeyId]);
-                    lhs.addTerm(r.numTrips, gamma[d][v + 1][r.journeyId]);
+                    lhs.addTerm(-r.numTrips, gamma[d][v + 1][r.journeyId]);
                 }
                 String constraint_name = String.format("5.88 Sym4 - Number of trips used for vehicle %d must be larger than vehicle %d in period %d and vehicle type %d", v, v + 1, d, dataMIP.vehicles[v + 1].vehicleType.type);
                 model.addConstr(lhs, GRB.GREATER_EQUAL, 0, constraint_name);

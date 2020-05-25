@@ -556,23 +556,8 @@ public class JourneyCombinationModel extends Model{
         // ----------------- Symmetry breaking constraints ------------
 
         // Four choices: none, car, cost, customers, trips
-        if (!symmetry.equals("none")){
+        if (!symmetry.equals("none")) {
             symmetryCar();
-            if (symmetry.equals("cost")) {
-                symmetryCost();
-            }
-            else if (symmetry.equals("customers")){
-                symmetryCustomers();
-            }
-            else if (symmetry.equals("trips")) {
-                symmetryTrips();
-            }
-            else {
-                System.out.println("------------------- Symmetri: " +symmetry + " (not standard) --------------------");
-            }
-        }
-        else {
-            System.out.println("No symmetri breaking constriant chosen");;
         }
 
 

@@ -780,7 +780,7 @@ public class ArcFlowModel  {
                     for (int i = 0; i < dataMIP.numNodes; i++){
                         for(int j = 0; j < dataMIP.numNodes; j++){
                             lhs.addTerm(dataMIP.travelTime[i][j] * dataMIP.travelCost[v], x[d][v][r][i][j]);
-                            lhs.addTerm(dataMIP.travelTime[i][j] * dataMIP.travelCost[v], x[d][v+1][r][i][j]);
+                            lhs.addTerm(-dataMIP.travelTime[i][j] * dataMIP.travelCost[v], x[d][v+1][r][i][j]);
                         }
                     }
                 }
@@ -801,7 +801,7 @@ public class ArcFlowModel  {
                 for (int r = 0; r < dataMIP.numTrips; r++) {
                     for (int i = 0; i < dataMIP.numCustomers; i++){
                         lhs.addTerm(1, y[d][v][r][i]);
-                        lhs.addTerm(1, y[d][v+1][r][i]);
+                        lhs.addTerm(-1, y[d][v+1][r][i]);
                     }
                 }
                 String constraint_name = String.format("5.66 Sym4 - Number of customer visits for vehicle %d must be larger than vehicle %d in period %d and vehicle type %d", v, v+1 ,d , dataMIP.vehicles[v+1].vehicleType.type);

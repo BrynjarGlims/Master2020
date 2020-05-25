@@ -17,10 +17,10 @@ public class Parameters {
     public static final String vehicleFilePath2 = "data/" + dataSet2 + "/Vehicles.txt";
     public static final String distancePathVestTele = "Google_VestTele";
     public static final String distancePathTrondelag = "Google_Trondelag";
-    public static boolean useVestTeleDataset = false;
+    public static boolean useVestTeleDataset = true;
     public static final boolean doRandomSeed = true;
     public static List<Integer> seeds = Arrays.asList(57, 97, 80, 89, 1);
-    public static long randomSeedValue = 10;
+    public static long randomSeedValue = 15;
     public static final int minimumVehicleSize = 2000;   // removes 1400 and 1800;
 
     public static final long totalRuntime = 600000;
@@ -91,7 +91,7 @@ public class Parameters {
     public static final boolean euclidianDistance = false;
     public static final double scalingDistanceParameter = 2.0; //set to 2.2
     public static final double timeShift = 6;
-    public static final double maxJourneyDuration = 11; //changed to journey duration
+    public static final double maxJourneyDuration = 11; //changed to journey duration //todo: see if this should be mentioned....
     public static final double loadingTimeAtDepotConstant = 0.03;
     public static final double loadingTimeAtDepotVariable = 0.001;
     public static final double scalingUnloadingTimeAtCustomerConstant = 0.02;
@@ -127,28 +127,21 @@ public class Parameters {
     //Periodic parameters
     public static boolean isPeriodic = false;  // should be set to true, but has default value false
     public static final boolean useODMIPBetweenIterations = true;
-    public static final double diversifiedODProbability = 0.5;    //remove, move to controller
-    public static int generationsPerOrderDistributionPeriodic = 75; //FINAL
-    public static final int minimumUpdatesPerOrderDistributions = 5;
-    public static final int orderDistributionUpdatesGA = 1;        // this / minimumUpdatesPerOrderDistributions = number of unique order distributions
-    //......
+    public static int maxGenerationsPerOrderDistributionUpdatePeriodic = 75; //FINAL
     public static final double initialOrderDistributionScale = 1;
-    public static final double incrementPerOrderDistributionScaling = 0.02;
-    public static final int numberOfGenerationsBetweenODScaling = 2;
-    public static final int numberOfGenerationBeforeODScalingStarts = 20;
 
     //......
 
     // Journey Combination Model parameters
     public static final boolean useJCM = false;
-    public static final int numberOfIndividualJourneysInMIPPerPeriod = 10;
-    public static final String symmetryOFJCM = "none";
+    public static final int numberOfIndividualJourneysInMIPPerPeriod = 5;
+    public static final String symmetryOFJCM = "car";
 
 
     // Periodic Parameters, common for PGA, ABC, and HYBRID
 
     public static final int numberOfAlgorithms = 6;
-    public static int numberOfPGA = 0;
+    public static int numberOfPGA = 3;
     public static int numberOfABC = numberOfAlgorithms - numberOfPGA;
     public static final int minimumIterationsPerOD = 3;
     public static final int hybridIterationsWithoutImprovementLimit = 1;
@@ -158,8 +151,6 @@ public class Parameters {
     // Time run parameters
     public static long timeLimitPerAlgorithm = 15000 ;  // in milli
     public static final double odUpdateTime = 2.3;
-
-    public static final int minimumRequiredIterationsOfOD = 3;
 
     // Verbose parameters
     public static final boolean verboseArcFlow = false;
