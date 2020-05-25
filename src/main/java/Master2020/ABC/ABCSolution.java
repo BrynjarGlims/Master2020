@@ -4,6 +4,7 @@ import Master2020.DataFiles.Data;
 import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.FitnessCalculation;
 import Master2020.Individual.Individual;
+import Master2020.Individual.GiantTour;
 import Master2020.Individual.Journey;
 import Master2020.Interfaces.PeriodicSolution;
 import Master2020.StoringResults.Result;
