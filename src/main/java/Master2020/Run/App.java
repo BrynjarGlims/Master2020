@@ -111,7 +111,7 @@ public class App {
             }
         }
     }
-    
+
     private static void initialize(){
         seeds = new int[2][5][];
         customers = new int[5];
