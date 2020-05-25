@@ -5,6 +5,7 @@ import Master2020.Genetic.PenaltyControl;
 import Master2020.Population.Population;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.Testing.IndividualTest;
+import Master2020.Individual.GiantTour;
 
 import java.util.ArrayList;
 import java.util.HashMap;
