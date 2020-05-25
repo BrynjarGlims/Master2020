@@ -121,8 +121,8 @@ public class HybridController {
                 times[counter] = periodicAlgorithm.getIterationTime();
                 counter ++;
             }
-            double maxIterationTime = Arrays.stream(times).max().getAsDouble();
-            Parameters.timeLimitPerAlgorithm = (long) (Parameters.odUpdateTime *maxIterationTime);
+            Arrays.sort(times);
+            Parameters.timeLimitPerAlgorithm = (long) (times[ (int) Parameters.numberOfAlgorithms-1]);
             System.out.println("New time for single run is: " + Parameters.timeLimitPerAlgorithm);
         }
     }
