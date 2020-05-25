@@ -514,6 +514,7 @@ public class JourneyCombinationModel extends Model{
                     }
                     String constraint_name = String.format("5.88 Sym1 - Cars in use for %d and %d for period %d and vehicle type " , lastVehicle, v, d, vt);
                     model.addConstr(lhs, GRB.GREATER_EQUAL, 0, constraint_name);
+                    lastVehicle = v;
                 }
             }
         }
@@ -545,23 +546,8 @@ public class JourneyCombinationModel extends Model{
         // ----------------- Symmetry breaking constraints ------------
 
         // Four choices: none, car, cost, customers, trips
-        if (!symmetry.equals("none")){
+        if (!symmetry.equals("none")) {
             symmetryCar();
-            if (symmetry.equals("cost")) {
-                //symmetryCost();
-            }
-            else if (symmetry.equals("customers")){
-                //symmetryCustomers();
-            }
-            else if (symmetry.equals("trips")) {
-                //symmetryTrips();
-            }
-            else {
-                System.out.println("------------------- Symmetri: " +symmetry + " (not standard) --------------------");
-            }
-        }
-        else {
-            System.out.println("No symmetri breaking constriant chosen");;
         }
 
 

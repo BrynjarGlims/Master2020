@@ -21,8 +21,6 @@ public class Individual implements Comparable<Individual> {
     public ArrayList<Journey>[][] journeyList; //period, vehicleType
     public Data data;
 
-    public Label[][] bestLabels;
-
     //fitness values:
     public double travelCost;
     public double infeasibilityCost;
@@ -63,7 +61,6 @@ public class Individual implements Comparable<Individual> {
             this.actualPeriod = actualPeriod;
         }
         this.giantTour = new GiantTour(data, this.isPeriodic, this.actualPeriod);
-        this.bestLabels = new Label[data.numberOfPeriods][data.numberOfVehicleTypes];
         this.initializeTripMap();
         this.initializeTripList();
         this.initializeJourneyList();

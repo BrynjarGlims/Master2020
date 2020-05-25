@@ -128,6 +128,7 @@ public class GeneticAlgorithm extends Thread {
     public void resetCounters(){
         numberOfIterations = 0;
         iterationsWithoutImprovement = 0;
+
     }
 
     public void selection(Population population){
@@ -170,7 +171,7 @@ public class GeneticAlgorithm extends Thread {
                 //wait for all threads to be ready
                 downstreamGate.await();
                 //run generations
-                if (run){runGenerations(Parameters.generationsPerOrderDistributionPeriodic);}
+                if (run){runGenerations(Parameters.maxGenerationsPerOrderDistributionUpdatePeriodic);}
                 //wait for all periods to finish
                 upstreamGate.await();
 

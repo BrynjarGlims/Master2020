@@ -563,7 +563,7 @@ public class PathFlowModel{
                 for (int r = 0; r < dataMIP.numTrips; r++) {
                     for (Path p : dataMIP.pathMap.get(d).get(dataMIP.vehicles[v].vehicleType.type)){
                         lhs.addTerm(p.cost, lambda[d][v][r][p.pathId]);
-                        lhs.addTerm(p.cost, lambda[d][v+1][r][p.pathId]);
+                        lhs.addTerm(-p.cost, lambda[d][v+1][r][p.pathId]);
                     }
                 }
                 String constraint_name = String.format("5.67 Sym5 - Length of jouney for vehicle %d must be larger than vehicle %d in period %d and vehicle type %d", v, v+1 ,d , dataMIP.vehicles[v+1].vehicleType.type);
@@ -583,7 +583,7 @@ public class PathFlowModel{
                 for (int r = 0; r < dataMIP.numTrips; r++) {
                     for (Path p : dataMIP.pathMap.get(d).get(dataMIP.vehicles[v].vehicleType.type)){
                         lhs.addTerm(p.customers.length, lambda[d][v][r][p.pathId]);
-                        lhs.addTerm(p.customers.length, lambda[d][v+1][r][p.pathId]);
+                        lhs.addTerm(-p.customers.length, lambda[d][v+1][r][p.pathId]);
                     }
                 }
                 String constraint_name = String.format("5.66 Sym4 - Number of customer visits for vehicle %d must be larger than vehicle %d in period %d and vehicle type %d", v, v+1 ,d , dataMIP.vehicles[v+1].vehicleType.type);
@@ -603,7 +603,7 @@ public class PathFlowModel{
                 for (int r = 0; r < dataMIP.numTrips; r++) {
                     for (Path p : dataMIP.pathMap.get(d).get(dataMIP.vehicles[v].vehicleType.type)){
                         lhs.addTerm(p.duration, lambda[d][v][r][p.pathId]);
-                        lhs.addTerm(p.duration, lambda[d][v+1][r][p.pathId]);
+                        lhs.addTerm(-p.duration, lambda[d][v+1][r][p.pathId]);
                     }
                 }
                 String constraint_name = String.format("5.67 Sym5 - Length of jouney for vehicle %d must be larger than vehicle %d in period %d and vehicle type %d", v, v+1 ,d , dataMIP.vehicles[v+1].vehicleType.type);
