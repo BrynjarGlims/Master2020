@@ -80,14 +80,17 @@ public class DataReader {
                     customerID++;
                 }
             }
-            productList.add(new Order(productID, customerID,
-                    Double.parseDouble(productData.get(line)[11]),
-                    checkSplitAttribute(productData.get(line)[4], line),
-                    productData.get(line)[3],
-                    Integer.parseInt(productData.get(line)[6]),
-                    Integer.parseInt(productData.get(line)[7]),
-                    Integer.parseInt(productData.get(line)[8])));
-            productID++;
+            if (Double.parseDouble(productData.get(line)[11]) > 0){
+                productList.add(new Order(productID, customerID,
+                        Double.parseDouble(productData.get(line)[11]),
+                        checkSplitAttribute(productData.get(line)[4], line),
+                        productData.get(line)[3],
+                        Integer.parseInt(productData.get(line)[6]),
+                        Integer.parseInt(productData.get(line)[7]),
+                        Integer.parseInt(productData.get(line)[8])));
+                productID++;
+            }
+
         }
         return convertCustomerList(customerList);
     }

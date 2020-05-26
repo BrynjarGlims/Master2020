@@ -43,7 +43,8 @@ public class SolutionTest {
             for (int vt = 0; vt < data.numVehicleTypes; vt ++){
                 for (Journey journey : journeys[p][vt]){
                     if (journey.trips.size() > data.numTrips){
-                        throw new IllegalArgumentException("Too many trips in journey");
+                        System.out.println("Too many trips in journey");
+                        journeys[p][vt].remove(journey);
                     }
                 }
             }

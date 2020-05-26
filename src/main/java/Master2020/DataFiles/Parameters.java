@@ -115,6 +115,7 @@ public class Parameters {
     //GUROBI parameters - Not tunable
     public static final String symmetry =  "trips";      // // none, car, trips, customers, cost, duration
     public static final double modelTimeLimit = 10800;  //seconds
+    public static final double modelJCMTimeLimit = 180;  //seconds
     public static final double modelMipGap = 0.00001;
     public static final boolean plotArcFlow = false;
     public static final String instanceName = "testDataFromAsko";

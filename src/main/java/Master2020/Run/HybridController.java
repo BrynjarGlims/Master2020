@@ -128,8 +128,8 @@ public class HybridController {
     }
 
     public void storeBestCurrentSolution() throws IOException {
-        Collections.sort(solutions);
         if (solutions.size() > 0){
+            Collections.sort(solutions);
             SolutionStorer.store(solutions.get(solutions.size()-1), startTime, fileName);
         }
     }
@@ -143,6 +143,7 @@ public class HybridController {
                 System.out.println("OD valid? " + IndividualTest.testValidOrderDistribution(data, orderDistributionJCM));
                 System.out.println("Fitness of od" + orderDistributionJCM.getFitness());
                 PeriodicSolution JCMSolution = new JCMSolution(orderDistributionJCM.clone(), journeys);
+                //SolutionStorer.store(JCMSolution, startTime, fileName);
                 System.out.println("Improvement from " + bestIterationFitness + " to " + JCMSolution.getFitness() + " equivalent to " + (bestIterationFitness-JCMSolution.getFitness())/bestIterationFitness*100 + " %");
                 double[] fitnesses = JCMSolution.getFitnesses();
                 System.out.print(" | Time warp "+ fitnesses[1] + " | ");
@@ -161,8 +162,8 @@ public class HybridController {
 
     private double getCurrentBestFitness() throws Exception {
         double fitness = 0;
-        if (Parameters.useJCM){
-            fitness = new PGASolution(orderDistributionJCM.clone(), journeyCombinationModel.getOptimalJourneys()).getFitness();
+        if (Parameters.useJCM && journeyCombinationModel.optimstatus == 2){  // TODO: 25/05/2020 Change this, as it needs to print the best solution 
+            fitness = new JCMSolution(orderDistributionJCM.clone(), journeyCombinationModel.getOptimalJourneys()).getFitness();
         }
         else {
             try {
