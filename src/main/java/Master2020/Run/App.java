@@ -5,6 +5,7 @@ import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Parameters;
 import gurobi.GRBException;
+import scala.xml.PrettyPrinter;
 
 import java.io.IOException;
 
@@ -18,6 +19,7 @@ public class App {
 
 
     public static void main(String[] args) throws Exception {
+//        baseCase(args);
         parameterTuning(args);
         //fullRun(args);
     }
@@ -63,6 +65,7 @@ public class App {
     }
 
     private static void parameterTuning(String[] args) throws Exception {
+        Parameters.totalRuntime = 600000;
         for (int iteration = 0 ; iteration < 5 ; iteration++){
             for (int bool = 0 ; bool < 2 ; bool++){
                 Parameters.useVestTeleDataset = bool == 0;
@@ -111,27 +114,67 @@ public class App {
         }
     }
 
+    private static void baseCase(String[] args) throws Exception {
+        Parameters.numberOfCustomers = 10;
+        Parameters.numberOfVehicles = 5;
+        for (int iteration = 0 ; iteration < 10 ; iteration++){
+            for (int bool = 0 ; bool < 2 ; bool++){
+                Parameters.useVestTeleDataset = bool == 0;
+                int[] seeds = Parameters.useVestTeleDataset ? new int[]{89,01} : new int[]{57,97,80};
+                for (int seed : seeds) {
+                    Parameters.randomSeedValue = seed;
+
+                    if (args[0].equals("AFM"))
+                        runMIPAFM();
+                    else if (args[0].equals("PFM"))
+                        runMIPPFM();
+                    else if (args[0].equals("JBM"))
+                        runMIPJBM();
+                    else if (args[0].equals("GA")){
+                        GAController ga = new GAController();
+                        ga.runGA();
+                    }
+                    else if (args[0].equals("PGA")) {
+                        Parameters.numberOfPGA = Parameters.numberOfAlgorithms;
+                        Parameters.isPeriodic = true;
+                        HybridController hc = new HybridController();
+                        hc.run();
+                    }
+                    else if (args[0].equals("ABC")) {
+                        Parameters.numberOfPGA = 0;
+                        HybridController hc = new HybridController();
+                        hc.run();
+                    }
+                    else if (args[0].equals("HYBRID")) {
+                        HybridController hc = new HybridController();
+                        hc.run();
+                    }
+                }
+            }
+        }
+    }
+
     private static void initialize(){
         seeds = new int[2][5][];
         customers = new int[5];
         vehicles = new int[5];
         //25
-        seeds[0][0] = new int[]{}; //15, 84};
-        seeds[1][0] = new int[]{};//69,85};
+        seeds[0][0] = new int[]{15, 84};
+        seeds[1][0] = new int[]{69,85};
         customers[0] = 25;
         vehicles[0] = 12;
         //50
-        seeds[0][1] = new int[]{};//94,41};
-        seeds[1][1] = new int[]{};//20,60};
+        seeds[0][1] = new int[]{94,41};
+        seeds[1][1] = new int[]{20,60};
         customers[1] = 50;
         vehicles[1] = 25;
         //75
-        seeds[0][2] = new int[]{};//32,18,37};
-        seeds[1][2] = new int[]{};//1};
+        seeds[0][2] = new int[]{32,18,37};
+        seeds[1][2] = new int[]{1};
         customers[2] = 75;
         vehicles[2] = 32;
         //100
-        seeds[0][3] = new int[]{};//97,46,35,76};
+        seeds[0][3] = new int[]{97,46,35,76};
         seeds[1][3] = new int[]{};
         customers[3] = 100;
         vehicles[3] = 50;
