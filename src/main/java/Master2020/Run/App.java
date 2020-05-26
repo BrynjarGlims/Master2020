@@ -75,10 +75,10 @@ public class App {
 
                     //MUST BE CHANGED DEPENDING ON WHAT WE WANT TO TEST!!!
                     //GENERATIONS / OD
-                    double[] gens = new double[]{1,2,3,4,5};
-                    for (double gen : gens){
-                        Parameters.heuristicDominanceValue = gen;
-                        Parameters.customFileName = "HeuristicDominance" + gen;
+                    int[] gens = new int[]{3,6,8,12,15};
+                    for (int gen : gens){
+                        Parameters.diversifiedODsGenerated = gen;
+                        Parameters.customFileName = "DiversifiedOD" + gen;
                         System.out.println(Parameters.customFileName);
                         System.out.println("Using vestTele: " + Parameters.useVestTeleDataset + " for seed: " + Parameters.randomSeedValue);
 

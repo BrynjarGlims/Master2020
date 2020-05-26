@@ -148,7 +148,7 @@ public class Parameters {
     public static final int minimumIterationsPerOD = 3;
     public static final int hybridIterationsWithoutImprovementLimit = 1;
     public static final int orderDistributionCutoff = 2;
-    public static final int diversifiedODsGenerated = 3;
+    public static int diversifiedODsGenerated = 3;
 
     // Time run parameters
     public static long timeLimitPerAlgorithm = 15000 ;  // in milli
