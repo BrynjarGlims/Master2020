@@ -119,6 +119,7 @@ public class App {
     private static void baseCase(String[] args) throws Exception {
         Parameters.numberOfCustomers = 10;
         Parameters.numberOfVehicles = 5;
+        Parameters.customFileName = "baseCase";
         for (int iteration = 0 ; iteration < 10 ; iteration++){
             for (int bool = 0 ; bool < 2 ; bool++){
                 Parameters.useVestTeleDataset = bool == 0;
