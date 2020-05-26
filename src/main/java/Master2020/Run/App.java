@@ -18,8 +18,8 @@ public class App {
 
 
     public static void main(String[] args) throws Exception {
-        //parameterTuning(args);
-        fullRun(args);
+        parameterTuning(args);
+        //fullRun(args);
     }
 
 
@@ -72,10 +72,10 @@ public class App {
 
                     //MUST BE CHANGED DEPENDING ON WHAT WE WANT TO TEST!!!
                     //GENERATIONS / OD
-                    double[] gens = new double[]{0.01, 0.25, 0.5, 0.75, 1};
+                    double[] gens = new double[]{1,2,3,4,5};
                     for (double gen : gens){
-                        Parameters.weightNeighborOnlooker = gen;
-                        Parameters.customFileName = "dimensionsChanged" + gen;
+                        Parameters.heuristicDominanceValue = gen;
+                        Parameters.customFileName = "HeuristicDominance" + gen;
                         System.out.println(Parameters.customFileName);
                         System.out.println("Using vestTele: " + Parameters.useVestTeleDataset + " for seed: " + Parameters.randomSeedValue);
 
