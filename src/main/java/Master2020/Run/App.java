@@ -19,8 +19,8 @@ public class App {
 
 
     public static void main(String[] args) throws Exception {
-//        baseCase(args);
-        parameterTuning(args);
+        baseCase(args);
+//        parameterTuning(args);
         //fullRun(args);
     }
 
@@ -122,7 +122,7 @@ public class App {
         for (int iteration = 0 ; iteration < 10 ; iteration++){
             for (int bool = 0 ; bool < 2 ; bool++){
                 Parameters.useVestTeleDataset = bool == 0;
-                int[] seeds = Parameters.useVestTeleDataset ? new int[]{89,01} : new int[]{57,97,80};
+                int[] seeds = Parameters.useVestTeleDataset ? new int[]{89,1} : new int[]{57,97,80};
                 for (int seed : seeds) {
                     Parameters.randomSeedValue = seed;
 
