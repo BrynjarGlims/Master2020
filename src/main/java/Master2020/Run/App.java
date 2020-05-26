@@ -19,8 +19,8 @@ public class App {
 
 
     public static void main(String[] args) throws Exception {
-        baseCase(args);
-//        parameterTuning(args);
+//        baseCase(args);
+        parameterTuning(args);
         //fullRun(args);
     }
 
