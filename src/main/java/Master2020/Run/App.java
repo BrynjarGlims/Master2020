@@ -66,6 +66,8 @@ public class App {
 
     private static void parameterTuning(String[] args) throws Exception {
         Parameters.totalRuntime = 600000;
+        Parameters.numberOfCustomers = 25;
+        Parameters.numberOfVehicles = 12;
         for (int iteration = 0 ; iteration < 5 ; iteration++){
             for (int bool = 0 ; bool < 2 ; bool++){
                 Parameters.useVestTeleDataset = bool == 0;
@@ -75,10 +77,10 @@ public class App {
 
                     //MUST BE CHANGED DEPENDING ON WHAT WE WANT TO TEST!!!
                     //GENERATIONS / OD
-                    int[] gens = new int[]{3,6,8,12,15};
+                    int[] gens = new int[]{3,5,8,10};
                     for (int gen : gens){
-                        Parameters.diversifiedODsGenerated = gen;
-                        Parameters.customFileName = "DiversifiedOD" + gen;
+                        Parameters.numberOfOnlookers = gen * Parameters.numberOfEmployees;
+                        Parameters.customFileName = "OnlookersperEmployee" + gen;
                         System.out.println(Parameters.customFileName);
                         System.out.println("Using vestTele: " + Parameters.useVestTeleDataset + " for seed: " + Parameters.randomSeedValue);
 

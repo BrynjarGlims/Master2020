@@ -65,8 +65,8 @@ public class Parameters {
     // ABC specific parameters
     public static final boolean ABCPenaltyAdjustment = false;
     public static final int generationsPerOrderDistribution = 4 * numberOfCustomers;
-    public static final int numberOfEmployees = 15;
-    public static final int numberOfOnlookers = 4 * numberOfEmployees;
+    public static final int numberOfEmployees = 10;
+    public static int numberOfOnlookers = 6 * numberOfEmployees;
     public static final int numberOfScoutTrials = 100;
     public static final int maxNumberOfTrials = 15;
     public static int maxBoundDimensionality = (int) Math.round(0.7 * numberOfCustomers); //FINAL //max amount of dimensions that can be changed, chosen randomly from 1-this
@@ -75,7 +75,7 @@ public class Parameters {
     public static double weightGlobalBest = 0.75;
     public static final double movementRange = 1; //both positive and negative, but only half in negative direction
     public static double onlookerRandomAdjustment = 0.01; //FINAL //a random number added when onlooker goes to employers foodsource
-    public static int numberOfEnhancements = 0; //number of enhancements for employees
+    public static int numberOfEnhancements = 3; //FINAL //number of enhancements for employees
     public static final double[] weightsEnhancement = new double[]{33, 33, 34}; //probability distribution of enhancements, [reverse, swap, insert]
     public static final double globalTrialsCutoff = 1.3; //trials will not increment if solution is within this multiplier of global best
 
@@ -129,7 +129,7 @@ public class Parameters {
     //Periodic parameters
     public static boolean isPeriodic = false;  // should be set to true, but has default value false
     public static final boolean useODMIPBetweenIterations = true;
-    public static int maxGenerationsPerOrderDistributionUpdatePeriodic = 75; //FINAL
+    public static int maxGenerationsPerOrderDistributionUpdatePeriodic = 50; //FINAL
     public static final double initialOrderDistributionScale = 1;
 
     //......
