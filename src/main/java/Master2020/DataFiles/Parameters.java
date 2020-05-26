@@ -67,7 +67,7 @@ public class Parameters {
     public static final int generationsPerOrderDistribution = 4 * numberOfCustomers;
     public static int numberOfEmployees = 10;
     public static int numberOfOnlookers = 6 * numberOfEmployees;
-    public static final int numberOfScoutTrials = 100;
+    public static int numberOfScoutTrials = 100;
     public static final int maxNumberOfTrials = 15;
     public static int maxBoundDimensionality = (int) Math.round(0.7 * numberOfCustomers); //FINAL //max amount of dimensions that can be changed, chosen randomly from 1-this
     public static double weightNeighborOnlooker = 1; //FINAL
