@@ -63,9 +63,6 @@ public class SolutionStorer {
         }
     }
 
-
-
-
     public static String getFolderName(String modelName) {
         try{
             SimpleDateFormat date_formatter = new SimpleDateFormat("dd_MM_yyyy_HH_mm_ss");

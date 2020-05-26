@@ -556,7 +556,7 @@ public class JourneyCombinationModel extends Model{
 
     public void optimizeModel() throws GRBException {
         model.set(GRB.DoubleParam.MIPGap, Parameters.modelMipGap);
-        model.set(GRB.DoubleParam.TimeLimit, Parameters.modelTimeLimit);
+        model.set(GRB.DoubleParam.TimeLimit, Parameters.modelJCMTimeLimit);
         model.optimize();
         model.get(GRB.DoubleAttr.Runtime);
         System.out.println(GRB.Status.OPTIMAL);
@@ -765,7 +765,8 @@ public class JourneyCombinationModel extends Model{
                     this.MIPGap = model.get(GRB.DoubleAttr.MIPGap);
                     runTime = (System.currentTimeMillis() - time)/1000;
                 }
-                else {
+                else if (model.get(GRB.IntAttr.SolCount) > 0) {
+                    optimstatus = 2;
                     System.out.println("Create and store results");
                     feasible = true;
                     optimal = false;
@@ -775,6 +776,9 @@ public class JourneyCombinationModel extends Model{
                     System.out.println("Terminate model");
                     this.MIPGap = model.get(GRB.DoubleAttr.MIPGap);
                     runTime = (System.currentTimeMillis() - time)/1000;
+                }
+                else {
+                    optimstatus = -1; //  no solution found
                 }
             }
             return optimstatus;
@@ -797,8 +801,6 @@ public class JourneyCombinationModel extends Model{
     }
 
     public ArrayList<Master2020.Individual.Journey>[][] getOptimalJourneys() throws Exception {
-        if (optimstatus != 2)
-            throw new Exception("Model not optimized");
         ArrayList<Master2020.Individual.Journey>[][] optimalJourneys = new ArrayList[dataMIP.numPeriods][dataMIP.numVehicleTypes];
         for (int p = 0; p < dataMIP.numPeriods; p++){
             for (int vt = 0; vt < dataMIP.numVehicleTypes; vt++){
