@@ -69,12 +69,12 @@ public class Parameters {
     public static final int numberOfOnlookers = 4 * numberOfEmployees;
     public static final int numberOfScoutTrials = 100;
     public static final int maxNumberOfTrials = 15;
-    public static int maxBoundDimensionality = (int) Math.round(0.7 * numberOfCustomers); //max amount of dimensions that can be changed, chosen randomly from 1-this
-    public static double weightNeighborOnlooker = 1;
-    public static double weightNeighborEmployed = 0.5 * weightNeighborOnlooker;
+    public static int maxBoundDimensionality = (int) Math.round(0.7 * numberOfCustomers); //FINAL //max amount of dimensions that can be changed, chosen randomly from 1-this
+    public static double weightNeighborOnlooker = 1; //FINAL
+    public static double weightNeighborEmployed = 0.5 * weightNeighborOnlooker; //FINAL
     public static double weightGlobalBest = 0.75;
     public static final double movementRange = 1; //both positive and negative, but only half in negative direction
-    public static double onlookerRandomAdjustment = 0.2; //a random number added when onlooker goes to employers foodsource
+    public static double onlookerRandomAdjustment = 0.01; //FINAL //a random number added when onlooker goes to employers foodsource
     public static int numberOfEnhancements = 0; //number of enhancements for employees
     public static final double[] weightsEnhancement = new double[]{33, 33, 34}; //probability distribution of enhancements, [reverse, swap, insert]
     public static final double globalTrialsCutoff = 1.3; //trials will not increment if solution is within this multiplier of global best
