@@ -77,10 +77,10 @@ public class App {
 
                     //MUST BE CHANGED DEPENDING ON WHAT WE WANT TO TEST!!!
                     //GENERATIONS / OD
-                    int[] gens = new int[]{2,4,6,8,10};
-                    for (int gen : gens){
-                        Parameters.generationsPerOrderDistribution = gen * Parameters.numberOfCustomers;
-                        Parameters.customFileName = "iterationsPerOD" + gen;
+                    double[] gens = new double[]{1.0, 1.1, 1.2, 1.3, 1.4, 1.5};
+                    for (double gen : gens){
+                        Parameters.globalTrialsCutoff = gen;
+                        Parameters.customFileName = "globalODcutoff" + gen;
                         System.out.println(Parameters.customFileName);
                         System.out.println("Using vestTele: " + Parameters.useVestTeleDataset + " for seed: " + Parameters.randomSeedValue);
 
