@@ -19,9 +19,15 @@ public class App {
 
 
     public static void main(String[] args) throws Exception {
-//        baseCase(args);
-        parameterTuning(args);
-        //fullRun(args);
+        if (args[1].equals("base")){
+        baseCase(args);
+        }
+        else if (args[1].equals("parameter")){
+            parameterTuning(args);
+        }
+        else if (args[1].equals("full")){
+            fullRun(args);
+        }
     }
 
 
