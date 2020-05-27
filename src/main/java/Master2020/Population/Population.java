@@ -203,7 +203,8 @@ public class Population {
         }
         ArrayList<Individual> individuals = new ArrayList<Individual>(feasiblePopulation);
         individuals.addAll(infeasiblePopulation);
-        Collections.sort(individuals);
+        Comparator<Individual> sortByFitness = new SortByFitness();
+        Collections.sort(individuals, sortByFitness);
         int numberOfIndividuals = 0;
         for (Individual individual : individuals){
             if (FitnessCalculation.getIndividualFitness(individual, 1, Parameters.initialTimeWarpPenalty,
@@ -212,7 +213,7 @@ public class Population {
                     bestJourneys[vt].addAll(individual.journeyList[0][vt]);
                 }
                 numberOfIndividuals += 1;
-                if (numberOfIndividuals > Parameters.numberOfIndividualJourneysInMIPPerPeriod)
+                if (numberOfIndividuals >= Parameters.numberOfIndividualJourneysInMIPPerPeriod)
                     break;
             }
         }
