@@ -12,6 +12,7 @@ import gurobi.GRBException;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
@@ -85,9 +86,15 @@ public class GeneticAlgorithm extends Thread {
         ArrayList<Individual> potentialIndividuals = new ArrayList<>(population.feasiblePopulation);
         if (Parameters.numberOfIndividualJourneysInMIPPerPeriod > potentialIndividuals.size())
             System.out.println("not enough individuals for this period " + period);
-        Collections.sort(potentialIndividuals);
+        Comparator<Individual> sortByFitness = new SortByFitness();
+        Collections.sort(potentialIndividuals, sortByFitness);
         for (int i = 0; i < Math.min(Parameters.numberOfIndividualJourneysInMIPPerPeriod, potentialIndividuals.size()); i++){
             Individual individual = potentialIndividuals.get(i);
+            System.out.println("Individual is feasible: " + individual.isFeasible());
+            if (FitnessCalculation.getIndividualFitness(individual, 1, Parameters.initialTimeWarpPenalty,
+                    Parameters.initialOverLoadPenalty)[1] >= Parameters.indifferenceValue) {
+                System.out.println("This individual is not feasible");
+            }
             for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
                 tempJourneyList[vt].addAll(individual.journeyList[0][vt]);
             }

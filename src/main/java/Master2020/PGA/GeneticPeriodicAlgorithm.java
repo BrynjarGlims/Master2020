@@ -105,13 +105,6 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
         return threads;
     }
 
-    public ArrayList<Journey>[][] createJourneysToJCM(){
-        ArrayList<Journey>[][] journeys = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
-        for (int p = 0; p < data.numberOfPeriods; p++){
-            journeys[p] = threads.get(p).getBestJourneysFromIndividuals();
-        }
-        return journeys;
-    }
 
     public void runIteration() throws Exception {
 
@@ -292,6 +285,7 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
     public void setListOfJourneysFromThreads() {
         this.journeys = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
         for (int p = 0; p < data.numberOfPeriods; p++) {
+            //this.journeys[p] = threads.get(p).getBestJourneysFromIndividuals();
             this.journeys[p] = threads.get(p).getListOfBestJourneys();
         }
     }

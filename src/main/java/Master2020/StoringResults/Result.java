@@ -609,10 +609,9 @@ public class Result {
 
 
         String[] results = {fileName, String.format("%.4f",bestIndividual.getFitness(false)), modelName,  String.valueOf(this.runTime), String.valueOf(Parameters.timeLimitPerAlgorithm),
-                String.valueOf(Parameters.useVestTeleDataset),
-                date_formatter.format(new Date()), String.valueOf(Parameters.useJCM) ,String.valueOf(Parameters.numberOfPGA), String.valueOf(Parameters.numberOfABC) ,String.valueOf(Parameters.randomSeedValue),
-                String.valueOf(Parameters.populationSize),String.valueOf(Parameters.maxNumberOfGenerations), String.valueOf(Parameters.numberOfCustomers)
-                , String.valueOf(Parameters.numberOfVehicles), String.valueOf(this.isFeasible), String.valueOf(this.isOptimal), String.valueOf(Math.round(this.MIPGap*1000000)/10000) + "%"};
+                String.valueOf(Parameters.useVestTeleDataset), date_formatter.format(new Date()), String.valueOf(Parameters.randomSeedValue), String.valueOf(Parameters.useJCM) ,String.valueOf(Parameters.numberOfPGA), String.valueOf(Parameters.numberOfABC),
+                String.valueOf(Parameters.populationSize),String.valueOf(Parameters.maxNumberOfGenerations), String.valueOf(Parameters.numberOfCustomers),
+                String.valueOf(Parameters.numberOfVehicles), String.valueOf(this.isFeasible), String.valueOf(this.isOptimal), String.valueOf(Math.round(this.MIPGap*1000000)/10000) + "%"};
         csvWriter.writeNext(results, false);
         csvWriter.close();
         writer.close();
