@@ -5,6 +5,7 @@ import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Parameters;
 import gurobi.GRBException;
+import scala.xml.PrettyPrinter;
 
 import java.io.IOException;
 
@@ -18,8 +19,9 @@ public class App {
 
 
     public static void main(String[] args) throws Exception {
-        //parameterTuning(args);
-        fullRun(args);
+//        baseCase(args);
+        parameterTuning(args);
+        //fullRun(args);
     }
 
 
@@ -32,7 +34,6 @@ public class App {
                 for (int seed : seeds[dataset][instance]){
                     Parameters.randomSeedValue = seed;
                     System.out.println("running " + args[0] + " for dataset " + dataset + " for " + Parameters.numberOfCustomers + " customers, seed: " + seed);
-
                     if (args[0].equals("AFM"))
                         runMIPAFM();
                     else if (args[0].equals("PFM"))
@@ -64,6 +65,9 @@ public class App {
     }
 
     private static void parameterTuning(String[] args) throws Exception {
+        Parameters.totalRuntime = 600000;
+        Parameters.numberOfCustomers = 25;
+        Parameters.numberOfVehicles = 12;
         for (int iteration = 0 ; iteration < 5 ; iteration++){
             for (int bool = 0 ; bool < 2 ; bool++){
                 Parameters.useVestTeleDataset = bool == 0;
@@ -73,10 +77,10 @@ public class App {
 
                     //MUST BE CHANGED DEPENDING ON WHAT WE WANT TO TEST!!!
                     //GENERATIONS / OD
-                    double[] gens = new double[]{0.01, 0.25, 0.5, 0.75, 1};
+                    double[] gens = new double[]{1.0, 1.1, 1.2, 1.3, 1.4, 1.5};
                     for (double gen : gens){
-                        Parameters.weightNeighborOnlooker = gen;
-                        Parameters.customFileName = "dimensionsChanged" + gen;
+                        Parameters.globalTrialsCutoff = gen;
+                        Parameters.customFileName = "globalODcutoff" + gen;
                         System.out.println(Parameters.customFileName);
                         System.out.println("Using vestTele: " + Parameters.useVestTeleDataset + " for seed: " + Parameters.randomSeedValue);
 
@@ -112,6 +116,47 @@ public class App {
         }
     }
 
+    private static void baseCase(String[] args) throws Exception {
+        Parameters.numberOfCustomers = 10;
+        Parameters.numberOfVehicles = 5;
+        Parameters.customFileName = "baseCase";
+        for (int iteration = 0 ; iteration < 10 ; iteration++){
+            for (int bool = 0 ; bool < 2 ; bool++){
+                Parameters.useVestTeleDataset = bool == 0;
+                int[] seeds = Parameters.useVestTeleDataset ? new int[]{89,1} : new int[]{57,97,80};
+                for (int seed : seeds) {
+                    Parameters.randomSeedValue = seed;
+
+                    if (args[0].equals("AFM"))
+                        runMIPAFM();
+                    else if (args[0].equals("PFM"))
+                        runMIPPFM();
+                    else if (args[0].equals("JBM"))
+                        runMIPJBM();
+                    else if (args[0].equals("GA")){
+                        GAController ga = new GAController();
+                        ga.runGA();
+                    }
+                    else if (args[0].equals("PGA")) {
+                        Parameters.numberOfPGA = Parameters.numberOfAlgorithms;
+                        Parameters.isPeriodic = true;
+                        HybridController hc = new HybridController();
+                        hc.run();
+                    }
+                    else if (args[0].equals("ABC")) {
+                        Parameters.numberOfPGA = 0;
+                        HybridController hc = new HybridController();
+                        hc.run();
+                    }
+                    else if (args[0].equals("HYBRID")) {
+                        HybridController hc = new HybridController();
+                        hc.run();
+                    }
+                }
+            }
+        }
+    }
+
     private static void initialize(){
         seeds = new int[2][5][];
         customers = new int[5];
@@ -139,7 +184,7 @@ public class App {
         //115
         seeds[0][4] = new int[]{10,27};
         seeds[1][4] = new int[]{};
-        customers[4] = 100;
+        customers[4] = 115;
         vehicles[4] = 62;
     }
 }
