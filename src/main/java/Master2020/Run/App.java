@@ -33,6 +33,7 @@ public class App {
 
     private static void fullRun(String[] args) throws Exception {
         initialize();
+        Parameters.customFileName = "fullRun";
         for (int dataset = 0 ; dataset < 2 ; dataset++){
             for (int instance = 0 ; instance < 5 ; instance++){
                 Parameters.numberOfCustomers = customers[instance];
@@ -40,31 +41,7 @@ public class App {
                 for (int seed : seeds[dataset][instance]){
                     Parameters.randomSeedValue = seed;
                     System.out.println("running " + args[0] + " for dataset " + dataset + " for " + Parameters.numberOfCustomers + " customers, seed: " + seed);
-                    if (args[0].equals("AFM"))
-                        runMIPAFM();
-                    else if (args[0].equals("PFM"))
-                        runMIPPFM();
-                    else if (args[0].equals("JBM"))
-                        runMIPJBM();
-                    else if (args[0].equals("GA")){
-                        GAController ga = new GAController();
-                        ga.runGA();
-                    }
-                    else if (args[0].equals("PGA")) {
-                        Parameters.numberOfPGA = Parameters.numberOfAlgorithms;
-                        Parameters.isPeriodic = true;
-                        HybridController hc = new HybridController();
-                        hc.run();
-                    }
-                    else if (args[0].equals("ABC")) {
-                        Parameters.numberOfPGA = 0;
-                        HybridController hc = new HybridController();
-                        hc.run();
-                    }
-                    else if (args[0].equals("HYBRID")) {
-                        HybridController hc = new HybridController();
-                        hc.run();
-                    }
+                    run(args);
                 }
             }
         }
@@ -83,39 +60,13 @@ public class App {
 
                     //MUST BE CHANGED DEPENDING ON WHAT WE WANT TO TEST!!!
                     //GENERATIONS / OD
-                    double[] gens = new double[]{1.0, 1.1, 1.2, 1.3, 1.4, 1.5};
-                    for (double gen : gens){
-                        Parameters.globalTrialsCutoff = gen;
-                        Parameters.customFileName = "globalODcutoff" + gen;
+                    int[] gens = new int[]{2,3,4,5,6};
+                    for (int gen : gens){
+                        Parameters.tournamentSize = gen;
+                        Parameters.customFileName = "tournamentSize" + gen;
                         System.out.println(Parameters.customFileName);
                         System.out.println("Using vestTele: " + Parameters.useVestTeleDataset + " for seed: " + Parameters.randomSeedValue);
-
-
-                        if (args[0].equals("AFM"))
-                            runMIPAFM();
-                        else if (args[0].equals("PFM"))
-                            runMIPPFM();
-                        else if (args[0].equals("JBM"))
-                            runMIPJBM();
-                        else if (args[0].equals("GA")){
-                            GAController ga = new GAController();
-                            ga.runGA();
-                        }
-                        else if (args[0].equals("PGA")) {
-                            Parameters.numberOfPGA = Parameters.numberOfAlgorithms;
-                            Parameters.isPeriodic = true;
-                            HybridController hc = new HybridController();
-                            hc.run();
-                        }
-                        else if (args[0].equals("ABC")) {
-                            Parameters.numberOfPGA = 0;
-                            HybridController hc = new HybridController();
-                            hc.run();
-                        }
-                        else if (args[0].equals("HYBRID")) {
-                            HybridController hc = new HybridController();
-                            hc.run();
-                        }
+                        run(args);
                     }
                 }
             }
@@ -132,34 +83,39 @@ public class App {
                 int[] seeds = Parameters.useVestTeleDataset ? new int[]{89,1} : new int[]{57,97,80};
                 for (int seed : seeds) {
                     Parameters.randomSeedValue = seed;
-
-                    if (args[0].equals("AFM"))
-                        runMIPAFM();
-                    else if (args[0].equals("PFM"))
-                        runMIPPFM();
-                    else if (args[0].equals("JBM"))
-                        runMIPJBM();
-                    else if (args[0].equals("GA")){
-                        GAController ga = new GAController();
-                        ga.runGA();
-                    }
-                    else if (args[0].equals("PGA")) {
-                        Parameters.numberOfPGA = Parameters.numberOfAlgorithms;
-                        Parameters.isPeriodic = true;
-                        HybridController hc = new HybridController();
-                        hc.run();
-                    }
-                    else if (args[0].equals("ABC")) {
-                        Parameters.numberOfPGA = 0;
-                        HybridController hc = new HybridController();
-                        hc.run();
-                    }
-                    else if (args[0].equals("HYBRID")) {
-                        HybridController hc = new HybridController();
-                        hc.run();
-                    }
+                    run(args);
                 }
             }
+        }
+    }
+
+    private static void run(String[] args) throws Exception {
+        if (args[0].equals("AFM"))
+            runMIPAFM();
+        else if (args[0].equals("PFM"))
+            runMIPPFM();
+        else if (args[0].equals("JBM"))
+            runMIPJBM();
+        else if (args[0].equals("GA")){
+            GAController ga = new GAController();
+            ga.runGA();
+        }
+        else if (args[0].equals("PGA")) {
+            Parameters.useJCM = false;
+            Parameters.numberOfPGA = Parameters.numberOfAlgorithms;
+            Parameters.isPeriodic = true;
+            HybridController hc = new HybridController();
+            hc.run();
+        }
+        else if (args[0].equals("ABC")) {
+            Parameters.numberOfPGA = 0;
+            Parameters.useJCM = false;
+            HybridController hc = new HybridController();
+            hc.run();
+        }
+        else if (args[0].equals("HYBRID")) {
+            HybridController hc = new HybridController();
+            hc.run();
         }
     }
 

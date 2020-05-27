@@ -110,7 +110,7 @@ public class Parameters {
     public static final int nearestNeighborsDiversity = (int) 0.2 * populationSize ;  // Neighbours from calculating diversity ... change!!!
     public static final int diversityCalculationInterval = 20;
     public static final double bestIndividualProbability = 0.6;
-    public static final int tournamentSize = 5;  // 2 or larger, size = 2 --> binary tournament selection
+    public static int tournamentSize = 5;  // 2 or larger, size = 2 --> binary tournament selection
     public static final boolean binarySelection = true;  // if true, bestIndProp must be much larger than 0.5
 
     //GUROBI parameters - Not tunable
@@ -135,7 +135,7 @@ public class Parameters {
     //......
 
     // Journey Combination Model parameters
-    public static final boolean useJCM = true;
+    public static boolean useJCM = true;
     public static final int numberOfIndividualJourneysInMIPPerPeriod = 1;
     public static final String symmetryOFJCM = "car";
 
@@ -143,7 +143,7 @@ public class Parameters {
     // Periodic Parameters, common for PGA, ABC, and HYBRID
 
     public static final int numberOfAlgorithms = 6;
-    public static int numberOfPGA = 6;
+    public static int numberOfPGA = 3;
     public static int numberOfABC = numberOfAlgorithms - numberOfPGA;
     public static final int minimumIterationsPerOD = 3;
     public static final int hybridIterationsWithoutImprovementLimit = 1;

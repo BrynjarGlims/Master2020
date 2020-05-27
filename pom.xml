@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.example</groupId>
-    <artifactId>VRP-complete</artifactId>
+    <artifactId>VRP-tournament</artifactId>
     <version>1.0</version>
 
     <properties>
