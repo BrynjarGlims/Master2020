@@ -59,15 +59,15 @@ public class Parameters {
     public static double tripOptimizerProbability = 0.25; //FINAL 0.25
     public static final double repairProbability = 0.4; //FINAL 0.4
     public static double ODMIPProbability = 0.75; //FINAL 0.75
-    public static double heuristicDominanceValue = 1;
+    public static double heuristicDominanceValue = 1; //FINAL
 
 
     // ABC specific parameters
     public static final boolean ABCPenaltyAdjustment = false;
-    public static int generationsPerOrderDistribution = 4 * numberOfCustomers;
-    public static int numberOfEmployees = 10;
-    public static int numberOfOnlookers = 6 * numberOfEmployees;
-    public static int numberOfScoutTrials = 100;
+    public static int generationsPerOrderDistribution = 4 * numberOfCustomers; //FINAL
+    public static int numberOfEmployees = 20; //FINAL
+    public static int numberOfOnlookers = 8 * numberOfEmployees; //FINAL
+    public static int numberOfScoutTrials = 50; //FINAL
     public static final int maxNumberOfTrials = 15;
     public static int maxBoundDimensionality = (int) Math.round(0.4 * numberOfCustomers); //FINAL //max amount of dimensions that can be changed, chosen randomly from 1-this
     public static double weightNeighborOnlooker = 1; //FINAL
@@ -135,20 +135,20 @@ public class Parameters {
     //......
 
     // Journey Combination Model parameters
-    public static boolean useJCM = true;
+    public static boolean useJCM = false;
     public static final int numberOfIndividualJourneysInMIPPerPeriod = 1;
     public static final String symmetryOFJCM = "car";
 
 
     // Periodic Parameters, common for PGA, ABC, and HYBRID
 
-    public static final int numberOfAlgorithms = 6;
-    public static int numberOfPGA = 3;
+    public static final int numberOfAlgorithms = 3;
+    public static int numberOfPGA = 0;
     public static int numberOfABC = numberOfAlgorithms - numberOfPGA;
     public static final int minimumIterationsPerOD = 3;
     public static final int hybridIterationsWithoutImprovementLimit = 1;
     public static final int orderDistributionCutoff = 2;
-    public static int diversifiedODsGenerated = 3;
+    public static int diversifiedODsGenerated = 9;
 
     // Time run parameters
     public static long timeLimitPerAlgorithm = 15000 ;  // in milli
