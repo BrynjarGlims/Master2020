@@ -107,7 +107,7 @@ public class Parameters {
     public static final double scalingDrivingCost = 25;  // // TODO: 03/04/2020 Not sure if implemented correctly 
 
     //Tournament selection parameters - Probably tunable
-    public static final int nearestNeighborsDiversity = 5;  // Neighbours from calculating diversity ... change!!!
+    public static final int nearestNeighborsDiversity = (int) 0.2 * populationSize ;  // Neighbours from calculating diversity ... change!!!
     public static final int diversityCalculationInterval = 20;
     public static final double bestIndividualProbability = 0.6;
     public static final int tournamentSize = 5;  // 2 or larger, size = 2 --> binary tournament selection
@@ -135,15 +135,15 @@ public class Parameters {
     //......
 
     // Journey Combination Model parameters
-    public static final boolean useJCM = false;
-    public static final int numberOfIndividualJourneysInMIPPerPeriod = 5;
+    public static final boolean useJCM = true;
+    public static final int numberOfIndividualJourneysInMIPPerPeriod = 1;
     public static final String symmetryOFJCM = "car";
 
 
     // Periodic Parameters, common for PGA, ABC, and HYBRID
 
     public static final int numberOfAlgorithms = 6;
-    public static int numberOfPGA = 3;
+    public static int numberOfPGA = 6;
     public static int numberOfABC = numberOfAlgorithms - numberOfPGA;
     public static final int minimumIterationsPerOD = 3;
     public static final int hybridIterationsWithoutImprovementLimit = 1;
