@@ -72,12 +72,12 @@ public class Parameters {
     public static int maxBoundDimensionality = (int) Math.round(0.4 * numberOfCustomers); //FINAL //max amount of dimensions that can be changed, chosen randomly from 1-this
     public static double weightNeighborOnlooker = 1; //FINAL
     public static double weightNeighborEmployed = 0.5 * weightNeighborOnlooker; //FINAL
-    public static double weightGlobalBest = 0.75;
-    public static final double movementRange = 1; //both positive and negative, but only half in negative direction
+    public static double weightGlobalBest = 0.75; //FINAL
+    public static final double movementRange = 1; //FINAL //both positive and negative, but only half in negative direction
     public static double onlookerRandomAdjustment = 0.01; //FINAL //a random number added when onlooker goes to employers foodsource
     public static int numberOfEnhancements = 3; //FINAL //number of enhancements for employees
     public static final double[] weightsEnhancement = new double[]{33, 33, 34}; //probability distribution of enhancements, [reverse, swap, insert]
-    public static double globalTrialsCutoff = 1.3; //trials will not increment if solution is within this multiplier of global best
+    public static double globalTrialsCutoff = 1.3; //FINAL//trials will not increment if solution is within this multiplier of global best
 
 
 
@@ -107,7 +107,7 @@ public class Parameters {
     public static final double scalingDrivingCost = 25;  // // TODO: 03/04/2020 Not sure if implemented correctly 
 
     //Tournament selection parameters - Probably tunable
-    public static final int nearestNeighborsDiversity = (int) 0.2 * populationSize ;  // Neighbours from calculating diversity ... change!!!
+    public static final int nearestNeighborsDiversity = (int) Math.round(0.2 * populationSize);  // Neighbours from calculating diversity ... change!!!
     public static final int diversityCalculationInterval = 20;
     public static final double bestIndividualProbability = 0.6;
     public static int tournamentSize = 5;  // 2 or larger, size = 2 --> binary tournament selection
@@ -142,7 +142,7 @@ public class Parameters {
 
     // Periodic Parameters, common for PGA, ABC, and HYBRID
 
-    public static final int numberOfAlgorithms = 3;
+    public static final int numberOfAlgorithms = 6;
     public static int numberOfPGA = 0;
     public static int numberOfABC = numberOfAlgorithms - numberOfPGA;
     public static final int minimumIterationsPerOD = 3;
