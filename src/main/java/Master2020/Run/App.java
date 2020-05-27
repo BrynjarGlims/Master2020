@@ -34,14 +34,16 @@ public class App {
     private static void fullRun(String[] args) throws Exception {
         initialize();
         Parameters.customFileName = "fullRun";
-        for (int dataset = 0 ; dataset < 2 ; dataset++){
-            for (int instance = 0 ; instance < 5 ; instance++){
-                Parameters.numberOfCustomers = customers[instance];
-                Parameters.numberOfVehicles = vehicles[instance];
-                for (int seed : seeds[dataset][instance]){
-                    Parameters.randomSeedValue = seed;
-                    System.out.println("running " + args[0] + " for dataset " + dataset + " for " + Parameters.numberOfCustomers + " customers, seed: " + seed);
-                    run(args);
+        for (int iteration = 0 ; iteration < 2 ; iteration++){
+            for (int dataset = 0 ; dataset < 2 ; dataset++){
+                for (int instance = 0 ; instance < 5 ; instance++){
+                    Parameters.numberOfCustomers = customers[instance];
+                    Parameters.numberOfVehicles = vehicles[instance];
+                    for (int seed : seeds[dataset][instance]){
+                        Parameters.randomSeedValue = seed;
+                        System.out.println("running " + args[0] + " for dataset " + dataset + " for " + Parameters.numberOfCustomers + " customers, seed: " + seed);
+                        run(args);
+                    }
                 }
             }
         }
