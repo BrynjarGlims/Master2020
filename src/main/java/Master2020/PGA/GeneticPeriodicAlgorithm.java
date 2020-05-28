@@ -258,6 +258,7 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
     }
 
     public ArrayList<Journey>[][] getJourneys(){
+        setListOfJourneysFromThreads();
         for (int p = 0; p < data.numberOfPeriods; p++){
             for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
                 for (Journey journey : journeys[p][vt]){

@@ -198,23 +198,30 @@ public class Population {
 
     public ArrayList<Journey>[] getListOfBestJourneysPeriodic(){
         ArrayList<Journey>[] bestJourneys = new ArrayList[data.numberOfVehicleTypes];
+        Individual bestIndividual = returnBestIndividual();
+        boolean isFeasible  =  (FitnessCalculation.getIndividualFitness(bestIndividual, 1, Parameters.initialTimeWarpPenalty,
+                Parameters.initialOverLoadPenalty)[1] <= Parameters.indifferenceValue);
         for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
             bestJourneys[vt] = new ArrayList<>();
+            if(isFeasible){
+                bestJourneys[vt].addAll(bestIndividual.journeyList[0][vt]);
+            }
         }
+        
         ArrayList<Individual> individuals = new ArrayList<Individual>(feasiblePopulation);
-        individuals.addAll(infeasiblePopulation);
-        Comparator<Individual> sortByFitness = new SortByFitness();
-        Collections.sort(individuals, sortByFitness);
+        //individuals.addAll(infeasiblePopulation);
+        //Comparator<Individual> sortByFitness = new SortByFitness();
+        Collections.sort(individuals);
         int numberOfIndividuals = 0;
         for (Individual individual : individuals){
             if (FitnessCalculation.getIndividualFitness(individual, 1, Parameters.initialTimeWarpPenalty,
-                    Parameters.initialOverLoadPenalty)[1] <= Parameters.indifferenceValue){
-                for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
-                    bestJourneys[vt].addAll(individual.journeyList[0][vt]);
-                }
+                    Parameters.initialOverLoadPenalty)[1] <= Parameters.indifferenceValue && !individual.equals(bestIndividual)){
                 numberOfIndividuals += 1;
                 if (numberOfIndividuals >= Parameters.numberOfIndividualJourneysInMIPPerPeriod)
                     break;
+                for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
+                    bestJourneys[vt].addAll(individual.journeyList[0][vt]);
+                }
             }
         }
         return bestJourneys;

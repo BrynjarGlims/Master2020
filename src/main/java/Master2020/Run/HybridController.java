@@ -16,6 +16,7 @@ import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.StoringResults.SolutionStorer;
 import Master2020.Testing.HybridTest;
 import Master2020.Testing.IndividualTest;
+import Master2020.Testing.MIPTest;
 import Master2020.Testing.SolutionTest;
 import gurobi.GRBException;
 
@@ -143,7 +144,8 @@ public class HybridController {
     public void generateOptimalSolution( ) throws CloneNotSupportedException {
         try{
             ArrayList<Journey>[][] journeys = getJourneys();
-            journeys = bestIterationSolution.getJourneys();
+            ArrayList<Journey>[][] otherJourneys = bestIterationSolution.getJourneys();
+            MIPTest.testJourneySimilarity(otherJourneys, journeys, data);
             if (journeyCombinationModel.runModel(journeys) == 2) {
                 journeys = journeyCombinationModel.getOptimalJourneys();
                 orderDistributionJCM = journeyCombinationModel.getOrderDistribution();
@@ -285,7 +287,11 @@ public class HybridController {
                 HybridTest.printNumberOfJourneys(tempJourneys,data);
             for (int p = 0 ; p < data.numberOfPeriods ; p++){
                 for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
-                    journeys[p][vt].addAll(tempJourneys[p][vt]);
+                    for (Journey j : tempJourneys[p][vt]){
+                        if (!journeys[p][vt].contains(j)) {
+                            journeys[p][vt].add(j);
+                        }
+                    }
                 }
             }
         }

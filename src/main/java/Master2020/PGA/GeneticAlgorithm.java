@@ -190,7 +190,7 @@ public class GeneticAlgorithm extends Thread {
 
     public void runGenerations(int generations) {
         resetCounters();
-        //printPopulationStats();
+        printPopulationStats();
         for (int i = 0 ; i < generations ; i++){
             runGeneration();
             if (iterationsWithoutImprovement > Parameters.maxNumberIterationsWithoutImprovement ||
@@ -199,7 +199,7 @@ public class GeneticAlgorithm extends Thread {
                 break;
             }
         }
-        //printPopulationStats();
+        printPopulationStats();
     }
 
     public void printPopulationStats(){

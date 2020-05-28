@@ -33,6 +33,25 @@ public class MIPTest {
         }
     }
 
+    public static void testJourneySimilarity(ArrayList<Master2020.Individual.Journey>[][] smallJourneySet, ArrayList<Master2020.Individual.Journey>[][] largeJourneySet, Data data){
+        for (int p = 0; p < data.numberOfPeriods; p++){
+            for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
+                for (Master2020.Individual.Journey j : smallJourneySet[p][vt] ){
+                    boolean found = false;
+                    for (Master2020.Individual.Journey x : largeJourneySet[p][vt]){
+                        if (j.isEqual(x)){
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found){
+                        System.out.println("Journey " + j.hashCode() + " is not found");
+                    }
+                }
+            }
+        }
+    }
+
     public static void testIfValidJourneys(ArrayList<Master2020.Individual.Journey>[][] journeys, Data data){
         for (int p = 0; p < data.numberOfPeriods; p++){
             for (int i = 0; i < data.numberOfCustomers; i++){
