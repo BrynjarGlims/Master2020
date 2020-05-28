@@ -26,7 +26,7 @@ import java.util.stream.IntStream;
 
 public class HybridController {
 
-    public static int algorithmCounter = 0;
+    public static int algorithmCounter;
     public Data data;
     public ArrayList<PeriodicAlgorithm> algorithms;
     public PeriodicOrderDistributionPopulation pod;
@@ -46,6 +46,7 @@ public class HybridController {
     public PeriodicSolution bestIterationSolution;
 
     public HybridController() throws GRBException {
+        algorithmCounter = 0;
         this.data = DataReader.loadData();
         initialize();
     }
