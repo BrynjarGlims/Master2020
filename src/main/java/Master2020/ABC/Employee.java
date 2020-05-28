@@ -50,7 +50,8 @@ public class Employee extends Bee {
         return this.position;
     }
 
-    public void search(Bee neighbor) {
+    public void search() {
+        Bee neighbor = colony.getRandomNeighbor(this);
         double[] currentPosition = position.clone();
         updatePosition(currentPosition, neighbor.position, true);
         enhance();

@@ -20,7 +20,7 @@ public class Parameters {
     public static boolean useVestTeleDataset = false;
     public static final boolean doRandomSeed = true;
     public static List<Integer> seeds = Arrays.asList(57, 97, 80, 89, 1);
-    public static long randomSeedValue = 69;
+    public static long randomSeedValue = 97;
     public static final int minimumVehicleSize = 2000;   // removes 1400 and 1800;
 
     public static long totalRuntime = 3 * 600000;
@@ -144,8 +144,8 @@ public class Parameters {
 
     // Periodic Parameters, common for PGA, ABC, and HYBRID
 
-    public static final int numberOfAlgorithms = 6;
-    public static int numberOfPGA = 2;
+    public static final int numberOfAlgorithms = 2;
+    public static int numberOfPGA = 1;
     public static int numberOfABC = numberOfAlgorithms - numberOfPGA;
     public static final int minimumIterationsPerOD = 3;
     public static final int orderDistributionCutoff = 2;
