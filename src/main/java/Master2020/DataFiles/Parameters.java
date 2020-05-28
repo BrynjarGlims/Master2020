@@ -129,7 +129,7 @@ public class Parameters {
 
     //Periodic parameters
     public static boolean isPeriodic = false;  // should be set to true, but has default value false
-    public static final boolean useODMIPBetweenIterations = true;
+    public static boolean useODMIPBetweenIterations = true;
     public static int maxGenerationsPerOrderDistributionUpdatePeriodic = 50; //FINAL
     public static final double initialOrderDistributionScale = 1;
     public static final int PHGAIterationsWithoutImprovementLimit = 2;

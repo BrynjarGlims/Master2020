@@ -36,7 +36,7 @@ public class HybridController {
     public CyclicBarrier upstreamGate;
     public String fileName;
     public String modelName = "HYBRID";
-    public double startTime;
+    public long startTime;
     public double currentBestSolution;
     public int iterationsWithoutImprovement;
 
@@ -84,6 +84,10 @@ public class HybridController {
     public void run() throws Exception {
         int genCounter = 0;
         while (System.currentTimeMillis() - startTime < Parameters.totalRuntime && iterationsWithoutImprovement < Parameters.maxNumberIterationsWithoutImprovement){
+            if (System.currentTimeMillis() - startTime < Parameters.timeLimitPerAlgorithm){
+                Parameters.useODMIPBetweenIterations = false;
+                Parameters.timeLimitPerAlgorithm = System.currentTimeMillis() - startTime;
+            }
             System.out.println(" ### Running generation: " + genCounter + " ### ");
             runIteration();
             if (Parameters.useJCM) {
@@ -141,7 +145,7 @@ public class HybridController {
 
     public void generateOptimalSolution( ) throws CloneNotSupportedException {
         try{
-            ArrayList<Journey>[][] journeys = getJourneys();
+            ArrayList<Journey>[][] journeys;
             journeys = bestIterationSolution.getJourneys();
             if (journeyCombinationModel.runModel(journeys) == 2) {
                 journeys = journeyCombinationModel.getOptimalJourneys();
