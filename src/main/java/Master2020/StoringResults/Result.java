@@ -539,7 +539,7 @@ public class Result {
         csvWriter.writeNext(results, false);
         results = new String[]{"Minimum iteration per OD", String.valueOf(Parameters.minimumIterationsPerOD)};
         csvWriter.writeNext(results, false);
-        results = new String[]{"Hybrid iterations without improvement limit", String.valueOf(Parameters.hybridIterationsWithoutImprovementLimit)};
+        results = new String[]{"Hybrid iterations without improvement limit", String.valueOf(Parameters.PHGAIterationsWithoutImprovementLimit)};
         csvWriter.writeNext(results, false);
         results = new String[]{"Order distribution cutoff", String.valueOf(Parameters.orderDistributionCutoff)};
         csvWriter.writeNext(results, false);

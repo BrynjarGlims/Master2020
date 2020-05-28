@@ -10,7 +10,6 @@ import Master2020.Interfaces.PeriodicSolution;
 import Master2020.MIP.JCMSolution;
 import Master2020.MIP.JourneyCombinationModel;
 import Master2020.PGA.GeneticPeriodicAlgorithm;
-import Master2020.PGA.PGASolution;
 import Master2020.Population.PeriodicOrderDistributionPopulation;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.StoringResults.SolutionStorer;
@@ -38,7 +37,7 @@ public class HybridController {
     public CyclicBarrier upstreamGate;
     public String fileName;
     public String modelName = "HYBRID";
-    public double startTime;
+    public long startTime;
     public double currentBestSolution;
     public int iterationsWithoutImprovement;
 
@@ -86,6 +85,10 @@ public class HybridController {
     public void run() throws Exception {
         int genCounter = 0;
         while (System.currentTimeMillis() - startTime < Parameters.totalRuntime && iterationsWithoutImprovement < Parameters.maxNumberIterationsWithoutImprovement){
+            if (System.currentTimeMillis() - (startTime + Parameters.totalRuntime) < Parameters.timeLimitPerAlgorithm){
+                Parameters.useODMIPBetweenIterations = false;
+                Parameters.timeLimitPerAlgorithm = System.currentTimeMillis() - startTime;
+            }
             System.out.println(" ### Running generation: " + genCounter + " ### ");
             runIteration();
             if (Parameters.useJCM) {
@@ -263,8 +266,16 @@ public class HybridController {
 
             }
         }
-        for (int i = 0; i < algorithms.size() ; i++){
-            if (algorithms.get(i).getIterationsWithoutImprovement() > Parameters.hybridIterationsWithoutImprovementLimit){
+        for (int i = 0; i < Parameters.numberOfPGA ; i++){
+            if (algorithms.get(i).getIterationsWithoutImprovement() > Parameters.PHGAIterationsWithoutImprovementLimit){
+                System.out.println("MAX ITERATIONS HIT");
+                finalSolutions.add(algorithms.get(i).storeSolution());
+                pod.distributions.set(i, pod.diversify(Parameters.diversifiedODsGenerated));
+                algorithms.get(i).updateOrderDistribution(pod.distributions.get(i));
+            }
+        }
+        for (int i = Parameters.numberOfPGA; i < Parameters.numberOfAlgorithms ; i++){
+            if (algorithms.get(i).getIterationsWithoutImprovement() > Parameters.ABCIterationsWithoutImprovementLimit){
                 System.out.println("MAX ITERATIONS HIT");
                 finalSolutions.add(algorithms.get(i).storeSolution());
                 pod.distributions.set(i, pod.diversify(Parameters.diversifiedODsGenerated));
