@@ -17,10 +17,10 @@ public class Parameters {
     public static final String vehicleFilePath2 = "data/" + dataSet2 + "/Vehicles.txt";
     public static final String distancePathVestTele = "Google_VestTele";
     public static final String distancePathTrondelag = "Google_Trondelag";
-    public static boolean useVestTeleDataset = true;
+    public static boolean useVestTeleDataset = false;
     public static final boolean doRandomSeed = true;
     public static List<Integer> seeds = Arrays.asList(57, 97, 80, 89, 1);
-    public static long randomSeedValue = 15;
+    public static long randomSeedValue = 69;
     public static final int minimumVehicleSize = 2000;   // removes 1400 and 1800;
 
     public static long totalRuntime = 3 * 600000;
@@ -78,6 +78,7 @@ public class Parameters {
     public static int numberOfEnhancements = 3; //FINAL //number of enhancements for employees
     public static final double[] weightsEnhancement = new double[]{33, 33, 34}; //probability distribution of enhancements, [reverse, swap, insert]
     public static double globalTrialsCutoff = 1.3; //FINAL//trials will not increment if solution is within this multiplier of global best
+    public static int ABCIterationsWithoutImprovementLimit = 4;
 
 
 
@@ -131,6 +132,7 @@ public class Parameters {
     public static final boolean useODMIPBetweenIterations = true;
     public static int maxGenerationsPerOrderDistributionUpdatePeriodic = 50; //FINAL
     public static final double initialOrderDistributionScale = 1;
+    public static final int PHGAIterationsWithoutImprovementLimit = 2;
 
     //......
 
@@ -146,7 +148,6 @@ public class Parameters {
     public static int numberOfPGA = 0;
     public static int numberOfABC = numberOfAlgorithms - numberOfPGA;
     public static final int minimumIterationsPerOD = 3;
-    public static final int hybridIterationsWithoutImprovementLimit = 1;
     public static final int orderDistributionCutoff = 2;
     public static int diversifiedODsGenerated = 9;
 
