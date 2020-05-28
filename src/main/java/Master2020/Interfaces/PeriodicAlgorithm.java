@@ -36,4 +36,6 @@ public interface PeriodicAlgorithm {
     PeriodicSolution storeSolution() throws CloneNotSupportedException;
 
     double getIterationTime();
+
+    public int getAlgorithmNumber();
 }
