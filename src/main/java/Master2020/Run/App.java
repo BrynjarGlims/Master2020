@@ -116,6 +116,7 @@ public class App {
             hc.run();
         }
         else if (args[0].equals("HYBRID")) {
+            Parameters.timeLimitPerAlgorithm = Parameters.timeLimitPerAlgorithmInitial;
             Parameters.useJCM = true;
             HybridController hc = new HybridController();
             hc.run();

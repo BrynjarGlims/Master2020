@@ -144,8 +144,8 @@ public class Parameters {
 
     // Periodic Parameters, common for PGA, ABC, and HYBRID
 
-    public static final int numberOfAlgorithms = 6;
-    public static int numberOfPGA = 1;
+    public static final int numberOfAlgorithms = 2;
+    public static int numberOfPGA = 0;
     public static int numberOfABC = numberOfAlgorithms - numberOfPGA;
     public static final int minimumIterationsPerOD = 3;
     public static final int orderDistributionCutoff = 2;
@@ -153,6 +153,7 @@ public class Parameters {
 
     // Time run parameters
     public static long timeLimitPerAlgorithm = 15000 ;  // in milli
+    public static final long timeLimitPerAlgorithmInitial = timeLimitPerAlgorithm;
     public static final double odUpdateTime = 2.3;
 
     // Verbose parameters

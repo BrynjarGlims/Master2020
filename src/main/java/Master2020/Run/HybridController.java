@@ -68,12 +68,14 @@ public class HybridController {
             s.initialize(pod.distributions.get(i), downstreamGate, upstreamGate);
             s.start();
             algorithms.add(s);
+            System.out.println(s.algorithmNumber);
         }
         for (int i = Parameters.numberOfPGA ; i < Parameters.numberOfAlgorithms ; i++){
             PeriodicABC s = new PeriodicABC(data);
             s.initialize(pod.distributions.get(i), downstreamGate, upstreamGate);
             s.start();
             algorithms.add(s);
+            System.out.println(s.algorithmNumber);
         }
     }
 
@@ -256,8 +258,9 @@ public class HybridController {
                 .mapToInt(i -> i)
                 .toArray();
         boolean firstOD = true;
+        System.out.println("sorted indices:" + Arrays.toString(sortedIndices));
         if (sortedIndices.length > 0){
-            for (int i = sortedIndices.length - 1 ; i > sortedIndices.length - Parameters.orderDistributionCutoff ; i--){
+            for (int i = sortedIndices.length - 1 ; i > Math.max(-1, sortedIndices.length - Parameters.orderDistributionCutoff -1) ; i--){
                 System.out.println("changing od: " + validAlgorithms.get(sortedIndices[i]).getAlgorithmNumber());
                 if (Parameters.useJCM && firstOD){
                     pod.distributions.set(validAlgorithms.get(i).getAlgorithmNumber(), orderDistributionJCM);
