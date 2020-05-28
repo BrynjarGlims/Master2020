@@ -84,7 +84,7 @@ public class HybridController {
     public void run() throws Exception {
         int genCounter = 0;
         while (System.currentTimeMillis() - startTime < Parameters.totalRuntime && iterationsWithoutImprovement < Parameters.maxNumberIterationsWithoutImprovement){
-            if (System.currentTimeMillis() - startTime < Parameters.timeLimitPerAlgorithm){
+            if (System.currentTimeMillis() - (startTime + Parameters.totalRuntime) < Parameters.timeLimitPerAlgorithm){
                 Parameters.useODMIPBetweenIterations = false;
                 Parameters.timeLimitPerAlgorithm = System.currentTimeMillis() - startTime;
             }
