@@ -4,6 +4,7 @@ import Master2020.Genetic.*;
 import Master2020.Individual.Individual;
 import Master2020.Individual.AdSplit;
 import Master2020.Individual.Journey;
+import Master2020.PGA.GeneticAlgorithm;
 import Master2020.PGA.PeriodicIndividual;
 import Master2020.MIP.OrderAllocationModel;
 import Master2020.PGA.PeriodicPopulation;
@@ -89,6 +90,10 @@ public class Population {
     public void addChildToPopulation(Individual individual){
         if (individual.isFeasible()){
             feasiblePopulation.add(individual);
+            double[] fitnesses = FitnessCalculation.getIndividualFitness(individual, 1, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
+            if (fitnesses[1] + fitnesses[2] > Parameters.indifferenceValue){
+                System.out.println("Infeasible individual added in the addChildToPopulation");
+            }
         }
         else{
             infeasiblePopulation.add(individual);

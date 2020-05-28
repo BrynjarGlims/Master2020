@@ -151,11 +151,11 @@ public class GeneticAlgorithm extends Thread {
             penaltyControl.adjust(newIndividual.hasTimeWarp(), newIndividual.hasOverLoad());
             educate(newIndividual);
             tripOptimizer(newIndividual);
+            newIndividual.updateFitness();
             population.addChildToPopulation(newIndividual);
         }
         repair(population);
         selection(population);
-
         updateSystemParameters();
     }
 
@@ -190,7 +190,7 @@ public class GeneticAlgorithm extends Thread {
 
     public void runGenerations(int generations) {
         resetCounters();
-        printPopulationStats();
+        //printPopulationStats();
         for (int i = 0 ; i < generations ; i++){
             runGeneration();
             if (iterationsWithoutImprovement > Parameters.maxNumberIterationsWithoutImprovement ||
@@ -199,11 +199,17 @@ public class GeneticAlgorithm extends Thread {
                 break;
             }
         }
-        printPopulationStats();
+        //printPopulationStats();
     }
 
     public void printPopulationStats(){
         System.out.println("Period " + period + " feasible individuals: " + population.feasiblePopulation.size() + " infeasible individuals: " + population.infeasiblePopulation.size());
+        for (Individual i : population.feasiblePopulation){
+            if (!i.isFeasible()){
+                System.out.println("Is not feasible");
+            }
+        }
+
     }
 
 

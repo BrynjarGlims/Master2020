@@ -145,8 +145,6 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
         repaired = new HashSet<>();
         fitness = Double.MAX_VALUE;
         BiasedFitness.setBiasedFitnessScore(periodicPopulation);
-
-
         for (int p = 0; p < data.numberOfPeriods; p++) {
             threads.get(p).setPopulation(periodicPopulation.populations[p]);
             threads.get(p).resetCounters();
@@ -198,8 +196,7 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
 
     }
 
-    private void makeOptimalOrderDistribution(List<GeneticAlgorithm> geneticAlgorithm, boolean newOD){
-        boolean allFeasibleJourneys = setJourneyFromBestIndividuals();
+    private void makeOptimalOrderDistribution(boolean allFeasibleJourneys){
         boolean verbose = false;
 
         if (verbose) {
@@ -238,13 +235,19 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
     public void runIterations() throws Exception {
         setStartTimeOfThreads();
         runIteration();
+        setJourneyFromBestIndividuals();
+        boolean allFeasibleJourneys = setJourneyFromBestIndividuals();
         if (Parameters.useODMIPBetweenIterations){
-            makeOptimalOrderDistribution(threads ,false);
+            makeOptimalOrderDistribution(allFeasibleJourneys);
             updateOrderDistributionForPopulations(orderDistribution, false);
         }
+
+
         updateFitness();
         runIteration();
-        setJourneyFromBestIndividuals();
+
+
+        allFeasibleJourneys = setJourneyFromBestIndividuals();
         setListOfJourneysFromThreads();
         updateFitness();
         firstIterationTime = (System.currentTimeMillis() - startTime);
@@ -270,12 +273,19 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
     }
 
     public ArrayList<Journey>[][] getOptimalJourneyFromThreads(){
+
         this.journeysForODMIP = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
         for (GeneticAlgorithm algorithm : threads){
             Individual individual =  algorithm.population.returnBestIndividual();
             double[] fitnesses = FitnessCalculation.getIndividualFitness(individual, 1, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
             if (fitnesses[1] + fitnesses[2] > Parameters.indifferenceValue) {
+                /*
+                System.out.println("Size of feasible population "+ algorithm.population.feasiblePopulation.size());
+                System.out.println("Is individual in population " + algorithm.population.feasiblePopulation.contains(individual));
+                System.out.println("Individual: " + individual.isFeasible());
                 System.out.println("Individual is feasible: " + individual.isFeasible());
+
+                 */
             }
             this.journeysForODMIP[algorithm.period] = individual.journeyList[0];
         }
