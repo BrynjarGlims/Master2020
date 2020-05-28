@@ -42,6 +42,48 @@ public class Journey {
         trips = new ArrayList<>();
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Journey){
+            Journey journey = (Journey) obj;
+            if (this.trips.size() != journey.trips.size()){
+                return false;
+            }
+            for (int t = 0; t < this.trips.size(); t++){
+                if (this.trips.get(t).customers.size() != journey.trips.get(t).customers.size()){
+                    return false;
+                }
+                for (int c = 0 ; c < this.trips.get(t).customers.size(); c++){
+                    if (this.trips.get(t).customers.get(c) != journey.trips.get(t).customers.get(c)){
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    public boolean isEqual(Journey journey){
+        if (this.trips.size() != journey.trips.size() )
+            return false;
+        for (int t = 0; t < this.trips.size(); t++){
+            if (this.trips.get(t).customers.size() != journey.trips.get(t).customers.size()){
+                return false;
+            }
+            for (int c = 0 ; c < this.trips.get(t).customers.size(); c++){
+                if (this.trips.get(t).customers.get(c) != journey.trips.get(t).customers.get(c)){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+
+
     public void addTrip(Trip trip){
         trips.add(trip);
         trip.journey = this;

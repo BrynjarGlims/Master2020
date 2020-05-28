@@ -220,7 +220,7 @@ public class GAController {
                 setOptimalOrderDistribution(newIndividual);
 
                 tripOptimizer(newIndividual);
-
+                newIndividual.updateFitness();
                 population.addChildToPopulation(newIndividual);
 
             }

@@ -24,6 +24,7 @@ public class Journey {
         this.vehicleType = vehicleType;
     }
 
+
     public String toString(){
         String out = "Journey " + journeyId + ":\n";
         for (Path path : paths){
