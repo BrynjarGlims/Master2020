@@ -242,7 +242,6 @@ public class HybridController {
         ArrayList<PeriodicAlgorithm> validAlgorithms = new ArrayList<>();
         for (PeriodicAlgorithm algorithm : algorithms){
             algorithm.setMinimumIterations(algorithm.getMinimumIterations() + 1);
-            System.out.println(algorithm.getMinimumIterations());
             if (algorithm.getMinimumIterations() > Parameters.minimumIterationsPerOD){
                 validAlgorithms.add(algorithm);
             }
@@ -257,7 +256,6 @@ public class HybridController {
                 .mapToInt(i -> i)
                 .toArray();
         boolean firstOD = true;
-        System.out.println("sorted length" + sortedIndices.length);
         if (sortedIndices.length > 0){
             for (int i = sortedIndices.length - 1 ; i > sortedIndices.length - Parameters.orderDistributionCutoff ; i--){
                 System.out.println("changing od: " + validAlgorithms.get(sortedIndices[i]).getAlgorithmNumber());
