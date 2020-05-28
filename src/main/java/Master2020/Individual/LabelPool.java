@@ -50,7 +50,11 @@ public class LabelPool {
         int vehicleCostOrderNumber = 0;
         // Generate labels by adding cost on already existing vehicles
         while (predecessorLabel.labelEntries[vehicleCostOrderNumber].inUse){
-            tryToAddNewLabel(new Label(predecessorLabel, vehicleCostOrderNumber, penaltyMultiplier, timeWarpPenalty, overLoadPenalty));
+            Label newLabel = new Label(predecessorLabel, vehicleCostOrderNumber, penaltyMultiplier, timeWarpPenalty, overLoadPenalty);
+            // Jump over labels with already 5 trips:
+            if (!newLabel.invalid){
+                tryToAddNewLabel(newLabel);
+            }
             if (vehicleCostOrderNumber == predecessorLabel.labelEntries.length-1)
                 break;
             vehicleCostOrderNumber++;

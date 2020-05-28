@@ -272,9 +272,9 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
         this.journeysForODMIP = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];
         for (GeneticAlgorithm algorithm : threads){
             Individual individual =  algorithm.population.returnBestIndividual();
-            if (!individual.isFeasible()) {
+            double[] fitnesses = FitnessCalculation.getIndividualFitness(individual, 1, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
+            if (fitnesses[1] + fitnesses[2] > Parameters.indifferenceValue) {
                 System.out.println("Individual is feasible: " + individual.isFeasible());
-                System.out.println("Individual added is not feasible");
             }
             this.journeysForODMIP[algorithm.period] = individual.journeyList[0];
         }

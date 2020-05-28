@@ -17,10 +17,10 @@ public class Parameters {
     public static final String vehicleFilePath2 = "data/" + dataSet2 + "/Vehicles.txt";
     public static final String distancePathVestTele = "Google_VestTele";
     public static final String distancePathTrondelag = "Google_Trondelag";
-    public static boolean useVestTeleDataset = true;
+    public static boolean useVestTeleDataset = false;
     public static final boolean doRandomSeed = true;
     public static List<Integer> seeds = Arrays.asList(57, 97, 80, 89, 1);
-    public static long randomSeedValue = 15;
+    public static long randomSeedValue = 57;
     public static final int minimumVehicleSize = 2000;   // removes 1400 and 1800;
 
     public static long totalRuntime = 3 * 600000;
@@ -43,8 +43,8 @@ public class Parameters {
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 25;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
-    public static int numberOfVehicles = 12;
+    public static int numberOfCustomers = 10;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
+    public static int numberOfVehicles = 5;
 
     public static final double distanceCutOffFromDepot = 3.0;   //default 3
     public static final boolean adjustTimeWindow = true;
@@ -114,7 +114,7 @@ public class Parameters {
     public static final boolean binarySelection = true;  // if true, bestIndProp must be much larger than 0.5
 
     //GUROBI parameters - Not tunable
-    public static final String symmetry =  "trips";      // // none, car, trips, customers, cost, duration
+    public static final String symmetry =  "Trips";      // // none, car, trips, customers, cost, duration
     public static final double modelTimeLimit = 10800;  //seconds
     public static final double modelJCMTimeLimit = 180;  //seconds
     public static final double modelMipGap = 0.00001;

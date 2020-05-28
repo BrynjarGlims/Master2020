@@ -100,7 +100,7 @@ public class Population {
         Individual bestIndividual = null;
         double fitnessScore = Double.MAX_VALUE;
         for (Individual individual : feasiblePopulation){
-            if (individual.getFitness(false) < fitnessScore){
+            if (individual.getFitness(true) < fitnessScore){  // TODO: 27/05/2020 Set to true, may effect runtime 
                 bestIndividual = individual;
                 fitnessScore = individual.getFitness(false);
             }
@@ -109,7 +109,7 @@ public class Population {
             return bestIndividual;
         }
         for (Individual individual : infeasiblePopulation){
-            if (individual.getFitness(false) < fitnessScore){
+            if (individual.getFitness(true) < fitnessScore){
                 bestIndividual = individual;
                 fitnessScore = individual.getFitness(false);
             }

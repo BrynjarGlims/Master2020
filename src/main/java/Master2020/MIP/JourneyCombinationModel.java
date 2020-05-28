@@ -77,11 +77,18 @@ public class JourneyCombinationModel extends Model{
     }
 
     public void initializeModel() throws GRBException, FileNotFoundException {
-        this.model = new GRBModel(env);
-        model.set(GRB.StringAttr.ModelName, "JourneyCombinationModel");
-        this.pg = new PathGenerator(dataMIP);
-        double time = System.currentTimeMillis();
-        this.preProcessTime = (System.currentTimeMillis() - time) / 1000;
+        if (this.model == null){
+            this.model = new GRBModel(env);
+            model.set(GRB.StringAttr.ModelName, "JourneyCombinationModel");
+            //this.model.set(GRB.IntParam.LogToConsole, 0); //removes print of gurobi
+        }
+        else {
+            this.model.dispose();
+            this.model = new GRBModel(env);
+            model.set(GRB.StringAttr.ModelName, "JourneyCombinationModel");
+            //this.model.set(GRB.IntParam.LogToConsole, 0); //removes print of gurobi
+        }
+
     }
 
 
