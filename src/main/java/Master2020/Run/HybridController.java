@@ -130,14 +130,19 @@ public class HybridController {
     public void storeBestCurrentSolution() throws IOException {
         if (solutions.size() > 0){
             Collections.sort(solutions);
-            SolutionStorer.store(solutions.get(solutions.size()-1), startTime, fileName);
+            PeriodicSolution bestSolution = solutions.get(0);
+            if (!finalSolutions.contains(bestSolution)){
+                finalSolutions.add(bestSolution);
+            }
+            Collections.sort(finalSolutions);
+            SolutionStorer.store(finalSolutions.get(0), startTime, fileName);
         }
     }
 
     public void generateOptimalSolution( ) throws CloneNotSupportedException {
         try{
             ArrayList<Journey>[][] journeys = getJourneys();
-            //journeys = bestIterationSolution.getJourneys();
+            journeys = bestIterationSolution.getJourneys();
             if (journeyCombinationModel.runModel(journeys) == 2) {
                 journeys = journeyCombinationModel.getOptimalJourneys();
                 orderDistributionJCM = journeyCombinationModel.getOrderDistribution();

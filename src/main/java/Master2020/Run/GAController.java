@@ -6,9 +6,15 @@ import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.*;
 import Master2020.Individual.Individual;
 import Master2020.Individual.Trip;
+import Master2020.MIP.DataConverter;
+import Master2020.MIP.JourneyCombinationModel;
 import Master2020.MIP.OrderAllocationModel;
 import Master2020.PGA.PeriodicIndividual;
 import Master2020.PGA.PeriodicPopulation;
+import Master2020.PR.ArcFlowModel;
+import Master2020.PR.DataMIP;
+import Master2020.PR.JourneyBasedModel;
+import Master2020.PR.PathFlowModel;
 import Master2020.Population.OrderDistributionPopulation;
 import Master2020.Population.Population;
 import Master2020.ProductAllocation.OrderDistribution;
@@ -19,6 +25,7 @@ import Master2020.Visualization.PlotIndividual;
 import gurobi.GRBException;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -174,11 +181,10 @@ public class GAController {
 
         }
 
-        Individual bestFeasibleIndividual = population.returnBestIndividual();
-        Individual bestInfeasibleIndividual = population.returnBestInfeasibleIndividual();
-        if (!Parameters.isPeriodic){
-            //bestFeasibleIndividual.printDetailedFitness();
-        }
+        System.out.println(Arrays.toString(FitnessCalculation.getIndividualFitness(bestIndividual, 1, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty)));
+
+
+
 
     }
 
@@ -244,11 +250,30 @@ public class GAController {
             numberOfIterations++;
         }
 
-
-
         Individual bestIndividual = population.returnBestIndividual();
         System.out.println("Individual feasible: " + bestIndividual.isFeasible());
         System.out.println("Fitness: " + bestIndividual.getFitness(false));
+
+        // debug may be removed
+        /*
+        DataMIP dataMIP = DataConverter.convert(data);
+        System.out.println("Arc Flow with extra constraints");
+        JourneyBasedModel jbm = new JourneyBasedModel(dataMIP);
+        jbm.testModel(bestIndividual.journeyList, bestIndividual.orderDistribution);
+        PathFlowModel pfm = new PathFlowModel(dataMIP);
+        pfm.testTrips(bestIndividual.journeyList, bestIndividual.orderDistribution);
+        ArcFlowModel afm = new ArcFlowModel(dataMIP);
+        afm.testSolution(bestIndividual.journeyList);
+        System.out.println("JCM with extra constraints");
+        JourneyCombinationModel jcm = new JourneyCombinationModel(data);
+        jcm.runModel(bestIndividual.journeyList);
+        System.out.println("Arc standalone");
+        PathFlowModel pfm = new PathFlowModel(dataMIP);
+        pfm.runModel(Parameters.symmetry);
+        afm = new ArcFlowModel(dataMIP);
+        afm.runModel(Parameters.symmetry);
+         */
+
         if (Parameters.savePlots) {
             PlotIndividual visualizer = new PlotIndividual(data);
             visualizer.visualize(bestIndividual);
@@ -260,46 +285,6 @@ public class GAController {
             orderAllocationModel.terminateEnvironment();
         }
     }
-
-
-
-    private void createNewOptimalOrderDistribution(PeriodicIndividual bestPeriodicIndividual){
-        System.out.println("Perform update of volumes");
-        if (orderAllocationModel.createOptimalOrderDistribution(bestPeriodicIndividual.getJourneys(), scalingFactorOrderDistribution) == 2){
-            globalOrderDistribution = orderAllocationModel.getOrderDistribution();
-            odp.setOfOrderDistributions.add(globalOrderDistribution);
-            odp.addOrderDistribution(orderAllocationModel.getOrderDistribution());
-            periodicPopulation.setOrderDistribution(globalOrderDistribution);
-            bestPeriodicIndividual.setOrderDistribution(globalOrderDistribution);
-            periodicPopulation.allocateIndividual(bestPeriodicIndividual);
-            periodicPopulation.reassignPeriodicIndividuals();
-            System.out.println("################################## Number of fesasible individuals:" + periodicPopulation.periodicFeasibleIndividualPopulation.size());
-            System.out.println("-----------------Optimal OD found!");
-        } else{
-            System.out.println("----------------No optimal OD found...");
-        }
-    }
-
-
-    private PeriodicIndividual generateGreedyPeriodicIndividual(){
-        PeriodicIndividual newPeriodicIndividual = new PeriodicIndividual(data, null);
-        newPeriodicIndividual.setOrderDistribution(globalOrderDistribution);
-        for (int p = 0; p < data.numberOfPeriods; p++){
-            Individual individual = periodicPopulation.populations[p].returnBestIndividual();
-            if (!individual.orderDistribution.equals(globalOrderDistribution)){
-                System.out.println("------ Trying to combine individuals with diffferent ODS ------- " + individual.hashCode());
-            }
-            individual.updateFitness();
-            if (!individual.isFeasible()){
-                System.out.println("------- The added individual is not feasible -------- " + individual.hashCode());
-            }
-            newPeriodicIndividual.setPeriodicIndividual(individual, p);
-        }
-        System.out.println("Fitness: " + newPeriodicIndividual.getFitness());
-        return newPeriodicIndividual;
-    }
-
-
 
     public static void main(String[] args) throws GRBException, IOException {
         GAController ga = new GAController();

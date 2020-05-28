@@ -3,10 +3,13 @@ import Master2020.DataFiles.Data;
 import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.PenaltyControl;
 import Master2020.Individual.Individual;
+import Master2020.Individual.Journey;
+import Master2020.Individual.Trip;
 import Master2020.MIP.DataConverter;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.StoringResults.SolutionStorer;
 import gurobi.*;
+import org.bouncycastle.crypto.AsymmetricCipherKeyPairGenerator;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -59,6 +62,8 @@ public class ArcFlowModel  {
     public GRBVar[] qO;
 
     public ArrayList<ArrayList<ArrayList<ArrayList<Integer>>>> pathsUsed; // TODO: 23.11.2019 Remove
+
+    public ArrayList<Master2020.Individual.Journey>[][] journeys;
 
     public ArcFlowModel(DataMIP dataMIP){
         this.dataMIP = dataMIP;
@@ -1150,8 +1155,46 @@ public class ArcFlowModel  {
         }
     }
 
+    public void testSolution( ArrayList<Master2020.Individual.Journey>[][] journeys){
+        this.journeys = journeys;
+        runModel("Trips", true);
 
-    public void runModel(String symmetry) {
+    }
+
+    private void activateJourneyConstraints() throws GRBException {
+        for (int p = 0; p < dataMIP.numPeriods; p++){
+            for (int vt = 0; vt < dataMIP.numVehicleTypes; vt++){
+                int vehicleID = 0;
+                for (Journey journey : journeys[p][vt]){
+                    if (dataMIP.vehicles[vehicleID].vehicleType.type == vt){
+                        int tripCounter = 0;
+                        for (Trip trip : journey.trips ){
+                            for (int customerID : trip.customers){
+                                GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
+                                lhs.addTerm(1, y[p][vehicleID][tripCounter][customerID]);
+                                String constraint_name = String.format("Fixed variable for test   p:%d v:%d r:%d i:%d", p, vehicleID, tripCounter, customerID);
+                                model.addConstr(lhs, GRB.EQUAL, 1, constraint_name);
+                            }
+                            tripCounter++;
+                        }
+                        vehicleID++;
+                        break;
+
+                    }
+                    else{
+                        vehicleID++;
+                    }
+                }
+            }
+        }
+
+    }
+
+    public void runModel(String symmetry){
+        runModel(symmetry, false);
+    }
+
+    public void runModel(String symmetry, boolean test) {
         try {
             double time = System.currentTimeMillis();
             this.symmetry = symmetry;
@@ -1163,10 +1206,13 @@ public class ArcFlowModel  {
             setObjective();
             System.out.println("Activate constraints");
             activateConstraints(symmetry);
+            if (test){
+                activateJourneyConstraints();
+            }
             System.out.println("Optimize model");
             optimizeModel();
             System.out.println("Print results:");
-            displayResults(false);
+            displayResults(true);
 
             if (model.get(GRB.IntAttr.SolCount) == 0){
                 this.feasible = false;

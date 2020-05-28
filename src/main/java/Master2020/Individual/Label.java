@@ -35,6 +35,8 @@ public class Label {
     public LabelEntry[] labelEntries;
     public boolean isEmptyLabel;
 
+    public boolean invalid = false;
+
 
 
     //create non-first labels
@@ -53,6 +55,9 @@ public class Label {
         // Cost of choosing arcs from the SPA
         this.cloneParentLabelEntries(parentLabel.labelEntries);
         this.labelEntries[vehicleIndex].updateLabelEntryValues(listOfTrips.get(tripNumber), tripNumber);
+        if (this.labelEntries[vehicleIndex].tripAssigment.size() > Parameters.numberOfTrips){
+            this.invalid = true;
+        }
 
         this.sortLabelEntries();
         this.deriveLabelCost(penaltyMultiplier, timeWarpPenalty, overLoadPenalty);

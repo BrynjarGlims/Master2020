@@ -124,6 +124,21 @@ public class Journey {
         }
     }
 
+    public boolean compareToOldJourney(Master2020.PR.Journey journey){
+        if (this.trips.size() != journey.paths.length){
+            return false;
+        }
+        for (int i = 0; i < this.trips.size(); i++){
+            if(!this.trips.get(i).isEqualToPath(journey.paths[i])){
+                return false;
+            }
+            else{
+                System.out.println("Journey found");
+            }
+        }
+        return true;
+    }
+
     private void updateOverload(Trip trip, OrderDistribution orderDistribution){
         double load = 0;
         for (int customer : trip.customers){

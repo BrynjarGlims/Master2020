@@ -1,8 +1,11 @@
 package Master2020.PR;
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.Parameters;
+import Master2020.Genetic.FitnessCalculation;
 import Master2020.Genetic.PenaltyControl;
 import Master2020.Individual.Individual;
+import Master2020.Individual.Journey;
+import Master2020.Individual.Trip;
 import Master2020.MIP.DataConverter;
 import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.StoringResults.SolutionStorer;
@@ -57,6 +60,9 @@ public class PathFlowModel{
     public GRBVar[][][] tS;
     public GRBVar[] qO;
     public ArrayList<ArrayList<ArrayList<ArrayList<Integer>>>> pathsUsed = null ;
+    public ArrayList<Master2020.Individual.Journey>[][] journeys;
+    public OrderDistribution testOrderDistribution;
+    public Data data;
 
     public PathFlowModel(DataMIP dataMIP){
         this.dataMIP = dataMIP;
@@ -883,6 +889,52 @@ public class PathFlowModel{
         }
     }
 
+    public void testTrips(ArrayList<Master2020.Individual.Journey>[][] journeys, OrderDistribution testOrderDistribution){
+        this.journeys = journeys;
+        this.testOrderDistribution = testOrderDistribution;
+        runModel(Parameters.symmetry);
+    }
+
+    private void checkIfTripsExists(ArrayList<Master2020.Individual.Journey>[][] journeys) throws GRBException {
+        System.out.println();
+        for (int p = 0; p < dataMIP.numPeriods; p++){
+            for (int vt = 0; vt < dataMIP.numVehicleTypes; vt++){
+                int vehicleID = 0;
+                for (Master2020.Individual.Journey j : journeys[p][vt]){
+                    int tripIndex = 0;
+                    for (Trip t: j.trips){
+                        boolean exist = false;
+                        for (Path path : dataMIP.pathMap.get(p).get(vt)){
+                            if (t.isEqualToPath(path)){
+                                for (int v = vehicleID; v < dataMIP.numVehicles; v++){
+                                    if (dataMIP.vehicles[v].vehicleType.type == vt){
+                                        GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
+                                        lhs.addTerm(1, lambda[p][vehicleID][tripIndex][path.pathId]);
+                                        String constraint_name = String.format("Fixed variable for test   p:%d v:%d r:%d i:%d", p, vehicleID, tripIndex, path.pathId);
+                                        model.addConstr(lhs, GRB.EQUAL, 1, constraint_name);
+                                        vehicleID++;
+                                        break;
+                                    }
+                                    else{
+                                        vehicleID++;
+                                    }
+                                }
+                                //System.out.println("Cost trip: " + FitnessCalculation.getTripFitness(t.customers, t.period, t.vehicleType, testOrderDistribution.getOrderVolumeDistribution(), j.data)  + "  path cost: " + path.cost);
+                                exist = true;
+                                break;
+                            }
+                        }
+                        if (!exist){
+                            System.out.println("Trip does not exist");
+                            System.out.println(t.toString());
+                        }
+                        tripIndex++;
+                    }
+                }
+            }
+        }
+    }
+
     public void runModel(String symmetry) {
         try {
             double time  = System.currentTimeMillis();
@@ -894,6 +946,7 @@ public class PathFlowModel{
             System.out.println("Set objective");
             setObjective();
             System.out.println("Activate constraints");
+            //checkIfTripsExists(journeys);  //test to check if trirp exists
             activateConstraints(symmetry);
             System.out.println("Optimize model");
             optimizeModel();

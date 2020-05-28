@@ -1,6 +1,7 @@
 package Master2020.Individual;
 
 import Master2020.DataFiles.Data;
+import Master2020.PR.Path;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -75,6 +76,25 @@ public class Trip {
         return customers;
     }
 
+    public boolean isEqualToPath( Path path){
+        if (path.period != this.period){
+            return false;
+        }
+        if (path.vehicleType.type != this.vehicleType){
+            return false;
+        }
+        if (this.customers.size() != path.customers.length){
+            return false;
+        }
+        for (int i  = 0; i < this.customers.size(); i++){
+            if (this.customers.get(i) != path.customers[i].customerID){
+                return false;
+            }
+        }
+        return true;
+
+        //sjekk om det er volumet til den største bilen som brukes
+    }
 
     public String toString(){
         String out = "";
