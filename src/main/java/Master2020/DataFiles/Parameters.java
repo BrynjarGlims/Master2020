@@ -59,25 +59,25 @@ public class Parameters {
     public static double tripOptimizerProbability = 0.25; //FINAL 0.25
     public static final double repairProbability = 0.4; //FINAL 0.4
     public static double ODMIPProbability = 0.75; //FINAL 0.75
-    public static double heuristicDominanceValue = 1;
+    public static double heuristicDominanceValue = 1; //FINAL
 
 
     // ABC specific parameters
     public static final boolean ABCPenaltyAdjustment = false;
-    public static int generationsPerOrderDistribution = 4 * numberOfCustomers;
-    public static int numberOfEmployees = 10;
-    public static int numberOfOnlookers = 6 * numberOfEmployees;
-    public static int numberOfScoutTrials = 100;
+    public static int generationsPerOrderDistribution = 4 * numberOfCustomers; //FINAL
+    public static int numberOfEmployees = 20; //FINAL
+    public static int numberOfOnlookers = 8 * numberOfEmployees; //FINAL
+    public static int numberOfScoutTrials = 50; //FINAL
     public static final int maxNumberOfTrials = 15;
     public static int maxBoundDimensionality = (int) Math.round(0.4 * numberOfCustomers); //FINAL //max amount of dimensions that can be changed, chosen randomly from 1-this
     public static double weightNeighborOnlooker = 1; //FINAL
     public static double weightNeighborEmployed = 0.5 * weightNeighborOnlooker; //FINAL
-    public static double weightGlobalBest = 0.75;
-    public static final double movementRange = 1; //both positive and negative, but only half in negative direction
+    public static double weightGlobalBest = 0.75; //FINAL
+    public static final double movementRange = 1; //FINAL //both positive and negative, but only half in negative direction
     public static double onlookerRandomAdjustment = 0.01; //FINAL //a random number added when onlooker goes to employers foodsource
     public static int numberOfEnhancements = 3; //FINAL //number of enhancements for employees
     public static final double[] weightsEnhancement = new double[]{33, 33, 34}; //probability distribution of enhancements, [reverse, swap, insert]
-    public static double globalTrialsCutoff = 1.3; //trials will not increment if solution is within this multiplier of global best
+    public static double globalTrialsCutoff = 1.3; //FINAL//trials will not increment if solution is within this multiplier of global best
 
 
 
@@ -107,10 +107,10 @@ public class Parameters {
     public static final double scalingDrivingCost = 25;  // // TODO: 03/04/2020 Not sure if implemented correctly 
 
     //Tournament selection parameters - Probably tunable
-    public static final int nearestNeighborsDiversity = (int) 0.2 * populationSize ;  // Neighbours from calculating diversity ... change!!!
+    public static final int nearestNeighborsDiversity = (int) Math.round(0.2 * populationSize);  // Neighbours from calculating diversity ... change!!!
     public static final int diversityCalculationInterval = 20;
     public static final double bestIndividualProbability = 0.6;
-    public static final int tournamentSize = 5;  // 2 or larger, size = 2 --> binary tournament selection
+    public static int tournamentSize = 5;  // 2 or larger, size = 2 --> binary tournament selection
     public static final boolean binarySelection = true;  // if true, bestIndProp must be much larger than 0.5
 
     //GUROBI parameters - Not tunable
@@ -135,7 +135,7 @@ public class Parameters {
     //......
 
     // Journey Combination Model parameters
-    public static final boolean useJCM = true;
+    public static boolean useJCM = false;
     public static final int numberOfIndividualJourneysInMIPPerPeriod = 1;
     public static final String symmetryOFJCM = "car";
 
@@ -143,12 +143,12 @@ public class Parameters {
     // Periodic Parameters, common for PGA, ABC, and HYBRID
 
     public static final int numberOfAlgorithms = 6;
-    public static int numberOfPGA = 6;
+    public static int numberOfPGA = 0;
     public static int numberOfABC = numberOfAlgorithms - numberOfPGA;
     public static final int minimumIterationsPerOD = 3;
     public static final int hybridIterationsWithoutImprovementLimit = 1;
     public static final int orderDistributionCutoff = 2;
-    public static int diversifiedODsGenerated = 3;
+    public static int diversifiedODsGenerated = 9;
 
     // Time run parameters
     public static long timeLimitPerAlgorithm = 15000 ;  // in milli
