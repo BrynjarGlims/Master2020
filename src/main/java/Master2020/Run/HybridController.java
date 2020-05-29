@@ -239,8 +239,8 @@ public class HybridController {
                 bestIterationSolution = solution;
             }
             System.out.println("Algorithm " + s + " fitness: "+ solution.getFitness() + " feasible: " + solution.isFeasible() + " infeasibility cost: " + solution.getInfeasibilityCost());
-
         }
+
     }
 
     public void updateOrderDistributionPopulation() throws CloneNotSupportedException {
