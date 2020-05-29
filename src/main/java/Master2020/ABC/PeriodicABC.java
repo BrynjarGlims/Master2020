@@ -76,6 +76,7 @@ public class PeriodicABC extends Thread implements PeriodicAlgorithm {
                     while(System.currentTimeMillis() - startTime < Parameters.timeLimitPerAlgorithm){
                         {runIteration();}
                     }
+                    updateFitness();
                 }
                 //wait for all periods to finish
                 masterUpstreamGate.await();
@@ -110,7 +111,7 @@ public class PeriodicABC extends Thread implements PeriodicAlgorithm {
         //update and find best order distribution
         makeOptimalOrderDistribution(threads);
         updateOrderDistributionForColonies(threads, false);
-        updateFitness();
+
 
     }
 
