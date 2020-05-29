@@ -63,10 +63,10 @@ public class App {
 
                     //MUST BE CHANGED DEPENDING ON WHAT WE WANT TO TEST!!!
                     //GENERATIONS / OD
-                    int[] gens = new int[]{0,1,2,3,4,5,6};
-                    for (int gen : gens){
-                        Parameters.numberOfPGA = gen;
-                        Parameters.customFileName = "numPGAs" + gen;
+                    double[] gens = new double[]{0.4,0.5,0.6,0.7,0.8,0.9};
+                    for (double gen : gens){
+                        Parameters.fractionOfFeasibleIndividualsFromAdsplit = gen;
+                        Parameters.customFileName = "adsplitFraction" + gen;
                         System.out.println(Parameters.customFileName);
                         System.out.println("Using vestTele: " + Parameters.useVestTeleDataset + " for seed: " + Parameters.randomSeedValue);
                         run(args);

@@ -36,15 +36,15 @@ public class Parameters {
     public static final int maxNumberOfGenerations = 10; //NOT IN USE
     public static int numberOfOffspring = 80;    //lambda FINAL
     public static final double fractionEliteIndividuals = 0.4;     //el
-    public static final double fractionOfFeasibleIndividualsFromAdsplit = 0.2;
+    public static double fractionOfFeasibleIndividualsFromAdsplit = 0.8;
     public static final int frequencyOfPenaltyUpdatesPGA = 50;
     public static final int frequencyOfPenaltyUpdatesABC = 1000;
 
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 25;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
-    public static int numberOfVehicles = 12;
+    public static int numberOfCustomers = 50;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
+    public static int numberOfVehicles = 20;
 
     public static final double distanceCutOffFromDepot = 3.0;   //default 3
     public static final boolean adjustTimeWindow = true;
@@ -63,7 +63,7 @@ public class Parameters {
 
 
     // ABC specific parameters
-    public static final boolean ABCPenaltyAdjustment = false;
+    public static final boolean ABCPenaltyAdjustment = true;
     public static int generationsPerOrderDistribution = 4 * numberOfCustomers; //FINAL
     public static int numberOfEmployees = 20; //FINAL
     public static int numberOfOnlookers = 8 * numberOfEmployees; //FINAL
