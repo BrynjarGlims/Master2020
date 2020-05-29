@@ -80,7 +80,7 @@ public class App {
         Parameters.numberOfCustomers = 10;
         Parameters.numberOfVehicles = 5;
         Parameters.customFileName = "baseCase";
-        for (int iteration = 0 ; iteration < 9 ; iteration++){
+        for (int iteration = 0 ; iteration < 10 ; iteration++){
             for (int bool = 0 ; bool < 2 ; bool++){
                 Parameters.useVestTeleDataset = bool == 0;
                 int[] seeds = Parameters.useVestTeleDataset ? new int[]{89,1} : new int[]{57,97,80};

@@ -69,14 +69,12 @@ public class HybridController {
             s.initialize(pod.distributions.get(i), downstreamGate, upstreamGate);
             s.start();
             algorithms.add(s);
-            System.out.println(s.algorithmNumber);
         }
         for (int i = Parameters.numberOfPGA ; i < Parameters.numberOfAlgorithms ; i++){
             PeriodicABC s = new PeriodicABC(data);
             s.initialize(pod.distributions.get(i), downstreamGate, upstreamGate);
             s.start();
             algorithms.add(s);
-            System.out.println(s.algorithmNumber);
         }
     }
 
@@ -136,7 +134,10 @@ public class HybridController {
         }
     }
 
-    public void storeBestCurrentSolution() throws IOException {
+    public void storeBestCurrentSolution() throws IOException, CloneNotSupportedException {
+        for (PeriodicAlgorithm algorithm : algorithms){
+            solutions.add(algorithm.storeSolution());
+        }
         if (solutions.size() > 0){
             Collections.sort(solutions);
             PeriodicSolution bestSolution = solutions.get(0);
@@ -146,6 +147,7 @@ public class HybridController {
             Collections.sort(finalSolutions);
             SolutionStorer.store(finalSolutions.get(0), startTime, fileName);
         }
+        solutions.clear();
     }
 
     public void generateOptimalSolution( ) throws CloneNotSupportedException {
@@ -242,6 +244,7 @@ public class HybridController {
     }
 
     public void updateOrderDistributionPopulation() throws CloneNotSupportedException {
+        ArrayList<PeriodicSolution> solutions = new ArrayList<>();
         ArrayList<PeriodicAlgorithm> validAlgorithms = new ArrayList<>();
         for (PeriodicAlgorithm algorithm : algorithms){
             algorithm.setMinimumIterations(algorithm.getMinimumIterations() + 1);
@@ -249,17 +252,15 @@ public class HybridController {
                 validAlgorithms.add(algorithm);
             }
         }
-        solutions.clear();
         for (PeriodicAlgorithm algorithm : validAlgorithms){
             solutions.add(algorithm.storeSolution());
         }
         int[] sortedIndices = IntStream.range(0, solutions.size())
                 .boxed()
-                .sorted(Comparator.comparing(i -> solutions.get(i)))
+                .sorted(Comparator.comparing(solutions::get))
                 .mapToInt(i -> i)
                 .toArray();
         boolean firstOD = true;
-        System.out.println("sorted indices:" + Arrays.toString(sortedIndices));
         if (sortedIndices.length > 0){
             for (int i = sortedIndices.length - 1 ; i > Math.max(-1, sortedIndices.length - Parameters.orderDistributionCutoff -1) ; i--){
                 System.out.println("changing od: " + validAlgorithms.get(sortedIndices[i]).getAlgorithmNumber());
