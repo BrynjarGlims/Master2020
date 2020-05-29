@@ -63,10 +63,10 @@ public class App {
 
                     //MUST BE CHANGED DEPENDING ON WHAT WE WANT TO TEST!!!
                     //GENERATIONS / OD
-                    double[] gens = new double[]{0.7,0.75, 0.8,0.85, 0.9};
+                    double[] gens = new double[]{1};
                     for (double gen : gens){
                         Parameters.fractionOfFeasibleIndividualsFromAdsplit = gen;
-                        Parameters.customFileName = "adsplitFraction" + gen;
+                        Parameters.customFileName = "NOadsplitFraction" + gen;
                         System.out.println(Parameters.customFileName);
                         System.out.println("Using vestTele: " + Parameters.useVestTeleDataset + " for seed: " + Parameters.randomSeedValue);
                         run(args);

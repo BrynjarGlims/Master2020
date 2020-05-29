@@ -63,7 +63,7 @@ public class Parameters {
 
 
     // ABC specific parameters
-    public static final boolean ABCPenaltyAdjustment = true;
+    public static final boolean ABCPenaltyAdjustment = false;
     public static int generationsPerOrderDistribution = 4 * numberOfCustomers; //FINAL
     public static int numberOfEmployees = 20; //FINAL
     public static int numberOfOnlookers = 8 * numberOfEmployees; //FINAL
