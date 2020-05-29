@@ -68,11 +68,8 @@ public class PeriodSwarm extends Thread {
         Bee neighbor;
 
         //Employee stage:
-        for (Employee employee : employees){
-            neighbor = getRandomNeighbor(employee);
-            employee.search(neighbor);
-            //add update of penaltyControl
-        }
+        employees.parallelStream().forEach(Employee::search);
+
         double[] fitnesses = employees.stream().mapToDouble(o -> 1/o.fitness).toArray();
         WeightedRandomSampler weightedRandomSampler = new WeightedRandomSampler(fitnesses);
 
@@ -80,21 +77,17 @@ public class PeriodSwarm extends Thread {
         for (Onlooker onlooker : onlookers){
             Employee employee = employees.get(weightedRandomSampler.nextIndex());
             neighbor = getRandomNeighbor(onlooker);
-            onlooker.search(neighbor, employee);
+            onlooker.employer = employee;
+            onlooker.neighbor = neighbor;
         }
+        onlookers.parallelStream().forEach(Onlooker::search);
 
         //update employee
-        for (Employee employee : employees){
-            employee.updateToBestPosition();
-        }
+        employees.parallelStream().forEach(Employee::updateToBestPosition);
+
 
         //scoute stage:
-        for (Employee employee : employees){
-            if (employee.trials > Parameters.maxNumberOfTrials){
-                employee.scout();
-            }
-        }
-
+        employees.parallelStream().filter(employee -> employee.trials > Parameters.maxNumberOfTrials).forEach(Employee::scout);
     }
 
     public Bee getRandomNeighbor(Bee bee){

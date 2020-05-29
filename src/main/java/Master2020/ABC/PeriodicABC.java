@@ -11,6 +11,7 @@ import Master2020.Interfaces.PeriodicAlgorithm;
 import Master2020.MIP.OrderAllocationModel;
 import Master2020.Population.PeriodicOrderDistributionPopulation;
 import Master2020.ProductAllocation.OrderDistribution;
+import Master2020.Run.HybridController;
 import Master2020.Testing.ABCtests;
 import gurobi.GRBException;
 
@@ -36,9 +37,12 @@ public class PeriodicABC extends Thread implements PeriodicAlgorithm {
     public int iterationsWithoutImprovement;
     public int minimumIterations;
     public boolean run;
+    public int algorithmNumber;
 
     public PeriodicABC(Data data) throws GRBException {
         this.data = data;
+        algorithmNumber = HybridController.algorithmCounter;
+        HybridController.algorithmCounter++;
         orderAllocationModel = new OrderAllocationModel(data);
         orderDistribution = new OrderDistribution(data);
         orderDistribution.makeInitialDistribution();
@@ -72,6 +76,7 @@ public class PeriodicABC extends Thread implements PeriodicAlgorithm {
                     while(System.currentTimeMillis() - startTime < Parameters.timeLimitPerAlgorithm){
                         {runIteration();}
                     }
+                    updateFitness();
                 }
                 //wait for all periods to finish
                 masterUpstreamGate.await();
@@ -106,7 +111,7 @@ public class PeriodicABC extends Thread implements PeriodicAlgorithm {
         //update and find best order distribution
         makeOptimalOrderDistribution(threads);
         updateOrderDistributionForColonies(threads, false);
-        updateFitness();
+
 
     }
 
@@ -247,6 +252,8 @@ public class PeriodicABC extends Thread implements PeriodicAlgorithm {
     public int getIterationsWithoutImprovement(){
         return iterationsWithoutImprovement;
     }
+
+    public int getAlgorithmNumber() {return algorithmNumber;}
 
     public static void main(String[] args) throws InterruptedException, BrokenBarrierException, GRBException, IOException, CloneNotSupportedException {
         Data data = DataReader.loadData();

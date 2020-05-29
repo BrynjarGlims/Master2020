@@ -12,6 +12,7 @@ import Master2020.MIP.OrderAllocationModel;
 import Master2020.Population.PeriodicOrderDistributionPopulation;
 import Master2020.Population.Population;
 import Master2020.ProductAllocation.OrderDistribution;
+import Master2020.Run.HybridController;
 import Master2020.Testing.ABCtests;
 import Master2020.Testing.IndividualTest;
 import gurobi.GRBException;
@@ -52,9 +53,12 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
 
     public double timeWarpPenalty;
     public double overLoadPenalty;
+    public int algorithmNumber;
 
     public GeneticPeriodicAlgorithm(Data data) throws GRBException {
         this.data = data;
+        algorithmNumber = HybridController.algorithmCounter;
+        HybridController.algorithmCounter++;
         orderAllocationModel = new OrderAllocationModel(data);
         orderDistribution = new OrderDistribution(data);
         orderDistribution.makeInitialDistribution();
@@ -326,6 +330,8 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
     public double getIterationTime(){
         return this.firstIterationTime;
     }
+
+    public int getAlgorithmNumber() {return algorithmNumber;}
 
     public static void main(String[] args) throws Exception {
         Data data = DataReader.loadData();

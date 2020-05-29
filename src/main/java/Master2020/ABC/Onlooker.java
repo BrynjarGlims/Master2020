@@ -7,6 +7,9 @@ import Master2020.ProductAllocation.OrderDistribution;
 
 public class Onlooker extends Bee {
 
+    public Employee employer;
+    public Bee neighbor;
+
 
     public Onlooker(Data data, int period, PeriodSwarm colony, PenaltyControl penaltyControl) {
         super(data, period, colony, penaltyControl);
@@ -20,7 +23,7 @@ public class Onlooker extends Bee {
     }
 
 
-    public void search(Bee neighbor, Employee employer){
+    public void search(){
         position = employer.position.clone();
         for (int d = 0 ; d < position.length ; d++){
             position[d] = (((position[d] + random.nextDouble(-Parameters.onlookerRandomAdjustment, Parameters.onlookerRandomAdjustment)) + data.numberOfVehicleTypes) + data.numberOfVehicleTypes) % data.numberOfVehicleTypes;

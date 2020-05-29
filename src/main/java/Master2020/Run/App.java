@@ -36,6 +36,7 @@ public class App {
         Parameters.customFileName = "fullRun";
         for (int iteration = 0 ; iteration < 2 ; iteration++){
             for (int dataset = 0 ; dataset < 2 ; dataset++){
+                Parameters.useVestTeleDataset = dataset == 0;
                 for (int instance = 0 ; instance < 5 ; instance++){
                     Parameters.numberOfCustomers = customers[instance];
                     Parameters.numberOfVehicles = vehicles[instance];
@@ -79,7 +80,7 @@ public class App {
         Parameters.numberOfCustomers = 10;
         Parameters.numberOfVehicles = 5;
         Parameters.customFileName = "baseCase";
-        for (int iteration = 0 ; iteration < 1 ; iteration++){
+        for (int iteration = 0 ; iteration < 10 ; iteration++){
             for (int bool = 0 ; bool < 2 ; bool++){
                 Parameters.useVestTeleDataset = bool == 0;
                 int[] seeds = Parameters.useVestTeleDataset ? new int[]{89,1} : new int[]{57,97,80};
@@ -116,6 +117,7 @@ public class App {
             hc.run();
         }
         else if (args[0].equals("HYBRID")) {
+            Parameters.timeLimitPerAlgorithm = Parameters.timeLimitPerAlgorithmInitial;
             Parameters.useJCM = true;
             HybridController hc = new HybridController();
             hc.run();

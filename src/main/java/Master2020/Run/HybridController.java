@@ -26,6 +26,7 @@ import java.util.stream.IntStream;
 
 public class HybridController {
 
+    public static int algorithmCounter;
     public Data data;
     public ArrayList<PeriodicAlgorithm> algorithms;
     public PeriodicOrderDistributionPopulation pod;
@@ -45,6 +46,7 @@ public class HybridController {
     public PeriodicSolution bestIterationSolution;
 
     public HybridController() throws GRBException {
+        algorithmCounter = 0;
         this.data = DataReader.loadData();
         initialize();
     }
@@ -85,7 +87,8 @@ public class HybridController {
     public void run() throws Exception {
         int genCounter = 0;
         while (System.currentTimeMillis() - startTime < Parameters.totalRuntime && iterationsWithoutImprovement < Parameters.maxNumberIterationsWithoutImprovement){
-            if ( (startTime + Parameters.totalRuntime) - System.currentTimeMillis() < Parameters.timeLimitPerAlgorithm){
+
+            if ((startTime + Parameters.totalRuntime) - System.currentTimeMillis() < Parameters.timeLimitPerAlgorithm){
                 Parameters.useODMIPBetweenIterations = false;
                 Parameters.timeLimitPerAlgorithm = System.currentTimeMillis() - startTime;
             }
@@ -131,7 +134,10 @@ public class HybridController {
         }
     }
 
-    public void storeBestCurrentSolution() throws IOException {
+    public void storeBestCurrentSolution() throws IOException, CloneNotSupportedException {
+        for (PeriodicAlgorithm algorithm : algorithms){
+            solutions.add(algorithm.storeSolution());
+        }
         if (solutions.size() > 0){
             Collections.sort(solutions);
             PeriodicSolution bestSolution = solutions.get(0);
@@ -141,9 +147,7 @@ public class HybridController {
             Collections.sort(finalSolutions);
             SolutionStorer.store(finalSolutions.get(0), startTime, fileName);
         }
-        else{
-            System.out.println("Not solution stored");
-        }
+        solutions.clear();
     }
 
     public void generateOptimalSolution( ) throws CloneNotSupportedException {
@@ -240,34 +244,40 @@ public class HybridController {
     }
 
     public void updateOrderDistributionPopulation() throws CloneNotSupportedException {
-        solutions.clear();
+        ArrayList<PeriodicSolution> solutions = new ArrayList<>();
+        ArrayList<PeriodicAlgorithm> validAlgorithms = new ArrayList<>();
         for (PeriodicAlgorithm algorithm : algorithms){
             algorithm.setMinimumIterations(algorithm.getMinimumIterations() + 1);
+            if (algorithm.getMinimumIterations() > Parameters.minimumIterationsPerOD){
+                validAlgorithms.add(algorithm);
+            }
+        }
+        for (PeriodicAlgorithm algorithm : validAlgorithms){
             solutions.add(algorithm.storeSolution());
         }
         int[] sortedIndices = IntStream.range(0, solutions.size())
                 .boxed()
-                .sorted(Comparator.comparing(i -> solutions.get(i)))
+                .sorted(Comparator.comparing(solutions::get))
                 .mapToInt(i -> i)
                 .toArray();
         boolean firstOD = true;
-        for (int i = sortedIndices.length - 1 ; i > sortedIndices.length - Parameters.orderDistributionCutoff ; i--){
-            if (algorithms.get(sortedIndices[i]).getMinimumIterations() > Parameters.minimumIterationsPerOD){
-                System.out.println("changing od: " + sortedIndices[i]);
+        if (sortedIndices.length > 0){
+            for (int i = sortedIndices.length - 1 ; i > Math.max(-1, sortedIndices.length - Parameters.orderDistributionCutoff -1) ; i--){
+                System.out.println("changing od: " + validAlgorithms.get(sortedIndices[i]).getAlgorithmNumber());
                 if (Parameters.useJCM && firstOD){
-                    pod.distributions.set(sortedIndices[i], orderDistributionJCM);
+                    pod.distributions.set(validAlgorithms.get(i).getAlgorithmNumber(), orderDistributionJCM);
                     firstOD = false;
                 }
                 else{
-                    pod.distributions.set(sortedIndices[i], pod.diversify(Parameters.diversifiedODsGenerated));
+                    pod.distributions.set(validAlgorithms.get(i).getAlgorithmNumber(), pod.diversify(Parameters.diversifiedODsGenerated));
                 }
 
                 //diversified new OD:
-                algorithms.get(sortedIndices[i]).updateOrderDistribution(pod.distributions.get(sortedIndices[i]));
-                algorithms.get(sortedIndices[i]).setMinimumIterations(0);
-
+                validAlgorithms.get(sortedIndices[i]).updateOrderDistribution(pod.distributions.get(sortedIndices[i]));
+                validAlgorithms.get(sortedIndices[i]).setMinimumIterations(0);
             }
         }
+
         for (int i = 0; i < Parameters.numberOfPGA ; i++){
             if (algorithms.get(i).getIterationsWithoutImprovement() > Parameters.PHGAIterationsWithoutImprovementLimit){
                 System.out.println("MAX ITERATIONS HIT");
