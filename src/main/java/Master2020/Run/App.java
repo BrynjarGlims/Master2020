@@ -36,6 +36,7 @@ public class App {
         Parameters.customFileName = "fullRun";
         for (int iteration = 0 ; iteration < 2 ; iteration++){
             for (int dataset = 0 ; dataset < 2 ; dataset++){
+                Parameters.useVestTeleDataset = dataset == 0;
                 for (int instance = 0 ; instance < 5 ; instance++){
                     Parameters.numberOfCustomers = customers[instance];
                     Parameters.numberOfVehicles = vehicles[instance];
