@@ -141,6 +141,9 @@ public class HybridController {
             Collections.sort(finalSolutions);
             SolutionStorer.store(finalSolutions.get(0), startTime, fileName);
         }
+        else{
+            System.out.println("Not solution stored");
+        }
     }
 
     public void generateOptimalSolution( ) throws CloneNotSupportedException {
@@ -232,8 +235,8 @@ public class HybridController {
                 bestIterationSolution = solution;
             }
             System.out.println("Algorithm " + s + " fitness: "+ solution.getFitness() + " feasible: " + solution.isFeasible() + " infeasibility cost: " + solution.getInfeasibilityCost());
-
         }
+
     }
 
     public void updateOrderDistributionPopulation() throws CloneNotSupportedException {
