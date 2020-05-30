@@ -19,21 +19,24 @@ public class App {
 
 
     public static void main(String[] args) throws Exception {
-        if (args[1].equals("base")){
-        baseCase(args);
-        }
-        else if (args[1].equals("parameter")){
-            parameterTuning(args);
-        }
-        else if (args[1].equals("full")){
-            fullRun(args);
+        switch (args[1]) {
+            case "base":
+                baseCase(args);
+                break;
+            case "parameter":
+                parameterTuning(args);
+                break;
+            case "full":
+                fullRun(args);
+                break;
         }
     }
 
 
     private static void fullRun(String[] args) throws Exception {
         initialize();
-        Parameters.customFileName = "fullRun";
+        Parameters.customFileName = "fullRun" + args[1];
+        Parameters.totalRuntime = 1800000;
         for (int iteration = 0 ; iteration < 2 ; iteration++){
             for (int dataset = 0 ; dataset < 2 ; dataset++){
                 Parameters.useVestTeleDataset = dataset == 0;
@@ -60,18 +63,23 @@ public class App {
                 int[] seeds = Parameters.useVestTeleDataset ? new int[]{15,84} : new int[]{69,85};
                 for (int seed : seeds) {
                     Parameters.randomSeedValue = seed;
+                    Parameters.numberOfPGA = Integer.parseInt(args[2]);
+                    Parameters.customFileName = "HYBRIDBALANCE" + Parameters.numberOfPGA;
+                    System.out.println(Parameters.customFileName);
+                    System.out.println("Using vestTele: " + Parameters.useVestTeleDataset + " for seed: " + Parameters.randomSeedValue);
+                    run(args);
 
 
                     //MUST BE CHANGED DEPENDING ON WHAT WE WANT TO TEST!!!
                     //GENERATIONS / OD
-                    double[] gens = new double[]{1};
-                    for (double gen : gens){
-                        Parameters.fractionOfFeasibleIndividualsFromAdsplit = gen;
-                        Parameters.customFileName = "NOadsplitFraction" + gen;
-                        System.out.println(Parameters.customFileName);
-                        System.out.println("Using vestTele: " + Parameters.useVestTeleDataset + " for seed: " + Parameters.randomSeedValue);
-                        run(args);
-                    }
+//                    double[] gens = new double[]{1};
+//                    for (double gen : gens){
+//                        Parameters.fractionOfFeasibleIndividualsFromAdsplit = gen;
+//                        Parameters.customFileName = "NOadsplitFraction" + gen;
+//                        System.out.println(Parameters.customFileName);
+//                        System.out.println("Using vestTele: " + Parameters.useVestTeleDataset + " for seed: " + Parameters.randomSeedValue);
+//                        run(args);
+//                    }
                 }
             }
         }
@@ -80,7 +88,8 @@ public class App {
     private static void baseCase(String[] args) throws Exception {
         Parameters.numberOfCustomers = 10;
         Parameters.numberOfVehicles = 5;
-        Parameters.customFileName = "baseCase";
+        Parameters.customFileName = "baseCase" + args[1];
+        Parameters.totalRuntime = 1800000;
         for (int iteration = 0 ; iteration < 10 ; iteration++){
             for (int bool = 0 ; bool < 2 ; bool++){
                 Parameters.useVestTeleDataset = bool == 0;
