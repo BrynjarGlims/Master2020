@@ -6,7 +6,9 @@ import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.*;
 import Master2020.Individual.Individual;
 import Master2020.Individual.Trip;
+import Master2020.Interfaces.PeriodicSolution;
 import Master2020.MIP.DataConverter;
+import Master2020.MIP.JCMSolution;
 import Master2020.MIP.JourneyCombinationModel;
 import Master2020.MIP.OrderAllocationModel;
 import Master2020.PGA.PeriodicIndividual;
@@ -72,6 +74,7 @@ public class GAController {
         orderAllocationModel = new OrderAllocationModel(data);
         repaired = new HashSet<>();
         numberOfIterations = 0;
+        time = System.currentTimeMillis();
     }
 
 
@@ -165,6 +168,9 @@ public class GAController {
         }
         bestIndividual = population.returnBestIndividual();
 
+        //store temporary solution
+        JCMSolution solution = new JCMSolution(bestIndividual.orderDistribution, bestIndividual.journeyList);
+        SolutionStorer.store(solution, time, fileName);
 
         // Check if it has improved for early termination
         if (bestIndividualScore == bestIndividual.getFitness(false)){
@@ -278,9 +284,8 @@ public class GAController {
             PlotIndividual visualizer = new PlotIndividual(data);
             visualizer.visualize(bestIndividual);
         }
-        double runTime = (System.currentTimeMillis() - time)/1000;
         Result res = new Result(population, modelName, fileName, population.returnBestIndividual().isFeasible(), false);
-        res.store(runTime, -1);
+        res.store(time, -1);
         if (Parameters.ODMIPProbability > 0){
             orderAllocationModel.terminateEnvironment();
         }
