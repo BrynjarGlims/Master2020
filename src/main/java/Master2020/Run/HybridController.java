@@ -17,6 +17,7 @@ import Master2020.Testing.HybridTest;
 import Master2020.Testing.IndividualTest;
 import Master2020.Testing.MIPTest;
 import Master2020.Testing.SolutionTest;
+import Master2020.Utils.Utils;
 import gurobi.GRBException;
 
 import java.io.IOException;
@@ -162,21 +163,22 @@ public class HybridController {
                 System.out.println("Fitness of od" + orderDistributionJCM.getFitness());
                 PeriodicSolution JCMSolution = new JCMSolution(orderDistributionJCM.clone(), journeys);
                 //SolutionStorer.store(JCMSolution, startTime, fileName);
-                System.out.println("Improvement from " + bestIterationFitness + " to " + JCMSolution.getFitness() + " equivalent to " + (bestIterationFitness-JCMSolution.getFitness())/bestIterationFitness*100 + " %");
+                double improvement = (bestIterationFitness-JCMSolution.getFitness())/bestIterationFitness*100;
+                System.out.println("Improvement from " + bestIterationFitness + " to " + JCMSolution.getFitness() + " equivalent to " + improvement + " %");
                 if (bestIterationFitness < JCMSolution.getFitness()){
-                    System.out.println("Stop");
+                    System.out.println("HYBRID MODEL MADE A WORSE SOLUTION");
                 }
                 double[] fitnesses = JCMSolution.getFitnesses();
                 System.out.print(" | Time warp "+ fitnesses[1] + " | ");
                 System.out.println("Over load "+ fitnesses[2]);
-                SolutionTest.checkForInfeasibility(JCMSolution, data);
+                int[] tags = Utils.getJourneyTags(JCMSolution.getJourneys(), data);
+                //SolutionTest.checkForInfeasibility(JCMSolution, data);
+                SolutionStorer.storeJBM(JCMSolution.getFitness(), journeyCombinationModel.runTime, improvement, tags[0], tags[1], journeyCombinationModel.optimal,startTime, fileName);
                 solutions.add(JCMSolution);
                 finalSolutions.add(JCMSolution);
             } else {
                 orderDistributionJCM = pod.diversify(Parameters.diversifiedODsGenerated);
             }
-            if (solutions.size()>0)
-                HybridTest.displayJourneyTags(solutions.get(solutions.size()-1).getJourneys(), data);
         } catch (Exception e){
             e.printStackTrace();
         }

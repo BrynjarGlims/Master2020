@@ -16,7 +16,51 @@ import java.util.Date;
 
 public class SolutionStorer {
 
-    public static String modelName;
+
+    public static void storeJBM(double fitness, double modeltime, double improvement, int numABC, int numHGA, boolean isOptimal, double startTime, String folderName){
+        try {
+            String filePath = FileParameters.filePathDetailed + "/" + folderName + "/" + folderName + "_JCMsolutions.csv";
+            File newFile = new File(filePath);
+            System.out.println("Storing result at path : " + newFile.getAbsolutePath());
+            Writer writer = Files.newBufferedWriter(Paths.get(filePath), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+            CSVWriter csvWriter = new CSVWriter(writer, Parameters.separator, CSVWriter.NO_QUOTE_CHARACTER,
+                    CSVWriter.DEFAULT_ESCAPE_CHARACTER,
+                    CSVWriter.DEFAULT_LINE_END);
+            NumberFormat formatter = new DecimalFormat("#0.000000");
+            SimpleDateFormat date_formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+            double runtime = (System.currentTimeMillis() - startTime)/1000;
+
+
+            if (newFile.length() == 0) {
+                String[] CSV_COLUMNS = {"Instance Name",
+                        "Time",
+                        "ModelRuntime",
+                        "Fitness",
+                        "Improvement[%]",
+                        "NumberOfJourneys",
+                        "NumberOFABC",
+                        "NumberOfHGA",
+                        "Optimal" };
+                csvWriter.writeNext(CSV_COLUMNS, false);
+            }
+            String[] results = {folderName,
+                    formatter.format(runtime),
+                    formatter.format(modeltime),
+                    formatter.format(fitness),
+                    formatter.format(improvement),
+                    formatter.format(numABC + numHGA),
+                    formatter.format(numABC),
+                    formatter.format(numHGA),
+                    Boolean.toString(isOptimal)};
+            csvWriter.writeNext(results, false);
+
+            csvWriter.close();
+            writer.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public static void store(PeriodicSolution periodicSolution, double startTime, String folderName){
         try {

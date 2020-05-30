@@ -30,6 +30,7 @@ public class HybridTest {
         System.out.println(" ");
     }
 
+
     public static void printNumberOfJourneys(ArrayList<Journey>[][] journeys, Data data){
         System.out.print("Number of journeys generated for ");
         int count = 0;
