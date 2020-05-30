@@ -8,6 +8,7 @@ import Master2020.Individual.Journey;
 import Master2020.Individual.Trip;
 import Master2020.Population.Population;
 import Master2020.ProductAllocation.OrderDistribution;
+import Master2020.Run.HybridController;
 import gurobi.GRBException;
 
 import java.util.ArrayList;
@@ -194,7 +195,7 @@ public class GeneticAlgorithm extends Thread {
         for (int i = 0 ; i < generations ; i++){
             runGeneration();
             if (iterationsWithoutImprovement > Parameters.maxNumberIterationsWithoutImprovement ||
-                    (System.currentTimeMillis() - this.startTime) > Parameters.timeLimitPerAlgorithm) {
+                    (System.currentTimeMillis() - HybridController.startTime) > Parameters.timeLimitPerAlgorithm) {
                 //System.out.println("BREAK DUE TO: improvement: " + (iterationsWithoutImprovement > Parameters.maxNumberIterationsWithoutImprovement) + " time: " + ((System.currentTimeMillis() - this.startTime) > Parameters.timeLimitPerAlgorithm));
                 break;
             }
