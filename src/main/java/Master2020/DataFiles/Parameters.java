@@ -152,7 +152,7 @@ public class Parameters {
     public static int diversifiedODsGenerated = 3;
 
     // Time run parameters
-    public static long timeLimitPerAlgorithm = 15000 ;  // in milli
+    public static long timeLimitPerAlgorithm = 1000 * numberOfCustomers ;  // in milli
     public static final long timeLimitPerAlgorithmInitial = timeLimitPerAlgorithm;
     public static final double odUpdateTime = 2.3;
 

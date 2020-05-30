@@ -60,22 +60,18 @@ public class App {
                 int[] seeds = Parameters.useVestTeleDataset ? new int[]{15,84} : new int[]{69,85};
                 for (int seed : seeds) {
                     Parameters.randomSeedValue = seed;
-                    Parameters.numberOfPGA = Integer.parseInt(args[2]);
-                    Parameters.customFileName = "PGAfraction" + Parameters.numberOfPGA;
-                    System.out.println(Parameters.customFileName);
-                    System.out.println("Using vestTele: " + Parameters.useVestTeleDataset + " for seed: " + Parameters.randomSeedValue);
-                    run(args);
+
 
                     //MUST BE CHANGED DEPENDING ON WHAT WE WANT TO TEST!!!
                     //GENERATIONS / OD
-//                    double[] gens = new double[]{1};
-//                    for (double gen : gens){
-//                        Parameters.fractionOfFeasibleIndividualsFromAdsplit = gen;
-//                        Parameters.customFileName = "NOadsplitFraction" + gen;
-//                        System.out.println(Parameters.customFileName);
-//                        System.out.println("Using vestTele: " + Parameters.useVestTeleDataset + " for seed: " + Parameters.randomSeedValue);
-//                        run(args);
-//                    }
+                    double[] gens = new double[]{1};
+                    for (double gen : gens){
+                        Parameters.fractionOfFeasibleIndividualsFromAdsplit = gen;
+                        Parameters.customFileName = "NOadsplitFraction" + gen;
+                        System.out.println(Parameters.customFileName);
+                        System.out.println("Using vestTele: " + Parameters.useVestTeleDataset + " for seed: " + Parameters.randomSeedValue);
+                        run(args);
+                    }
                 }
             }
         }
