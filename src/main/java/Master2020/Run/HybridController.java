@@ -38,7 +38,7 @@ public class HybridController {
     public CyclicBarrier upstreamGate;
     public String fileName;
     public String modelName = "HYBRID";
-    public long startTime;
+    public static long startTime;
     public double currentBestSolution;
     public int iterationsWithoutImprovement;
 

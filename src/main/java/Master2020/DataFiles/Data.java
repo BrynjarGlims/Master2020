@@ -240,13 +240,9 @@ public class Data {
 
 
     public static void main(String[] args){
-        Data data = DataReader.loadData();
-        for (Customer c : data.customers){
-            if (c.requiredVisitPeriod[5] == 1){
-                System.out.println("hello");
-            }
-        }
-
+        System.out.println("COMPUTING COMPLICATED ALGORITHM STUFF");
+        System.out.println("AMAZING RESULTS");
+        System.out.println("--------- Sindre er kul -----------");
     }
 
 }
