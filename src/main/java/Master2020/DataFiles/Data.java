@@ -238,11 +238,4 @@ public class Data {
         targetVolume = totalVolume/ numberOfPeriods;
     }
 
-
-    public static void main(String[] args){
-        System.out.println("COMPUTING COMPLICATED ALGORITHM STUFF");
-        System.out.println("AMAZING RESULTS");
-        System.out.println("--------- Sindre er kul -----------");
-    }
-
 }
