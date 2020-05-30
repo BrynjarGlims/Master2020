@@ -5,6 +5,7 @@ import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.PenaltyControl;
 import Master2020.ProductAllocation.OrderDistribution;
+import Master2020.Run.HybridController;
 import Master2020.Utils.WeightedRandomSampler;
 
 import java.util.ArrayList;
@@ -57,6 +58,9 @@ public class PeriodSwarm extends Thread {
 
     public void runGenerations(int generations){
         for (int i = 0 ; i < generations ; i++){
+            if (System.currentTimeMillis() - HybridController.startTime > Parameters.totalRuntime){
+                break;
+            }
             runGeneration();
         }
         if (Parameters.useJCM){

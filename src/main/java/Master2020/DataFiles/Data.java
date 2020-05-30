@@ -238,15 +238,4 @@ public class Data {
         targetVolume = totalVolume/ numberOfPeriods;
     }
 
-
-    public static void main(String[] args){
-        Data data = DataReader.loadData();
-        for (Customer c : data.customers){
-            if (c.requiredVisitPeriod[5] == 1){
-                System.out.println("hello");
-            }
-        }
-
-    }
-
 }

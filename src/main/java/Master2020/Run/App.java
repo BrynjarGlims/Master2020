@@ -61,6 +61,7 @@ public class App {
                 for (int seed : seeds) {
                     Parameters.randomSeedValue = seed;
 
+
                     //MUST BE CHANGED DEPENDING ON WHAT WE WANT TO TEST!!!
                     //GENERATIONS / OD
                     double[] gens = new double[]{1};
