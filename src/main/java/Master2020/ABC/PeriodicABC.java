@@ -74,10 +74,10 @@ public class PeriodicABC extends Thread implements PeriodicAlgorithm {
                 long startTime = System.currentTimeMillis();
                 if(run){
                     while(System.currentTimeMillis() - startTime < Parameters.timeLimitPerAlgorithm){
-                        if (System.currentTimeMillis() - startTime > Parameters.totalRuntime){
+                        if (System.currentTimeMillis() - HybridController.startTime > Parameters.totalRuntime){
                             break;
                         }
-                        {runIteration();}
+                        runIteration();
                     }
                     updateFitness();
                 }

@@ -101,7 +101,9 @@ public class HybridController {
             storeBestCurrentSolution();
             updateItertionsWithoutImprovement();
             updateOrderDistributionPopulation();
-            updateRuntimeOfThreads();
+            if (Parameters.dynamicRuntime){
+                updateRuntimeOfThreads();
+            }
             genCounter++;
         }
         runIteration();

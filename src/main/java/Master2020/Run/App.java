@@ -123,6 +123,7 @@ public class App {
         else if (args[0].equals("HYBRID")) {
             Parameters.timeLimitPerAlgorithm = Parameters.timeLimitPerAlgorithmInitial;
             Parameters.useJCM = true;
+            Parameters.numberOfPGA = 2;
             HybridController hc = new HybridController();
             hc.run();
         }
