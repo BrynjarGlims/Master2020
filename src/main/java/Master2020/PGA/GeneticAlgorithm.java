@@ -193,12 +193,12 @@ public class GeneticAlgorithm extends Thread {
         resetCounters();
         //printPopulationStats();
         for (int i = 0 ; i < generations ; i++){
-            runGeneration();
             if (iterationsWithoutImprovement > Parameters.maxNumberIterationsWithoutImprovement ||
                     (System.currentTimeMillis() - HybridController.startTime) > Parameters.timeLimitPerAlgorithm) {
                 //System.out.println("BREAK DUE TO: improvement: " + (iterationsWithoutImprovement > Parameters.maxNumberIterationsWithoutImprovement) + " time: " + ((System.currentTimeMillis() - this.startTime) > Parameters.timeLimitPerAlgorithm));
                 break;
             }
+            runGeneration();
         }
         //printPopulationStats();
     }

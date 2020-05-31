@@ -44,7 +44,7 @@ public class Parameters {
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
     public static int numberOfCustomers = 115;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
-    public static int numberOfVehicles = 50;
+    public static int numberOfVehicles = 62;
 
     public static final double distanceCutOffFromDepot = 3.0;   //default 3
     public static final boolean adjustTimeWindow = true;
@@ -152,7 +152,7 @@ public class Parameters {
     public static int diversifiedODsGenerated = 3;
 
     // Time run parameters
-    public static long timeLimitPerAlgorithm = 1000 * numberOfCustomers ;  // in milli
+    public static long timeLimitPerAlgorithm = 40000;  // in milli
     public static final long timeLimitPerAlgorithmInitial = timeLimitPerAlgorithm;
     public static final double odUpdateTime = 2.3;
 
