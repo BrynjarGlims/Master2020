@@ -36,7 +36,7 @@ public class Parameters {
     public static final int maxNumberOfGenerations = 10; //NOT IN USE
     public static int numberOfOffspring = 80;    //lambda FINAL
     public static final double fractionEliteIndividuals = 0.4;     //el
-    public static double fractionOfFeasibleIndividualsFromAdsplit = 0.8;
+    public static double fractionOfFeasibleIndividualsFromAdsplit = 0.2;
     public static final int frequencyOfPenaltyUpdatesPGA = 50;
     public static final int frequencyOfPenaltyUpdatesABC = 1000;
 
@@ -68,7 +68,7 @@ public class Parameters {
     public static int numberOfEmployees = 20; //FINAL
     public static int numberOfOnlookers = 8 * numberOfEmployees; //FINAL
     public static int numberOfScoutTrials = 50; //FINAL
-    public static final int maxNumberOfTrials = 15;
+    public static final int maxNumberOfTrials = 10;
     public static int maxBoundDimensionality = (int) Math.round(0.4 * numberOfCustomers); //FINAL //max amount of dimensions that can be changed, chosen randomly from 1-this
     public static double weightNeighborOnlooker = 1; //FINAL
     public static double weightNeighborEmployed = 0.5 * weightNeighborOnlooker; //FINAL
@@ -145,7 +145,7 @@ public class Parameters {
     // Periodic Parameters, common for PGA, ABC, and HYBRID
 
     public static final int numberOfAlgorithms = 6;
-    public static int numberOfPGA = 2; //2 FINAL
+    public static int numberOfPGA = 0; //2 FINAL
     public static int numberOfABC = numberOfAlgorithms - numberOfPGA;
     public static final int minimumIterationsPerOD = 2;
     public static final int orderDistributionCutoff = 2;
