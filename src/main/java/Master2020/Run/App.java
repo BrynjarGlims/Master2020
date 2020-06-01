@@ -69,7 +69,7 @@ public class App {
                     double[] gens = new double[]{1};
                     for (double gen : gens){
                         Parameters.numberOfPGA = Integer.parseInt(args[2]);
-                        Parameters.customFileName = "FinalFractionsPGA" + Parameters.numberOfPGA;
+                        Parameters.customFileName = "Final2FractionsPGA" + Parameters.numberOfPGA;
                         System.out.println(Parameters.customFileName);
                         System.out.println("Using vestTele: " + Parameters.useVestTeleDataset + " for seed: " + Parameters.randomSeedValue);
                         run(args);
