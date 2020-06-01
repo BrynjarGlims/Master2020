@@ -68,8 +68,8 @@ public class App {
 //                    GENERATIONS / OD
                     double[] gens = new double[]{1};
                     for (double gen : gens){
-                        Parameters.fractionOfFeasibleIndividualsFromAdsplit = gen;
-                        Parameters.customFileName = "NOadsplitFraction" + gen;
+                        Parameters.numberOfPGA = Integer.parseInt(args[2]);
+                        Parameters.customFileName = "FinalFractionsPGA" + Parameters.numberOfPGA;
                         System.out.println(Parameters.customFileName);
                         System.out.println("Using vestTele: " + Parameters.useVestTeleDataset + " for seed: " + Parameters.randomSeedValue);
                         run(args);
