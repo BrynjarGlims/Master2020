@@ -223,8 +223,7 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
                 //wait for all threads to be ready
                 masterDownstreamGate.await();
                 //run generations
-                if (run){runIterations();
-                    System.out.println("Algorithm done");}
+                if (run){runIterations();}
                 //wait for all periods to finish
                 masterUpstreamGate.await();
 
