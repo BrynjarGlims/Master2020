@@ -82,6 +82,16 @@ public class JourneyCombinationModel extends Model{
             model.set(GRB.StringAttr.ModelName, "JourneyCombinationModel");
             //this.model.set(GRB.IntParam.LogToConsole, 0); //removes print of gurobi
         }
+        else if(optimstatus == 9){
+            this.model.dispose();
+            this.env.dispose();
+            env = new GRBEnv(true);
+            this.env.set("logFile",  "JourneyBasedModel.log");
+            this.env.start();
+            this.model = new GRBModel(env);
+            model.set(GRB.StringAttr.ModelName, "JourneyCombinationModel");
+            //this.model.set(GRB.IntParam.LogToConsole, 0); //removes print of gurobi
+        }
         else {
             this.model.dispose();
             this.model = new GRBModel(env);
