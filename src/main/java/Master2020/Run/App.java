@@ -35,7 +35,7 @@ public class App {
 
     private static void fullRun(String[] args) throws Exception {
         initialize();
-        Parameters.customFileName = "fullRun" + args[1];
+        Parameters.customFileName = "fullRun-ABC" + args[1];
         Parameters.totalRuntime = 1800000;
         for (int iteration = 0 ; iteration < 2 ; iteration++){
             for (int dataset = 0 ; dataset < 2 ; dataset++){
