@@ -244,7 +244,6 @@ public class HybridController {
             }
             System.out.println("Algorithm " + s + " fitness: "+ solution.getFitness() + " feasible: " + solution.isFeasible() + " infeasibility cost: " + solution.getInfeasibilityCost());
         }
-
     }
 
     public void updateOrderDistributionPopulation() throws CloneNotSupportedException {
@@ -252,7 +251,8 @@ public class HybridController {
         ArrayList<PeriodicAlgorithm> validAlgorithms = new ArrayList<>();
         for (PeriodicAlgorithm algorithm : algorithms){
             algorithm.setMinimumIterations(algorithm.getMinimumIterations() + 1);
-            if (algorithm.getMinimumIterations() > Parameters.minimumIterationsPerOD){
+            if (algorithm.getMinimumIterations() > Parameters.minimumIterationsPerOD &&
+                    (algorithm.getIterationsWithoutImprovement() > 0 || algorithm.storeSolution().getFitness() < Parameters.globalTrialsCutoff * finalSolutions.get(0).getFitness())){
                 validAlgorithms.add(algorithm);
             }
         }

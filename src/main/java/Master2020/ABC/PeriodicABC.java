@@ -36,6 +36,7 @@ public class PeriodicABC extends Thread implements PeriodicAlgorithm {
     private double fitness;
     public int iterationsWithoutImprovement;
     public int minimumIterations;
+    public long startTime;
     public boolean run;
     public int algorithmNumber;
 
@@ -71,7 +72,7 @@ public class PeriodicABC extends Thread implements PeriodicAlgorithm {
                 //wait for all threads to be ready
                 masterDownstreamGate.await();
                 //run generations
-                long startTime = System.currentTimeMillis();
+                this.startTime = System.currentTimeMillis();
                 if(run){
                     while(System.currentTimeMillis() - startTime < Parameters.timeLimitPerAlgorithm){
                         if (System.currentTimeMillis() - HybridController.startTime > Parameters.totalRuntime){
@@ -199,7 +200,7 @@ public class PeriodicABC extends Thread implements PeriodicAlgorithm {
     private List<PeriodSwarm> makeThreadsAndStart(CyclicBarrier downstreamGate, CyclicBarrier upstreamGate){
         List<PeriodSwarm> threads = new ArrayList<>();
         for (int p = 0 ; p < data.numberOfPeriods ; p++){
-            PeriodSwarm periodSwarm = new PeriodSwarm(data, p, orderDistribution, downstreamGate, upstreamGate);
+            PeriodSwarm periodSwarm = new PeriodSwarm(data, p, orderDistribution, this, downstreamGate, upstreamGate);
             threads.add(periodSwarm);
         }
         for (Thread t : threads){

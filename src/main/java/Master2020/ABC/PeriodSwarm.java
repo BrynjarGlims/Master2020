@@ -23,6 +23,7 @@ public class PeriodSwarm extends Thread {
     public Data data;
     public int period;
     public OrderDistribution orderDistribution;
+    public PeriodicABC periodicABC;
     public List<Employee> employees;
     public List<Onlooker> onlookers;
     public CyclicBarrier downstreamGate;
@@ -38,27 +39,20 @@ public class PeriodSwarm extends Thread {
     private int counter;
 
 
-    public PeriodSwarm(Data data, int period, OrderDistribution orderDistribution, CyclicBarrier downstreamGate, CyclicBarrier upstreamGate){
+    public PeriodSwarm(Data data, int period, OrderDistribution orderDistribution, PeriodicABC periodicABC, CyclicBarrier downstreamGate, CyclicBarrier upstreamGate){
         this.data = data;
         this.period = period;
         this.downstreamGate = downstreamGate;
         this.upstreamGate = upstreamGate;
         this.orderDistribution = orderDistribution;
-        this.penaltyControl = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty, Parameters.frequencyOfPenaltyUpdatesABC);
-        initialize();
-    }
-
-    public PeriodSwarm(Data data, int period, OrderDistribution orderDistribution){
-        this.data = data;
-        this.period = period;
-        this.orderDistribution = orderDistribution;
+        this.periodicABC = periodicABC;
         this.penaltyControl = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty, Parameters.frequencyOfPenaltyUpdatesABC);
         initialize();
     }
 
     public void runGenerations(int generations){
         for (int i = 0 ; i < generations ; i++){
-            if (System.currentTimeMillis() - HybridController.startTime > Parameters.totalRuntime){
+            if (System.currentTimeMillis() - HybridController.startTime > Parameters.totalRuntime || System.currentTimeMillis() - periodicABC.startTime > Parameters.timeLimitPerAlgorithm ){
                 break;
             }
             runGeneration();
@@ -150,16 +144,5 @@ public class PeriodSwarm extends Thread {
         solutions = new ArrayList<>();
         currentBestFitness = Double.MAX_VALUE;
         counter = 0;
-    }
-
-
-    public static void main(String[] args){
-        Data data = DataReader.loadData();
-        OrderDistribution orderDistribution = new OrderDistribution(data);
-        orderDistribution.makeInitialDistribution();
-        PeriodSwarm periodSwarm = new PeriodSwarm(data, 0, orderDistribution);
-        periodSwarm.runGenerations(1000);
-        System.out.println(periodSwarm.solutions);
-
     }
 }
