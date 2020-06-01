@@ -554,7 +554,7 @@ public class JourneyCombinationModel extends Model{
 
         // Four choices: none, car, cost, customers, trips
         if (!symmetry.equals("none")) {
-            //symmetryCar();
+            symmetryCar();
         }
 
 

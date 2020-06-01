@@ -246,7 +246,7 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
             makeOptimalOrderDistribution(allFeasibleJourneys);
             updateOrderDistributionForPopulations(orderDistribution, false);
         }
-        System.out.println("run second generation" + (System.currentTimeMillis() - this.startTime));
+        //System.out.println("run second generation" + (System.currentTimeMillis() - this.startTime));
         setStartTimeOfThreads();
         runIteration();
         setJourneyFromBestIndividuals();
