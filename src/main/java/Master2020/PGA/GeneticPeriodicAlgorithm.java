@@ -223,7 +223,8 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
                 //wait for all threads to be ready
                 masterDownstreamGate.await();
                 //run generations
-                if (run){runIterations();}
+                if (run){runIterations();
+                    System.out.println("Algorithm done");}
                 //wait for all periods to finish
                 masterUpstreamGate.await();
 
@@ -237,6 +238,7 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
 
 
     public void runIterations() throws Exception {
+        startTime = System.currentTimeMillis();
         setStartTimeOfThreads();
         runIteration();
         setJourneyFromBestIndividuals();
@@ -245,8 +247,12 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
             makeOptimalOrderDistribution(allFeasibleJourneys);
             updateOrderDistributionForPopulations(orderDistribution, false);
         }
-        updateFitness();
+        System.out.println("run second generation" + (System.currentTimeMillis() - this.startTime));
+        setStartTimeOfThreads();
         runIteration();
+        setJourneyFromBestIndividuals();
+
+
         firstIterationTime = (System.currentTimeMillis() - startTime);
         allFeasibleJourneys = setJourneyFromBestIndividuals();
         setListOfJourneysFromThreads();
@@ -254,9 +260,9 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
     }
 
     public void setStartTimeOfThreads(){
-        startTime = System.currentTimeMillis();
+        double currentTime = System.currentTimeMillis();
         for (GeneticAlgorithm algorithm : threads){
-            algorithm.startTime = this.startTime;
+            algorithm.startTime = currentTime;
         }
     }
 
