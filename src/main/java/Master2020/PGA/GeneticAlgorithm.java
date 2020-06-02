@@ -194,7 +194,7 @@ public class GeneticAlgorithm extends Thread {
         //printPopulationStats();
         for (int i = 0 ; i < generations ; i++){
             if (  //iterationsWithoutImprovement > Parameters.maxNumberIterationsWithoutImprovement ||
-                    (System.currentTimeMillis() - this.startTime) > Parameters.timeLimitPerAlgorithm/2) {
+                    (System.currentTimeMillis() - this.startTime) > Parameters.timeLimitPerAlgorithm/2 || (System.currentTimeMillis() - HybridController.startTime) > Parameters.totalRuntime ) {
                 //System.out.println("BREAK DUE TO: improvement: " + (iterationsWithoutImprovement > Parameters.maxNumberIterationsWithoutImprovement) + " time: " + ((System.currentTimeMillis() - this.startTime) > Parameters.timeLimitPerAlgorithm));
                 //System.out.println(" Is this true? " + ((System.currentTimeMillis() - HybridController.startTime) > Parameters.timeLimitPerAlgorithm));
                 break;

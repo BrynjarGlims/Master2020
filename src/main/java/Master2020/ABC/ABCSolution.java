@@ -95,7 +95,7 @@ public class ABCSolution implements PeriodicSolution {
         Individual individual = HelperFunctions.createIndividual(data, journeys, orderDistribution);
         System.out.println(IndividualTest.testValidOrderDistribution(data, orderDistribution));
         System.out.println(IndividualTest.checkIfIndividualIsComplete(individual));
-        Result result = new Result(individual, "ABC", fileName, individual.isFeasible() , false);
+        Result result = new Result(this, data, "ABC", fileName, individual.isFeasible());
         result.store(startTime);
 
     }

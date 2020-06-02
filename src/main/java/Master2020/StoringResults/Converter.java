@@ -2,9 +2,11 @@ package Master2020.StoringResults;
 
 import Master2020.DataFiles.*;
 import Master2020.Individual.Individual;
+import Master2020.Individual.Journey;
 import Master2020.Individual.Trip;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Converter {
@@ -128,29 +130,49 @@ public class Converter {
                 + Math.pow(yCoordinateFrom - yCoordinateTo, 2)) * Parameters.scalingDistanceParameter;
     }
 
-    public static String findNumberOfTrips(Vehicle v, Individual individual){
+    public static String findNumberOfTrips(Vehicle v, ArrayList<Journey>[][] journeyList){
         int numberOfTrips = 0;
-        for (int p = 0; p < individual.data.numberOfPeriods; p++){
-            for (Trip t : individual.tripList[p][v.vehicleType.vehicleTypeID]){
-                if (t.vehicleID == v.vehicleID){
-                    numberOfTrips++;
+        for (int p = 0; p < journeyList.length; p++){
+            for (Journey j : journeyList[p][v.vehicleType.vehicleTypeID])
+                for (Trip t : j.trips){
+                    if (t.vehicleID == v.vehicleID){
+                        numberOfTrips++;
+                    }
                 }
-            }
         }
         return Integer.toString(numberOfTrips);
     }
 
-    public static String findNumberOfDays(Vehicle v, Individual individual){
+    public static String findNumberOfDays(Vehicle v, ArrayList<Journey>[][] journeyList){
         int numberOfDays = 0;
-        for (int p = 0; p < individual.data.numberOfPeriods; p++){
-            for (Trip t : individual.tripList[p][v.vehicleType.vehicleTypeID]){
-                if (t.vehicleID == v.vehicleID){
-                    numberOfDays++;
-                    break;
+        for (int p = 0; p < journeyList.length; p++){
+            for (Journey j : journeyList[p][v.vehicleType.vehicleTypeID]) {
+                for (Trip t : j.trips) {
+                    if (t.vehicleID == v.vehicleID) {
+                        numberOfDays++;
+                        break;
+                    }
                 }
             }
         }
         return Integer.toString(numberOfDays);
+    }
+
+    public static HashMap< Integer, HashMap<Integer, Trip>> setTripMapFromJourneys(ArrayList<Journey>[][] journeys){
+        HashMap< Integer, HashMap<Integer, Trip>> tripMap = new HashMap< Integer, HashMap<Integer, Trip>>();
+        for (int p = 0; p < journeys.length; p++){
+            tripMap.put(p,new HashMap<Integer, Trip>());
+            for (int vt = 0; vt < journeys[p].length; vt++) {
+                for (Journey journey : journeys[p][vt]){
+                    for (Trip trip : journey.trips) {
+                        for (int customerID : trip.customers) {
+                            tripMap.get(p).put(customerID, trip);
+                        }
+                    }
+                }
+            }
+        }
+        return tripMap;
     }
 
     public static String calcualteWaitingTime(Trip t, Data data){
