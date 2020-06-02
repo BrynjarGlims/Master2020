@@ -23,7 +23,7 @@ public class Parameters {
     public static long randomSeedValue = 10;
     public static final int minimumVehicleSize = 2000;   // removes 1400 and 1800;
 
-    public static long totalRuntime = 1 * 20000;
+    public static long totalRuntime = 1 * 60000;
 
 
     //Misc

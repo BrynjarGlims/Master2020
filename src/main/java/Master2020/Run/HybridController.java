@@ -91,7 +91,7 @@ public class HybridController {
 
             if (((startTime + Parameters.totalRuntime) - System.currentTimeMillis()) < Parameters.timeLimitPerAlgorithm){
                 Parameters.useODMIPBetweenIterations = false;
-                Parameters.timeLimitPerAlgorithm = System.currentTimeMillis() - startTime;
+                Parameters.timeLimitPerAlgorithm = ((startTime + Parameters.totalRuntime) - System.currentTimeMillis());
                 System.out.println("Termination due to runtime");
             }
             System.out.println(" ### Run iteration " + genCounter + " ### ");

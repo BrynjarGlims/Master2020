@@ -35,7 +35,7 @@ public class App {
 
     private static void fullRun(String[] args) throws Exception {
         initialize();
-        Parameters.customFileName = "fullRun-ABC" + args[1];
+        Parameters.customFileName = "fullRun" + args[1];
         Parameters.totalRuntime = 1800000;
         for (int iteration = 0 ; iteration < 2 ; iteration++){
             for (int dataset = 0 ; dataset < 2 ; dataset++){
@@ -88,7 +88,7 @@ public class App {
     private static void baseCase(String[] args) throws Exception {
         Parameters.numberOfCustomers = 10;
         Parameters.numberOfVehicles = 5;
-        Parameters.customFileName = "baseCase-new" + args[1];
+        Parameters.customFileName = "baseCase" + args[1];
         Parameters.totalRuntime = 1800000;
         Parameters.timeLimitPerAlgorithm = Parameters.timeLimitPerAlgorithmConstant + Parameters.numberOfCustomers*Parameters.timeLimitPerAlgorithmVariable;
         for (int iteration = 0 ; iteration < 10 ; iteration++){
@@ -129,7 +129,6 @@ public class App {
             hc.run();
         }
         else if (args[0].equals("HYBRID")) {
-            Parameters.timeLimitPerAlgorithm = Parameters.timeLimitPerAlgorithmInitial;
             Parameters.useJCM = true;
             Parameters.isPeriodic = true;
             HybridController hc = new HybridController();
@@ -142,27 +141,27 @@ public class App {
         customers = new int[5];
         vehicles = new int[5];
         //25
-        seeds[0][0] = new int[]{15};   //15, 84};
-        seeds[1][0] = new int[]{}; //69,85};
+        seeds[0][0] = new int[]{15, 84};
+        seeds[1][0] = new int[]{69,85};
         customers[0] = 25;
         vehicles[0] = 12;
         //50
-        seeds[0][1] = new int[]{}; //94,41};
-        seeds[1][1] = new int[]{}; //20,60};
+        seeds[0][1] = new int[]{94,41};
+        seeds[1][1] = new int[]{20,60};
         customers[1] = 50;
         vehicles[1] = 25;
         //75
-        seeds[0][2] = new int[]{};  //32,18,37};
-        seeds[1][2] = new int[]{}; //1};
+        seeds[0][2] = new int[]{32,18,37};
+        seeds[1][2] = new int[]{1};
         customers[2] = 75;
         vehicles[2] = 32;
         //100
-        seeds[0][3] = new int[]{}; //97,46,35,76};
+        seeds[0][3] = new int[]{97,46,35,76};
         seeds[1][3] = new int[]{};
         customers[3] = 100;
         vehicles[3] = 50;
         //115
-        seeds[0][4] = new int[]{};//10,27};
+        seeds[0][4] = new int[]{10,27};
         seeds[1][4] = new int[]{};
         customers[4] = 115;
         vehicles[4] = 62;
