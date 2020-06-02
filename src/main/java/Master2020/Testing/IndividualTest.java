@@ -91,6 +91,8 @@ public class IndividualTest {
     }
 
 
+
+
     public static boolean checkJourneyVehicle(Individual individual){
         int vehicleId;
         int vehicleType;

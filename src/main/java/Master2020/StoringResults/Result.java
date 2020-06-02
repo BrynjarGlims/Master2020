@@ -5,6 +5,7 @@ import Master2020.Genetic.OrderDistributionCrossover;
 import Master2020.Genetic.PenaltyControl;
 import Master2020.Individual.Individual;
 import Master2020.Individual.Journey;
+import Master2020.Interfaces.PeriodicSolution;
 import Master2020.Population.Population;
 import Master2020.ProductAllocation.OrderDelivery;
 import Master2020.ProductAllocation.OrderDistribution;
@@ -25,14 +26,17 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 
 public class Result {
 
 
     Population population;
     Data data;
-    Individual bestIndividual;
-    OrderDistribution bestOD;
+    OrderDistribution orderDistribution;
+    ArrayList<Journey>[][] journeyArrayList;
+    HashMap< Integer, HashMap<Integer, Trip>> tripMap;
+    double fitness;
     String modelName;
     String fileName;
     boolean isFeasible;
@@ -46,36 +50,68 @@ public class Result {
     public Result(Population population, String modelName, String fileName){
         this.population = population;
         this.data = population.data;
-        this.bestIndividual = population.returnBestIndividual();
-        this.bestOD = bestIndividual.orderDistribution;
+        Individual bestIndividual = population.returnBestIndividual();
+        this.orderDistribution = bestIndividual.orderDistribution;
+        this.journeyArrayList = bestIndividual.journeyList;
+        this.tripMap = Converter.setTripMapFromJourneys(journeyArrayList);
+        this.fitness = bestIndividual.getFitness(false);
         this.isFeasible = bestIndividual.isFeasible();
         this.isOptimal = false;
         this.modelName = modelName;
         this.fileName = fileName;
+        if (modelName == "GA") {
+            this.isFeasible = bestIndividual.isFeasible();
+        }
+
+        if (modelName == "GA"){
+            this.isOptimal = false;
+        }
     }
 
     public Result(Individual individual, String modelName, String fileName){
-        this.bestOD = individual.orderDistribution;
+        this.orderDistribution = individual.orderDistribution;
+        this.journeyArrayList = individual.journeyList;
+        this.tripMap = Converter.setTripMapFromJourneys(journeyArrayList);
         this.data = individual.data;
-        this.bestIndividual = individual;
+        Individual bestIndividual = individual;
+        this.fitness = bestIndividual.getFitness(false);
         this.isFeasible = bestIndividual.isFeasible();
         this.isOptimal = false;
         this.modelName = modelName;
         this.fileName = fileName;
+        if (modelName == "GA") {
+            this.isFeasible = bestIndividual.isFeasible();
+        }
+
+        if (modelName == "GA"){
+            this.isOptimal = false;
+        }
     }
 
     public Result(Individual individual, String modelName, String fileName, boolean isFeasible, boolean isOptimal){
         this(individual, modelName, fileName);
         this.isFeasible = isFeasible;
         this.isOptimal = isOptimal;
-
     }
+
 
     public Result(Population population, String modelName, String fileName, boolean isFeasible, boolean isOptimal){
         this(population, modelName, fileName);
         this.isFeasible = isFeasible;
         this.isOptimal = isOptimal;
         this.modelName = modelName;
+    }
+
+    public Result(PeriodicSolution periodicSolution, Data data, String modelName, String fileName, boolean isFeasible){
+        this.data = data;
+        this.fitness = periodicSolution.getFitness();
+        this.orderDistribution = periodicSolution.getOrderDistribution();
+        this.journeyArrayList = periodicSolution.getJourneys();
+        this.tripMap = Converter.setTripMapFromJourneys(journeyArrayList);
+        this.isOptimal = false;
+        this.isFeasible = isFeasible;
+        this.modelName = modelName;
+        this.fileName = fileName;
     }
 
     public void store() throws IOException {
@@ -168,7 +204,7 @@ public class Result {
             String[] results = {v.vehicleName, String.valueOf(v.vehicleID), String.valueOf(v.vehicleNumber),
                     String.valueOf(v.vehicleType.vehicleTypeID), v.trailerNumberPlate, String.valueOf(v.vehicleType.capacity),
                     String.valueOf(v.vehicleType.travelCost), String.valueOf(v.vehicleType.usageCost),
-                    String.format("%.3f", v.vehicleType.loadingTimeAtDepot*60), Converter.findNumberOfTrips(v, bestIndividual), Converter.findNumberOfDays(v, bestIndividual)};
+                    String.format("%.3f", v.vehicleType.loadingTimeAtDepot*60), Converter.findNumberOfTrips(v, journeyArrayList), Converter.findNumberOfDays(v, journeyArrayList)};
             csvWriter.writeNext(results, false);
         }
         csvWriter.close();
@@ -193,7 +229,7 @@ public class Result {
             csvWriter.writeNext(CSV_COLUMNS, false);
         }
         int tripNumber = 1;
-        for (ArrayList<Journey>[] periodJourneys : bestIndividual.journeyList){
+        for (ArrayList<Journey>[] periodJourneys : journeyArrayList){
             for (ArrayList<Journey> vehicleJourneys : periodJourneys) {
                 for (Journey journey : vehicleJourneys ){
                     int tripCounter = 0;
@@ -256,8 +292,7 @@ public class Result {
     }
 
     private void storeDetailedOrders() throws IOException {
-        System.out.println("complete?: " + IndividualTest.checkIfIndividualIsComplete(bestIndividual));
-        System.out.println("complete OD?: " + IndividualTest.testValidOrderDistribution(data, bestOD));
+        System.out.println("complete OD?: " + IndividualTest.testValidOrderDistribution(data, orderDistribution));
         String filePath  = FileParameters.filePathDetailed + "/" + fileName + "/" + fileName + "_orders.csv";
         File newFile = new File(filePath);
         System.out.println("Path : " + newFile.getAbsolutePath());
@@ -274,19 +309,17 @@ public class Result {
         }
         int vehicleID;
 
-        for (OrderDelivery orderDelivery : bestOD.orderDeliveries){
+        for (OrderDelivery orderDelivery : orderDistribution.orderDeliveries){
             if (!orderDelivery.dividable){
-                if (bestIndividual.tripMap.get(orderDelivery.getPeriod()).containsKey(orderDelivery.order.customerID)){ //todo: change when fixed
-                    vehicleID = bestIndividual.tripMap.get(orderDelivery.getPeriod()).get(orderDelivery.order.customerID).vehicleID;
+                if (tripMap.get(orderDelivery.getPeriod()).containsKey(orderDelivery.order.customerID)){ //todo: change when fixed
+                    vehicleID = tripMap.get(orderDelivery.getPeriod()).get(orderDelivery.order.customerID).vehicleID;
                     int period = orderDelivery.getPeriod();
                     String[] results = {String.valueOf(orderDelivery.order.orderID), Converter.dividableConverter(orderDelivery.dividable),
                             orderDelivery.order.commodityFlow, formatter.format(orderDelivery.orderVolumes[period]), Converter.periodConverter(period),
                             String.valueOf(orderDelivery.order.customerID), data.customers[orderDelivery.order.customerID].customerName,
-                            String.valueOf(bestIndividual.tripMap.get(orderDelivery.getPeriod()).get(orderDelivery.order.customerID).vehicleID),
+                            String.valueOf(tripMap.get(orderDelivery.getPeriod()).get(orderDelivery.order.customerID).vehicleID),
                             String.valueOf(data.vehicles[vehicleID].vehicleName),String.valueOf(data.vehicles[vehicleID].vehicleType.capacity)};
                     csvWriter.writeNext(results, false);
-
-
                 }
             }
             else{
@@ -295,19 +328,19 @@ public class Result {
                         continue;
                     }
                     else{
-                        if (bestIndividual.tripMap.get(period).size() == 0){
-                            if (!bestIndividual.tripMap.get(period).containsKey(orderDelivery.order.customerID)){
+                        if (tripMap.get(period).size() == 0){
+                            if (!tripMap.get(period).containsKey(orderDelivery.order.customerID)){
                                 System.out.println("-------Wrong delivery-------- Find this message in result.java, storing results");
                                 System.out.println("OrderID: " + orderDelivery.order.orderID+  " Period: " + period + " customer: " + orderDelivery.order.customerID + " required visit: " + orderDelivery.orderPeriods[period]);
                                 continue;
                             }
                         }
 
-                        vehicleID = bestIndividual.tripMap.get(period).get(orderDelivery.order.customerID).vehicleID;
+                        vehicleID = tripMap.get(period).get(orderDelivery.order.customerID).vehicleID;
                         String[] results = {String.valueOf(orderDelivery.order.orderID), Converter.dividableConverter(orderDelivery.dividable),
                                 orderDelivery.order.commodityFlow, formatter.format(orderDelivery.orderVolumes[period]), Converter.periodConverter(period),
                                 String.valueOf(orderDelivery.order.customerID), data.customers[orderDelivery.order.customerID].customerName,
-                                String.valueOf(bestIndividual.tripMap.get(period).get(orderDelivery.order.customerID).vehicleID),
+                                String.valueOf(tripMap.get(period).get(orderDelivery.order.customerID).vehicleID),
                                 String.valueOf(data.vehicles[vehicleID].vehicleName),
                                 String.valueOf(data.vehicles[vehicleID].vehicleType.capacity)};
                         csvWriter.writeNext(results, false);
@@ -573,16 +606,8 @@ public class Result {
             csvWriter.writeNext(CSV_COLUMNS, false);
         }
 
-        if (modelName == "GA") {
-            this.isFeasible = bestIndividual.isFeasible();
-        }
 
-        if (modelName == "GA"){
-            this.isOptimal = false;
-        }
-
-
-        String[] results = {fileName, String.format("%.4f",bestIndividual.getFitness(false)), modelName, String.valueOf(this.runTime), date_formatter.format(new Date()), String.valueOf(Parameters.randomSeedValue),
+        String[] results = {fileName, String.format("%.4f",fitness), modelName, String.valueOf(this.runTime), date_formatter.format(new Date()), String.valueOf(Parameters.randomSeedValue),
                 String.valueOf(Parameters.populationSize),String.valueOf(Parameters.maxNumberOfGenerations), String.valueOf(Parameters.numberOfCustomers)
                 , String.valueOf(Parameters.numberOfVehicles), String.valueOf(this.isFeasible), String.valueOf(this.isOptimal), String.valueOf(Math.round(this.MIPGap*1000000)/10000) + "%"};
         csvWriter.writeNext(results, false);
@@ -608,7 +633,7 @@ public class Result {
         }
 
 
-        String[] results = {fileName, String.format("%.4f",bestIndividual.getFitness(false)), modelName,  String.valueOf(this.runTime), String.valueOf(Parameters.timeLimitPerAlgorithm),
+        String[] results = {fileName, String.format("%.4f",fitness), modelName,  String.valueOf(this.runTime), String.valueOf(Parameters.timeLimitPerAlgorithm),
                 String.valueOf(Parameters.useVestTeleDataset), date_formatter.format(new Date()), String.valueOf(Parameters.randomSeedValue), String.valueOf(Parameters.useJCM) ,String.valueOf(Parameters.numberOfPGA), String.valueOf(Parameters.numberOfABC),
                 String.valueOf(Parameters.populationSize),String.valueOf(Parameters.maxNumberOfGenerations), String.valueOf(Parameters.numberOfCustomers),
                 String.valueOf(Parameters.numberOfVehicles), String.valueOf(this.isFeasible), String.valueOf(this.isOptimal), String.valueOf(Math.round(this.MIPGap*1000000)/10000) + "%"};

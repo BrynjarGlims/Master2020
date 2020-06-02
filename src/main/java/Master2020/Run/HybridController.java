@@ -89,11 +89,13 @@ public class HybridController {
         int genCounter = 0;
         while (System.currentTimeMillis() - startTime < Parameters.totalRuntime && iterationsWithoutImprovement < Parameters.maxNumberIterationsWithoutImprovement){
 
-            if ((startTime + Parameters.totalRuntime) - System.currentTimeMillis() < Parameters.timeLimitPerAlgorithm){
+            if (((startTime + Parameters.totalRuntime) - System.currentTimeMillis()) < Parameters.timeLimitPerAlgorithm){
                 Parameters.useODMIPBetweenIterations = false;
                 Parameters.timeLimitPerAlgorithm = System.currentTimeMillis() - startTime;
+                System.out.println("Termination due to runtime");
             }
-            System.out.println(" ### Running generation: " + genCounter + " ### ");
+            System.out.println(" ### Run iteration " + genCounter + " ### ");
+            System.out.println("Time left: " + (Parameters.totalRuntime - (System.currentTimeMillis() - HybridController.startTime)) + " time per algorithm " + Parameters.timeLimitPerAlgorithm);
             runIteration();
             if (Parameters.useJCM) {
                 generateOptimalSolution();
@@ -102,7 +104,8 @@ public class HybridController {
             updateItertionsWithoutImprovement();
             updateOrderDistributionPopulation();
             if (Parameters.dynamicRuntime){
-                updateRuntimeOfThreads();
+                System.out.println("IKKE KJØRE DETTE");
+                //updateRuntimeOfThreads();
             }
             genCounter++;
         }

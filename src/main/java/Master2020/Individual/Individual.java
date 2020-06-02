@@ -73,6 +73,11 @@ public class Individual implements Comparable<Individual> {
         this.journeyList[period][vehicleType] = journeyList;
     }
 
+    public void convertToNonPeriodicIndividual(){
+        this.numberOfPeriods = data.numberOfPeriods;
+        this.actualPeriod = -1;
+    }
+
 
 
     public  void initializeTripList(){

@@ -242,7 +242,7 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
         runIteration();
         setJourneyFromBestIndividuals();
         boolean allFeasibleJourneys = setJourneyFromBestIndividuals();
-        if (Parameters.useODMIPBetweenIterations){
+        if (Parameters.useODMIPBetweenIterations && ((System.currentTimeMillis() - HybridController.startTime) < Parameters.totalRuntime)){
             makeOptimalOrderDistribution(allFeasibleJourneys);
             updateOrderDistributionForPopulations(orderDistribution, false);
         }

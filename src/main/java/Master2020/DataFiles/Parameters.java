@@ -154,6 +154,8 @@ public class Parameters {
 
     // Time run parameters
     public static long timeLimitPerAlgorithm = 25000 + 3000 * numberOfCustomers;  // in milli
+    public static final long timeLimitPerAlgorithmConstant = 25000;
+    public static final long timeLimitPerAlgorithmVariable = 3000;
     public static final long timeLimitPerAlgorithmInitial = timeLimitPerAlgorithm;
     public static final double odUpdateTime = 2.3;
 
