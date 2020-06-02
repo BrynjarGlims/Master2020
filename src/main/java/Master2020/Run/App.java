@@ -54,7 +54,7 @@ public class App {
     }
 
     private static void parameterTuning(String[] args) throws Exception {
-        Parameters.totalRuntime = 600000;
+        Parameters.totalRuntime = 1200000;
         Parameters.numberOfCustomers = 50;
         Parameters.numberOfVehicles = 25;
         for (int iteration = 0 ; iteration < 5 ; iteration++){
@@ -123,7 +123,6 @@ public class App {
         else if (args[0].equals("HYBRID")) {
             Parameters.timeLimitPerAlgorithm = Parameters.timeLimitPerAlgorithmInitial;
             Parameters.useJCM = true;
-            Parameters.numberOfPGA = 2;
             HybridController hc = new HybridController();
             hc.run();
         }
