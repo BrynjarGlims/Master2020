@@ -88,7 +88,7 @@ public class App {
     private static void baseCase(String[] args) throws Exception {
         Parameters.numberOfCustomers = 10;
         Parameters.numberOfVehicles = 5;
-        Parameters.customFileName = "baseCase" + args[1];
+        Parameters.customFileName = "baseCase-new" + args[1];
         Parameters.totalRuntime = 1800000;
         Parameters.timeLimitPerAlgorithm = Parameters.timeLimitPerAlgorithmConstant + Parameters.numberOfCustomers*Parameters.timeLimitPerAlgorithmVariable;
         for (int iteration = 0 ; iteration < 10 ; iteration++){
@@ -124,12 +124,14 @@ public class App {
         else if (args[0].equals("ABC")) {
             Parameters.numberOfPGA = 0;
             Parameters.useJCM = false;
+            Parameters.isPeriodic = true;
             HybridController hc = new HybridController();
             hc.run();
         }
         else if (args[0].equals("HYBRID")) {
             Parameters.timeLimitPerAlgorithm = Parameters.timeLimitPerAlgorithmInitial;
             Parameters.useJCM = true;
+            Parameters.isPeriodic = true;
             HybridController hc = new HybridController();
             hc.run();
         }
