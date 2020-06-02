@@ -96,8 +96,13 @@ public class ABCSolution implements PeriodicSolution {
         System.out.println(IndividualTest.testValidOrderDistribution(data, orderDistribution));
         System.out.println(IndividualTest.checkIfIndividualIsComplete(individual));
         Result result = new Result(individual, "ABC", fileName, individual.isFeasible() , false);
+        System.out.println("old fitness: " + fitness + " new fitness to file: " + individual.getFitness(true));
         result.store(startTime);
 
+    }
+
+    public String toString(){
+        return " " + fitness;
     }
 
 }

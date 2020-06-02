@@ -84,6 +84,7 @@ public class PGASolution implements PeriodicSolution {
     public void writeSolution(String fileName, double startTime) throws IOException {
         Individual individual = HelperFunctions.createIndividual(data, journeys, orderDistribution);
         Result result = new Result(individual, "PGA", fileName, individual.isFeasible() , false);
+        System.out.println("old fitness: " + fitness + " new fitness to file: " + individual.getFitness(false));
         result.store(startTime);
     }
 
@@ -108,6 +109,10 @@ public class PGASolution implements PeriodicSolution {
             return 1;
         }
         return 0;
+    }
+
+    public String toString(){
+        return " " + fitness;
     }
 
 }
