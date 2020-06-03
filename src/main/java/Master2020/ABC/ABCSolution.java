@@ -100,4 +100,8 @@ public class ABCSolution implements PeriodicSolution {
 
     }
 
+    public String toString(){
+        return " " + fitness;
+    }
+
 }

@@ -17,13 +17,13 @@ public class Parameters {
     public static final String vehicleFilePath2 = "data/" + dataSet2 + "/Vehicles.txt";
     public static final String distancePathVestTele = "Google_VestTele";
     public static final String distancePathTrondelag = "Google_Trondelag";
-    public static boolean useVestTeleDataset = false;
+    public static boolean useVestTeleDataset = true;
     public static final boolean doRandomSeed = true;
     public static List<Integer> seeds = Arrays.asList(57, 97, 80, 89, 1);
-    public static long randomSeedValue = 80;
+    public static long randomSeedValue = 10;
     public static final int minimumVehicleSize = 2000;   // removes 1400 and 1800;
 
-    public static long totalRuntime = 3 * 600000;
+    public static long totalRuntime = 1 * 60000;
 
 
     //Misc
@@ -138,14 +138,14 @@ public class Parameters {
 
     // Journey Combination Model parameters
     public static boolean useJCM = false;
-    public static final int numberOfIndividualJourneysInMIPPerPeriod = 5;
+    public static final int numberOfIndividualJourneysInMIPPerPeriod = 3;
     public static final String symmetryOFJCM = "car";
 
 
     // Periodic Parameters, common for PGA, ABC, and HYBRID
 
     public static final int numberOfAlgorithms = 6;
-    public static int numberOfPGA = 6; //2 FINAL
+    public static int numberOfPGA = 4; //4 FINAL
     public static int numberOfABC = numberOfAlgorithms - numberOfPGA;
     public static final int minimumIterationsPerOD = 2;
     public static final int orderDistributionCutoff = 2;

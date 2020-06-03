@@ -113,4 +113,8 @@ public class PGASolution implements PeriodicSolution {
         return 0;
     }
 
+    public String toString(){
+        return " " + fitness;
+    }
+
 }
