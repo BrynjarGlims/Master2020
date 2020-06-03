@@ -50,7 +50,6 @@ public class HybridTest {
         if(id == null){
             System.out.println("No id found");
         }
-        System.out.println(id.toString() + ": " + count );
         return journeyExists;
     }
 }

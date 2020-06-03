@@ -574,6 +574,9 @@ public class JourneyCombinationModel extends Model{
     public void optimizeModel() throws GRBException {
         model.set(GRB.DoubleParam.MIPGap, Parameters.modelMipGap);
         model.set(GRB.DoubleParam.TimeLimit, Parameters.modelJCMTimeLimit);
+        if (Parameters.removePresolve){
+            model.set(GRB.IntParam.Presolve, 0);
+        }
         model.optimize();
         model.get(GRB.DoubleAttr.Runtime);
         System.out.println(GRB.Status.OPTIMAL);
