@@ -91,7 +91,7 @@ public class HybridController {
 
             if (((startTime + Parameters.totalRuntime) - System.currentTimeMillis()) < Parameters.timeLimitPerAlgorithm){
                 Parameters.useODMIPBetweenIterations = false;
-                Parameters.timeLimitPerAlgorithm = System.currentTimeMillis() - startTime;
+                Parameters.timeLimitPerAlgorithm = ((startTime + Parameters.totalRuntime) - System.currentTimeMillis());
                 System.out.println("Termination due to runtime");
             }
             System.out.println(" ### Run iteration " + genCounter + " ### ");
@@ -313,7 +313,7 @@ public class HybridController {
         ArrayList<Journey>[][] tempJourneys;
         for (PeriodicAlgorithm algorithm : algorithms){
             tempJourneys = algorithm.getJourneys();
-            if (true)  //display journey number from each algorithm
+            if (false)  //display journey number from each algorithm
                 HybridTest.printNumberOfJourneys(tempJourneys,data);
             for (int p = 0 ; p < data.numberOfPeriods ; p++){
                 for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
