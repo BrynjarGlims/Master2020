@@ -20,10 +20,10 @@ public class Parameters {
     public static boolean useVestTeleDataset = true;
     public static final boolean doRandomSeed = true;
     public static List<Integer> seeds = Arrays.asList(57, 97, 80, 89, 1);
-    public static long randomSeedValue = 46;
+    public static long randomSeedValue = 97;
     public static final int minimumVehicleSize = 2000;   // removes 1400 and 1800;
 
-    public static long totalRuntime = 1 * 60000;
+    public static long totalRuntime = 3 * 600000;
 
 
     //Misc
@@ -138,9 +138,10 @@ public class Parameters {
 
     // Journey Combination Model parameters
     public static boolean useJCM = false;
-    public static int numberOfIndividualJourneysInMIPPerPeriod = 1;
+    public static boolean useNewJCMModel = true;
+    public static int numberOfIndividualJourneysInMIPPerPeriod = 5;
     public static final String symmetryOFJCM = "car";
-    public static final boolean removePresolve = true;
+    public static boolean removePresolve = false;
 
 
     // Periodic Parameters, common for PGA, ABC, and HYBRID
