@@ -20,7 +20,7 @@ public class Parameters {
     public static boolean useVestTeleDataset = true;
     public static final boolean doRandomSeed = true;
     public static List<Integer> seeds = Arrays.asList(57, 97, 80, 89, 1);
-    public static long randomSeedValue = 10;
+    public static long randomSeedValue = 46;
     public static final int minimumVehicleSize = 2000;   // removes 1400 and 1800;
 
     public static long totalRuntime = 1 * 60000;
@@ -43,8 +43,8 @@ public class Parameters {
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 10;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
-    public static int numberOfVehicles = 5;
+    public static int numberOfCustomers = 100;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
+    public static int numberOfVehicles = 50;
 
     public static final double distanceCutOffFromDepot = 3.0;   //default 3
     public static final boolean adjustTimeWindow = true;
@@ -140,6 +140,7 @@ public class Parameters {
     public static boolean useJCM = false;
     public static final int numberOfIndividualJourneysInMIPPerPeriod = 3;
     public static final String symmetryOFJCM = "car";
+    public static final boolean removePresolve = true;
 
 
     // Periodic Parameters, common for PGA, ABC, and HYBRID
