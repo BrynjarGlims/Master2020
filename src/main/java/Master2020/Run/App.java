@@ -19,7 +19,7 @@ public class App {
 
 
     public static void main(String[] args) throws Exception {
-        //oargs = new String[]{"HYBRID", "full"};
+        args = new String[]{"HYBRID", "debug"};
         switch (args[1]) {
             case "base":
                 baseCase(args);
@@ -76,12 +76,12 @@ public class App {
                 if (Parameters.timeLimitPerAlgorithm > Parameters.totalRuntime){
                     throw new IllegalArgumentException(" Time limit per algorithm is larger than totalRuntime");
                 }
-                for (int seed : seeds[dataset][instance]){
-                    Parameters.randomSeedValue = seed;
-                    System.out.println("running " + args[0] + " for dataset " + dataset + " for " + Parameters.numberOfCustomers + " customers, seed: " + seed);
-                    System.out.println("Time limit per algorithm: " + Parameters.timeLimitPerAlgorithm/1000 + " seconds");
-                    run(args);
-                }
+
+                Parameters.randomSeedValue = 10;
+                System.out.println("running " + args[0] + " for dataset " + dataset + " for " + Parameters.numberOfCustomers + " customers, seed: " + seed);
+                System.out.println("Time limit per algorithm: " + Parameters.timeLimitPerAlgorithm/1000 + " seconds");
+                run(args);
+
             }
         }
     }
