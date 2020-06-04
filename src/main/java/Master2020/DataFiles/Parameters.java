@@ -140,6 +140,7 @@ public class Parameters {
     public static boolean useJCM = false;
     public static final int numberOfIndividualJourneysInMIPPerPeriod = 3;
     public static final String symmetryOFJCM = "car";
+    public static final boolean removePresolve = true;
 
 
     // Periodic Parameters, common for PGA, ABC, and HYBRID
