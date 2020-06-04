@@ -18,7 +18,7 @@ public class App {
 
 
     public static void main(String[] args) throws Exception {
-        //args = new String[]{"PGA", "full"};
+        //args = new String[]{"HYBRID", "full"};
         switch (args[1]) {
             case "base":
                 baseCase(args);
@@ -141,7 +141,7 @@ public class App {
         customers = new int[5];
         vehicles = new int[5];
         //25
-        seeds[0][0] = new int[]{};//15, 84};
+        seeds[0][0] = new int[]{15};//15, 84};
         seeds[1][0] = new int[]{};//69,85};
         customers[0] = 25;
         vehicles[0] = 12;
@@ -156,7 +156,7 @@ public class App {
         customers[2] = 75;
         vehicles[2] = 32;
         //100
-        seeds[0][3] = new int[]{46}; //97,46,35,76};
+        seeds[0][3] = new int[]{}; //97,46,35,76};
         seeds[1][3] = new int[]{};
         customers[3] = 100;
         vehicles[3] = 50;

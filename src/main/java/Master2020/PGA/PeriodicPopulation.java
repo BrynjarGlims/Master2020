@@ -48,7 +48,6 @@ public class PeriodicPopulation extends Thread {
             this.populations[p] = new Population(data, p);
             this.populations[p].setOrderDistributionPopulation(this.orderDistributionPopulation);
             this.populations[p].initializePopulation(orderDistribution, new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty));  //added
-
         }
         this.periodicFeasibleIndividualPopulation = new HashSet<PeriodicIndividual>();
         this.periodicInfeasibleIndividualPopulation = new HashSet<PeriodicIndividual>();
