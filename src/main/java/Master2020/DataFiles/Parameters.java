@@ -138,7 +138,7 @@ public class Parameters {
 
     // Journey Combination Model parameters
     public static boolean useJCM = false;
-    public static final int numberOfIndividualJourneysInMIPPerPeriod = 3;
+    public static final int numberOfIndividualJourneysInMIPPerPeriod = 1;
     public static final String symmetryOFJCM = "car";
     public static final boolean removePresolve = true;
 
