@@ -19,7 +19,7 @@ public class App {
 
 
     public static void main(String[] args) throws Exception {
-        args = new String[]{"HYBRID", "debug"};
+        //args = new String[]{"HYBRID", "debug"};
         switch (args[1]) {
             case "base":
                 baseCase(args);
@@ -69,16 +69,16 @@ public class App {
         for (int dataset = 0 ; dataset < 2 ; dataset++){
             Parameters.useVestTeleDataset = dataset == 0;
             for (int instance = 4 ; instance < 5 ; instance++){
-                Parameters.numberOfCustomers = customers[instance];
-                Parameters.numberOfVehicles = vehicles[instance];
-                Parameters.numberOfIndividualJourneysInMIPPerPeriod = journeys[instance];
+                Parameters.numberOfCustomers = 100;
+                Parameters.numberOfVehicles = 50;
+                Parameters.removePresolve = true;
+                Parameters.numberOfIndividualJourneysInMIPPerPeriod = 3;
                 Parameters.timeLimitPerAlgorithm = Parameters.timeLimitPerAlgorithmConstant + Parameters.numberOfCustomers*Parameters.timeLimitPerAlgorithmVariable;
                 if (Parameters.timeLimitPerAlgorithm > Parameters.totalRuntime){
                     throw new IllegalArgumentException(" Time limit per algorithm is larger than totalRuntime");
                 }
-
                 Parameters.randomSeedValue = 10;
-                System.out.println("running " + args[0] + " for dataset " + dataset + " for " + Parameters.numberOfCustomers + " customers, seed: " + seed);
+                System.out.println("running " + args[0] + " for dataset " + dataset + " for " + Parameters.numberOfCustomers + " customers, seed: " + Parameters.randomSeedValue);
                 System.out.println("Time limit per algorithm: " + Parameters.timeLimitPerAlgorithm/1000 + " seconds");
                 run(args);
 
