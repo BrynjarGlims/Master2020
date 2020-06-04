@@ -252,8 +252,9 @@ public class HybridController {
 
     private double getCurrentBestFitness() throws Exception {
         double fitness = 0;
-        if (Parameters.useJCM && journeyCombinationModel.optimstatus == 2){  // TODO: 25/05/2020 Change this, as it needs to print the best solution
-            fitness = new JCMSolution(orderDistributionJCM.clone(), journeyCombinationModel.getOptimalJourneys()).getFitness();
+
+        if (Parameters.useJCM && improvedJourneyCombinationModel.optimstatus == 2){  // TODO: 25/05/2020 Change this, as it needs to print the best solution
+            fitness = new JCMSolution(orderDistributionJCM.clone(), improvedJourneyCombinationModel.getOptimalJourneys()).getFitness();
         }
         else {
             try {
