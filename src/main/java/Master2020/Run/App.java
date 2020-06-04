@@ -30,6 +30,9 @@ public class App {
             case "full":
                 fullRun(args);
                 break;
+            case "debug":
+                debugRun(args);
+                break;
         }
     }
 
@@ -55,6 +58,29 @@ public class App {
                         System.out.println("Time limit per algorithm: " + Parameters.timeLimitPerAlgorithm/1000 + " seconds");
                         run(args);
                     }
+                }
+            }
+        }
+    }
+
+    private static void debugRun(String[] args) throws Exception {
+        Parameters.customFileName = "debugRun" + args[1];
+        Parameters.totalRuntime = 1800000;
+        for (int dataset = 0 ; dataset < 2 ; dataset++){
+            Parameters.useVestTeleDataset = dataset == 0;
+            for (int instance = 4 ; instance < 5 ; instance++){
+                Parameters.numberOfCustomers = customers[instance];
+                Parameters.numberOfVehicles = vehicles[instance];
+                Parameters.numberOfIndividualJourneysInMIPPerPeriod = journeys[instance];
+                Parameters.timeLimitPerAlgorithm = Parameters.timeLimitPerAlgorithmConstant + Parameters.numberOfCustomers*Parameters.timeLimitPerAlgorithmVariable;
+                if (Parameters.timeLimitPerAlgorithm > Parameters.totalRuntime){
+                    throw new IllegalArgumentException(" Time limit per algorithm is larger than totalRuntime");
+                }
+                for (int seed : seeds[dataset][instance]){
+                    Parameters.randomSeedValue = seed;
+                    System.out.println("running " + args[0] + " for dataset " + dataset + " for " + Parameters.numberOfCustomers + " customers, seed: " + seed);
+                    System.out.println("Time limit per algorithm: " + Parameters.timeLimitPerAlgorithm/1000 + " seconds");
+                    run(args);
                 }
             }
         }
