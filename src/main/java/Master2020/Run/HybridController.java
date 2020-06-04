@@ -8,6 +8,7 @@ import Master2020.Individual.Journey;
 import Master2020.Individual.Origin;
 import Master2020.Interfaces.PeriodicAlgorithm;
 import Master2020.Interfaces.PeriodicSolution;
+import Master2020.MIP.ImprovedJourneyCombinationModel;
 import Master2020.MIP.JCMSolution;
 import Master2020.MIP.JourneyCombinationModel;
 import Master2020.PGA.GeneticPeriodicAlgorithm;
@@ -19,6 +20,7 @@ import Master2020.Testing.IndividualTest;
 import Master2020.Testing.MIPTest;
 import Master2020.Utils.Utils;
 import gurobi.GRBException;
+import scala.collection.parallel.immutable.ParRange;
 
 import java.io.IOException;
 import java.util.*;
@@ -34,6 +36,7 @@ public class HybridController {
     public ArrayList<PeriodicSolution> solutions;
     public ArrayList<PeriodicSolution> finalSolutions;
     public JourneyCombinationModel journeyCombinationModel;
+    public ImprovedJourneyCombinationModel improvedJourneyCombinationModel;
     public OrderDistribution orderDistributionJCM;
     public CyclicBarrier downstreamGate;
     public CyclicBarrier upstreamGate;
@@ -63,7 +66,12 @@ public class HybridController {
         algorithms = new ArrayList<>();
         pod = new PeriodicOrderDistributionPopulation(data);
         pod.initialize(Parameters.numberOfAlgorithms);
-        journeyCombinationModel = new JourneyCombinationModel(data);
+        if (Parameters.useNewJCMModel){
+            improvedJourneyCombinationModel = new ImprovedJourneyCombinationModel(data);
+        }
+        else{
+            journeyCombinationModel = new JourneyCombinationModel(data);
+        }
         fileName = SolutionStorer.getFolderName(this.modelName);
         for (int i = 0 ; i < Parameters.numberOfPGA ; i++){
             GeneticPeriodicAlgorithm s = new GeneticPeriodicAlgorithm(data);
@@ -81,7 +89,13 @@ public class HybridController {
 
     public void terminate() throws GRBException {
         if (Parameters.useJCM){
-            journeyCombinationModel.terminateModel();
+            if (Parameters.useNewJCMModel){
+                improvedJourneyCombinationModel.terminateModel();
+            }
+            else{
+                journeyCombinationModel.terminateModel();
+
+            }
         }
     }
 
@@ -157,42 +171,88 @@ public class HybridController {
     }
 
     public void generateOptimalSolution( ) throws CloneNotSupportedException {
-        try{
-            ArrayList<Journey>[][] journeys = getJourneys();
-            ArrayList<Journey>[][] otherJourneys = bestIterationSolution.getJourneys();
-            MIPTest.testJourneySimilarity(otherJourneys, journeys, data);
-            if (journeyCombinationModel.runModel(journeys) == 2) {
-                journeys = journeyCombinationModel.getOptimalJourneys();
-                orderDistributionJCM = journeyCombinationModel.getOrderDistribution();
-                System.out.println("OD valid? " + IndividualTest.testValidOrderDistribution(data, orderDistributionJCM));
-                System.out.println("Fitness of od" + orderDistributionJCM.getFitness());
-                PeriodicSolution JCMSolution = new JCMSolution(orderDistributionJCM.clone(), journeys);
-                //SolutionStorer.store(JCMSolution, startTime, fileName);
-                double improvement = (bestIterationFitness-JCMSolution.getFitness())/bestIterationFitness*100;
-                System.out.println("Improvement from " + bestIterationFitness + " to " + JCMSolution.getFitness() + " equivalent to " + improvement + " %");
-                if (bestIterationFitness < JCMSolution.getFitness()){
-                    System.out.println("HYBRID MODEL MADE A WORSE SOLUTION");
-                }
-                double[] fitnesses = JCMSolution.getFitnesses();
-                System.out.print(" | Time warp "+ fitnesses[1] + " | ");
-                System.out.println("Over load "+ fitnesses[2]);
-                int[] tags = Utils.getJourneyTags(JCMSolution.getJourneys(), data);
-                //SolutionTest.checkForInfeasibility(JCMSolution, data);
-                SolutionStorer.storeJBM(JCMSolution.getFitness(), journeyCombinationModel.runTime, improvement, tags[0], tags[1], tags[2], journeyCombinationModel.optimstatus == 2,startTime, fileName);
-                solutions.add(JCMSolution);
-                finalSolutions.add(JCMSolution);
-            } else {
-                orderDistributionJCM = pod.diversify(Parameters.diversifiedODsGenerated);
+        try {
+            if (Parameters.useNewJCMModel){
+            runNewJBMModel();
             }
+            else{
+                runOldJBMModel();
+            }
+
         } catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    private void runNewJBMModel() throws Exception {
+        ArrayList<Journey>[][] journeys = getJourneys();
+        ArrayList<Journey>[][] otherJourneys = bestIterationSolution.getJourneys();
+        MIPTest.testJourneySimilarity(otherJourneys, journeys, data);
+        if (improvedJourneyCombinationModel.runModel(journeys) == 2) {
+            journeys = improvedJourneyCombinationModel.getOptimalJourneys();
+            orderDistributionJCM = improvedJourneyCombinationModel.getOrderDistribution();
+            System.out.println("OD valid? " + IndividualTest.testValidOrderDistribution(data, orderDistributionJCM));
+            System.out.println("Fitness of od" + orderDistributionJCM.getFitness());
+            PeriodicSolution JCMSolution = new JCMSolution(orderDistributionJCM.clone(), journeys);
+            //SolutionStorer.store(JCMSolution, startTime, fileName);
+            double improvement = (bestIterationFitness-JCMSolution.getFitness())/bestIterationFitness*100;
+            System.out.println("Improvement from " + bestIterationFitness + " to " + JCMSolution.getFitness() + " equivalent to " + improvement + " %");
+            if (bestIterationFitness < JCMSolution.getFitness()){
+                System.out.println("HYBRID MODEL MADE A WORSE SOLUTION");
+            }
+            double[] fitnesses = JCMSolution.getFitnesses();
+            System.out.print(" | Time warp "+ fitnesses[1] + " | ");
+            System.out.println("Over load "+ fitnesses[2]);
+            int[] tags = Utils.getJourneyTags(JCMSolution.getJourneys(), data);
+            //SolutionTest.checkForInfeasibility(JCMSolution, data);
+            SolutionStorer.storeJBM(JCMSolution.getFitness(), improvedJourneyCombinationModel.runTime, improvement, tags[0], tags[1], tags[2], improvedJourneyCombinationModel.optimstatus == 2,startTime, fileName);
+            solutions.add(JCMSolution);
+            finalSolutions.add(JCMSolution);
+        }
+        else {
+            orderDistributionJCM = pod.diversify(Parameters.diversifiedODsGenerated);
+        }
+    }
+
+    public void runOldJBMModel() throws Exception {
+        ArrayList<Journey>[][] journeys = getJourneys();
+        ArrayList<Journey>[][] otherJourneys = bestIterationSolution.getJourneys();
+        MIPTest.testJourneySimilarity(otherJourneys, journeys, data);
+        if (journeyCombinationModel.runModel(journeys) == 2) {
+            journeys = journeyCombinationModel.getOptimalJourneys();
+            orderDistributionJCM = journeyCombinationModel.getOrderDistribution();
+            System.out.println("OD valid? " + IndividualTest.testValidOrderDistribution(data, orderDistributionJCM));
+            System.out.println("Fitness of od" + orderDistributionJCM.getFitness());
+            PeriodicSolution JCMSolution = new JCMSolution(orderDistributionJCM.clone(), journeys);
+            //SolutionStorer.store(JCMSolution, startTime, fileName);
+            double improvement = (bestIterationFitness - JCMSolution.getFitness()) / bestIterationFitness * 100;
+            System.out.println("Improvement from " + bestIterationFitness + " to " + JCMSolution.getFitness() + " equivalent to " + improvement + " %");
+            if (bestIterationFitness < JCMSolution.getFitness()) {
+                System.out.println("HYBRID MODEL MADE A WORSE SOLUTION");
+            }
+            double[] fitnesses = JCMSolution.getFitnesses();
+            System.out.print(" | Time warp " + fitnesses[1] + " | ");
+            System.out.println("Over load " + fitnesses[2]);
+            int[] tags = Utils.getJourneyTags(JCMSolution.getJourneys(), data);
+            //SolutionTest.checkForInfeasibility(JCMSolution, data);
+            SolutionStorer.storeJBM(JCMSolution.getFitness(), journeyCombinationModel.runTime, improvement, tags[0], tags[1], tags[2], journeyCombinationModel.optimstatus == 2, startTime, fileName);
+            solutions.add(JCMSolution);
+            finalSolutions.add(JCMSolution);
+        }
+        else{
+            orderDistributionJCM = pod.diversify(Parameters.diversifiedODsGenerated);
+        }
+
+
+
 
     }
 
+
+
     private double getCurrentBestFitness() throws Exception {
         double fitness = 0;
-        if (Parameters.useJCM && journeyCombinationModel.optimstatus == 2){  // TODO: 25/05/2020 Change this, as it needs to print the best solution 
+        if (Parameters.useJCM && journeyCombinationModel.optimstatus == 2){  // TODO: 25/05/2020 Change this, as it needs to print the best solution
             fitness = new JCMSolution(orderDistributionJCM.clone(), journeyCombinationModel.getOptimalJourneys()).getFitness();
         }
         else {
