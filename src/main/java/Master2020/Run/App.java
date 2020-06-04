@@ -38,7 +38,7 @@ public class App {
         initialize();
         Parameters.customFileName = "fullRun" + args[1];
         Parameters.totalRuntime = 1800000;
-        for (int iteration = 0 ; iteration < 2 ; iteration++){
+        for (int iteration = 0 ; iteration < 1 ; iteration++){
             for (int dataset = 0 ; dataset < 2 ; dataset++){
                 Parameters.useVestTeleDataset = dataset == 0;
                 for (int instance = 0 ; instance < 5 ; instance++){
