@@ -15,6 +15,7 @@ public class App {
     private static int[][][] seeds;//dataset, instance size, seed
     private static int[] customers;//instance size
     private static int[] vehicles;//instance size
+    private static int[] journeys;
 
 
     public static void main(String[] args) throws Exception {
@@ -43,6 +44,7 @@ public class App {
                 for (int instance = 0 ; instance < 5 ; instance++){
                     Parameters.numberOfCustomers = customers[instance];
                     Parameters.numberOfVehicles = vehicles[instance];
+                    Parameters.numberOfIndividualJourneysInMIPPerPeriod = journeys[instance];
                     Parameters.timeLimitPerAlgorithm = Parameters.timeLimitPerAlgorithmConstant + Parameters.numberOfCustomers*Parameters.timeLimitPerAlgorithmVariable;
                     if (Parameters.timeLimitPerAlgorithm > Parameters.totalRuntime){
                         throw new IllegalArgumentException(" Time limit per algorithm is larger than totalRuntime");
@@ -91,7 +93,7 @@ public class App {
         Parameters.customFileName = "baseCase" + args[1];
         Parameters.totalRuntime = 1800000;
         Parameters.timeLimitPerAlgorithm = Parameters.timeLimitPerAlgorithmConstant + Parameters.numberOfCustomers*Parameters.timeLimitPerAlgorithmVariable;
-        for (int iteration = 0 ; iteration < 5 ; iteration++){
+        for (int iteration = 0 ; iteration < 2 ; iteration++){
             for (int bool = 0 ; bool < 2 ; bool++){
                 Parameters.useVestTeleDataset = bool == 0;
                 int[] seeds = Parameters.useVestTeleDataset ? new int[]{89,1} : new int[]{57,97,80};
@@ -140,30 +142,36 @@ public class App {
         seeds = new int[2][5][];
         customers = new int[5];
         vehicles = new int[5];
+        journeys = new int[5];
         //25
-        seeds[0][0] = new int[]{15};//15, 84};
-        seeds[1][0] = new int[]{};//69,85};
+        seeds[0][0] = new int[]{15, 84};
+        seeds[1][0] = new int[]{69,85};
         customers[0] = 25;
         vehicles[0] = 12;
+        journeys[0] = 3;
         //50
-        seeds[0][1] = new int[]{};//94,41};
-        seeds[1][1] = new int[]{};//20,60};
+        seeds[0][1] = new int[]{94,41};
+        seeds[1][1] = new int[]{20,60};
         customers[1] = 50;
         vehicles[1] = 25;
+        journeys[1] = 3;
         //75
-        seeds[0][2] = new int[]{}; //32,18,37};
-        seeds[1][2] = new int[]{}; //1};
+        seeds[0][2] = new int[]{32,18,37};
+        seeds[1][2] = new int[]{1};
         customers[2] = 75;
         vehicles[2] = 32;
+        journeys[2] = 2;
         //100
-        seeds[0][3] = new int[]{}; //97,46,35,76};
+        seeds[0][3] = new int[]{97,46,35,76};
         seeds[1][3] = new int[]{};
         customers[3] = 100;
         vehicles[3] = 50;
+        journeys[4] = 1;
         //115
-        seeds[0][4] = new int[]{}; //10,27};
+        seeds[0][4] = new int[]{10,27};
         seeds[1][4] = new int[]{};
         customers[4] = 115;
         vehicles[4] = 62;
+        journeys[4] = 1;
     }
 }
