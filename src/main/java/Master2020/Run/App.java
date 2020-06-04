@@ -19,6 +19,7 @@ public class App {
 
     public static void main(String[] args) throws Exception {
         //args = new String[]{"PGA", "full"};
+//        args = new String[]{"PGA", "full"};
         switch (args[1]) {
             case "base":
                 baseCase(args);
