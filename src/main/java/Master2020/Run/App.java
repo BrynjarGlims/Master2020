@@ -18,7 +18,7 @@ public class App {
 
 
     public static void main(String[] args) throws Exception {
-        //args = new String[]{"HYBRID", "full"};
+        //oargs = new String[]{"HYBRID", "full"};
         switch (args[1]) {
             case "base":
                 baseCase(args);

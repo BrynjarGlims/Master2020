@@ -579,8 +579,8 @@ public class JourneyCombinationModel extends Model{
         }
         model.optimize();
         model.get(GRB.DoubleAttr.Runtime);
-        System.out.println(GRB.Status.OPTIMAL);
-        System.out.println(GRB.DoubleAttr.Runtime);
+        //System.out.println(GRB.Status.OPTIMAL);
+        //System.out.println(GRB.DoubleAttr.Runtime);
         this.optimstatus = model.get(GRB.IntAttr.Status);
     }
 

@@ -5,6 +5,7 @@ import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Parameters;
 import Master2020.Individual.Journey;
+import Master2020.Individual.Origin;
 import Master2020.Interfaces.PeriodicAlgorithm;
 import Master2020.Interfaces.PeriodicSolution;
 import Master2020.MIP.JCMSolution;
@@ -15,6 +16,7 @@ import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.StoringResults.SolutionStorer;
 import Master2020.Testing.HybridTest;
 import Master2020.Testing.IndividualTest;
+import Master2020.Testing.MIPTest;
 import Master2020.Utils.Utils;
 import gurobi.GRBException;
 
@@ -157,9 +159,8 @@ public class HybridController {
     public void generateOptimalSolution( ) throws CloneNotSupportedException {
         try{
             ArrayList<Journey>[][] journeys = getJourneys();
-            //ArrayList<Journey>[][] otherJourneys = bestIterationSolution.getJourneys();
-            //MIPTest.testJourneySimilarity(otherJourneys, journeys, data);
-
+            ArrayList<Journey>[][] otherJourneys = bestIterationSolution.getJourneys();
+            MIPTest.testJourneySimilarity(otherJourneys, journeys, data);
             if (journeyCombinationModel.runModel(journeys) == 2) {
                 journeys = journeyCombinationModel.getOptimalJourneys();
                 orderDistributionJCM = journeyCombinationModel.getOrderDistribution();
@@ -177,7 +178,7 @@ public class HybridController {
                 System.out.println("Over load "+ fitnesses[2]);
                 int[] tags = Utils.getJourneyTags(JCMSolution.getJourneys(), data);
                 //SolutionTest.checkForInfeasibility(JCMSolution, data);
-                SolutionStorer.storeJBM(JCMSolution.getFitness(), journeyCombinationModel.runTime, improvement, tags[0], tags[1], journeyCombinationModel.optimal,startTime, fileName);
+                SolutionStorer.storeJBM(JCMSolution.getFitness(), journeyCombinationModel.runTime, improvement, tags[0], tags[1], tags[2], journeyCombinationModel.optimstatus == 2,startTime, fileName);
                 solutions.add(JCMSolution);
                 finalSolutions.add(JCMSolution);
             } else {
@@ -310,13 +311,26 @@ public class HybridController {
             }
         }
         ArrayList<Journey>[][] tempJourneys;
+        boolean found;
+        int counter = -1;
         for (PeriodicAlgorithm algorithm : algorithms){
+            counter++;
             tempJourneys = algorithm.getJourneys();
-            if (HybridTest.checkIfJourneysExists(tempJourneys,data))  {
+            if (HybridTest.checkIfJourneysExists(tempJourneys,data, counter))  {
                 for (int p = 0 ; p < data.numberOfPeriods ; p++){
                     for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
                         for (Journey j : tempJourneys[p][vt]){
-                            if (!journeys[p][vt].contains(j)) {
+                            found = false;
+                            for (Journey addedJourney : journeys[p][vt]){
+                                if (addedJourney.isEqual(j)) {
+                                    if (addedJourney.ID != j.ID){
+                                        addedJourney.ID = Origin.BOTH;
+                                    }
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (!found){
                                 journeys[p][vt].add(j);
                             }
                         }

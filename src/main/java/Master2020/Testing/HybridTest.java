@@ -31,9 +31,8 @@ public class HybridTest {
     }
 
 
-    public static boolean checkIfJourneysExists(ArrayList<Journey>[][] journeys, Data data){
+    public static boolean checkIfJourneysExists(ArrayList<Journey>[][] journeys, Data data, int counter){
         boolean journeyExists = false;
-        System.out.print("Number of journeys generated for ");
         int count = 0;
         Origin id = null;
         for (int p = 0; p < data.numberOfPeriods; p++){
@@ -48,7 +47,7 @@ public class HybridTest {
             }
         }
         if(id == null){
-            System.out.println("No id found");
+            System.out.println("No id found for algorithm " + counter );
         }
         return journeyExists;
     }

@@ -192,9 +192,20 @@ public class Journey {
     public String toString(){
         String out = "";
         for (Trip trip : trips){
+            out += "[";
+            for (int customerId : trip.customers){
+                out += " " + customerId + " ";
+            }
+            out += "]";
+        }
+        /*
+        for (Trip trip : trips){
             out += "trip: " + trip.tripIndex;
             out += trip.toString();
         }
+
+         */
+        out += " " + ID;
         return out;
     }
 

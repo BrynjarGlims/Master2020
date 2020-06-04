@@ -17,7 +17,7 @@ import java.util.Date;
 public class SolutionStorer {
 
 
-    public static void storeJBM(double fitness, double modeltime, double improvement, int numABC, int numHGA, boolean isOptimal, double startTime, String folderName){
+    public static void storeJBM(double fitness, double modeltime, double improvement, int numABC, int numHGA, int numBoth, boolean isOptimal, double startTime, String folderName){
         try {
             String filePath = FileParameters.filePathDetailed + "/" + folderName + "/" + folderName + "_JCMsolutions.csv";
             File newFile = new File(filePath);
@@ -40,6 +40,7 @@ public class SolutionStorer {
                         "NumberOfJourneys",
                         "NumberOFABC",
                         "NumberOfHGA",
+                        "NumberOfBOTH",
                         "Optimal" };
                 csvWriter.writeNext(CSV_COLUMNS, false);
             }
@@ -48,9 +49,10 @@ public class SolutionStorer {
                     formatter.format(modeltime),
                     formatter.format(fitness),
                     formatter.format(improvement),
-                    formatter.format(numABC + numHGA),
+                    formatter.format(numABC + numHGA + numBoth),
                     formatter.format(numABC),
                     formatter.format(numHGA),
+                    formatter.format(numBoth),
                     Boolean.toString(isOptimal)};
             csvWriter.writeNext(results, false);
 
