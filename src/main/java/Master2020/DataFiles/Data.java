@@ -238,7 +238,4 @@ public class Data {
         targetVolume = totalVolume/ numberOfPeriods;
     }
 
-    public static void main(String[] args){
-    }
-
 }

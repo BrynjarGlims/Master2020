@@ -43,8 +43,8 @@ public class Parameters {
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 115;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
-    public static int numberOfVehicles = 62;
+    public static int numberOfCustomers = 100;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
+    public static int numberOfVehicles = 5;
 
     public static final double distanceCutOffFromDepot = 3.0;   //default 3
     public static final boolean adjustTimeWindow = true;
