@@ -31,7 +31,6 @@ public class GeneticAlgorithm extends Thread {
     public int numberOfIterations;
     public int iterationsWithoutImprovement;
     public Individual currentBestIndividual;
-    public PenaltyControl penaltyControl;
 
 
     //threads
@@ -39,18 +38,18 @@ public class GeneticAlgorithm extends Thread {
     public CyclicBarrier upstreamGate;
     public boolean run = true;
     public double startTime;
+    public PenaltyControl penaltyControl;
 
 
     public GeneticAlgorithm(Data data){
         this.data = data;
-        this.penaltyControl = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty, Parameters.frequencyOfPenaltyUpdatesPGA);
     }
 
-    public void initialize(int period, OrderDistribution orderDistribution, CyclicBarrier downstreamGate, CyclicBarrier upstreamGate, Population population) throws GRBException {
+    public void initialize(int period, OrderDistribution orderDistribution, CyclicBarrier downstreamGate, CyclicBarrier upstreamGate, Population population, PenaltyControl penaltyControl) throws GRBException {
         this.population = population;
         this.period = period;
         this.orderDistribution = orderDistribution;
-        population.initializePopulation(this.orderDistribution, penaltyControl);
+        this.penaltyControl = penaltyControl;
         fitnessForPeriod = Double.MAX_VALUE;
         BiasedFitness.setBiasedFitnessScore(population);
         repaired = new HashSet<>();
@@ -58,6 +57,8 @@ public class GeneticAlgorithm extends Thread {
         this.downstreamGate = downstreamGate;
         this.upstreamGate = upstreamGate;
     }
+
+
 
     public void setPopulation(Population population) {
         this.population = population;
@@ -191,7 +192,7 @@ public class GeneticAlgorithm extends Thread {
 
     public void runGenerations(int generations) {
         resetCounters();
-        printPopulationStats();
+        //printPopulationStats();
         for (int i = 0 ; i < generations ; i++){
             if (  //iterationsWithoutImprovement > Parameters.maxNumberIterationsWithoutImprovement ||
                     (System.currentTimeMillis() - this.startTime) > Parameters.timeLimitPerAlgorithm/2 || (System.currentTimeMillis() - HybridController.startTime) > Parameters.totalRuntime ) {
@@ -201,7 +202,7 @@ public class GeneticAlgorithm extends Thread {
             }
             runGeneration();
         }
-        printPopulationStats();
+        //printPopulationStats();
     }
 
     public void printPopulationStats(){

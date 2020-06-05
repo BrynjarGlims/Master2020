@@ -2,6 +2,7 @@ package Master2020.PGA;
 
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
+import Master2020.DataFiles.Order;
 import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.*;
 import Master2020.Individual.Individual;
@@ -34,6 +35,7 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
     public ArrayList<Journey>[][] journeysForODMIP;
     public ArrayList<Journey>[][] journeys;
     public OrderDistribution orderDistribution;
+    public PenaltyControl[] penaltyControls;
 
     public double scalingFactorOrderDistribution = Parameters.initialOrderDistributionScale;
     public double fitness;
@@ -58,6 +60,7 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
     public GeneticPeriodicAlgorithm(Data data) throws GRBException {
         this.data = data;
         algorithmNumber = HybridController.algorithmCounter;
+        initializePenaltyControl();
         HybridController.algorithmCounter++;
         orderAllocationModel = new OrderAllocationModel(data);
         orderDistribution = new OrderDistribution(data);
@@ -68,9 +71,13 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
 
     public void initialize(OrderDistribution orderDistribution) throws GRBException {
         Parameters.isPeriodic = true;
-        this.orderDistribution = orderDistribution;
+        downstreamGate = new CyclicBarrier(data.numberOfPeriods + 1);
+        upstreamGate = new CyclicBarrier(data.numberOfPeriods + 1);
         periodicPopulation = new PeriodicPopulation(data);
-        periodicPopulation.initialize(orderDistribution);
+        periodicPopulation.initialize(orderDistribution, penaltyControls);
+        threads = makeThreadsAndStart(downstreamGate, upstreamGate);
+        setPenaltyControlInThreads();
+        this.orderDistribution = orderDistribution;
         BiasedFitness.setBiasedFitnessScore(periodicPopulation);
         repaired = new HashSet<>();
         fitness = Double.MAX_VALUE;
@@ -79,9 +86,6 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
         iterationsWithSameOd = 0;
         minimumIterations = 0;
         //threading
-        downstreamGate = new CyclicBarrier(data.numberOfPeriods + 1);
-        upstreamGate = new CyclicBarrier(data.numberOfPeriods + 1);
-        threads = makeThreadsAndStart(downstreamGate, upstreamGate);
         this.run = true;
     }
 
@@ -92,6 +96,19 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
         this.masterUpstreamGate = masterUpstreamGate;
     }
 
+    private void initializePenaltyControl(){
+        penaltyControls = new PenaltyControl[data.numberOfPeriods];
+        for (int p = 0; p < data.numberOfPeriods; p++){
+            penaltyControls[p] = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
+        }
+    }
+
+    private void setPenaltyControlInThreads(){
+        for (int p = 0; p < data.numberOfPeriods; p++){
+            threads.get(p).penaltyControl =penaltyControls[p];
+        }
+    }
+
     public OrderDistribution getOrderDistribution() {
         return this.orderDistribution;
     }
@@ -100,7 +117,7 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
         List<GeneticAlgorithm> threads = new ArrayList<>();
         for (int p = 0 ; p < data.numberOfPeriods ; p++){
             GeneticAlgorithm algorithm = new GeneticAlgorithm(data);
-            algorithm.initialize(p, this.orderDistribution, downstreamGate, upstreamGate, periodicPopulation.populations[p]);
+            algorithm.initialize(p, this.orderDistribution, downstreamGate, upstreamGate, periodicPopulation.populations[p], penaltyControls[p]);
             threads.add(algorithm);
         }
         for (Thread t : threads){
@@ -134,9 +151,9 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
     }
 
 
-    public void resetPeriodicPopulation() {
+    public void resetPeriodicPopulation(OrderDistribution orderDistribution) {
         periodicPopulation = new PeriodicPopulation(data);
-        periodicPopulation.initialize(orderDistribution);
+        periodicPopulation.initialize(orderDistribution, penaltyControls);
         numberOfIterations = 0;
         iterationsWithoutImprovement = 0;
         iterationsWithSameOd = 0;
@@ -164,7 +181,7 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
             algorithm.population.updateOrderDistributionsOfAllIndividuals(this.orderDistribution);
             algorithm.population.reassignIndividualsInPopulations();
             if (newOD){
-                resetPeriodicPopulation();
+                resetPeriodicPopulation(orderDistribution);
             }
         }
     }

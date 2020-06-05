@@ -25,29 +25,23 @@ public class PeriodicPopulation extends Thread {
 
 
 
+
+
+
     public PeriodicPopulation(Data data) {
         this.data = data;
     }
 
-    public void initialize(OrderDistributionPopulation odp ){
-        this.orderDistributionPopulation = odp;
-        this.populations = new Population[data.numberOfPeriods];
-        for (int p = 0; p < data.numberOfPeriods; p++){
-            this.populations[p] = new Population(data, p);
-            this.populations[p].setOrderDistributionPopulation(this.orderDistributionPopulation);
-        }
-        this.periodicFeasibleIndividualPopulation = new HashSet<PeriodicIndividual>();
-        this.periodicInfeasibleIndividualPopulation = new HashSet<PeriodicIndividual>();
-    }
 
-    public void initialize(OrderDistribution orderDistribution){
+
+    public void initialize(OrderDistribution orderDistribution, PenaltyControl[] penaltyControls){
         this.orderDistribution = orderDistribution;
 
         this.populations = new Population[data.numberOfPeriods];
         for (int p = 0; p < data.numberOfPeriods; p++){
             this.populations[p] = new Population(data, p);
-            this.populations[p].setOrderDistributionPopulation(this.orderDistributionPopulation);
-            this.populations[p].initializePopulation(orderDistribution, new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty));  //added
+            this.populations[p].setOrderDistributionPopulation(this.orderDistributionPopulation); //// TODO: 05/06/2020 NEW PENALTY CONTROLL?
+            this.populations[p].initializePopulation(orderDistribution, penaltyControls[p]);  //added
         }
         this.periodicFeasibleIndividualPopulation = new HashSet<PeriodicIndividual>();
         this.periodicInfeasibleIndividualPopulation = new HashSet<PeriodicIndividual>();
@@ -184,9 +178,6 @@ public class PeriodicPopulation extends Thread {
         Data data = DataReader.loadData();
         OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
         PeriodicPopulation periodicPopulation = new PeriodicPopulation(data);
-        periodicPopulation.initialize(odp);
 
-        odp.initializeOrderDistributionPopulation(periodicPopulation);
-        System.out.println("hei");
     }
 }

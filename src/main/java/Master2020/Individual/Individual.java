@@ -386,21 +386,6 @@ public class Individual implements Comparable<Individual> {
         return Parameters.isPeriodic ? 0 : period;
     }
 
-    public static Individual makeIndividual() {
-        Data data = DataReader.loadData();
-        OrderDistribution od = new OrderDistribution(data);
-        od.makeInitialDistribution();
-        PenaltyControl penaltyControl = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
-        Individual individual = new Individual(data, penaltyControl);
-        individual.initializeIndividual(od);
-        for( int i = 0; i < 100; i++){
-            AdSplit.adSplitPlural(individual, Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty);
-            individual.updateFitness();
-            individual.printDetailedFitness();
-        }
-        return individual;
-    }
-
     public int compareTo(Individual individual) {
         if (this.getBiasedFitness() == individual.getBiasedFitness()){ // if tie, make a consistent choice
             return (this.hashCode() < individual.hashCode()) ? -1 : 1;
