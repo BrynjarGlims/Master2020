@@ -55,9 +55,6 @@ public class Population {
         this(data, -1);   //used if not periodic
     }
 
-
-
-
     public void updateOrderDistributionsOfAllIndividuals(OrderDistribution orderDistribution){
         for (Individual individual : feasiblePopulation){
             individual.orderDistribution =  orderDistribution;
@@ -66,7 +63,6 @@ public class Population {
             individual.orderDistribution =  orderDistribution;
         }
     }
-
 
     public void initializePopulation (OrderDistribution od, PenaltyControl penaltyControl) {
         for (int i = 0; i < Parameters.populationSize*Parameters.initializationMultiplier; i++) {
