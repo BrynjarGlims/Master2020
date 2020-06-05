@@ -39,6 +39,7 @@ public class Parameters {
     public static double fractionOfFeasibleIndividualsFromAdsplit = 0.2;
     public static final int frequencyOfPenaltyUpdatesPGA = 50;
     public static final int frequencyOfPenaltyUpdatesABC = 1000;
+    public static final int initializationMultiplier = 4; //FINAL from VIDAL
 
     // Loading data parameters
     public static final int numberOfPeriods = 6;
