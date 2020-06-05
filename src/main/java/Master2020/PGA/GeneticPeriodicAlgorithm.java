@@ -111,17 +111,11 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
 
 
     public void runIteration() throws Exception {
-
         downstreamGate.await();
         downstreamGate.reset();
-
         //wait for all periods to finish their generations
         upstreamGate.await();
         upstreamGate.reset();
-
-
-
-
     }
 
     private boolean setJourneyFromBestIndividuals() {

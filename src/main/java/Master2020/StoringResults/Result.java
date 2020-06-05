@@ -333,9 +333,7 @@ public class Result {
                             System.out.println("OrderID: " + orderDelivery.order.orderID + " Period: " + period + " customer: " + orderDelivery.order.customerID + " required visit: " + orderDelivery.orderPeriods[period]);
                             continue;
                         }
-
                         vehicleID = tripMap.get(period).get(orderDelivery.order.customerID).vehicleID;
-
                         String[] results = {String.valueOf(orderDelivery.order.orderID), Converter.dividableConverter(orderDelivery.dividable),
                                 orderDelivery.order.commodityFlow, formatter.format(orderDelivery.orderVolumes[period]), Converter.periodConverter(period),
                                 String.valueOf(orderDelivery.order.customerID), data.customers[orderDelivery.order.customerID].customerName,

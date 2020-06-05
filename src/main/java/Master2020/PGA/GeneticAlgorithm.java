@@ -191,7 +191,7 @@ public class GeneticAlgorithm extends Thread {
 
     public void runGenerations(int generations) {
         resetCounters();
-        //printPopulationStats();
+        printPopulationStats();
         for (int i = 0 ; i < generations ; i++){
             if (  //iterationsWithoutImprovement > Parameters.maxNumberIterationsWithoutImprovement ||
                     (System.currentTimeMillis() - this.startTime) > Parameters.timeLimitPerAlgorithm/2 || (System.currentTimeMillis() - HybridController.startTime) > Parameters.totalRuntime ) {
@@ -201,7 +201,7 @@ public class GeneticAlgorithm extends Thread {
             }
             runGeneration();
         }
-        //printPopulationStats();
+        printPopulationStats();
     }
 
     public void printPopulationStats(){
