@@ -518,7 +518,7 @@ public class ImprovedJourneyCombinationModel extends Model {
         for (int d = 0 ; d < data.numberOfPeriods; d++){
             for (int i = 0; i < data.numberOfCustomers; i++){
                 if (data.customers[i].requiredVisitPeriod[d] == 0){
-                    for (int m = 0; m < data.customers[i].numberOfDividableOrders; m++) {
+                    for (int m = 0; m < data.customers[i].numberOfOrders; m++) {
                         //lock quantity
                         GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
                         lhs.addTerm(1, q[d][i][m]);
@@ -822,11 +822,26 @@ public class ImprovedJourneyCombinationModel extends Model {
     public ArrayList<Master2020.Individual.Journey>[][] getOptimalJourneys() throws Exception {
         ArrayList<Master2020.Individual.Journey>[][] optimalJourneys = new ArrayList[dataMIP.numPeriods][dataMIP.numVehicleTypes];
         for (int p = 0; p < dataMIP.numPeriods; p++){
+            ArrayList<Integer> vehiclesUsed = new ArrayList<>();
             for (int vt = 0; vt < dataMIP.numVehicleTypes; vt++){
                 optimalJourneys[p][vt] = new ArrayList<Master2020.Individual.Journey>();
                 for (int j = 0; j < journeys[p][vt].size(); j++){
                     if (Math.round(gamma[p][vt][j].get(GRB.DoubleAttr.X)) == 1){
-                        optimalJourneys[p][vt].add(journeys[p][vt].get(j));
+                        int currentVehicleId = journeys[p][vt].get(j).vehicleId;
+                        if (!vehiclesUsed.contains(currentVehicleId)){
+                            optimalJourneys[p][vt].add(journeys[p][vt].get(j).clone(currentVehicleId));
+                            vehiclesUsed.add(currentVehicleId);
+                        }
+                        else{
+                            for(Master2020.DataFiles.Vehicle vehicle : data.vehicles){
+                                if(vehicle.vehicleType.vehicleTypeID == vt && !vehiclesUsed.contains(vehicle.vehicleID)){
+                                    optimalJourneys[p][vt].add(journeys[p][vt].get(j).clone(vehicle.vehicleID));
+                                    vehiclesUsed.add(vehicle.vehicleID);
+                                    break;
+                                }
+                            }
+                        }
+
                     }
                 }
 

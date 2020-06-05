@@ -36,6 +36,17 @@ public class Trip {
 
     }
 
+    public Trip clone(int newVehicleId){
+        Trip newTrip = new Trip();
+        initialize(period, vehicleType, newVehicleId);
+        List<Integer> newCustomers = new ArrayList<>();
+        for (int c : customers){
+            newCustomers.add(c);
+        }
+        newTrip.setCustomers(newCustomers);
+        return newTrip;
+    }
+
     public void removeCustomer(int customer){
         int index = customerToTripIndexMap.get(customer);
         customers.remove(index);
