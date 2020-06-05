@@ -278,7 +278,7 @@ public class HybridController {
     private void updateItertionsWithoutImprovement() throws Exception {
         Collections.sort(finalSolutions);
         double currentFitness = finalSolutions.get(0).getFitness();
-                //getCurrentBestFitness();  //this can be done alot better
+                // getCurrentBestFitness();  //this can be done alot better
         if (currentFitness < this.currentBestSolution){
             this.currentBestSolution = currentFitness;
             iterationsWithoutImprovement = 0;
