@@ -47,6 +47,7 @@ public class HybridController {
 
     public double bestIterationFitness;
     public PeriodicSolution bestIterationSolution;
+    public boolean feasibleSolutions = false;
 
     private double[] currentRunBestSolution;
     private boolean[] changeOD;
@@ -179,12 +180,20 @@ public class HybridController {
 
     public void generateOptimalSolution( ) throws CloneNotSupportedException {
         try {
-            if (Parameters.useNewJCMModel){
-            runNewJBMModel();
+            if (feasibleSolutions){
+                if (Parameters.useNewJCMModel){
+                    runNewJBMModel();
+                }
+                else{
+                    runOldJBMModel();
+                }
             }
             else{
-                runOldJBMModel();
+                System.out.println("Did not find any feasible solutions - hybrid canceled" );
+                orderDistributionJCM = pod.diversify(Parameters.diversifiedODsGenerated);
+
             }
+
 
         } catch (Exception e){
             e.printStackTrace();
@@ -300,14 +309,20 @@ public class HybridController {
         PeriodicSolution solution;
         bestIterationFitness = Double.MAX_VALUE;
         bestIterationSolution = null;
+        feasibleSolutions = false;
+
         for (int s = 0 ; s < Parameters.numberOfAlgorithms ; s++){
             pod.distributions.set(s, algorithms.get(s).getOrderDistribution());
             solution = algorithms.get(s).storeSolution();
+
             if (solution.getFitness() < bestIterationFitness){
                 bestIterationFitness = solution.getFitness();
                 bestIterationSolution = solution;
             }
             System.out.println("Algorithm " + s + " fitness: "+ solution.getFitness() + " feasible: " + solution.isFeasible() + " infeasibility cost: " + solution.getInfeasibilityCost());
+            if (solution.isFeasible()){
+                feasibleSolutions = true;
+            }
         }
     }
 

@@ -208,7 +208,7 @@ public class GAController {
         long startTime = System.currentTimeMillis();
         while (runsWithoutImprovement < Parameters.maxNumberIterationsWithoutImprovement && System.currentTimeMillis() - startTime < Parameters.totalRuntime ){
 
-            while ((population.getIterationsWithoutImprovement() < Parameters.maxNumberIterationsWithoutImprovement
+            while ((population.getIterationsWithoutImprovement() < Parameters.iterationsWithoutImprovementBeforeDiversification
                     && System.currentTimeMillis() - startTime < Parameters.totalRuntime)) {
 
                 System.out.println("Start generation: " + numberOfIterations);
