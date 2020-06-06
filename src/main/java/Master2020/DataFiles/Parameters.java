@@ -37,7 +37,7 @@ public class Parameters {
     public static int numberOfOffspring = 80;    //lambda FINAL
     public static final double fractionEliteIndividuals = 0.4;     //el
     public static double fractionOfFeasibleIndividualsFromAdsplit = 0.2;
-    public static final int frequencyOfPenaltyUpdatesPGA = 50;
+    public static final int frequencyOfPenaltyUpdatesPGA = 100;
     public static final int frequencyOfPenaltyUpdatesABC = 1000;
     public static final int initializationMultiplier = 4; //FINAL from VIDAL
 
@@ -46,6 +46,8 @@ public class Parameters {
     public static final int numberOfTrips = 5;
     public static int numberOfCustomers = 75;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
     public static int numberOfVehicles = 37;
+
+
 
     public static final double distanceCutOffFromDepot = 3.0;   //default 3
     public static final boolean adjustTimeWindow = true;
@@ -170,5 +172,6 @@ public class Parameters {
     public static final boolean verboseJourneyCombination = false;
     public static final boolean savePlots = false;
     public static final boolean verbose = false;
+    public static final boolean showPopulation = false;
     public static final char separator = ';';
 }
