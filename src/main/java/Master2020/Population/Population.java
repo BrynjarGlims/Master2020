@@ -112,7 +112,9 @@ public class Population {
     private void createNewIndividuals(PenaltyControl penaltyControl){
         for (int i = 0; i < Parameters.populationSize*Parameters.initializationMultiplier; i++) {
             Individual individual = new Individual(this.data, this, Parameters.isPeriodic, actualPeriod, penaltyControl );
-            individual.initializeIndividual(odp.getRandomOrderDistribution());
+            OrderDistribution orderDistribution = new OrderDistribution(data);
+            orderDistribution.makeInitialDistribution();
+            individual.initializeIndividual(orderDistribution);
             AdSplit.adSplitPlural(individual, penaltyControl.timeWarpPenalty, penaltyControl.overLoadPenalty);
             individual.updateFitness();
             if (individual.isFeasible()) {
