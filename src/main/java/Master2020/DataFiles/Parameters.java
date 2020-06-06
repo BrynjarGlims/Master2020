@@ -37,7 +37,7 @@ public class Parameters {
     public static int numberOfOffspring = 80;    //lambda FINAL
     public static final double fractionEliteIndividuals = 0.4;     //el
     public static double fractionOfFeasibleIndividualsFromAdsplit = 0.2;
-    public static final int frequencyOfPenaltyUpdatesPGA = 50;
+    public static final int frequencyOfPenaltyUpdatesPGA = 100;
     public static final int frequencyOfPenaltyUpdatesABC = 1000;
     public static final int initializationMultiplier = 4; //FINAL from VIDAL
 
