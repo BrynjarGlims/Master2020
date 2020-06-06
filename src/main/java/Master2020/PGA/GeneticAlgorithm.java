@@ -194,13 +194,17 @@ public class GeneticAlgorithm extends Thread {
         this.startTime = System.currentTimeMillis();
         if(Parameters.showPopulation)
             printPopulationStats();
+        int numGenerations = 0;
         while ((System.currentTimeMillis() - this.startTime) < Parameters.timeLimitPerAlgorithm/2 && (System.currentTimeMillis() - HybridController.startTime) < Parameters.totalRuntime ) {
                 //System.out.println("BREAK DUE TO: improvement: " + (iterationsWithoutImprovement > Parameters.maxNumberIterationsWithoutImprovement) + " time: " + ((System.currentTimeMillis() - this.startTime) > Parameters.timeLimitPerAlgorithm));
                 //System.out.println(" Is this true? " + ((System.currentTimeMillis() - HybridController.startTime) > Parameters.timeLimitPerAlgorithm));
             runGeneration();
+            numGenerations+=1;
+            //System.out.println("Generation number: " + numGenerations);
         }
         if(Parameters.showPopulation)
             printPopulationStats();
+        System.out.println("Algorithm in period" + period + " used " + numGenerations + " iterations");
     }
 
     public void printPopulationStats(){
