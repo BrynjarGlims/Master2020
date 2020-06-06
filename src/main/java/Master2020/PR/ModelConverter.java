@@ -2,6 +2,7 @@ package Master2020.PR;
 
 import Master2020.DataFiles.Data;
 import Master2020.Individual.Individual;
+import Master2020.MIP.ImprovedJourneyCombinationModel;
 import Master2020.MIP.JourneyCombinationModel;
 import Master2020.ProductAllocation.OrderDistribution;
 import gurobi.GRB;
@@ -25,8 +26,22 @@ public class ModelConverter {
     private static Data data;
     private static DataMIP dataMIP;
     private static JourneyCombinationModel jcm;
+    private static ImprovedJourneyCombinationModel ijcm;
 
+    public static void initializeOrderDistributionFromModel(ImprovedJourneyCombinationModel model) throws GRBException {
+        ijcm = model;
+        data = model.dataMIP.newData;
+        dataMIP = model.dataMIP;
+        orderDistribution = model.getOrderDistribution();
+        orderDistribution.makeDistributionFromImprovedJourneyBasedModel(ijcm.u, ijcm.q, ijcm.dataMIP);
 
+        //individual is not implemented for this model as it is never used.
+        //individual = model.getIndividual();
+        //set giant tour chromosome and support strucutres in new individual
+        //initializeGiantTourInIndividualForJCM(model.getJourneys());
+
+        //individual.setOrderDistribution(orderDistribution);
+    }
 
     public static void initializeIndividualFromModel(JourneyCombinationModel model) throws GRBException {
         jcm = model;
@@ -40,6 +55,7 @@ public class ModelConverter {
 
         individual.setOrderDistribution(orderDistribution);
     }
+
 
     public static void initializeIndividualFromJourneyCombinationModel(JourneyCombinationModel jcm) throws GRBException {
         journeyCombinationModel = jcm;
@@ -102,6 +118,18 @@ public class ModelConverter {
     }
 
     private static void initializeGiantTourInIndividualForJCM(ArrayList<Master2020.Individual.Journey>[][] journeys) throws GRBException {
+        ArrayList<Trip>[][] tripList = initializeTripList();
+        updateTripListJCM(tripList, journeys);
+        ArrayList<Integer>[][] giantTour = initializeGiantTourChromosome();
+        updateGiantTourChromosome(giantTour,tripList);
+        HashMap<Integer, HashMap<Integer, Trip>> tripMap = getTripMap(tripList);
+        individual.setTripMap(tripMap);
+        individual.setTripList(tripList);
+        individual.setGiantTour(createGiantTour(giantTour));
+        individual.journeyList = generateJourneyListFromTripList(tripList);
+    }
+
+    private static void initializeGiantTourInIndividualForIJCM(ArrayList<Master2020.Individual.Journey>[][] journeys) throws GRBException {
         ArrayList<Trip>[][] tripList = initializeTripList();
         updateTripListJCM(tripList, journeys);
         ArrayList<Integer>[][] giantTour = initializeGiantTourChromosome();
@@ -335,5 +363,3 @@ public class ModelConverter {
         return tripList;
     }
 }
-
-

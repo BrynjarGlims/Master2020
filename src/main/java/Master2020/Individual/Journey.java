@@ -42,6 +42,15 @@ public class Journey {
         trips = new ArrayList<>();
     }
 
+    public Journey clone(int newVehicleId){
+        Journey newJourney = new Journey(this.data, this.period, this.vehicleType, newVehicleId);
+        for (Trip t :trips){
+            newJourney.addTrip(t.clone(newVehicleId));
+        }
+        newJourney.ID = this.ID;
+        return newJourney;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Journey){
@@ -189,6 +198,8 @@ public class Journey {
         overLoad += Math.max(0, load - data.vehicleTypes[vehicleType].capacity);
     }
 
+
+
     public String toString(){
         String out = "";
         for (Trip trip : trips){
@@ -197,6 +208,8 @@ public class Journey {
         }
         return out;
     }
+
+
 
 
     public static void main(String[] args){

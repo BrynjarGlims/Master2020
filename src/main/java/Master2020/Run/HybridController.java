@@ -7,6 +7,7 @@ import Master2020.DataFiles.Parameters;
 import Master2020.Individual.Journey;
 import Master2020.Interfaces.PeriodicAlgorithm;
 import Master2020.Interfaces.PeriodicSolution;
+import Master2020.MIP.ImprovedJourneyCombinationModel;
 import Master2020.MIP.JCMSolution;
 import Master2020.MIP.JourneyCombinationModel;
 import Master2020.PGA.GeneticPeriodicAlgorithm;
@@ -31,7 +32,7 @@ public class HybridController {
     public PeriodicOrderDistributionPopulation pod;
     public ArrayList<PeriodicSolution> solutions;
     public ArrayList<PeriodicSolution> finalSolutions;
-    public JourneyCombinationModel journeyCombinationModel;
+    public ImprovedJourneyCombinationModel journeyCombinationModel;
     public OrderDistribution orderDistributionJCM;
     public CyclicBarrier downstreamGate;
     public CyclicBarrier upstreamGate;
@@ -69,7 +70,7 @@ public class HybridController {
         changeOD = new boolean[Parameters.numberOfAlgorithms];
         pod = new PeriodicOrderDistributionPopulation(data);
         pod.initialize(Parameters.numberOfAlgorithms);
-        journeyCombinationModel = new JourneyCombinationModel(data);
+        journeyCombinationModel = new ImprovedJourneyCombinationModel(data);
         fileName = SolutionStorer.getFolderName(this.modelName);
         for (int i = 0 ; i < Parameters.numberOfPGA ; i++){
             GeneticPeriodicAlgorithm s = new GeneticPeriodicAlgorithm(data);
