@@ -147,7 +147,6 @@ public class GeneticAlgorithm extends Thread {
 
 
     public void runGeneration() {
-
         for (int j = 0; j < Parameters.numberOfOffspring; j++) {
             Individual newIndividual = PIX(population, penaltyControl.timeWarpPenalty, penaltyControl.overLoadPenalty);
             penaltyControl.adjust(newIndividual.hasTimeWarp(), newIndividual.hasOverLoad());
@@ -180,7 +179,7 @@ public class GeneticAlgorithm extends Thread {
                 //wait for all threads to be ready
                 downstreamGate.await();
                 //run generations
-                if (run){runGenerations(Parameters.maxGenerationsPerOrderDistributionUpdatePeriodic);}
+                if (run){runGenerations();}
                 //wait for all periods to finish
                 upstreamGate.await();
 
@@ -190,17 +189,13 @@ public class GeneticAlgorithm extends Thread {
         }
     }
 
-    public void runGenerations(int generations) {
+    public void runGenerations() {
         resetCounters();
         if(Parameters.showPopulation)
             printPopulationStats();
-        for (int i = 0 ; i < generations ; i++){
-            if (  //iterationsWithoutImprovement > Parameters.maxNumberIterationsWithoutImprovement ||
-                    (System.currentTimeMillis() - this.startTime) > Parameters.timeLimitPerAlgorithm/2 || (System.currentTimeMillis() - HybridController.startTime) > Parameters.totalRuntime ) {
+        while ((System.currentTimeMillis() - this.startTime) < Parameters.timeLimitPerAlgorithm/2 && (System.currentTimeMillis() - HybridController.startTime) < Parameters.totalRuntime ) {
                 //System.out.println("BREAK DUE TO: improvement: " + (iterationsWithoutImprovement > Parameters.maxNumberIterationsWithoutImprovement) + " time: " + ((System.currentTimeMillis() - this.startTime) > Parameters.timeLimitPerAlgorithm));
                 //System.out.println(" Is this true? " + ((System.currentTimeMillis() - HybridController.startTime) > Parameters.timeLimitPerAlgorithm));
-                break;
-            }
             runGeneration();
         }
         if(Parameters.showPopulation)

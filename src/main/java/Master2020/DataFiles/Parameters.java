@@ -20,10 +20,10 @@ public class Parameters {
     public static boolean useVestTeleDataset = true;
     public static final boolean doRandomSeed = true;
     public static List<Integer> seeds = Arrays.asList(57, 97, 80, 89, 1);
-    public static long randomSeedValue = 97;
+    public static long randomSeedValue = 10;
     public static final int minimumVehicleSize = 2000;   // removes 1400 and 1800;
 
-    public static long totalRuntime = 1 * 600000;
+    public static long totalRuntime = 3 * 600000;
 
 
     //Misc
@@ -40,12 +40,12 @@ public class Parameters {
     public static final int frequencyOfPenaltyUpdatesPGA = 100;
     public static final int frequencyOfPenaltyUpdatesABC = 1000;
     public static final int initializationMultiplier = 4; //FINAL from VIDAL
-
+    public static final int iterationsWithoutImprovementBeforeDiversification =(int) (maxNumberIterationsWithoutImprovement*0.4);
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 75;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
-    public static int numberOfVehicles = 37;
+    public static int numberOfCustomers = 115;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
+    public static int numberOfVehicles = 62;
 
 
 
@@ -172,6 +172,6 @@ public class Parameters {
     public static final boolean verboseJourneyCombination = false;
     public static final boolean savePlots = false;
     public static final boolean verbose = false;
-    public static final boolean showPopulation = false;
+    public static final boolean showPopulation = true;
     public static final char separator = ';';
 }
