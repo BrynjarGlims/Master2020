@@ -238,4 +238,8 @@ public class Data {
         targetVolume = totalVolume/ numberOfPeriods;
     }
 
+    public static void main(String[] args){
+        System.out.println(Arrays.toString(new boolean[4]));
+    }
+
 }

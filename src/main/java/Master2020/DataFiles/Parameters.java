@@ -23,7 +23,7 @@ public class Parameters {
     public static long randomSeedValue = 97;
     public static final int minimumVehicleSize = 2000;   // removes 1400 and 1800;
 
-    public static long totalRuntime = 3 * 600000;
+    public static long totalRuntime = 1 * 600000;
 
 
     //Misc
@@ -44,8 +44,10 @@ public class Parameters {
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 25;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
-    public static int numberOfVehicles = 12;
+    public static int numberOfCustomers = 75;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
+    public static int numberOfVehicles = 37;
+
+
 
     public static final double distanceCutOffFromDepot = 3.0;   //default 3
     public static final boolean adjustTimeWindow = true;
@@ -150,6 +152,7 @@ public class Parameters {
     public static final int numberOfAlgorithms = 6;
     public static int numberOfPGA = 4; //4 FINAL
     public static int numberOfABC = numberOfAlgorithms - numberOfPGA;
+    public static final double ODCutoffRange = 1.3;
     public static final int minimumIterationsPerOD = 2;
     public static final int orderDistributionCutoff = 2;
     public static int diversifiedODsGenerated = 3;
