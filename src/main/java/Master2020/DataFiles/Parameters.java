@@ -1,6 +1,5 @@
 package Master2020.DataFiles;
 
-import scala.Int;
 
 import java.util.*;
 
@@ -23,7 +22,7 @@ public class Parameters {
     public static long randomSeedValue = 10;
     public static final int minimumVehicleSize = 2000;   // removes 1400 and 1800;
 
-    public static long totalRuntime = 1 * 60000;
+    public static long totalRuntime = 1 * 600000;
 
 
     //Misc
@@ -138,7 +137,7 @@ public class Parameters {
     //......
 
     // Journey Combination Model parameters
-    public static boolean useJCM = false;
+    public static boolean useJCM = true;
     public static final int numberOfIndividualJourneysInMIPPerPeriod = 3;
     public static final String symmetryOFJCM = "car";
 
