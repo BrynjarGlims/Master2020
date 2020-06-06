@@ -29,6 +29,8 @@ public class ImprovedJourneyCombinationModel extends Model {
     public double runTime;
     public double MIPGap;
 
+    public static boolean useImprovedConstraint = false;
+
     // Master 2020 parameters
     private OrderDistribution globalOrderDistribution;
     private Individual individual;
@@ -216,6 +218,8 @@ public class ImprovedJourneyCombinationModel extends Model {
     }
 
 
+
+
     public void capacityOfJourney() throws GRBException {  //evaluate this constraint
         // Constraint 5.70
         //Capacity constraint on each delivery
@@ -254,6 +258,42 @@ public class ImprovedJourneyCombinationModel extends Model {
                         //System.out.println(" ");
                         //System.out.println(constraint_name);
                         model.addConstr(lhs, GRB.LESS_EQUAL, bigM , constraint_name);
+                    }
+                }
+            }
+        }
+    }
+
+
+    public void capacityOfJourneyImproved() throws GRBException {  //evaluate this constraint
+        // Constraint 5.70
+        //Capacity constraint on each delivery
+
+        double largestCapacity = 0;
+        for (VehicleType vt :dataMIP.vehicleTypes) {
+            largestCapacity = largestCapacity < vt.capacity ? vt.capacity : largestCapacity;
+        }
+
+
+        for (int d = 0; d < dataMIP.numPeriods; d++) {
+            for (int vt = 0; vt < dataMIP.numVehicleTypes; vt++) {
+                for (int j = 0; j < journeys[d][vt].size(); j++) {
+                    for (Trip t : journeys[d][vt].get(j).trips){
+                        GRBLinExpr lhs = new GRBLinExpr();  //Create the left hand side of the equation
+                        for (int i : t.customers){
+                            for (int m = 0; m < dataMIP.numProductsPrCustomer[i]; m++) {
+                                lhs.addTerm(1, q[d][i][m]);
+                                //System.out.print("q["+ d + "][" + v + "]["+r+"]["+i+"]["+m+"] + " );
+                            }
+                        }
+
+                        lhs.addTerm(t.customers.size()*largestCapacity + Parameters.modelMipGap - dataMIP.vehicleTypes[vt].capacity  , gamma[d][vt][j]);
+
+
+                        String constraint_name = String.format("5.72 -Connection gamma and q for day %d vehicle type %d. M = %f", d, vt, dataMIP.vehicleTypes[vt].capacity);
+                        //System.out.println(" ");
+                        //System.out.println(constraint_name);
+                        model.addConstr(lhs, GRB.LESS_EQUAL, t.customers.size()*largestCapacity , constraint_name);
                     }
                 }
             }
@@ -546,7 +586,12 @@ public class ImprovedJourneyCombinationModel extends Model {
         //useOfVehiclesForEachCapacity();
         useOfVehicles();
         allowableVisits();
-        capacityOfJourney();
+        if (!useImprovedConstraint){
+            capacityOfJourney();
+        }
+        else{
+            capacityOfJourneyImproved();
+        }
         overtimeAtDepot();
         fixationRemoveNonDeliveries();
 

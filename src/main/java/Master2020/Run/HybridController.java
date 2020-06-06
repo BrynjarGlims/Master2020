@@ -189,6 +189,9 @@ public class HybridController {
         ArrayList<Journey>[][] otherJourneys = bestIterationSolution.getJourneys();
         MIPTest.testJourneySimilarity(otherJourneys, journeys, data);
         if (improvedJourneyCombinationModel.runModel(journeys) == 2) {
+            ImprovedJourneyCombinationModel anotherModel = new ImprovedJourneyCombinationModel(data);
+            ImprovedJourneyCombinationModel.useImprovedConstraint = true;
+            anotherModel.runModel(journeys);
             journeys = improvedJourneyCombinationModel.getOptimalJourneys();
             orderDistributionJCM = improvedJourneyCombinationModel.getOrderDistribution();
             System.out.println("OD valid? " + IndividualTest.testValidOrderDistribution(data, orderDistributionJCM));
