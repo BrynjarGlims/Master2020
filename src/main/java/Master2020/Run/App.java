@@ -174,7 +174,7 @@ public class App {
         seeds[1][0] = new int[]{69,85};
         customers[0] = 25;
         vehicles[0] = 12;
-        journeys[0] = 4;
+        journeys[0] = 3;
         //50
         seeds[0][1] = new int[]{94,41};
         seeds[1][1] = new int[]{20,60};
@@ -192,12 +192,12 @@ public class App {
         seeds[1][3] = new int[]{};
         customers[3] = 100;
         vehicles[3] = 50;
-        journeys[3] = 1;
+        journeys[3] = 2;
         //115
         seeds[0][4] = new int[]{10,27};
         seeds[1][4] = new int[]{};
         customers[4] = 115;
         vehicles[4] = 62;
-        journeys[4] = 1;
+        journeys[4] = 2;
     }
 }
