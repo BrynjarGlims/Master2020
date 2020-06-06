@@ -104,6 +104,13 @@ public class OrderDistribution implements Cloneable {
         setFitness();
     }
 
+    public void makeDistributionFromImprovedJourneyBasedModel(GRBVar[][][] u, GRBVar[][][] q, DataMIP dataMIP) throws GRBException {
+        setVolumeAndOrdersFromIJBM(u,q, dataMIP);
+        setVolumePerPeriod();
+        setFitness();
+    }
+
+
 
     public void makeDistributionFromArcFlowModel(ArcFlowModel afm) throws GRBException {
         setVolumeAndOrdersFromMIP( afm.u, afm.q, afm.dataMIP);
@@ -207,6 +214,27 @@ public class OrderDistribution implements Cloneable {
                         this.orderIdDistribution[d][i].add(data.customers[i].nonDividableOrders[m].orderID);
                         this.orderDeliveries[data.customers[i].nonDividableOrders[m].orderID].addDelivery(d, qND[d][i][m].get(GRB.DoubleAttr.X));
                         this.orderVolumeDistribution[d][i] += qND[d][i][m].get(GRB.DoubleAttr.X);
+                    }
+                }
+            }
+        }
+    }
+
+    private void setVolumeAndOrdersFromIJBM(GRBVar[][][] u, GRBVar[][][] q, DataMIP dataMIP) throws GRBException {
+        for (int d = 0; d < data.numberOfPeriods; d++){
+            for (int i = 0; i < data.numberOfCustomers; i++) {
+                for (int m = 0; m < data.customers[i].numberOfOrders; m++){
+                    if (Math.round(u[d][i][m].get(GRB.DoubleAttr.X)) == 1) {
+                        if (dataMIP.productTypes[i][m] == 1){
+                            this.orderIdDistribution[d][i].add(data.customers[i].orders[m].orderID);
+                            this.orderDeliveries[data.customers[i].orders[m].orderID].addDelivery(d, q[d][i][m].get(GRB.DoubleAttr.X));
+                            this.orderVolumeDistribution[d][i] += q[d][i][m].get(GRB.DoubleAttr.X);
+                        }
+                        else{
+                            this.orderIdDistribution[d][i].add(data.customers[i].orders[m].orderID);
+                            this.orderDeliveries[data.customers[i].orders[m].orderID].addDelivery(d, q[d][i][m].get(GRB.DoubleAttr.X));
+                            this.orderVolumeDistribution[d][i] += q[d][i][m].get(GRB.DoubleAttr.X);
+                        }
                     }
                 }
             }
@@ -442,4 +470,3 @@ public class OrderDistribution implements Cloneable {
         }
     }
 }
-

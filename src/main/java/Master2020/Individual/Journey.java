@@ -189,6 +189,8 @@ public class Journey {
         overLoad += Math.max(0, load - data.vehicleTypes[vehicleType].capacity);
     }
 
+
+
     public String toString(){
         String out = "";
         for (Trip trip : trips){
@@ -197,6 +199,8 @@ public class Journey {
         }
         return out;
     }
+
+
 
 
     public static void main(String[] args){

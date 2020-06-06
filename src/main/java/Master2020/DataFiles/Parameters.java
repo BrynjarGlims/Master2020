@@ -125,6 +125,7 @@ public class Parameters {
     public static final int upperBoundOvertime = 1000;  // upper bound qO variable
     public static final double MIPSafetyIndifference = 0.1;
     public static final boolean verboseODValidity = false;
+    public static final boolean removePresolve = false;
 
 
     //Periodic parameters
