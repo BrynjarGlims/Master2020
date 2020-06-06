@@ -191,6 +191,7 @@ public class GeneticAlgorithm extends Thread {
 
     public void runGenerations() {
         resetCounters();
+        this.startTime = System.currentTimeMillis();
         if(Parameters.showPopulation)
             printPopulationStats();
         while ((System.currentTimeMillis() - this.startTime) < Parameters.timeLimitPerAlgorithm/2 && (System.currentTimeMillis() - HybridController.startTime) < Parameters.totalRuntime ) {
