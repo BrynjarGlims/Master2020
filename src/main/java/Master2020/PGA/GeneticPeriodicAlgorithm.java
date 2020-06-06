@@ -249,7 +249,7 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
 
     public void runIterations() throws Exception {
         startTime = System.currentTimeMillis();
-        setStartTimeOfThreads();
+        //setStartTimeOfThreads();
         runIteration();
         setJourneyFromBestIndividuals();
         boolean allFeasibleJourneys = setJourneyFromBestIndividuals();
@@ -258,7 +258,7 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
             updateOrderDistributionForPopulations(orderDistribution, false);
         }
         //System.out.println("run second generation" + (System.currentTimeMillis() - this.startTime));
-        setStartTimeOfThreads();
+        //setStartTimeOfThreads();
         runIteration();
         setJourneyFromBestIndividuals();
 
@@ -271,6 +271,7 @@ public class GeneticPeriodicAlgorithm extends Thread implements PeriodicAlgorith
 
     public void setStartTimeOfThreads(){
         double currentTime = System.currentTimeMillis();
+
         for (GeneticAlgorithm algorithm : threads){
             algorithm.startTime = currentTime;
         }
