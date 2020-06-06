@@ -79,6 +79,51 @@ public class Population {
         }
     }
 
+    public void flushPopulation(PenaltyControl penaltyControl){
+        removeFeasibleIndividuals();
+        removeInfeasibleIndividuals();
+        createNewIndividuals(penaltyControl);
+    }
+
+    private void removeFeasibleIndividuals(){
+        ArrayList<Individual> feasiblePopulationList = new ArrayList<>(this.feasiblePopulation);
+        Comparator<Individual> sortByFitness = new SortByFitness();
+        Collections.sort(feasiblePopulationList, sortByFitness);
+        int numberOfBestIndividuals = (int) (Parameters.populationSize/3);
+        Set<Individual> newIndividuals = new HashSet<>();
+        for (int i = 0; i < numberOfBestIndividuals; i++){
+            newIndividuals.add(feasiblePopulationList.get(i));
+        }
+        this.feasiblePopulation = newIndividuals;
+    }
+
+    private void removeInfeasibleIndividuals(){
+        ArrayList<Individual> infeasiblePopulation = new ArrayList<>(this.infeasiblePopulation);
+        Comparator<Individual> sortByFitness = new SortByFitness();
+        Collections.sort(infeasiblePopulation, sortByFitness);
+        int numberOfBestIndividuals = (int) (Parameters.populationSize/3);
+        Set<Individual> newIndividuals = new HashSet<>();
+        for (int i = 0; i < numberOfBestIndividuals; i++){
+            newIndividuals.add(infeasiblePopulation.get(i));
+        }
+        this.infeasiblePopulation = newIndividuals;
+    }
+
+    private void createNewIndividuals(PenaltyControl penaltyControl){
+        for (int i = 0; i < Parameters.populationSize*Parameters.initializationMultiplier; i++) {
+            Individual individual = new Individual(this.data, this, Parameters.isPeriodic, actualPeriod, penaltyControl );
+            individual.initializeIndividual(odp.getRandomOrderDistribution());
+            AdSplit.adSplitPlural(individual, penaltyControl.timeWarpPenalty, penaltyControl.overLoadPenalty);
+            individual.updateFitness();
+            if (individual.isFeasible()) {
+                this.feasiblePopulation.add(individual);
+            }
+            else {
+                this.infeasiblePopulation.add(individual);
+            }
+        }
+    }
+
 
     private static double getFitnessDifference(Individual i1, Individual i2) {
         return (Math.abs(i1.getFitness(false) - i2.getFitness(false)));
