@@ -169,25 +169,25 @@ public class App {
         vehicles = new int[5];
         journeys = new int[5];
         //25
-        seeds[0][0] = new int[]{15, 84};
-        seeds[1][0] = new int[]{69,85};
+        seeds[0][0] = new int[]{};//15, 84};
+        seeds[1][0] = new int[]{};//69,85};
         customers[0] = 25;
         vehicles[0] = 12;
         journeys[0] = 3;
         //50
-        seeds[0][1] = new int[]{94,41};
-        seeds[1][1] = new int[]{20,60};
+        seeds[0][1] = new int[]{};//94,41};
+        seeds[1][1] = new int[]{};//20,60};
         customers[1] = 50;
         vehicles[1] = 25;
         journeys[1] = 3;
         //75
-        seeds[0][2] = new int[]{32,18,37};
-        seeds[1][2] = new int[]{1};
+        seeds[0][2] = new int[]{};//32,18,37};
+        seeds[1][2] = new int[]{};//1};
         customers[2] = 75;
         vehicles[2] = 32;
         journeys[2] = 2;
         //100
-        seeds[0][3] = new int[]{97,46,35,76};
+        seeds[0][3] = new int[]{};//97,46,35,76};
         seeds[1][3] = new int[]{};
         customers[3] = 100;
         vehicles[3] = 50;
