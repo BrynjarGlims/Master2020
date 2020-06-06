@@ -39,6 +39,9 @@ public class HybridController {
     public String modelName = "HYBRID";
     public static long startTime;
     public double currentBestSolution;
+    public double[] currentRunBestSolution;
+    public boolean[] changeOD;
+
     public int iterationsWithoutImprovement;
 
     public double bestIterationFitness;
@@ -59,6 +62,11 @@ public class HybridController {
         solutions = new ArrayList<>();
         finalSolutions = new ArrayList<>();
         algorithms = new ArrayList<>();
+        currentRunBestSolution = new double[Parameters.numberOfAlgorithms];
+        for (int i = 0 ; i < Parameters.numberOfAlgorithms ; i++){
+            currentRunBestSolution[i] = Double.MAX_VALUE;
+        }
+        changeOD = new boolean[Parameters.numberOfAlgorithms];
         pod = new PeriodicOrderDistributionPopulation(data);
         pod.initialize(Parameters.numberOfAlgorithms);
         journeyCombinationModel = new JourneyCombinationModel(data);
@@ -248,59 +256,47 @@ public class HybridController {
         }
     }
 
-    public void updateOrderDistributionPopulation() throws CloneNotSupportedException {
-        ArrayList<PeriodicSolution> solutions = new ArrayList<>();
-        ArrayList<PeriodicAlgorithm> validAlgorithms = new ArrayList<>();
+    private void findAlgorithmsToChange() throws CloneNotSupportedException {
         for (PeriodicAlgorithm algorithm : algorithms){
-            algorithm.setMinimumIterations(algorithm.getMinimumIterations() + 1);
-            if (algorithm.getMinimumIterations() > Parameters.minimumIterationsPerOD &&
-                    (algorithm.getIterationsWithoutImprovement() > 0 || algorithm.storeSolution().getFitness() < Parameters.globalTrialsCutoff * finalSolutions.get(0).getFitness())){
-                validAlgorithms.add(algorithm);
+            PeriodicSolution solution = algorithm.storeSolution();
+            if (solution.getFitness() >= currentRunBestSolution[algorithm.getAlgorithmNumber()]){
+                changeOD[algorithm.getAlgorithmNumber()] = true;
+                currentRunBestSolution[algorithm.getAlgorithmNumber()]  = Double.MAX_VALUE;
             }
-        }
-        for (PeriodicAlgorithm algorithm : validAlgorithms){
-            solutions.add(algorithm.storeSolution());
-        }
-        int[] sortedIndices = IntStream.range(0, solutions.size())
-                .boxed()
-                .sorted(Comparator.comparing(solutions::get))
-                .mapToInt(i -> i)
-                .toArray();
-        boolean firstOD = true;
-        if (sortedIndices.length > 0){
-            for (int i = sortedIndices.length - 1 ; i > Math.max(-1, sortedIndices.length - Parameters.orderDistributionCutoff -1) ; i--){
-                System.out.println("changing od: " + validAlgorithms.get(sortedIndices[i]).getAlgorithmNumber());
-                if (Parameters.useJCM && firstOD){
-                    pod.distributions.set(validAlgorithms.get(i).getAlgorithmNumber(), orderDistributionJCM);
-                    firstOD = false;
-                }
-                else{
-                    pod.distributions.set(validAlgorithms.get(i).getAlgorithmNumber(), pod.diversify(Parameters.diversifiedODsGenerated));
-                }
-
-                //diversified new OD:
-                validAlgorithms.get(sortedIndices[i]).updateOrderDistribution(pod.distributions.get(sortedIndices[i]));
-                validAlgorithms.get(sortedIndices[i]).setMinimumIterations(0);
+            else if (solution.getFitness() > Parameters.ODCutoffRange * finalSolutions.get(0).getFitness()){
+                changeOD[algorithm.getAlgorithmNumber()] = true;
+                currentRunBestSolution[algorithm.getAlgorithmNumber()]  = Double.MAX_VALUE;
             }
-        }
-
-        for (int i = 0; i < Parameters.numberOfPGA ; i++){
-            if (algorithms.get(i).getIterationsWithoutImprovement() > Parameters.PHGAIterationsWithoutImprovementLimit){
-                System.out.println("MAX ITERATIONS HIT");
-                finalSolutions.add(algorithms.get(i).storeSolution());
-                pod.distributions.set(i, pod.diversify(Parameters.diversifiedODsGenerated));
-                algorithms.get(i).updateOrderDistribution(pod.distributions.get(i));
-            }
-        }
-        for (int i = Parameters.numberOfPGA; i < Parameters.numberOfAlgorithms ; i++){
-            if (algorithms.get(i).getIterationsWithoutImprovement() > Parameters.ABCIterationsWithoutImprovementLimit){
-                System.out.println("MAX ITERATIONS HIT");
-                finalSolutions.add(algorithms.get(i).storeSolution());
-                pod.distributions.set(i, pod.diversify(Parameters.diversifiedODsGenerated));
-                algorithms.get(i).updateOrderDistribution(pod.distributions.get(i));
+            else {
+                changeOD[algorithm.getAlgorithmNumber()] = false;
+                currentRunBestSolution[algorithm.getAlgorithmNumber()]  = solution.getFitness();
             }
         }
     }
+
+    public void updateOrderDistributionPopulation() throws CloneNotSupportedException {
+        findAlgorithmsToChange();
+        ArrayList<PeriodicAlgorithm> validAlgorithms = new ArrayList<>();
+        for (PeriodicAlgorithm algorithm : algorithms){
+            if (changeOD[algorithm.getAlgorithmNumber()]){
+                validAlgorithms.add(algorithm);
+            }
+        }
+        Collections.shuffle(validAlgorithms);
+        boolean firstOD = true;
+        for (PeriodicAlgorithm algorithm : validAlgorithms){
+            System.out.println("changing od: " + algorithm.getAlgorithmNumber());
+            if (Parameters.useJCM && firstOD){
+                pod.distributions.set(algorithm.getAlgorithmNumber(), orderDistributionJCM);
+                firstOD = false;
+            }
+            else{
+                pod.distributions.set(algorithm.getAlgorithmNumber(), pod.diversify(Parameters.diversifiedODsGenerated));
+            }
+            algorithm.updateOrderDistribution(pod.distributions.get(algorithm.getAlgorithmNumber()));
+        }
+    }
+
 
     public ArrayList<Journey>[][] getJourneys() {
         ArrayList<Journey>[][] journeys = new ArrayList[data.numberOfPeriods][data.numberOfVehicleTypes];

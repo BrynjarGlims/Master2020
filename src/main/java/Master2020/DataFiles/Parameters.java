@@ -149,6 +149,7 @@ public class Parameters {
     public static int numberOfABC = numberOfAlgorithms - numberOfPGA;
     public static final int minimumIterationsPerOD = 2;
     public static final int orderDistributionCutoff = 2;
+    public static double ODCutoffRange = 1.3;
     public static int diversifiedODsGenerated = 3;
     public static boolean dynamicRuntime = false;
 
