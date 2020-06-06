@@ -44,8 +44,8 @@ public class Parameters {
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 115;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
-    public static int numberOfVehicles = 62;
+    public static int numberOfCustomers = 25;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
+    public static int numberOfVehicles = 12;
 
 
 
@@ -172,6 +172,6 @@ public class Parameters {
     public static final boolean verboseJourneyCombination = false;
     public static final boolean savePlots = false;
     public static final boolean verbose = false;
-    public static final boolean showPopulation = true;
+    public static final boolean showPopulation = false;
     public static final char separator = ';';
 }
