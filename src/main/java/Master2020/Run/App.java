@@ -71,7 +71,6 @@ public class App {
             for (int instance = 4 ; instance < 5 ; instance++){
                 Parameters.numberOfCustomers = 100;
                 Parameters.numberOfVehicles = 50;
-                Parameters.removePresolve = true;
                 Parameters.numberOfIndividualJourneysInMIPPerPeriod = 3;
                 Parameters.timeLimitPerAlgorithm = Parameters.timeLimitPerAlgorithmConstant + Parameters.numberOfCustomers*Parameters.timeLimitPerAlgorithmVariable;
                 if (Parameters.timeLimitPerAlgorithm > Parameters.totalRuntime){
