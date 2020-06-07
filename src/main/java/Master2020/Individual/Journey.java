@@ -145,6 +145,7 @@ public class Journey {
         return fitnesses[0] + fitnesses[1] + fitnesses[2] + fitnesses[3]; //travel + timewarp + overload + vehicle use
     }
 
+
     private void updateTimes(Trip trip){
         if (trip.customers.isEmpty()){
             return;

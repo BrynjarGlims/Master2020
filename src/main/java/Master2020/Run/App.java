@@ -156,19 +156,19 @@ public class App {
         vehicles[1] = 25;
         journeys[1] = 3;
         //75
-        seeds[0][2] = new int[]{32,18,37};
-        seeds[1][2] = new int[]{1};
+        seeds[0][2] = new int[]{};//32,18,37};
+        seeds[1][2] = new int[]{};//1};
         customers[2] = 75;
         vehicles[2] = 32;
         journeys[2] = 2;
         //100
-        seeds[0][3] = new int[]{97,46,35,76};
+        seeds[0][3] = new int[]{};//97,46,35,76};
         seeds[1][3] = new int[]{};
         customers[3] = 100;
         vehicles[3] = 50;
         journeys[3] = 2;
         //115
-        seeds[0][4] = new int[]{10,27};
+        seeds[0][4] = new int[]{};//10,27};
         seeds[1][4] = new int[]{};
         customers[4] = 115;
         vehicles[4] = 62;

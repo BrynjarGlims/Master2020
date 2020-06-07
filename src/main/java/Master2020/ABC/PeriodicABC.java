@@ -216,13 +216,14 @@ public class PeriodicABC extends Thread implements PeriodicAlgorithm {
                 journeys[p][vt] = new ArrayList<>();
             }
         }
+        double[] fitnesses;
         for (PeriodSwarm periodSwarm : threads){
             for (ABCPeriodSolution solution : periodSwarm.solutions){
                 for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
                     for (Journey journey : solution.journeys[vt]){
                         journey.ID = Origin.ABC;   //set identificator of PGA
+                        journeys[periodSwarm.period][vt].addAll(solution.journeys[vt]);
                     }
-                    journeys[periodSwarm.period][vt].addAll(solution.journeys[vt]);
                 }
             }
         }
