@@ -38,6 +38,8 @@ public class Parameters {
     public static double fractionOfFeasibleIndividualsFromAdsplit = 0.2;
     public static final int frequencyOfPenaltyUpdatesPGA = 50;
     public static final int frequencyOfPenaltyUpdatesABC = 1000;
+    public static final int initializationMultiplier = 4; //from vidal
+    public static final int iterationsWithoutImprovementBeforeDiversification = (int) (maxNumberIterationsWithoutImprovement*0.4);
 
     // Loading data parameters
     public static final int numberOfPeriods = 6;

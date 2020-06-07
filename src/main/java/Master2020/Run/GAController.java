@@ -1,9 +1,11 @@
+
 package Master2020.Run;
 
 import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Parameters;
 import Master2020.Genetic.*;
+import Master2020.Individual.AdSplit;
 import Master2020.Individual.Individual;
 import Master2020.Individual.Trip;
 import Master2020.Interfaces.PeriodicSolution;
@@ -26,9 +28,9 @@ import Master2020.Testing.IndividualTest;
 import Master2020.Visualization.PlotIndividual;
 import gurobi.GRBException;
 
+
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class GAController {
@@ -48,6 +50,8 @@ public class GAController {
     public double scalingFactorOrderDistribution;
     public PeriodicIndividual bestPeriodicIndividual;
     public PenaltyControl penaltyControl;
+    public int runsWithoutImprovement = 0;
+    public Individual bestRunSolution;
 
     public String fileName;
     public String modelName = "GA";
@@ -196,95 +200,98 @@ public class GAController {
 
 
 
+
     public void runGA() throws IOException, GRBException {
         double time = System.currentTimeMillis();
         System.out.println("Initialize population..");
         initialize();
         long startTime = System.currentTimeMillis();
-        while ((population.getIterationsWithoutImprovement() < Parameters.maxNumberIterationsWithoutImprovement &&
-                System.currentTimeMillis() - startTime < Parameters.totalRuntime)) {
-            System.out.println("Start generation: " + numberOfIterations);
-            System.out.println(population.getIterationsWithoutImprovement());
-            //Find best OD for the distribution
-            findBestOrderDistribution();
+        while (runsWithoutImprovement < Parameters.maxNumberIterationsWithoutImprovement && System.currentTimeMillis() - startTime < Parameters.totalRuntime ){
 
-            //Generate new population
-            for (Individual individual : population.infeasiblePopulation) {
-                if (!Master2020.Testing.IndividualTest.testIndividual(individual)) {
-                    System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: PRIOR");
+            while ((population.getIterationsWithoutImprovement() < Parameters.iterationsWithoutImprovementBeforeDiversification
+                    && System.currentTimeMillis() - startTime < Parameters.totalRuntime)) {
+
+                System.out.println("Start generation: " + numberOfIterations);
+                System.out.println("Iterations without improvement: " + population.getIterationsWithoutImprovement());
+                //Find best OD for the distribution
+                findBestOrderDistribution();
+
+                //Generate new population
+                for (Individual individual : population.infeasiblePopulation) {
+                    if (!Master2020.Testing.IndividualTest.testIndividual(individual)) {
+                        System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: PRIOR");
+                    }
                 }
-            }
 
 
-            for (int j = 0; j < Parameters.numberOfOffspring; j++) {
-                Individual newIndividual = PIX();
-                penaltyControl.adjust(newIndividual.hasTimeWarp(), newIndividual.hasOverLoad());
-                //System.out.println("Time warp: " + newIndividual.timeWarpCost + " overLoad: " + newIndividual.overLoadCost);
+                for (int j = 0; j < Parameters.numberOfOffspring; j++) {
+                    Individual newIndividual = PIX();
+                    penaltyControl.adjust(newIndividual.hasTimeWarp(), newIndividual.hasOverLoad());
+                    //System.out.println("Time warp: " + newIndividual.timeWarpCost + " overLoad: " + newIndividual.overLoadCost);
 
-                educate(newIndividual, penaltyControl);
+                    educate(newIndividual, penaltyControl);
 
-                setOptimalOrderDistribution(newIndividual);
+                    setOptimalOrderDistribution(newIndividual);
 
-                tripOptimizer(newIndividual);
-                newIndividual.updateFitness();
-                population.addChildToPopulation(newIndividual);
+                    tripOptimizer(newIndividual);
+                    newIndividual.updateFitness();
+                    population.addChildToPopulation(newIndividual);
 
-            }
-            for (Individual individual : population.getTotalPopulation()) {
-                IndividualTest.checkIfIndividualIsComplete(individual);
-            }
+                }
+                for (Individual individual : population.getTotalPopulation()) {
+                    IndividualTest.checkIfIndividualIsComplete(individual);
+                }
 
 
-            repair();
+                repair();
 
 
             /*
             System.out.println("Feas pop: " + population.feasiblePopulation.size());
             System.out.println("Infeas pop: " + population.infeasiblePopulation.size());
             */
-            selection();
+                selection();
             /*
             System.out.println("Feas pop after: " + population.feasiblePopulation.size());
             System.out.println("Infeas pop after: " + population.infeasiblePopulation.size());
 
              */
-            System.out.println("OBject: " + population.returnBestIndividual().hashCode());
-            System.out.println("Fitness: " + population.returnBestIndividual().getFitness(false) + " feasible: " + population.returnBestIndividual().isFeasible());
+                System.out.println("OBject: " + population.returnBestIndividual().hashCode());
+                System.out.println("Fitness: " + population.returnBestIndividual().getFitness(false) + " feasible: " + population.returnBestIndividual().isFeasible());
+                System.out.println("Runs without improvement: " + runsWithoutImprovement);
 
 
-            bestIndividualScore = population.returnBestIndividual().getFitness(false);
-            numberOfIterations++;
+                bestIndividualScore = population.returnBestIndividual().getFitness(false);
+                numberOfIterations++;
+            }
+            bestIndividual = population.returnBestIndividual();
+            System.out.println("Individual feasible: " + bestIndividual.isFeasible());
+            System.out.println("Fitness: " + bestIndividual.getFitness(false));
+            if (bestRunSolution == null){
+                bestRunSolution = bestIndividual;
+            }
+
+            //Set runs
+            if (bestRunSolution.getFitness(false) == bestIndividual.getFitness(false)){
+                System.out.println("Flushing 1/3 of the population, creating 4 times new individuals");
+                population.flushPopulation(penaltyControl);
+                runsWithoutImprovement += 1;
+                population.setIterationsWithoutImprovement(0);
+            }
+            else{
+                bestRunSolution = bestIndividual;
+            }
         }
 
-        Individual bestIndividual = population.returnBestIndividual();
-        System.out.println("Individual feasible: " + bestIndividual.isFeasible());
-        System.out.println("Fitness: " + bestIndividual.getFitness(false));
-
-        // debug may be removed
-        /*
-        DataMIP dataMIP = DataConverter.convert(data);
-        System.out.println("Arc Flow with extra constraints");
-        JourneyBasedModel jbm = new JourneyBasedModel(dataMIP);
-        jbm.testModel(bestIndividual.journeyList, bestIndividual.orderDistribution);
-        PathFlowModel pfm = new PathFlowModel(dataMIP);
-        pfm.testTrips(bestIndividual.journeyList, bestIndividual.orderDistribution);
-        ArcFlowModel afm = new ArcFlowModel(dataMIP);
-        afm.testSolution(bestIndividual.journeyList);
-        System.out.println("JCM with extra constraints");
-        JourneyCombinationModel jcm = new JourneyCombinationModel(data);
-        jcm.runModel(bestIndividual.journeyList);
-        System.out.println("Arc standalone");
-        PathFlowModel pfm = new PathFlowModel(dataMIP);
-        pfm.runModel(Parameters.symmetry);
-        afm = new ArcFlowModel(dataMIP);
-        afm.runModel(Parameters.symmetry);
-         */
 
         if (Parameters.savePlots) {
             PlotIndividual visualizer = new PlotIndividual(data);
             visualizer.visualize(bestIndividual);
         }
-        Result res = new Result(population, modelName, fileName, population.returnBestIndividual().isFeasible(), false);
+
+
+        //Result res = new Result(population, modelName, fileName, population.returnBestIndividual().isFeasible(), false);
+        Result res = new Result(bestRunSolution, modelName, fileName, bestRunSolution.isFeasible(), false);
         res.store(time, -1);
         if (Parameters.ODMIPProbability > 0){
             orderAllocationModel.terminateEnvironment();
@@ -296,3 +303,4 @@ public class GAController {
         ga.runGA();
     }
 }
+
