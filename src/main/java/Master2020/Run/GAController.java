@@ -256,6 +256,8 @@ public class GAController {
                 System.out.println("OBject: " + population.returnBestIndividual().hashCode());
                 System.out.println("Fitness: " + population.returnBestIndividual().getFitness(false) + " feasible: " + population.returnBestIndividual().isFeasible());
                 System.out.println("Runs without improvement: " + runsWithoutImprovement);
+                bestIndividualScore = population.returnBestIndividual().getFitness(false);
+                numberOfIterations++;
             }
 
             if (bestRunSolution == null){
@@ -263,18 +265,12 @@ public class GAController {
             }
 
             //Set runs
-            if (population.getIterationsWithoutImprovement() > Parameters.iterationsWithoutImprovementBeforeDiversification){
-                System.out.println("Flushing 1/3 of the population, creating 4 times new individuals");
-                population.flushPopulation(penaltyControl);
-                runsWithoutImprovement += 1;
-                population.setIterationsWithoutImprovement(0);
-            }
-            else{
-                bestRunSolution = bestIndividual;
-            }
+            System.out.println("Flushing 1/3 of the population, creating 4 times new individuals");
+            population.flushPopulation(penaltyControl);
+            runsWithoutImprovement += 1;
+            population.setIterationsWithoutImprovement(0);
 
-            bestIndividualScore = population.returnBestIndividual().getFitness(false);
-            numberOfIterations++;
+
         }
         bestIndividual = population.returnBestIndividual();
         System.out.println("Individual feasible: " + bestIndividual.isFeasible());
