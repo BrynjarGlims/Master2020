@@ -206,82 +206,78 @@ public class GAController {
         System.out.println("Initialize population..");
         initialize();
         long startTime = System.currentTimeMillis();
-        while (runsWithoutImprovement < Parameters.maxNumberIterationsWithoutImprovement && System.currentTimeMillis() - startTime < Parameters.totalRuntime ){
+        while (population.getIterationsWithoutImprovement() < Parameters.maxNumberIterationsWithoutImprovement && System.currentTimeMillis() - startTime < Parameters.totalRuntime ){
+            System.out.println("Start generation: " + numberOfIterations);
+            System.out.println("Iterations without improvement: " + population.getIterationsWithoutImprovement());
+            //Find best OD for the distribution
+            findBestOrderDistribution();
 
-            while ((population.getIterationsWithoutImprovement() < Parameters.iterationsWithoutImprovementBeforeDiversification
-                    && System.currentTimeMillis() - startTime < Parameters.totalRuntime)) {
-
-                System.out.println("Start generation: " + numberOfIterations);
-                System.out.println("Iterations without improvement: " + population.getIterationsWithoutImprovement());
-                //Find best OD for the distribution
-                findBestOrderDistribution();
-
-                //Generate new population
-                for (Individual individual : population.infeasiblePopulation) {
-                    if (!Master2020.Testing.IndividualTest.testIndividual(individual)) {
-                        System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: PRIOR");
-                    }
+            //Generate new population
+            for (Individual individual : population.infeasiblePopulation) {
+                if (!Master2020.Testing.IndividualTest.testIndividual(individual)) {
+                    System.out.println("BEST INDIVIDUAL IS NOT COMPLETE: PRIOR");
                 }
-
-
-                for (int j = 0; j < Parameters.numberOfOffspring; j++) {
-                    Individual newIndividual = PIX();
-                    penaltyControl.adjust(newIndividual.hasTimeWarp(), newIndividual.hasOverLoad());
-                    //System.out.println("Time warp: " + newIndividual.timeWarpCost + " overLoad: " + newIndividual.overLoadCost);
-
-                    educate(newIndividual, penaltyControl);
-
-                    setOptimalOrderDistribution(newIndividual);
-
-                    tripOptimizer(newIndividual);
-                    newIndividual.updateFitness();
-                    population.addChildToPopulation(newIndividual);
-
-                }
-                for (Individual individual : population.getTotalPopulation()) {
-                    IndividualTest.checkIfIndividualIsComplete(individual);
-                }
-
-
-                repair();
-
-
-            /*
-            System.out.println("Feas pop: " + population.feasiblePopulation.size());
-            System.out.println("Infeas pop: " + population.infeasiblePopulation.size());
-            */
-                selection();
-            /*
-            System.out.println("Feas pop after: " + population.feasiblePopulation.size());
-            System.out.println("Infeas pop after: " + population.infeasiblePopulation.size());
-
-             */
-                System.out.println("OBject: " + population.returnBestIndividual().hashCode());
-                System.out.println("Fitness: " + population.returnBestIndividual().getFitness(false) + " feasible: " + population.returnBestIndividual().isFeasible());
-                System.out.println("Runs without improvement: " + runsWithoutImprovement);
-
-
-                bestIndividualScore = population.returnBestIndividual().getFitness(false);
-                numberOfIterations++;
             }
-            bestIndividual = population.returnBestIndividual();
-            System.out.println("Individual feasible: " + bestIndividual.isFeasible());
-            System.out.println("Fitness: " + bestIndividual.getFitness(false));
+
+
+            for (int j = 0; j < Parameters.numberOfOffspring; j++) {
+                Individual newIndividual = PIX();
+                penaltyControl.adjust(newIndividual.hasTimeWarp(), newIndividual.hasOverLoad());
+                //System.out.println("Time warp: " + newIndividual.timeWarpCost + " overLoad: " + newIndividual.overLoadCost);
+
+                educate(newIndividual, penaltyControl);
+
+                setOptimalOrderDistribution(newIndividual);
+
+                tripOptimizer(newIndividual);
+                newIndividual.updateFitness();
+                population.addChildToPopulation(newIndividual);
+
+            }
+            for (Individual individual : population.getTotalPopulation()) {
+                IndividualTest.checkIfIndividualIsComplete(individual);
+            }
+
+
+            repair();
+
+
+        /*
+        System.out.println("Feas pop: " + population.feasiblePopulation.size());
+        System.out.println("Infeas pop: " + population.infeasiblePopulation.size());
+        */
+            selection();
+        /*
+        System.out.println("Feas pop after: " + population.feasiblePopulation.size());
+        System.out.println("Infeas pop after: " + population.infeasiblePopulation.size());
+
+         */
+            System.out.println("OBject: " + population.returnBestIndividual().hashCode());
+            System.out.println("Fitness: " + population.returnBestIndividual().getFitness(false) + " feasible: " + population.returnBestIndividual().isFeasible());
+            System.out.println("Runs without improvement: " + runsWithoutImprovement);
+
             if (bestRunSolution == null){
                 bestRunSolution = bestIndividual;
             }
 
             //Set runs
-            if (bestRunSolution.getFitness(false) == bestIndividual.getFitness(false)){
+            if (population.getIterationsWithoutImprovement() > Parameters.iterationsWithoutImprovementBeforeDiversification){
                 System.out.println("Flushing 1/3 of the population, creating 4 times new individuals");
                 population.flushPopulation(penaltyControl);
-                runsWithoutImprovement += 1;
-                population.setIterationsWithoutImprovement(0);
+                //population.setIterationsWithoutImprovement(0);
             }
             else{
                 bestRunSolution = bestIndividual;
             }
+
+            bestIndividualScore = population.returnBestIndividual().getFitness(false);
+            numberOfIterations++;
         }
+        bestIndividual = population.returnBestIndividual();
+        System.out.println("Individual feasible: " + bestIndividual.isFeasible());
+        System.out.println("Fitness: " + bestIndividual.getFitness(false));
+
+
 
 
         if (Parameters.savePlots) {
