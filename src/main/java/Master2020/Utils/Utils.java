@@ -114,7 +114,7 @@ public class Utils {
             System.out.print(Origin.values()[o] + " " + count[o] + " | ");
         }
         System.out.println(" ");
-        int[] result = {count[0], count[1]};
+        int[] result = {count[0], count[1], count[2]};
         return result;
     }
 
