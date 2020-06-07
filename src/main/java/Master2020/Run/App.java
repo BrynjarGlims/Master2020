@@ -44,12 +44,13 @@ public class App {
                 for (int instance = 0 ; instance < 5 ; instance++){
                     Parameters.numberOfCustomers = customers[instance];
                     Parameters.numberOfVehicles = vehicles[instance];
-                    Parameters.timeLimitPerAlgorithm = Parameters.timeLimitPerAlgorithmConstant + Parameters.numberOfCustomers*Parameters.timeLimitPerAlgorithmVariable;
+
                     if (Parameters.timeLimitPerAlgorithm > Parameters.totalRuntime){
                         throw new IllegalArgumentException(" Time limit per algorithm is larger than totalRuntime");
                     }
                     for (int seed : seeds[dataset][instance]){
                         Parameters.randomSeedValue = seed;
+                        Parameters.timeLimitPerAlgorithm = Parameters.timeLimitPerAlgorithmConstant + Parameters.numberOfCustomers*Parameters.timeLimitPerAlgorithmVariable;
                         System.out.println("running " + args[0] + " for dataset " + dataset + " for " + Parameters.numberOfCustomers + " customers, seed: " + seed);
                         System.out.println("Time limit per algorithm: " + Parameters.timeLimitPerAlgorithm/1000 + " seconds");
                         run(args);
