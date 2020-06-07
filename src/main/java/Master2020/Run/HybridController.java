@@ -16,6 +16,7 @@ import Master2020.ProductAllocation.OrderDistribution;
 import Master2020.StoringResults.SolutionStorer;
 import Master2020.Testing.HybridTest;
 import Master2020.Testing.IndividualTest;
+import Master2020.Testing.MIPTest;
 import Master2020.Utils.Utils;
 import gurobi.GRBException;
 
@@ -47,6 +48,7 @@ public class HybridController {
 
     public double bestIterationFitness;
     public PeriodicSolution bestIterationSolution;
+    public boolean feasibleSolutions;
 
     public HybridController() throws GRBException {
         algorithmCounter = 0;
@@ -165,30 +167,35 @@ public class HybridController {
 
     public void generateOptimalSolution( ) throws CloneNotSupportedException {
         try{
-            ArrayList<Journey>[][] journeys = getJourneys();
-            //ArrayList<Journey>[][] otherJourneys = bestIterationSolution.getJourneys();
-            //MIPTest.testJourneySimilarity(otherJourneys, journeys, data);
+            if (feasibleSolutions){
+                ArrayList<Journey>[][] journeys = getJourneys();
+                //ArrayList<Journey>[][] otherJourneys = bestIterationSolution.getJourneys();
+                //MIPTest.testJourneySimilarity(otherJourneys, journeys, data);
 
-            if (journeyCombinationModel.runModel(journeys) == 2) {
-                journeys = journeyCombinationModel.getOptimalJourneys();
-                orderDistributionJCM = journeyCombinationModel.getOrderDistribution();
-                System.out.println("OD valid? " + IndividualTest.testValidOrderDistribution(data, orderDistributionJCM));
-                System.out.println("Fitness of od" + orderDistributionJCM.getFitness());
-                PeriodicSolution JCMSolution = new JCMSolution(orderDistributionJCM.clone(), journeys);
-                //SolutionStorer.store(JCMSolution, startTime, fileName);
-                double improvement = (bestIterationFitness-JCMSolution.getFitness())/bestIterationFitness*100;
-                System.out.println("Improvement from " + bestIterationFitness + " to " + JCMSolution.getFitness() + " equivalent to " + improvement + " %");
-                if (bestIterationFitness < JCMSolution.getFitness()){
-                    System.out.println("HYBRID MODEL MADE A WORSE SOLUTION");
+                if (journeyCombinationModel.runModel(journeys) == 2) {
+                    journeys = journeyCombinationModel.getOptimalJourneys();
+                    orderDistributionJCM = journeyCombinationModel.getOrderDistribution();
+                    System.out.println("OD valid? " + IndividualTest.testValidOrderDistribution(data, orderDistributionJCM));
+                    System.out.println("Fitness of od" + orderDistributionJCM.getFitness());
+                    PeriodicSolution JCMSolution = new JCMSolution(orderDistributionJCM.clone(), journeys);
+                    //SolutionStorer.store(JCMSolution, startTime, fileName);
+                    double improvement = (bestIterationFitness - JCMSolution.getFitness()) / bestIterationFitness * 100;
+                    System.out.println("Improvement from " + bestIterationFitness + " to " + JCMSolution.getFitness() + " equivalent to " + improvement + " %");
+                    if (bestIterationFitness < JCMSolution.getFitness()) {
+                        System.out.println("HYBRID MODEL MADE A WORSE SOLUTION");
+                    }
+                    double[] fitnesses = JCMSolution.getFitnesses();
+                    System.out.print(" | Time warp " + fitnesses[1] + " | ");
+                    System.out.println("Over load " + fitnesses[2]);
+                    int[] tags = Utils.getJourneyTags(JCMSolution.getJourneys(), data);
+                    //SolutionTest.checkForInfeasibility(JCMSolution, data);
+                    SolutionStorer.storeJBM(JCMSolution.getFitness(), journeyCombinationModel.runTime, improvement, tags[0], tags[1], tags[2], journeyCombinationModel.optimal, startTime, fileName);
+                    solutions.add(JCMSolution);
+                    finalSolutions.add(JCMSolution);
                 }
-                double[] fitnesses = JCMSolution.getFitnesses();
-                System.out.print(" | Time warp "+ fitnesses[1] + " | ");
-                System.out.println("Over load "+ fitnesses[2]);
-                int[] tags = Utils.getJourneyTags(JCMSolution.getJourneys(), data);
-                //SolutionTest.checkForInfeasibility(JCMSolution, data);
-                SolutionStorer.storeJBM(JCMSolution.getFitness(), journeyCombinationModel.runTime, improvement, tags[0], tags[1], tags[2], journeyCombinationModel.optimal,startTime, fileName);
-                solutions.add(JCMSolution);
-                finalSolutions.add(JCMSolution);
+                else{
+                    orderDistributionJCM = pod.diversify(Parameters.diversifiedODsGenerated);
+                }
             } else {
                 orderDistributionJCM = pod.diversify(Parameters.diversifiedODsGenerated);
             }
@@ -246,6 +253,7 @@ public class HybridController {
         PeriodicSolution solution;
         bestIterationFitness = Double.MAX_VALUE;
         bestIterationSolution = null;
+        feasibleSolutions = false;
         for (int s = 0 ; s < Parameters.numberOfAlgorithms ; s++){
             pod.distributions.set(s, algorithms.get(s).getOrderDistribution());
             solution = algorithms.get(s).storeSolution();
@@ -253,6 +261,8 @@ public class HybridController {
                 bestIterationFitness = solution.getFitness();
                 bestIterationSolution = solution;
             }
+            if (solution.isFeasible())
+                feasibleSolutions = true;
             System.out.println("Algorithm " + s + " fitness: "+ solution.getFitness() + " feasible: " + solution.isFeasible() + " infeasibility cost: " + solution.getInfeasibilityCost());
         }
     }
