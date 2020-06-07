@@ -5,6 +5,7 @@ import Master2020.DataFiles.Data;
 import Master2020.DataFiles.DataReader;
 import Master2020.DataFiles.Parameters;
 import Master2020.Individual.Journey;
+import Master2020.Individual.Origin;
 import Master2020.Interfaces.PeriodicAlgorithm;
 import Master2020.Interfaces.PeriodicSolution;
 import Master2020.MIP.ImprovedJourneyCombinationModel;
@@ -317,13 +318,26 @@ public class HybridController {
             }
         }
         ArrayList<Journey>[][] tempJourneys;
+        boolean found;
+        int counter = -1;
         for (PeriodicAlgorithm algorithm : algorithms){
+            counter++;
             tempJourneys = algorithm.getJourneys();
-            if (HybridTest.checkIfJourneysExists(tempJourneys,data))  {
+            if (HybridTest.checkIfJourneysExists(tempJourneys,data, counter))  {
                 for (int p = 0 ; p < data.numberOfPeriods ; p++){
                     for (int vt = 0 ; vt < data.numberOfVehicleTypes ; vt++){
                         for (Journey j : tempJourneys[p][vt]){
-                            if (!journeys[p][vt].contains(j)) {
+                            found = false;
+                            for (Journey addedJourney : journeys[p][vt]){
+                                if (addedJourney.isEqual(j)) {
+                                    if (addedJourney.ID != j.ID){
+                                        addedJourney.ID = Origin.BOTH;
+                                    }
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (!found){
                                 journeys[p][vt].add(j);
                             }
                         }
@@ -333,8 +347,6 @@ public class HybridController {
             else{
                 System.out.println("Solution is found with no feasible Journeys");
             }
-
-
         }
         return journeys;
     }

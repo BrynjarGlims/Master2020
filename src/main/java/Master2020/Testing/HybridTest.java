@@ -3,7 +3,7 @@ package Master2020.Testing;
 import Master2020.DataFiles.Data;
 import Master2020.Individual.Journey;
 import Master2020.Individual.Origin;
-import org.nustaq.kson.KsonStringOutput;
+
 
 
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ public class HybridTest {
     }
 
 
-    public static boolean checkIfJourneysExists(ArrayList<Journey>[][] journeys, Data data){
+    public static boolean checkIfJourneysExists(ArrayList<Journey>[][] journeys, Data data, int counter){
         boolean journeyExists = false;
         System.out.print("Number of journeys generated for ");
         int count = 0;
@@ -48,7 +48,7 @@ public class HybridTest {
             }
         }
         if(id == null){
-            System.out.println("No id found");
+            System.out.println("No id found for algorithm " + counter);
         }
         System.out.println(id.toString() + ": " + count );
         return journeyExists;
