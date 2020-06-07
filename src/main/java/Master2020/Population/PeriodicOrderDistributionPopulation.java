@@ -2,7 +2,7 @@ package Master2020.Population;
 
 import Master2020.DataFiles.Data;
 import Master2020.ProductAllocation.OrderDistribution;
-import scala.xml.Null;
+
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
