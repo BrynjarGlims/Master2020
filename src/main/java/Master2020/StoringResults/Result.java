@@ -5,6 +5,7 @@ import Master2020.Genetic.OrderDistributionCrossover;
 import Master2020.Genetic.PenaltyControl;
 import Master2020.Individual.Individual;
 import Master2020.Individual.Journey;
+import Master2020.Individual.Origin;
 import Master2020.Interfaces.PeriodicSolution;
 import Master2020.Population.Population;
 import Master2020.ProductAllocation.OrderDelivery;
@@ -13,6 +14,7 @@ import Master2020.Testing.IndividualTest;
 import com.opencsv.CSVWriter;
 import Master2020.Population.OrderDistributionPopulation;
 import Master2020.Individual.Trip;
+import scala.util.parsing.combinator.testing.Str;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,6 +46,11 @@ public class Result {
     double startTime;
     double MIPGap;
     double runTime;
+
+
+    int numPGA = 0;
+    int numABC = 0;
+    int numBOTH = 0;
 
 
 
@@ -112,6 +119,7 @@ public class Result {
         this.isFeasible = isFeasible;
         this.modelName = modelName;
         this.fileName = fileName;
+        setNumberOfJourneysFromAlgorithms();
     }
 
     public void store() throws IOException {
@@ -140,6 +148,28 @@ public class Result {
             storeDetailed();
             System.out.println("Storing complete");
         }
+    }
+
+    private void setNumberOfJourneysFromAlgorithms(){
+        for (int p = 0; p < data.numberOfPeriods; p++){
+            for (int vt  = 0; vt < data.numberOfVehicleTypes; vt++){
+                for (Journey journey : journeyArrayList[p][vt]){
+                    if (journey.ID == null){
+                        continue;
+                    }
+                    if (journey.ID == Origin.ABC){
+                        numABC += 1;
+                    }
+                    if (journey.ID == Origin.PGA){
+                        numPGA += 1;
+                    }
+                    if (journey.ID == Origin.BOTH){
+                        numBOTH += 1;
+                    }
+                }
+            }
+        }
+
     }
 
 
@@ -328,14 +358,11 @@ public class Result {
                         continue;
                     }
                     else{
-                        if (tripMap.get(period).size() == 0){
-                            if (!tripMap.get(period).containsKey(orderDelivery.order.customerID)){
-                                System.out.println("-------Wrong delivery-------- Find this message in result.java, storing results");
-                                System.out.println("OrderID: " + orderDelivery.order.orderID+  " Period: " + period + " customer: " + orderDelivery.order.customerID + " required visit: " + orderDelivery.orderPeriods[period]);
-                                continue;
-                            }
+                        if (!tripMap.get(period).containsKey(orderDelivery.order.customerID)) {
+                            System.out.println("-------Wrong delivery-------- Find this message in result.java, storing results");
+                            System.out.println("OrderID: " + orderDelivery.order.orderID + " Period: " + period + " customer: " + orderDelivery.order.customerID + " required visit: " + orderDelivery.orderPeriods[period]);
+                            continue;
                         }
-
                         vehicleID = tripMap.get(period).get(orderDelivery.order.customerID).vehicleID;
                         String[] results = {String.valueOf(orderDelivery.order.orderID), Converter.dividableConverter(orderDelivery.dividable),
                                 orderDelivery.order.commodityFlow, formatter.format(orderDelivery.orderVolumes[period]), Converter.periodConverter(period),
@@ -601,13 +628,15 @@ public class Result {
         SimpleDateFormat date_formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         System.out.println("Changing detailed file...");
         if (newFile.length() == 0){
-            String[] CSV_COLUMNS = {"File name" ,"Objective Value", "Model", "Runtime", "Date", "Seed value", "Population Size ", "Generations",
+            String[] CSV_COLUMNS = {"File name" ,"Objective Value", "Model", "Runtime", "numABC", "numPGA", "numBOTH" , "Date", "Seed value", "Population Size ", "Generations",
                     "Customers", "Vehicles", "isFeasible", "isOptimal", "MIPGap"};
             csvWriter.writeNext(CSV_COLUMNS, false);
         }
 
 
-        String[] results = {fileName, String.format("%.4f",fitness), modelName, String.valueOf(this.runTime), date_formatter.format(new Date()), String.valueOf(Parameters.randomSeedValue),
+        String[] results = {fileName, String.format("%.4f",fitness), modelName, String.valueOf(this.runTime),
+                String.valueOf(numABC), String.valueOf(numPGA), String.valueOf(numBOTH),
+                date_formatter.format(new Date()), String.valueOf(Parameters.randomSeedValue),
                 String.valueOf(Parameters.populationSize),String.valueOf(Parameters.maxNumberOfGenerations), String.valueOf(Parameters.numberOfCustomers)
                 , String.valueOf(Parameters.numberOfVehicles), String.valueOf(this.isFeasible), String.valueOf(this.isOptimal), String.valueOf(Math.round(this.MIPGap*1000000)/10000) + "%"};
         csvWriter.writeNext(results, false);
@@ -627,13 +656,15 @@ public class Result {
         SimpleDateFormat date_formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         System.out.println("Changing summary file...");
         if (newFile.length() == 0){
-            String[] CSV_COLUMNS = {"File name" ,"Objective Value", "Model", "Runtime", "Time limit", "VestTeleDataset", "Date", "Seed value", "UseJCM", "PGAs", "ABCs" , "Population Size ", "Generations",
+            String[] CSV_COLUMNS = {"File name" ,"Objective Value", "Model", "Runtime", "numABC", "numPGA", "numBOTH", "Time limit", "VestTeleDataset", "Date", "Seed value", "UseJCM", "PGAs", "ABCs" , "Population Size ", "Generations",
                     "Customers", "Vehicles","isFeasible", "isOptimal", "MIPGap"};
             csvWriter.writeNext(CSV_COLUMNS, false);
         }
 
 
-        String[] results = {fileName, String.format("%.4f",fitness), modelName,  String.valueOf(this.runTime), String.valueOf(Parameters.timeLimitPerAlgorithm),
+        String[] results = {fileName, String.format("%.4f",fitness), modelName,  String.valueOf(this.runTime),
+                String.valueOf(numABC), String.valueOf(numPGA), String.valueOf(numBOTH),
+                String.valueOf(Parameters.timeLimitPerAlgorithm),
                 String.valueOf(Parameters.useVestTeleDataset), date_formatter.format(new Date()), String.valueOf(Parameters.randomSeedValue), String.valueOf(Parameters.useJCM) ,String.valueOf(Parameters.numberOfPGA), String.valueOf(Parameters.numberOfABC),
                 String.valueOf(Parameters.populationSize),String.valueOf(Parameters.maxNumberOfGenerations), String.valueOf(Parameters.numberOfCustomers),
                 String.valueOf(Parameters.numberOfVehicles), String.valueOf(this.isFeasible), String.valueOf(this.isOptimal), String.valueOf(Math.round(this.MIPGap*1000000)/10000) + "%"};

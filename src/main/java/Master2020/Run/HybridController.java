@@ -186,7 +186,7 @@ public class HybridController {
                 System.out.println("Over load "+ fitnesses[2]);
                 int[] tags = Utils.getJourneyTags(JCMSolution.getJourneys(), data);
                 //SolutionTest.checkForInfeasibility(JCMSolution, data);
-                SolutionStorer.storeJBM(JCMSolution.getFitness(), journeyCombinationModel.runTime, improvement, tags[0], tags[1], journeyCombinationModel.optimal,startTime, fileName);
+                SolutionStorer.storeJBM(JCMSolution.getFitness(), journeyCombinationModel.runTime, improvement, tags[0], tags[1], tags[2], journeyCombinationModel.optimal,startTime, fileName);
                 solutions.add(JCMSolution);
                 finalSolutions.add(JCMSolution);
             } else {

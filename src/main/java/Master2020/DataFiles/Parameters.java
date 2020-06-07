@@ -38,12 +38,14 @@ public class Parameters {
     public static double fractionOfFeasibleIndividualsFromAdsplit = 0.2;
     public static final int frequencyOfPenaltyUpdatesPGA = 50;
     public static final int frequencyOfPenaltyUpdatesABC = 1000;
+    public static final int initializationMultiplier = 4; //from vidal
+    public static final int iterationsWithoutImprovementBeforeDiversification = (int) (maxNumberIterationsWithoutImprovement*0.4);
 
     // Loading data parameters
     public static final int numberOfPeriods = 6;
     public static final int numberOfTrips = 5;
-    public static int numberOfCustomers = 10;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
-    public static int numberOfVehicles = 5;
+    public static int numberOfCustomers = 25;        //A maximum of 75 trøndelag, 118 for vestfold/telemark
+    public static int numberOfVehicles = 12;
 
     public static final double distanceCutOffFromDepot = 3.0;   //default 3
     public static final boolean adjustTimeWindow = true;
