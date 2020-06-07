@@ -68,7 +68,7 @@ public class Population {
 
 
     public void initializePopulation (OrderDistribution od, PenaltyControl penaltyControl) {
-        for (int i = 0; i < Parameters.populationSize; i++) {
+        for (int i = 0; i < Parameters.populationSize*Parameters.initializationMultiplier; i++) {
             Individual individual = new Individual(this.data, this, isPeriodic, actualPeriod, penaltyControl);
             individual.initializeIndividual(od);
             AdSplit.adSplitPlural(individual, penaltyControl.timeWarpPenalty, penaltyControl.overLoadPenalty);
