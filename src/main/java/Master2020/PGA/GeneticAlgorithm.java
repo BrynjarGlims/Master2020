@@ -50,7 +50,6 @@ public class GeneticAlgorithm extends Thread {
         this.population = population;
         this.period = period;
         this.orderDistribution = orderDistribution;
-        population.initializePopulation(this.orderDistribution, penaltyControl);
         fitnessForPeriod = Double.MAX_VALUE;
         BiasedFitness.setBiasedFitnessScore(population);
         repaired = new HashSet<>();
