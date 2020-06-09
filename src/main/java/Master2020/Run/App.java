@@ -37,7 +37,7 @@ public class App {
     private static void fullRun(String[] args) throws Exception {
         initialize();
         Parameters.customFileName = "fullRun" + args[1];
-        Parameters.totalRuntime = 1800000;
+        Parameters.totalRuntime = 4 * 1800000;
         Parameters.customFileName = "-timed-for-" + args[0];
         for (int iteration = 0 ; iteration < 1 ; iteration++){
             for (int dataset = 0 ; dataset < 2 ; dataset++){
@@ -145,8 +145,8 @@ public class App {
         vehicles = new int[5];
         journeys = new int[5];
         //25
-        seeds[0][0] = new int[]{15, 84};
-        seeds[1][0] = new int[]{69,85};
+        seeds[0][0] = new int[]{};//15, 84};
+        seeds[1][0] = new int[]{};//69,85};
         customers[0] = 25;
         vehicles[0] = 12;
         journeys[0] = 3;
@@ -158,7 +158,7 @@ public class App {
         journeys[1] = 3;
         //75
         seeds[0][2] = new int[]{};//32,18,37};
-        seeds[1][2] = new int[]{};//1};
+        seeds[1][2] = new int[]{1};
         customers[2] = 75;
         vehicles[2] = 32;
         journeys[2] = 2;
@@ -169,9 +169,9 @@ public class App {
         vehicles[3] = 50;
         journeys[3] = 2;
         //115
-        seeds[0][4] = new int[]{};//10,27};
+        seeds[0][4] = new int[]{1};//10,27};
         seeds[1][4] = new int[]{};
-        customers[4] = 115;
+        customers[4] = 118;
         vehicles[4] = 62;
         journeys[4] = 2;
     }
