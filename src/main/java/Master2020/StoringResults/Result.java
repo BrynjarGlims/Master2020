@@ -234,7 +234,7 @@ public class Result {
             String[] results = {v.vehicleName, String.valueOf(v.vehicleID), String.valueOf(v.vehicleNumber),
                     String.valueOf(v.vehicleType.vehicleTypeID), v.trailerNumberPlate, String.valueOf(v.vehicleType.capacity),
                     String.valueOf(v.vehicleType.travelCost), String.valueOf(v.vehicleType.usageCost),
-                    String.format("%.3f", v.vehicleType.loadingTimeAtDepot*60), Converter.findNumberOfTrips(v, journeyArrayList), Converter.findNumberOfDays(v, journeyArrayList)};
+                    String.format("%.3f", v.vehicleType.loadingTimeAtDepot*60), Converter.findNumberOfTrips(v,journeyArrayList,data), Converter.findNumberOfDays(v, journeyArrayList)};
             csvWriter.writeNext(results, false);
         }
         csvWriter.close();
@@ -250,18 +250,19 @@ public class Result {
         CSVWriter csvWriter = new CSVWriter(writer, Parameters.separator, CSVWriter.NO_QUOTE_CHARACTER,
                 CSVWriter.DEFAULT_ESCAPE_CHARACTER,
                 CSVWriter.DEFAULT_LINE_END);
-        NumberFormat formatter = new DecimalFormat("#0.00000000");
+        NumberFormat formatter = new DecimalFormat("#0.0000");
         SimpleDateFormat date_formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         System.out.println("Changing detailed file...");
         if (newFile.length() == 0){
             String[] CSV_COLUMNS = {"TripID", "Trip Number", "Day", "VehicleID", "Vehicle Name", "Capacity", "Departure time" ,
-                    "Total Trip Time[min]","Traveling Time[min]","CustomerIDs", "Customers visted", "Time Windows"};
+                    "Total Trip Time[min]","Traveling Time[min]", "IDLE-time (journey)", "CustomerIDs", "NumberOfCustomers", "Customers visted", "Time Windows"};
             csvWriter.writeNext(CSV_COLUMNS, false);
         }
         int tripNumber = 1;
-        for (ArrayList<Journey>[] periodJourneys : journeyArrayList){
-            for (ArrayList<Journey> vehicleJourneys : periodJourneys) {
-                for (Journey journey : vehicleJourneys ){
+        for (int p = 0; p < data.numberOfPeriods; p++){
+            for (int vt = 0; vt < data.numberOfVehicleTypes; vt++){
+                for (Journey journey : journeyArrayList[p][vt] ){
+                    Double vehicleIdleTime = Converter.calculateIdleTime(journey,data, p);
                     int tripCounter = 0;
                     for (Trip t : journey.trips){
                         tripCounter += 1;
@@ -269,11 +270,20 @@ public class Result {
                             System.out.println("Empty trip");
                             continue;
                         }
-                        String[] results = {String.valueOf(tripNumber), String.valueOf(tripCounter) , Converter.periodConverter(t.period),String.valueOf(t.vehicleID)
-                                ,data.vehicles[t.vehicleID].vehicleName, String.valueOf(data.vehicleTypes[t.vehicleType].capacity),
-                                Converter.getStartingTimeForTrip(t, data)
-                                ,Converter.calculateTotalTripTime(t, data), Converter.calculateDrivingTime(t, data) ,Converter.formatList(t.customers)
-                                ,Converter.findCustomersFromID((ArrayList) t.customers, data), Converter.findTimeWindowToCustomers((ArrayList) t.customers, data, t.period)};
+                        String[] results = {String.valueOf(tripNumber),
+                                String.valueOf(tripCounter) ,
+                                Converter.periodConverter(p),
+                                String.valueOf(journey.vehicleId),
+                                data.vehicles[journey.vehicleId].vehicleName,
+                                String.valueOf(data.vehicles[journey.vehicleId].vehicleType.capacity),
+                                Converter.getStartingTimeForTrip(t, data),
+                                Converter.calculateTotalTripTime(t, data),
+                                Converter.calculateDrivingTime(t, data),
+                                formatter.format(vehicleIdleTime*60),
+                                Converter.formatList(t.customers),
+                                String.valueOf(t.customers.size()),
+                                Converter.findCustomersFromID((ArrayList) t.customers, data),
+                                Converter.findTimeWindowToCustomers((ArrayList) t.customers, data, p)};
                         csvWriter.writeNext(results, false);
                         tripNumber++;
 
@@ -294,19 +304,30 @@ public class Result {
         CSVWriter csvWriter = new CSVWriter(writer, Parameters.separator, CSVWriter.NO_QUOTE_CHARACTER,
                 CSVWriter.DEFAULT_ESCAPE_CHARACTER,
                 CSVWriter.DEFAULT_LINE_END);
-        NumberFormat formatter = new DecimalFormat("#0.00000000");
+        NumberFormat formatter = new DecimalFormat("#0.00000");
         SimpleDateFormat date_formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         System.out.println("Changing detailed file...");
         if (newFile.length() == 0){
             String[] CSV_COLUMNS = {"Customer Name", "CustomerID", "Customer number", "Orders", "Dividable Orders", "NonDividable Orders",
                     "Frequency", "Total Volume",  "Visit Monday", "Visit Tuesday", "Visit Wednesday" ,"Visit Thursday" ,"Visit Friday" ,"Visit Saturday",
-                    "Unloading time [minutes]"
+                    "Unloading time [minutes]", "V:P0", "V:P1", "V:P2", "V:P3", "V:P4", "V:P5", "AverageVolum"
             };
             csvWriter.writeNext(CSV_COLUMNS, false);
         }
 
 
+
         for (Customer c : data.customers){
+            double averageVolume = 0;
+            int days = 0;
+            for (int p = 0; p < data.numberOfPeriods; p++){
+                averageVolume += orderDistribution.getOrderVolumeDistribution(p, c.customerID);
+                if (orderDistribution.getOrderVolumeDistribution(p, c.customerID) > Parameters.indifferenceValue){
+                    days += 1;
+                }
+            }
+            averageVolume /= days;
+
             String[] results = {c.customerName, String.valueOf(c.customerID), String.valueOf(c.customerNumber),
                     String.valueOf(c.numberOfOrders), String.valueOf(c.numberOfDividableOrders), String.valueOf(c.numberOfNonDividableOrders),
                     String.valueOf(c.numberOfVisitPeriods), Converter.calculateTotalOrderVolume(c),
@@ -314,7 +335,15 @@ public class Result {
                     Converter.convertTimeWindow(c.timeWindow[1][0], c.timeWindow[1][1]), Converter.convertTimeWindow(c.timeWindow[2][0], c.timeWindow[2][1]),
                     Converter.convertTimeWindow(c.timeWindow[3][0], c.timeWindow[3][1]), Converter.convertTimeWindow(c.timeWindow[4][0], c.timeWindow[4][1]),
                     Converter.convertTimeWindow(c.timeWindow[5][0], c.timeWindow[5][1]),
-                    String.format("%.0f", c.totalUnloadingTime*60)};
+                    String.format("%.0f", c.totalUnloadingTime*60),
+                    formatter.format(orderDistribution.getOrderVolumeDistribution(0, c.customerID)),
+                    formatter.format(orderDistribution.getOrderVolumeDistribution(1, c.customerID)),
+                    formatter.format(orderDistribution.getOrderVolumeDistribution(2, c.customerID)),
+                    formatter.format(orderDistribution.getOrderVolumeDistribution(3, c.customerID)),
+                    formatter.format(orderDistribution.getOrderVolumeDistribution(4, c.customerID)),
+                    formatter.format(orderDistribution.getOrderVolumeDistribution(5, c.customerID)),
+                    formatter.format(averageVolume)
+            };
             csvWriter.writeNext(results, false);
         }
         csvWriter.close();
@@ -617,6 +646,9 @@ public class Result {
         writer.close();
     }
 
+
+
+
     private void storeSummaryDetailed() throws IOException {
         String filePath  = FileParameters.filePathDetailed + "/" + fileName + "/" + fileName + "_summary.csv";
         File newFile = new File(filePath);
@@ -673,20 +705,5 @@ public class Result {
         writer.close();
     }
 
-    public static void main(String[] args) throws IOException {
-        Data data = DataReader.loadData();
-        PenaltyControl penaltyControl = new PenaltyControl(Parameters.initialTimeWarpPenalty, Parameters.initialOverLoadPenalty, Parameters.frequencyOfPenaltyUpdatesPGA);
-        Population population = new Population(data);
-        OrderDistributionPopulation odp = new OrderDistributionPopulation(data);
-        OrderDistributionCrossover ODC = new OrderDistributionCrossover(data);
-        odp.initializeOrderDistributionPopulation(population);
-        OrderDistribution firstOD = odp.getRandomOrderDistribution();
-        population.setOrderDistributionPopulation(odp);
-        population.initializePopulation(firstOD, penaltyControl);
-        String modelName = "GA";
-        String folderName = SolutionStorer.getFolderName(modelName);
-        Result res = new Result(population, modelName, folderName);
-        res.store();
-    }
 
 }

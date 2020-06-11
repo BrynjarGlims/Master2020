@@ -130,28 +130,29 @@ public class Converter {
                 + Math.pow(yCoordinateFrom - yCoordinateTo, 2)) * Parameters.scalingDistanceParameter;
     }
 
-    public static String findNumberOfTrips(Vehicle v, ArrayList<Journey>[][] journeyList){
+    public static String findNumberOfTrips(Vehicle v, ArrayList<Journey>[][] journeyList, Data data){
         int numberOfTrips = 0;
-        for (int p = 0; p < journeyList.length; p++){
-            for (Journey j : journeyList[p][v.vehicleType.vehicleTypeID])
-                for (Trip t : j.trips){
-                    if (t.vehicleID == v.vehicleID){
+        for (int p = 0; p < journeyList.length; p++) {
+            for (Journey j : journeyList[p][v.vehicleType.vehicleTypeID]) {
+                if (j.vehicleId == v.vehicleID) {
+                    for (Trip t : j.trips) {
                         numberOfTrips++;
                     }
                 }
+            }
         }
         return Integer.toString(numberOfTrips);
     }
+
+
 
     public static String findNumberOfDays(Vehicle v, ArrayList<Journey>[][] journeyList){
         int numberOfDays = 0;
         for (int p = 0; p < journeyList.length; p++){
             for (Journey j : journeyList[p][v.vehicleType.vehicleTypeID]) {
-                for (Trip t : j.trips) {
-                    if (t.vehicleID == v.vehicleID) {
-                        numberOfDays++;
-                        break;
-                    }
+                if (j.vehicleId == v.vehicleID) {
+                    numberOfDays++;
+                    break;
                 }
             }
         }
@@ -216,13 +217,11 @@ public class Converter {
         double vehicleDrivingDistance = 0;
 
         //if second trip, add loading time at depot
-
         //initialize
         boolean fromDepot = true;
         int lastCustomerID = -1;
 
         //three cases, from depot to cust, cust to cust, cust to depot
-
         for ( int customerID : customers){
             if (fromDepot){
                 vehicleDrivingDistance = data.distanceMatrix[data.numberOfCustomers][customerID];
@@ -236,8 +235,43 @@ public class Converter {
             }
         }
         vehicleDrivingDistance += data.distanceMatrix[lastCustomerID][data.numberOfCustomers];
-
         return String.format("%.1f",vehicleDrivingDistance*60);
-
     }
+
+    public static double calculateIdleTime(Journey j, Data data, int p) {
+        double vehicleCurrentTime = 0;
+        double vehicleIdleTime = 0;
+        //if second trip, add loading time at depot
+        //initialize
+        boolean fromDepot = true;
+        int lastCustomerID = -1;
+
+        for (Trip t : j.trips){
+
+            for ( int customerID : t.customers){
+                if (fromDepot){
+                    vehicleCurrentTime = Math.max(data.distanceMatrix[data.numberOfCustomers][customerID] + vehicleCurrentTime, data.customers[customerID].timeWindow[p][0]);
+                    vehicleCurrentTime += data.customers[customerID].totalUnloadingTime;
+                    lastCustomerID = customerID;
+                    fromDepot = false;
+                }
+                else {
+                    vehicleCurrentTime += data.distanceMatrix[lastCustomerID][customerID];
+                    if (vehicleCurrentTime <  data.customers[customerID].timeWindow[p][0] ){
+                        vehicleIdleTime += data.customers[customerID].timeWindow[p][0] - vehicleCurrentTime;
+                        vehicleCurrentTime = data.customers[customerID].timeWindow[p][0];
+                    }
+                    vehicleCurrentTime += data.customers[customerID].totalUnloadingTime;
+                    lastCustomerID = customerID;
+                }
+            }
+            vehicleCurrentTime += data.distanceMatrix[lastCustomerID][data.numberOfCustomers];
+            vehicleCurrentTime += data.vehicles[j.vehicleId].vehicleType.loadingTimeAtDepot;
+            fromDepot = true;
+            lastCustomerID = -1;
+
+        }
+        return vehicleIdleTime;
+    }
+
 }
