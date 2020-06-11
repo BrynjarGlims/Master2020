@@ -145,8 +145,8 @@ public class App {
         vehicles = new int[5];
         journeys = new int[5];
         //25
-        seeds[0][0] = new int[]{};//15, 84};
-        seeds[1][0] = new int[]{};//69,85};
+        seeds[0][0] = new int[]{15, 84};
+        seeds[1][0] = new int[]{69,85};
         customers[0] = 25;
         vehicles[0] = 12;
         journeys[0] = 3;
