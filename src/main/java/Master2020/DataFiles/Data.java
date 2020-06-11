@@ -10,9 +10,7 @@ import scala.xml.PrettyPrinter;
 
 import java.io.IOException;
 import java.lang.*;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.IllegalFormatException;
+import java.util.*;
 
 public class Data {
 
@@ -237,8 +235,4 @@ public class Data {
         }
         targetVolume = totalVolume/ numberOfPeriods;
     }
-
-    public static void main(String[] args){
-    }
-
 }

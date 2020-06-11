@@ -1,49 +1,34 @@
-# Master2020
+# Heuristic Methods for a Periodic Multi-Trip Vehicle Routing Problem in the Food Distribution Industry
 
-SETUP FOR SOLSTORM:
+#Description
+The project describes multiple heuristics to solve the periodic multi-trip vehicle routing problem with time windows (PMTVRPTW), incompatible commodities, and a heterogeneous fleet. The project is coded as part of a master thesis in optimization from NTNU 2020.
 
-1. Login via Putty (Solstorm-login.iot.ntnu.no)
+NOTE THAT THE DATA USED IN THIS  CODE MUST NOT BE DISTRIBUTED AS ITS PROPERTY OF ASKO AS.
 
-2. Add java to path and create JAVA_HOME environment variable:
+##Dependencies
+In order to run the project the user has to have installed Apache Maven v3.1.6 or newer. In addition, Gurobi optimizer v8.1.  or newer is required. The following environment variables must be set properly:
+ * GUROBI_HOME: point to the Gurobi folder
+ * JAVA_HOME: point to the SDK version folder
+ * MAVEN_HOME: to Apache Maven folder
+ 
+ Java, Gurobi, and Maven must also be added to path.
+ 
+ After these properties has been set, run following command in order to install Gurobi to Maven
+ 
+ mvn install:install-file -Dfile=["PATH TO GUROBI.JAR"] -DgroupId=gurobi -DartifactId=gurobi -Dversion=8 -Dpackaging=jar
 
-export PATH=$PATH:~:/share/apps/Java/11.0.2/bin export JAVA_HOME=/share/apps/Java/11.0.2
+where the path has been set correctly.
 
-3. Add Maven to path:
+In order to run the project, build it using command "mvn package".
 
-export PATH=$PATH:~:/share/apps/Maven/3.6.3/bin
+Run the algorithm by running the VRP-1.0.jar file in the /target folder
 
-4. clone master project to storage:
+Input arguments are [GA, ABC, PGA, HYBRID] [base, full]
 
-cd /storage/global
+in order to reproduce results reported in the master thesis
 
-mkdir \<your-username\>
 
-cd \<your-username\>
-
-git clone \<master-project-link\>
-
-cd Master2020
-
-5. Install gurobi to maven:
-
-mvn install:install-file -Dfile=/share/apps/gurobi/8.1.1/lib/gurobi.jar -DgroupId=gurobi -DartifactId=gurobi -Dversion=8 -Dpackaging=jar
-
-6. Add gurobi environment variables:
-
-export PATH=$PATH:~:/share/apps/gurobi/8.1.1/bin
-
-export LD_LIBRARY_PATH=/share/apps/gurobi/8.1.1/lib
-
-export GRB_LICENSE_FILE="/share/apps/gurobi/gurobi.lic"
-
-7. Build maven project:
-
-mvn clean package
-
-8. Run project!
-
-java -jar target/test-1.0-SNAPSHOT.jar \<model\> \<num_customers\>
-
-example:
-
-java -jar target/test-1.0-SNAPSHOT.jar JBM 25
+##Contributors
+Fride Elise Bakken \
+Brynjar Glimsdal \
+Lars Kåre Tvinnereim
